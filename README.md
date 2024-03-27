@@ -1,7 +1,7 @@
-# Predmetni projekat iz pretmeta USI
+# Project for Introduction to Software Engineering course
 
-Članovi tima:
-* ...
-* ...
-* ...
-* ...
+Contributors:
+- [Damjan Vinčić](https://github.com/DamjanVincic)
+- [Nađa Zorić](https://github.com/zoricnadja)
+- [Milica Radić](https://github.com/milicaradicc)
+- [Mijat Krivokapić](https://github.com/mijatkrivokapic)
