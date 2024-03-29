@@ -69,6 +69,12 @@ namespace LangLang.Model
 
         public User(string firstName, string lastName, string email, string password, Gender gender, string phone)
         {
+            ValidateFirstName(firstName);
+            ValidateLastName(lastName);
+            ValidateEmail(email);    
+            ValidatePassword(password);
+            ValidatePhoneNumber(phone);
+
             FirstName = firstName;
             LastName = lastName;
             Email = email;
