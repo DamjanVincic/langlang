@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LangLang.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,8 @@ namespace LangLang.View
     {
         public TeachersView()
         {
+            TeacherListingViewModel teachersViewModel = new TeacherListingViewModel();
+
             InitializeComponent();
         }
     }
