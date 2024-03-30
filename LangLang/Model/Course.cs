@@ -10,69 +10,147 @@ namespace LangLang.Model
 {
     public class Course
     {
-        public int Id { get; set; }
+        private int id;
+        private Language language;
+        private int duration;
+        private List<Weekday> held;
+        private bool isOnline;
+        private int maxStudents;
+        private int creatorId;
+        private TimeOnly scheduledTime;
+        private DateOnly startDate;
+        private bool areApplicationsClosed;
+        private int teacherId;
+        private List<int> studentIds;
+        public int Id {
+            get 
+            {
+                return id;
+            }
+            set 
+            {
+                id = value;
+            } 
+        }
         public Language Language
         {
             get
             {
-                return Language;
+                return language;
             }
             set
             {
                 ValidateLanguage(value);
-                Language = value;
+                language = value;
             }
         }
         public int Duration 
         {
             get
             {
-                return Duration;
+                return duration;
             }
             set
             {
                 ValidateDuration(value);
-                Duration = value;
+                duration = value;
             }
         }
-        public List<Weekday> Held { get; set; }
-        public bool IsOnline {  get; set; }
+        public List<Weekday> Held {
+            get
+            {
+                return held;
+            }
+            set 
+            {
+                held = value;
+            }
+        }
+        public bool IsOnline {
+            get
+            {
+                return isOnline;
+            }
+            set 
+            {
+                isOnline = value;
+            } }
         public int MaxStudents 
         {
             get
             {
-                return MaxStudents;
+                return maxStudents;
             }
             set
             {
                 ValidateMaxStudents(value);
-                MaxStudents = value;
+                maxStudents = value;
             }
         }
-        public int CreatorId {  get; set; }
-        public TimeOnly ScheduledTime {  get; set; }
+        public int CreatorId {
+            get
+            {
+                return creatorId;
+            }
+            set
+            {
+                creatorId = value;            
+            } 
+        }
+        public TimeOnly ScheduledTime { 
+            get 
+            {
+                return scheduledTime;
+            }
+            set 
+            {
+                scheduledTime = value;
+            }
+                }
         public DateOnly StartDate
         {
             get
             {
-                return StartDate;
+                return startDate;
             }
             set
             {
                 ValidateStartDate(value);
-                StartDate = value;
+                startDate = value;
             }
         }
-        public bool AreApplicationsClosed {  get; set; }
-        public int TeacherId {  get; set; }
-        public List<int> StudentIds {  get; set; }
+        public bool AreApplicationsClosed {
+            get 
+            {
+                return areApplicationsClosed;
+            }
+            set 
+            { 
+                areApplicationsClosed = value;
+            }
+        }
+        public int TeacherId {
+            get 
+            {
+                return teacherId;
+            }
+            set 
+            {
+                teacherId = value;
+            } 
+        }
+        public List<int> StudentIds { 
+            get 
+            {
+                return studentIds;
+            } set
+            {
+                studentIds = value;
+            }
+        }
 
         public Course(Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents, int creator, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed, int teacher, List<int> students)
         {
-            ValidateLanguage(language);
-            ValidateDuration(duration);
-            ValidateMaxStudents(maxStudents);
-            ValidateStartDate(startDate);
             Language = language;
             Duration = duration;
             Held = held;
@@ -126,8 +204,5 @@ namespace LangLang.Model
                 throw new ArgumentNullException("Language must not be null.");
             }
         }
-
-       
     }
-    
 }

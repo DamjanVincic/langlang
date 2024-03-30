@@ -8,40 +8,38 @@ namespace LangLang.Model
 {
     public class Language
     {
+        private string name;
+        private LanguageLevel level;
         public string Name
         {
             get
             {
-                return Name;
+                return name;
             }
             set
             {
                 ValidateName(value);
-                Name = value;
+                name = value;
             }
         }
-        public string Level
+        public LanguageLevel Level
         {
             get
             {
-                return Level;
+                return level;
             }
             set
             {
                 ValidateLevel(value);
-                Level = value;
+                level = value;
             }
         }
 
-        private void ValidateLevel(string level)
+        private void ValidateLevel(LanguageLevel level)
         {
             if (level == null)
             {
                 throw new ArgumentNullException("Level must not be null.");
-            }
-            if (level.Equals(""))
-            {
-                throw new InvalidInputException("Level must include at least one character.");
             }
         }
 
@@ -56,11 +54,8 @@ namespace LangLang.Model
                 throw new InvalidInputException("Name must include at least one character.");
             }
         }
-        public Language(string name, string level) 
+        public Language(string name, LanguageLevel level) 
         {
-            ValidateName(name);
-            ValidateLevel(level);
-
             Name = name;
             Level = level;
         }
