@@ -98,7 +98,7 @@ namespace LangLang.Model
         {
             if (held == null)
             {
-                throw new ArgumentNullException(nameof(_held));
+                throw new ArgumentNullException(nameof(held));
             }
         }
 
@@ -114,7 +114,7 @@ namespace LangLang.Model
         {
             if (language == null)
             {
-                throw new ArgumentNullException(nameof(_language));
+                throw new ArgumentNullException(nameof(language));
             }
         }
     }

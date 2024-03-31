@@ -25,7 +25,7 @@ namespace LangLang.Model
         {
             if (name == null)
             {
-                throw new ArgumentNullException(nameof(_name));
+                throw new ArgumentNullException(nameof(name));
             }
             if (name.Equals(""))
             {
