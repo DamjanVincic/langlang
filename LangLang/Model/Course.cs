@@ -16,6 +16,8 @@ namespace LangLang.Model
             Language = language;
             Duration = duration;
             Held = held;
+            CreatorId = creator;
+            AreApplicationsClosed = areApplicationsClosed;
             IsOnline = isOnline;
             MaxStudents = maxStudents;
             ScheduledTime = scheduledTime;
