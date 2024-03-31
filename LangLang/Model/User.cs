@@ -18,7 +18,6 @@ namespace LangLang.Model
 
         public User(string firstName, string lastName, string email, string password, Gender gender, string phone)
         {
-            Id = _idCounter++;
             FirstName = firstName;
             LastName = lastName;
             Email = email;
@@ -26,6 +25,7 @@ namespace LangLang.Model
             Gender = gender;
             Phone = phone;
             
+            Id = _idCounter++;
             _users.Add(Id, this);
         }
         
@@ -109,7 +109,12 @@ namespace LangLang.Model
 
         private void ValidateEmail(string email)
         {
-            if (email == null || !Regex.IsMatch(email, "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$\r\n"))
+            if (email == null)
+            {
+                throw new ArgumentNullException(nameof(email));
+            }
+            
+            if (!Regex.IsMatch(email, "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"))
             {
                 throw new InvalidInputException("Email not valid");
             }
@@ -124,7 +129,7 @@ namespace LangLang.Model
         {
             if (password == null)
             {
-                throw new InvalidInputException("Password can not be null");
+                throw new InvalidInputException(nameof(password));
             }
 
             if (password.Length < 8)
@@ -165,10 +170,15 @@ namespace LangLang.Model
                 throw new InvalidInputException("Phone number must contain at least 10 numbers.");
             }
 
-            if (!Regex.IsMatch(phoneNumber, "^\\d+$\r\n"))
+            if (!Regex.IsMatch(phoneNumber, "^\\d+$"))
             {
                 throw new InvalidInputException("Phone number must contain only numbers.");
             }
+        }
+        
+        public static bool TryAddUser(User user)
+        {
+            return _users.TryAdd(user.Id, user);
         }
     }
 }
