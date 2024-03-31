@@ -28,6 +28,11 @@ namespace LangLang.Model
             Id = _idCounter++;
             _users.Add(Id, this);
         }
+
+        public static User? Login(string email, string password)
+        {
+            return _users.Values.FirstOrDefault(user => user.Email.Equals(email) && user.Password.Equals(password));
+        }
         
         public int Id { get; }
 
