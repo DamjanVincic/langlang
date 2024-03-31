@@ -9,8 +9,8 @@ namespace LangLang.ViewModel;
 
 public class LoginViewModel : ViewModelBase
 {
-    public string Email { get; set; }
-    public string Password { get; set; }
+    public string? Email { get; set; }
+    public string? Password { get; set; }
     
     public ICommand LoginCommand { get; }
     
@@ -21,7 +21,7 @@ public class LoginViewModel : ViewModelBase
     
     private void Login()
     {
-        User? user = User.Login(Email, Password);
+        User? user = User.Login(Email!, Password!);
         
         switch (user)
         {
