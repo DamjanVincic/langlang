@@ -19,6 +19,9 @@ public class RegisterViewModel : ViewModelBase
     public string Phone { get; set; }
     public Education Education { get; set; }
     
+    public IEnumerable<Gender> GenderValues => Enum.GetValues(typeof(Gender)).Cast<Gender>();
+    public IEnumerable<Education> EducationValues => Enum.GetValues(typeof(Education)).Cast<Education>();
+    
     public ICommand RegisterCommand { get; }
     
     public RegisterViewModel()
@@ -43,8 +46,4 @@ public class RegisterViewModel : ViewModelBase
             MessageBox.Show(exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
-
-    public IEnumerable<Gender> GenderValues => Enum.GetValues(typeof(Gender)).Cast<Gender>();
-    
-    public IEnumerable<Education> EducationValues => Enum.GetValues(typeof(Education)).Cast<Education>();
 }
