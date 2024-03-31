@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace LangLang.Model
 {
-    public class User
+    public abstract class User
     {
+        private static int _idCounter = 1;
+        private static Dictionary<int, User> _users = new Dictionary<int, User>();
+
         private string _firstName;
         private string _lastName;
         private string _email;
@@ -14,13 +18,18 @@ namespace LangLang.Model
 
         public User(string firstName, string lastName, string email, string password, Gender gender, string phone)
         {
+            Id = _idCounter++;
             FirstName = firstName;
             LastName = lastName;
             Email = email;
             Password = password;
             Gender = gender;
             Phone = phone;
+            
+            _users.Add(Id, this);
         }
+        
+        public int Id { get; }
 
         public string FirstName
         {
@@ -103,6 +112,11 @@ namespace LangLang.Model
             if (email == null || !Regex.IsMatch(email, "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$\r\n"))
             {
                 throw new InvalidInputException("Email not valid");
+            }
+            
+            if (_users.Values.Any(user => user.Email.Equals(email)))
+            {
+                throw new InvalidInputException("Email already exists");
             }
         }
 
