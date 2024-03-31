@@ -8,42 +8,42 @@ namespace LangLang.Model
 {
     public class Language
     {
-        private string name;
-        private LanguageLevel level;
+        private string _name;
+        private LanguageLevel _level;
         public string Name
         {
             get
             {
-                return name;
+                return _name;
             }
             set
             {
                 ValidateName(value);
-                name = value;
+                _name = value;
             }
         }
         public LanguageLevel Level
         {
             get
             {
-                return level;
+                return _level;
             }
             set
             {
-                ValidateLevel(value);
-                level = value;
+                //ValidateLevel(value);
+                _level = value;
             }
         }
 
-        private void ValidateLevel(LanguageLevel level)
-        {
-            if (level == null)
-            {
-                throw new ArgumentNullException("Level must not be null.");
-            }
-        }
+        //public void ValidateLevel(LanguageLevel level)
+        //{
+        //    if (level == null)
+        //    {
+        //        throw new ArgumentNullException("Level must not be null.");
+        //    }
+        //}
 
-        private void ValidateName(string name)
+        public void ValidateName(string name)
         {
             if (name == null)
             {

@@ -10,142 +10,142 @@ namespace LangLang.Model
 {
     public class Course
     {
-        private int id;
-        private Language language;
-        private int duration;
-        private List<Weekday> held;
-        private bool isOnline;
-        private int maxStudents;
-        private int creatorId;
-        private TimeOnly scheduledTime;
-        private DateOnly startDate;
-        private bool areApplicationsClosed;
-        private int teacherId;
-        private List<int> studentIds;
+        private int _id;
+        private Language _language;
+        private int _duration;
+        private List<Weekday> _held;
+        private bool _isOnline;
+        private int _maxStudents;
+        private int _creatorId;
+        private TimeOnly _scheduledTime;
+        private DateOnly _startDate;
+        private bool _areApplicationsClosed;
+        private int _teacherId;
+        private List<int> _studentIds;
         public int Id {
             get 
             {
-                return id;
+                return _id;
             }
             set 
             {
-                id = value;
+                _id = value;
             } 
         }
         public Language Language
         {
             get
             {
-                return language;
+                return _language;
             }
             set
             {
                 ValidateLanguage(value);
-                language = value;
+                _language = value;
             }
         }
         public int Duration 
         {
             get
             {
-                return duration;
+                return _duration;
             }
             set
             {
                 ValidateDuration(value);
-                duration = value;
+                _duration = value;
             }
         }
         public List<Weekday> Held {
             get
             {
-                return held;
+                return _held;
             }
             set 
             {
-                held = value;
+                _held = value;
             }
         }
         public bool IsOnline {
             get
             {
-                return isOnline;
+                return _isOnline;
             }
             set 
             {
-                isOnline = value;
+                _isOnline = value;
             } }
         public int MaxStudents 
         {
             get
             {
-                return maxStudents;
+                return _maxStudents;
             }
             set
             {
                 ValidateMaxStudents(value);
-                maxStudents = value;
+                _maxStudents = value;
             }
         }
         public int CreatorId {
             get
             {
-                return creatorId;
+                return _creatorId;
             }
             set
             {
-                creatorId = value;            
+                _creatorId = value;            
             } 
         }
         public TimeOnly ScheduledTime { 
             get 
             {
-                return scheduledTime;
+                return _scheduledTime;
             }
             set 
             {
-                scheduledTime = value;
+                _scheduledTime = value;
             }
                 }
         public DateOnly StartDate
         {
             get
             {
-                return startDate;
+                return _startDate;
             }
             set
             {
                 ValidateStartDate(value);
-                startDate = value;
+                _startDate = value;
             }
         }
         public bool AreApplicationsClosed {
             get 
             {
-                return areApplicationsClosed;
+                return _areApplicationsClosed;
             }
             set 
             { 
-                areApplicationsClosed = value;
+                _areApplicationsClosed = value;
             }
         }
         public int TeacherId {
             get 
             {
-                return teacherId;
+                return _teacherId;
             }
             set 
             {
-                teacherId = value;
+                _teacherId = value;
             } 
         }
         public List<int> StudentIds { 
             get 
             {
-                return studentIds;
+                return _studentIds;
             } set
             {
-                studentIds = value;
+                _studentIds = value;
             }
         }
 
@@ -197,7 +197,7 @@ namespace LangLang.Model
             }
         }
 
-        private void ValidateLanguage(Language language)
+        public void ValidateLanguage(Language language)
         {
             if (language == null)
             {
