@@ -32,6 +32,10 @@ namespace LangLang.Model
                 throw new InvalidInputException("Name must include at least one character.");
             }
         }
-        
+
+        public override string ToString()
+        {
+            return Name + " " + Level.ToString();
+        }
     }
 }
