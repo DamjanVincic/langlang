@@ -9,61 +9,56 @@ namespace LangLang.Model
 {
     public class User
     { 
+        private string _firstName;
         public string FirstName {
-            get
-            {
-                return FirstName;
-            }
+            get => _firstName;
             set
             {
-                FirstName = value;
+                ValidateFirstName(value);
+                _firstName = value;
             }
         }
+
+        private string _lastName;
         public string LastName {
-            get
-            {
-                return LastName;
-            }
+            get => _lastName;
             set
             {
                 ValidateLastName(value);
-                LastName = value;
+                _lastName = value;
             }
-            }
+        }
+
+        private string _email;
         public string Email
         {
-            get
-            {
-                return Email;
-            }
+            get => _email;
             set
             {
                 ValidateEmail(value);
-                Email = value;
+                _email = value;
             }
         }
+
+        private string _password;
         public string Password
         {
-            get
-            {
-                return Password;
-            }
+            get => _password;
             set
             {
                 ValidatePassword(value);
-                Password = value;
+                _password = value;
             }
         }
         public Gender Gender { get; set; }
+
+        private string _phone;
         public string Phone {
-            get
-            {
-                return Phone;
-            }
+            get => _phone;
             set
             {
                 ValidatePhoneNumber(value);
-                Phone = value;
+                _phone = value;
             }
         }
 
@@ -83,7 +78,7 @@ namespace LangLang.Model
             Phone = phone;
         }
 
-        public void ValidateFirstName(string firstName)
+        private void ValidateFirstName(string firstName)
         {
             if(firstName == null)
             {
@@ -94,17 +89,18 @@ namespace LangLang.Model
                 throw new InvalidInputException("First name must include at least one character.");
             }
         }
-        public void ValidateLastName(string lastName)
+
+        private void ValidateLastName(string lastName)
         {
-            if (lastName == null)
+            switch (lastName)
             {
-                throw new ArgumentNullException("Last name must not be null.");
-            }
-            if (lastName.Equals(""))
-            {
-                throw new InvalidInputException("Last name must include at least one character.");
+                case null:
+                    throw new ArgumentNullException(nameof(lastName));
+                case "":
+                    throw new InvalidInputException("Last name must include at least one character.");
             }
         }
+        
         private void ValidateEmail(string email)
         {
             if (email == null || !Regex.IsMatch(email, "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$\r\n"))
@@ -112,6 +108,7 @@ namespace LangLang.Model
                 throw new InvalidInputException("Email not valid");
             }
         }
+        
         private void ValidatePassword(string password)
         {
             if (password == null)
@@ -140,11 +137,11 @@ namespace LangLang.Model
             }
         }
 
-        public void ValidatePhoneNumber(string phoneNumber)
+        private void ValidatePhoneNumber(string phoneNumber)
         {
             if(phoneNumber == null)
             {
-                throw new ArgumentNullException("Phone number must not be null.");
+                throw new ArgumentNullException(nameof(phoneNumber));
             }
             if(phoneNumber.Equals("")){
                 throw new InvalidInputException("Phone number must not be empty.");
