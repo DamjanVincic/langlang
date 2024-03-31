@@ -7,59 +7,58 @@ using System.Threading.Tasks;
 namespace LangLang.Model
 {
     public class Exam
-    {                 
-        private int id;
-        private Language language;
-        private int maxStudents;
-        private DateOnly examDate;
-        public int Id
+    {
+        public int Id;
+        private Language _language;
+        private int _maxStudents;
+        private DateOnly _examDate;
+
+        public Exam(int id, Language language, int maxStudents, DateOnly examDate, List<int> studentIds)
         {
-            get
-            {
-                return Id;
-            }
-            set
-            {
-                Id = value;
-            }
+            Id = id;
+            Language = language;
+            MaxStudents = maxStudents;
+            ExamDate = examDate;
+            StudentIds = studentIds;
         }
+
         public Language Language
         {
             get
             {
-                return Language;
+                return _language;
             }
             set
             {
                 ValidateLanguage(value);
-                Language = value;
+                _language = value;
             }
         }
-        public int MaxStudents 
+        public int MaxStudents
         {
             get
             {
-                return MaxStudents;
+                return _maxStudents;
             }
             set
             {
                 ValidateMaxStudents(value);
-                MaxStudents = value;
+                _maxStudents = value;
             }
         }
         public DateOnly ExamDate
         {
             get
             {
-                return ExamDate;
+                return _examDate;
             }
             set
             {
                 ValidateExamDate(value);
-                ExamDate = value;
+                _examDate = value;
             }
         }
-        public List <int> studentIds { get; set; }
+        public List<int> StudentIds { get; set; }
 
         public void ValidateMaxStudents(int maxStudents)
         {
