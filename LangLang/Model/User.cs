@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace LangLang.Model
 {
@@ -64,12 +61,6 @@ namespace LangLang.Model
 
         public User(string firstName, string lastName, string email, string password, Gender gender, string phone)
         {
-            ValidateFirstName(firstName);
-            ValidateLastName(lastName);
-            ValidateEmail(email);    
-            ValidatePassword(password);
-            ValidatePhoneNumber(phone);
-
             FirstName = firstName;
             LastName = lastName;
             Email = email;
@@ -82,7 +73,7 @@ namespace LangLang.Model
         {
             if(firstName == null)
             {
-                throw new ArgumentNullException("First name must not be null.");
+                throw new ArgumentNullException(nameof(firstName));
             }
             if(firstName.Equals(""))
             {
@@ -154,7 +145,6 @@ namespace LangLang.Model
             {
                 throw new InvalidInputException("Phone number must contain only numbers.");
             }
-
         }
     }
 }
