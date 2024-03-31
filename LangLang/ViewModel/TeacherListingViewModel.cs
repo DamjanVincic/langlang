@@ -14,22 +14,21 @@ namespace LangLang.ViewModel
         ObservableCollection<TeacherViewModel> teachers;
         public TeacherListingViewModel()
         {
-            string eng = "English";
-            Language enga1 = new Language(eng, "a1");
-            Language enga2 = new Language("English", "a2");
-            Language gera1 = new Language("German", "a1");
-            Language gera2 = new Language("German", "a2");
+            Language enga1 = new Language("English", LanguageLevel.A1);
+            Language enga2 = new Language("English", LanguageLevel.A2);
+            Language gera1 = new Language("German", LanguageLevel.A1);
+            Language gera2 = new Language("German", LanguageLevel.A2);
             List<Language> peraLangs = new List<Language>
             {
                 enga1,
                 gera1
             };
-            Teacher t1 = new Teacher("Pera", "Peric", "mijat2004@gmail.com", "lozinkaa", Gender.Male, "0638662250", peraLangs, new List<int> { 1, 2, 3 });
-            Teacher t2 = new Teacher("Pera2", "Peric2", "kfjsdlk@gmail.com", "lozinkaa", Gender.Male, "0638662250", peraLangs, new List<int> { 1, 2, 3 });
-            Teacher t3 = new Teacher("Pera3", "Peric3", "kfjsdlk@gmail.com", "lozinkaa", Gender.Male, "0638662250", peraLangs, new List<int> { 1, 2, 3 });
-            Teacher t4 = new Teacher("Pera4", "Peric4", "kfjsdlk@gmail.com", "lozinkaa", Gender.Male, "0638662250", peraLangs, new List<int> { 1, 2, 3 });
-            Teacher t5 = new Teacher("Pera5", "Peric5", "kfjsdlk@gmail.com", "lozinkaa", Gender.Male, "0638662250", peraLangs, new List<int> { 1, 2, 3 });
-            Teacher t6 = new Teacher("Pera6", "Peric6", "kfjsdlk@gmail.com", "lozinkaa", Gender.Male, "0638662250", peraLangs, new List<int> { 1, 2, 3 });
+            Teacher t1 = new Teacher("Pera", "Peric", "mijat2004@gmail.com", "Lozinkaa2", Gender.Male, "0638662250", peraLangs, new List<int> { 1, 2, 3 });
+            Teacher t2 = new Teacher("Pera2", "Peric2", "kfjsdlk@gmail.com", "Lozinkaa2", Gender.Male, "0638662250", peraLangs, new List<int> { 1, 2, 3 });
+            Teacher t3 = new Teacher("Pera3", "Peric3", "kfjsdlk@gmail.com", "Lozinkaa2", Gender.Male, "0638662250", peraLangs, new List<int> { 1, 2, 3 });
+            Teacher t4 = new Teacher("Pera4", "Peric4", "kfjsdlk@gmail.com", "Lozinkaa2", Gender.Male, "0638662250", peraLangs, new List<int> { 1, 2, 3 });
+            Teacher t5 = new Teacher("Pera5", "Peric5", "kfjsdlk@gmail.com", "Lozinkaa2", Gender.Male, "0638662250", peraLangs, new List<int> { 1, 2, 3 });
+            Teacher t6 = new Teacher("Pera6", "Peric6", "kfjsdlk@gmail.com", "Lozinkaa2", Gender.Male, "0638662250", peraLangs, new List<int> { 1, 2, 3 });
 
             teachers = new ObservableCollection<TeacherViewModel> {
                 new TeacherViewModel(t1),

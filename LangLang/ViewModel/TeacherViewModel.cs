@@ -13,19 +13,31 @@ namespace LangLang.ViewModel
     {
         private readonly Teacher teacher;
 
-        public string FirstName=>teacher.FirstName;
-        public string LastName=>teacher.LastName;
+        public string FirstName => teacher.FirstName;
+        public string LastName => teacher.LastName;
         public string Email => teacher.Email;
         public string Password => teacher.Password;
         public Gender Gender => teacher.Gender;
-        public string Phone=>teacher.Phone;
-        public string Qualifications => teacher.Qualifications?.ToString();
+        public string Phone => teacher.Phone;
+
+        private string qualifications;
+        public string Qualifications {
+            get { return qualifications; }
+            set { qualifications = value; }
+        }
+        public string DateAdded => teacher.DateCreated.ToString();
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public TeacherViewModel(Teacher teacher)
         {
             this.teacher=teacher;
+            qualifications="";
+            foreach(Language language in teacher.Qualifications)
+            {
+                qualifications+=language.ToString()+", ";
+            }
+            qualifications=qualifications.Remove(Qualifications.Length-2);
         }
 
 
