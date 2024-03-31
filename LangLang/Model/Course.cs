@@ -110,7 +110,7 @@ namespace LangLang.Model
             }
         }
 
-        public void ValidateLanguage(Language language)
+        private void ValidateLanguage(Language language)
         {
             if (language == null)
             {

@@ -21,7 +21,7 @@ namespace LangLang.Model
         }
         public LanguageLevel Level { get; set; }
 
-        public void ValidateName(string name)
+        private void ValidateName(string name)
         {
             if (name == null)
             {
