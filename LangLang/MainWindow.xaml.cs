@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using LangLang.View;
 
 namespace LangLang
 {
@@ -23,6 +24,16 @@ namespace LangLang
         public MainWindow()
         {
             InitializeComponent();
+        }
+        
+        private void LoginButton_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new LoginView();
+        }
+
+        private void RegisterButton_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new RegisterView();
         }
     }
 }
