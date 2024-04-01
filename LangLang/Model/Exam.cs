@@ -1,64 +1,60 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LangLang.Model
 {
-    public class Exam
+    public class Exam : Schedule
     {
-        public int Id;
+        private static int _examId = 0;
+        private static Dictionary<int, Exam> _exams = new Dictionary<int, Exam>();
+
         private Language _language;
         private int _maxStudents;
         private DateOnly _examDate;
+        public List<int> StudentIds { get; set; }
 
-        public Exam(int id, Language language, int maxStudents, DateOnly examDate, List<int> studentIds)
+
+        public Exam(Language language, int maxStudents, DateOnly examDate)
         {
-            Id = id;
+            _examId++;
+            Id = _examId;
             Language = language;
             MaxStudents = maxStudents;
             ExamDate = examDate;
-            StudentIds = studentIds;
+            StudentIds = new List<int>();
         }
+
+        public int Id { get; }
 
         public Language Language
         {
-            get
-            {
-                return _language;
-            }
+            get => _language;
             set
             {
                 ValidateLanguage(value);
                 _language = value;
             }
         }
+
         public int MaxStudents
         {
-            get
-            {
-                return _maxStudents;
-            }
+            get => _maxStudents;
             set
             {
                 ValidateMaxStudents(value);
                 _maxStudents = value;
             }
         }
+
         public DateOnly ExamDate
         {
-            get
-            {
-                return _examDate;
-            }
+            get => _examDate;
             set
             {
                 ValidateExamDate(value);
                 _examDate = value;
             }
         }
-        public List<int> StudentIds { get; set; }
 
         public void ValidateMaxStudents(int maxStudents)
         {
@@ -67,13 +63,15 @@ namespace LangLang.Model
                 throw new InvalidInputException("Number of max students can not be negative.");
             }
         }
+
         public void ValidateLanguage(Language language)
         {
             if (language == null)
             {
-                throw new ArgumentNullException("Language must not be null.");
+                throw new ArgumentNullException(nameof(language));
             }
         }
+
         public void ValidateExamDate(DateOnly examDate)
         {
             DateOnly today = new DateOnly();
