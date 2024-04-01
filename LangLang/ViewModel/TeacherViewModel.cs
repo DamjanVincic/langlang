@@ -16,6 +16,7 @@ namespace LangLang.ViewModel
     {
         private readonly Teacher teacher;
 
+        public int Id => teacher.Id;
         public string FirstName => teacher.FirstName;
         public string LastName => teacher.LastName;
         public string Email => teacher.Email;
@@ -44,9 +45,9 @@ namespace LangLang.ViewModel
             return languageName==null || teacher.Qualifications.Where(language => language.Name.Equals(languageName)).Count()!=0;
         }
 
-        public bool FilterDateCreated(DateTimeOffset dateCreated)
+        public bool FilterDateCreated(DateTime dateCreated)
         {
-            return dateCreated==DateTimeOffset.MinValue || teacher.DateCreated==DateOnly.FromDateTime(dateCreated.Date);
+            return dateCreated==DateTime.MinValue || teacher.DateCreated==DateOnly.FromDateTime(dateCreated.Date);
         }
     }
 }
