@@ -1,4 +1,4 @@
-﻿using System.Windows.Input;
+using System.Windows.Input;
 using System.Windows.Navigation;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -12,9 +12,9 @@ public class MainViewModel : ViewModelBase
     
     private readonly NavigationService _navigationService;
     
-    public MainViewModel(NavigationService navigationService)
+    public MainViewModel()
     {
-        _navigationService = navigationService;
+        // _navigationService = navigationService;
         NavigateToRegisterCommand = new RelayCommand(NavigateToRegister);
     }
 

@@ -29,7 +29,7 @@ namespace LangLang.ViewModel
                 enga1,
                 gera1
             };
-            Teacher t1 = new("Pera", "Peric", "mijat2004@gmail.com", "Lozinkaa2", Gender.Male, "0638662250", peraLangs, new List<int> { 1, 2, 3 });
+            Teacher t1 = new("Pera", "Peric", "mijat2004@gmail.com", "Lozinkaa2", Gender.Male, "0638662250", peraLangs);
             Course course1 = new Course(new Language("en", LanguageLevel.B1), 5, new List<Weekday> { Weekday.Monday }, true, 1, 1, new TimeOnly(18), new DateOnly(2033, 4, 4), true, t1.Id, new List<int> { 1 });
             Course course2 = new Course(new Language("en", LanguageLevel.B1), 5, new List<Weekday> { Weekday.Monday }, true, 1, 1, new TimeOnly(18), new DateOnly(2033, 4, 4), true, t1.Id, new List<int> { 1 });
             Course course3 = new Course(new Language("en", LanguageLevel.B1), 5, new List<Weekday> { Weekday.Monday }, true, 1, 1, new TimeOnly(18), new DateOnly(2033, 4, 4), true, t1.Id, new List<int> { 1 });

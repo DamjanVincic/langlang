@@ -59,7 +59,7 @@ namespace LangLang.Model
                 throw new InvalidInputException("Name must include at least one character.");
             }
         }
-
+        
         public override bool Equals(object? obj)
         {
             return obj is Language language &&
