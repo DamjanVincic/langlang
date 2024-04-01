@@ -4,7 +4,8 @@ using System.Collections.Generic;
 namespace LangLang.Model
 {
     public class Course : ScheduleItem
-    {
+    { 
+        public const int CLASS_DURATION = 90; 
         private static int _idCounter = 1;
         private static Dictionary<int, Course> _courses = new Dictionary<int, Course>();
         private Language _language;
