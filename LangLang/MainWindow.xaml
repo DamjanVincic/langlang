@@ -7,6 +7,17 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+            
+        <!-- Back button -->
+        <Button x:Name="BackButton" Content="Back" Click="BackButton_Click" Margin="10"/>
+        <Button Grid.Row="1" x:Name="RegisterButton" Content="Register" Click="RegisterButton_Click" Margin="10"/>
+        
+        <!-- Frame for page navigation -->
+        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" Grid.Row="2"/>
     </Grid>
 </Window>

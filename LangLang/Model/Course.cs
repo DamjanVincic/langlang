@@ -5,6 +5,8 @@ namespace LangLang.Model
 {
     public class Course : ScheduleItem
     {
+        private static int _idCounter = 1;
+        private static Dictionary<int, Course> _courses = new Dictionary<int, Course>();
         private Language _language;
         private int _duration;
         private List<Weekday> _held;
@@ -22,6 +24,8 @@ namespace LangLang.Model
             StartDate = startDate;
             TeacherId = teacher;
             StudentIds = students;
+            Id = _idCounter++;
+            _courses.Add(Id, this);
         }
         public int Id { get; set; }
         public Language Language
@@ -116,6 +120,6 @@ namespace LangLang.Model
             {
                 throw new ArgumentNullException(nameof(language));
             }
-        }
+        }  
     }
 }
