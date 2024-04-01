@@ -1,97 +1,88 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
 
 namespace LangLang.Model
 {
     public class Course
     {
-        public int Id { get; set; }
-        public Language Language
-        {
-            get
-            {
-                return Language;
-            }
-            set
-            {
-                ValidateLanguage(value);
-                Language = value;
-            }
-        }
-        public int Duration 
-        {
-            get
-            {
-                return Duration;
-            }
-            set
-            {
-                ValidateDuration(value);
-                Duration = value;
-            }
-        }
-        public List<Weekday> Held { get; set; }
-        public bool IsOnline {  get; set; }
-        public int MaxStudents 
-        {
-            get
-            {
-                return MaxStudents;
-            }
-            set
-            {
-                ValidateMaxStudents(value);
-                MaxStudents = value;
-            }
-        }
-        public int CreatorId {  get; set; }
-        public TimeOnly ScheduledTime {  get; set; }
-        public DateOnly StartDate
-        {
-            get
-            {
-                return StartDate;
-            }
-            set
-            {
-                ValidateStartDate(value);
-                StartDate = value;
-            }
-        }
-        public bool AreApplicationsClosed {  get; set; }
-        public int TeacherId {  get; set; }
-        public List<int> StudentIds {  get; set; }
+        private Language _language;
+        private int _duration;
+        private List<Weekday> _held;
+        private int _maxStudents;
+        private DateOnly _startDate;
 
         public Course(Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents, int creator, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed, int teacher, List<int> students)
         {
-            ValidateLanguage(language);
-            ValidateDuration(duration);
-            ValidateMaxStudents(maxStudents);
-            ValidateStartDate(startDate);
             Language = language;
             Duration = duration;
             Held = held;
             IsOnline = isOnline;
             MaxStudents = maxStudents;
-            CreatorId = creator;
             ScheduledTime = scheduledTime;
             StartDate = startDate;
-            AreApplicationsClosed = areApplicationsClosed;
             TeacherId = teacher;
             StudentIds = students;
         }
+        public int Id { get; set; }
+        public Language Language
+        {
+            get => _language;
+            set
+            {
+                ValidateLanguage(value);
+                _language = value;
+            }
+        }
+        public int Duration 
+        {
+            get => _duration;
+            set
+            {
+                ValidateDuration(value);
+                _duration = value;
+            }
+        }
+        public List<Weekday> Held {
+            get => _held;
+            set 
+            {
+                ValidateHeld(value);
+                _held = value;
+            }
+        }
+        public bool IsOnline { get; set; }
+        public int MaxStudents 
+        {
+            get => _maxStudents;
+            set
+            {
+                ValidateMaxStudents(value);
+                _maxStudents = value;
+            }
+        }
+        public int CreatorId { get; set;}
+        public TimeOnly ScheduledTime { get; set; }
+        public DateOnly StartDate
+        {
+            get => _startDate;
+            set
+            {
+                ValidateStartDate(value);
+                _startDate = value;
+            }
+        }
+        public bool AreApplicationsClosed {get; set; }
+        public int TeacherId {get; set; }
+        public List<int> StudentIds { get; set; }
+
+        
 
         private void ValidateStartDate(DateOnly startDate)
         {
-            DateOnly today = new DateOnly();
+            DateOnly today = DateOnly.FromDateTime(DateTime.Today);
             if (startDate < today)
-            {
-                throw new ArgumentNullException("Start date of course must be after today.");
+            { 
+                throw new InvalidInputException("Start date of course must be after today.");
             }
         }
 
@@ -99,23 +90,23 @@ namespace LangLang.Model
         {
             if (maxStudents < 0)
             {
-                throw new ArgumentNullException("Maximum number of students must not be negative.");
+                throw new InvalidInputException("Maximum number of students must not be negative.");
             }
         }
 
-        //private void ValidateHeld(List<Weekday> held)
-        //{
-        //    if (held == null)
-        //    {
-        //        throw new ArgumentNullException("Held must not be null.");
-        //    }
-        //}
+        private void ValidateHeld(List<Weekday> held)
+        {
+            if (held == null)
+            {
+                throw new ArgumentNullException(nameof(held));
+            }
+        }
 
         private void ValidateDuration(int duration)
         {
             if (duration <= 0)
             {
-                throw new ArgumentNullException("Duration must be positive.");
+                throw new InvalidInputException("Duration must be positive.");
             }
         }
 
@@ -123,11 +114,8 @@ namespace LangLang.Model
         {
             if (language == null)
             {
-                throw new ArgumentNullException("Language must not be null.");
+                throw new ArgumentNullException(nameof(language));
             }
         }
-
-       
     }
-    
 }
