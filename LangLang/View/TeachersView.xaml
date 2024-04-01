@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:LangLang.View"
+             xmlns:local="clr-namespace:LangLang.View" xmlns:viewmodel="clr-namespace:LangLang.ViewModel" d:DataContext="{d:DesignInstance Type=viewmodel:TeacherListingViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -23,7 +23,7 @@
             <ColumnDefinition Width="3*"/>
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
-        <ListView Grid.Row="0" Grid.RowSpan="10" Padding="5" Margin="5" ItemsSource="{Binding TeachersCollectionView}">
+        <ListView Grid.Row="0" Grid.RowSpan="10" Padding="5" Margin="5" ItemsSource="{Binding TeachersCollectionView}" SelectedItem="{Binding SelectedItem}" SelectionMode="Single">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="First Name">
@@ -94,7 +94,7 @@
         <TextBlock Text="Level:" Grid.Column="1" Grid.Row="5"/>
         <ComboBox Grid.Column="1" Grid.Row="6" Margin="10" ItemsSource="{Binding LanguageLevelValues}" SelectedItem="{Binding SelectedLanguageLevel}"/>
         <Button Content="Add" Grid.Column="1" Grid.Row="7"/>
-        <Button Content="Edit" Grid.Column="1" Grid.Row="8"/>
+        <Button Content="Edit" Grid.Column="1" Grid.Row="8" Command="{Binding EditCommand}"/>
         <Button Content="Delete" Grid.Column="1" Grid.Row="9"/>
 
     </Grid>

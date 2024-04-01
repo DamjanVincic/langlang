@@ -9,6 +9,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using System.Windows.Input;
+using LangLang.View;
+using System.Windows;
+using GalaSoft.MvvmLight.Command;
 
 namespace LangLang.ViewModel
 {
@@ -19,18 +23,20 @@ namespace LangLang.ViewModel
         public ICollectionView TeachersCollectionView { get; }
         public IEnumerable<String> LanguageNameValues => Language.LanguageNames;
         public IEnumerable<String> LanguageLevelValues => Enum.GetNames(typeof(LanguageLevel));
-        private string selectedLanguageName;
-        private string selectedLanguageLevel;
+        private string _selectedLanguageName;
+        private string _selectedLanguageLevel;
         private DateTime selectedDateCreated;
+        public ICommand EditCommand { get; }
+        public TeacherViewModel SelectedItem { get; set; }
         public string SelectedLanguageName
         {
             get
             {
-                return selectedLanguageName;
+                return _selectedLanguageName;
             }
             set
             {
-                selectedLanguageName = value;
+                _selectedLanguageName = value;
                 TeachersCollectionView.Refresh();
             }
         }
@@ -39,11 +45,11 @@ namespace LangLang.ViewModel
         {
             get
             {
-                return selectedLanguageLevel;
+                return _selectedLanguageLevel;
             }
             set
             {
-                selectedLanguageLevel = value;
+                _selectedLanguageLevel = value;
                 TeachersCollectionView.Refresh();
             }
         }
@@ -63,6 +69,7 @@ namespace LangLang.ViewModel
         {
             teachers=new ObservableCollection<TeacherViewModel>();
             TeachersCollectionView=CollectionViewSource.GetDefaultView(teachers);
+            EditCommand = new RelayCommand(OpenEditWindow);
 
             Language enga1 = new Language("English", LanguageLevel.A1);
             Language enga2 = new Language("English", LanguageLevel.A2);
@@ -99,6 +106,20 @@ namespace LangLang.ViewModel
                 return false;
             }
         }
+
+        private void OpenEditWindow()
+        {
+            if (SelectedItem == null)
+            {
+                MessageBox.Show("No teacher selected", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            var newWindow = new EditTeacherView((Teacher)User.GetById(SelectedItem.Id), TeachersCollectionView);
+
+            newWindow.Show();
+
+        }
+
 
         public IEnumerable<TeacherViewModel> Teachers => teachers;
     }

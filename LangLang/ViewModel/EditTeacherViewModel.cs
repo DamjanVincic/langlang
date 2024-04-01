@@ -9,6 +9,7 @@ using System.Windows;
 using GalaSoft.MvvmLight;
 using LangLang.Model;
 using GalaSoft.MvvmLight.Command;
+using System.ComponentModel;
 
 namespace LangLang.ViewModel
 {
@@ -25,8 +26,9 @@ namespace LangLang.ViewModel
         public List<string> Qualifications { get; set; }
 
         public ICommand SaveEditCommand { get; }
+        private ICollectionView teachersCollectionView;
 
-        public EditTeacherViewModel(Teacher teacher)
+        public EditTeacherViewModel(Teacher teacher, ICollectionView teachersCollectionView)
         {
             this.teacher=teacher;
             FirstName = this.teacher.FirstName;
@@ -37,6 +39,7 @@ namespace LangLang.ViewModel
             Phone = this.teacher.Phone;
             Qualifications = this.teacher.Qualifications.ConvertAll(qualification => qualification.ToString()); ;
             SaveEditCommand = new RelayCommand(Edit);
+            this.teachersCollectionView = teachersCollectionView;
         }
 
         private void Edit()
@@ -44,7 +47,7 @@ namespace LangLang.ViewModel
             try
             {
                 teacher.Edit(FirstName,LastName,Email,Password,Gender,Phone);
-                User pera=User.GetById(1);
+                teachersCollectionView.Refresh();
                 MessageBox.Show("Teacher edited successfully.", "Success", MessageBoxButton.OK,
                     MessageBoxImage.Information);
             }
