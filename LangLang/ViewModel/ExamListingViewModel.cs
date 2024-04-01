@@ -81,7 +81,9 @@ namespace LangLang.ViewModel
             };
             ExamCollectionView = CollectionViewSource.GetDefaultView(_exams);
             ExamCollectionView.Filter = FilterExams;
-            _deleteCommand = new RelayCommand(Delete);
+            DeleteCommand = new RelayCommand(Delete);
+            AddCommand = new RelayCommand(Add);
+            AddCommand = new RelayCommand(Edit);
         }
 
         public IEnumerable<ExamViewModel> Exams => _exams;
@@ -96,9 +98,7 @@ namespace LangLang.ViewModel
             }
             return false;
         }
-        private RelayCommand _deleteCommand;
-        public ICommand DeleteCommand => _deleteCommand ?? (_deleteCommand = new RelayCommand(Delete));
-
+        public ICommand DeleteCommand { get; }
         public void Delete()
         {
             try
@@ -118,71 +118,47 @@ namespace LangLang.ViewModel
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-        private RelayCommand _addCommand;
-        public ICommand AddCommand
+        public ICommand AddCommand { get; }
+        public void Add()
         {
-            get
+            var newWindow = new AddExamView();
+            newWindow.Show();
+            Application.Current.MainWindow.Closed += (sender, e) =>
             {
-                if (_addCommand == null)
+                foreach (Window window in Application.Current.Windows)
                 {
-                    _addCommand = new RelayCommand(() =>
+                    if (window != Application.Current.MainWindow)
                     {
-                        var newWindow = new AddExamView();
-
-                        newWindow.Show();
-
-                        //Application.Current.MainWindow.Close();
-                    });
-                }
-                Application.Current.MainWindow.Closed += (sender, e) =>
-                {
-                    foreach (Window window in Application.Current.Windows)
-                    {
-                        if (window != Application.Current.MainWindow)
-                        {
-                            window.Close();
-                        }
+                        window.Close();
                     }
-                };
-                return _addCommand;
-            }
+                }
+            };
         }
 
-        private RelayCommand _editCommand;
-
-        public ICommand EditCommand
+        public ICommand EditCommand {  get; }
+        public void Edit()
         {
-            get
+            if (SelectedItem != null)
             {
-                if (_editCommand == null)
-                {
-                    _editCommand = new RelayCommand(() =>
-                    {
-                        if (SelectedItem != null)
-                        {
-                            var newWindow = new AddExamView(Exam.GetById(SelectedItem.Id));
+                var newWindow = new AddExamView(Exam.GetById(SelectedItem.Id));
 
-                            newWindow.Show();
+                newWindow.Show();
 
-                        }
-                        else
-                        {
-                            MessageBox.Show("Please select an exam to edit.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        }
-                    });
-                }
-                Application.Current.MainWindow.Closed += (sender, e) =>
-                {
-                    foreach (Window window in Application.Current.Windows)
-                    {
-                        if (window != Application.Current.MainWindow)
-                        {
-                            window.Close();
-                        }
-                    }
-                };
-                return _editCommand;
             }
+            else
+            {
+                MessageBox.Show("Please select an exam to edit.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            Application.Current.MainWindow.Closed += (sender, e) =>
+            {
+                foreach (Window window in Application.Current.Windows)
+                {
+                    if (window != Application.Current.MainWindow)
+                    {
+                        window.Close();
+                    }
+                }
+            };
         }
 
     }

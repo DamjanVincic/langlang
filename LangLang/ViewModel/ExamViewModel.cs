@@ -28,9 +28,6 @@ namespace LangLang.ViewModel
         public string MaxStudents => _exam.MaxStudents.ToString();
         public DateOnly ExamDate => _exam.ExamDate;
 
-        public ExamListingViewModel ObjExamListingViewModel;
-        public event PropertyChangedEventHandler? PropertyChanged;
-
         public bool FilterLevel(string level)
         {
             if (level == null)
