@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace LangLang.Model
 {
-    public class Course
+    public class Course : ScheduleItem
     {
         private Language _language;
         private int _duration;

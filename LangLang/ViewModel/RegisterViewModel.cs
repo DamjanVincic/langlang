@@ -11,13 +11,16 @@ namespace LangLang.ViewModel;
 
 public class RegisterViewModel : ViewModelBase
 {
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public string Email { get; set; }
-    public string Password { get; set; }
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
+    public string? Email { get; set; }
+    public string? Password { get; set; }
     public Gender Gender { get; set; }
-    public string Phone { get; set; }
+    public string? Phone { get; set; }
     public Education Education { get; set; }
+    
+    public IEnumerable<Gender> GenderValues => Enum.GetValues(typeof(Gender)).Cast<Gender>();
+    public IEnumerable<Education> EducationValues => Enum.GetValues(typeof(Education)).Cast<Education>();
     
     public ICommand RegisterCommand { get; }
     
@@ -30,7 +33,7 @@ public class RegisterViewModel : ViewModelBase
     {
         try
         {
-            Student student = new Student(FirstName, LastName, Email, Password, Gender, Phone, Education);
+            Student student = new Student(FirstName!, LastName!, Email!, Password!, Gender, Phone!, Education);
             MessageBox.Show("User registered successfully.", "Success", MessageBoxButton.OK,
                 MessageBoxImage.Information);
         }
@@ -43,8 +46,4 @@ public class RegisterViewModel : ViewModelBase
             MessageBox.Show(exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
-
-    public IEnumerable<Gender> GenderValues => Enum.GetValues(typeof(Gender)).Cast<Gender>();
-    
-    public IEnumerable<Education> EducationValues => Enum.GetValues(typeof(Education)).Cast<Education>();
 }

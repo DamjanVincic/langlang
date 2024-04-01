@@ -28,7 +28,7 @@ namespace LangLang.Model
             Id = _idCounter++;
             _users.Add(Id, this);
         }
-
+        
         public void Edit(string firstName, string lastName, string email, string password, Gender gender, string phone)
         {
             Validate(firstName, lastName, email, password, phone);
@@ -47,6 +47,11 @@ namespace LangLang.Model
             ValidateEmail(email, true);
             ValidatePassword(password);
             ValidatePhoneNumber(phone);
+        }
+            
+        public static User? Login(string email, string password)
+        {
+            return _users.Values.FirstOrDefault(user => user.Email.Equals(email) && user.Password.Equals(password));
         }
         
         public int Id { get; }
