@@ -36,7 +36,7 @@ namespace LangLang.Model
                 _languageNames = value;
             }
         }
-
+        
         public string Name
         {
             get => _name;
