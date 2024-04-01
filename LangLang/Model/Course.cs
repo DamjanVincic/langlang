@@ -8,35 +8,40 @@ namespace LangLang.Model
         public const int CLASS_DURATION = 90; 
         private static int _idCounter = 1;
         private static Dictionary<int, Course> _courses = new Dictionary<int, Course>();
-        public static List<int> CourseIds { get; set; }
         private Language _language;
         private int _duration;
         private List<Weekday> _held;
         private int _maxStudents;
         private DateOnly _startDate;
+        private static List<int> _courseIds = new List<int>();
 
-        public Course(Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents, int creator, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed, int teacher, List<int> students)
+        public Course(Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents, int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed, int teacherId, List<int> studentIds)
         {
             Language = language;
             Duration = duration;
             Held = held;
-            CreatorId = creator;
+            CreatorId = creatorId;
             AreApplicationsClosed = areApplicationsClosed;
             IsOnline = isOnline;
             MaxStudents = maxStudents;
             ScheduledTime = scheduledTime;
             StartDate = startDate;
-            TeacherId = teacher;
-            StudentIds = students;
+            TeacherId = teacherId;
+            StudentIds = studentIds;
             Id = _idCounter++;
             _courses.Add(Id, this);
-            if (CourseIds == null)
-            {
-                CourseIds = new List<int>();
-            }
             CourseIds.Add(Id);
         }
         public int Id { get; set; }
+        public static List<int> CourseIds 
+        {
+            get => _courseIds;
+            set
+            {
+                _courseIds = value;
+            }
+        }
+
         public Language Language
         {
             get => _language;

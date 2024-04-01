@@ -26,10 +26,7 @@ namespace LangLang.ViewModel
 
         public string SelectedLanguageName
         {
-            get
-            {
-                return _selectedLanguageName;
-            }
+            get => _selectedLanguageName;
             set
             {
                 _selectedLanguageName = value;
@@ -39,10 +36,7 @@ namespace LangLang.ViewModel
 
         public string SelectedLanguageLevel
         {
-            get
-            {
-                return _selectedLanguageLevel;
-            }
+            get => _selectedLanguageLevel;
             set
             {
                 _selectedLanguageLevel = value;
@@ -51,10 +45,7 @@ namespace LangLang.ViewModel
         }
         public DateTime SelectedDate
         {
-            get
-            {
-                return _selectedDate;
-            }
+            get => _selectedDate;
             set
             {
                 _selectedDate = value;
@@ -63,10 +54,7 @@ namespace LangLang.ViewModel
         }
         public string SelectedDuration
         {
-            get
-            {
-                return _selectedDuration;
-            }
+            get => _selectedDuration;
             set
             {
                 _selectedDuration = value;
@@ -76,10 +64,7 @@ namespace LangLang.ViewModel
 
         public string SelectedFormat
         {
-            get
-            {
-                return _selectedFormat;
-            }
+            get => _selectedFormat;
             set
             {
                 _selectedFormat = value;

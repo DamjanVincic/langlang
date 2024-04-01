@@ -6,8 +6,8 @@ namespace LangLang.Model
     public class Language
     {
         private string _name;
-        public static List<Language> Languages = new List<Language>();
-        public static List<string> LanguageNames = new List<string>();
+        private static List<Language> _languages = new List<Language>();
+        private static List<string> _languageNames = new List<string>();
 
         public Language(string name, LanguageLevel level)
         {
@@ -17,6 +17,23 @@ namespace LangLang.Model
             if (!LanguageNames.Contains(name))
             {
                 LanguageNames.Add(name);
+            }
+        }
+
+        public static List<Language> Languages
+        {
+            get => _languages;
+            set
+            {
+                _languages = value;
+            }
+        }
+        public static List<string> LanguageNames
+        {
+            get => _languageNames;
+            set
+            {
+                _languageNames = value;
             }
         }
 
