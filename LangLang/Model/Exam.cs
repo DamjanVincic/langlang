@@ -3,15 +3,13 @@ using System.Collections.Generic;
 
 namespace LangLang.Model
 {
-    public class Exam
+    public class Exam : ScheduleItem
     {
         private static int _examId = 0;
         private static Dictionary<int, Exam> _exams = new Dictionary<int, Exam>();
-
         private Language _language;
         private int _maxStudents;
         private DateOnly _examDate;
-        public List<int> StudentIds { get; set; }
 
 
         public Exam(Language language, int maxStudents, DateOnly examDate)
@@ -24,6 +22,8 @@ namespace LangLang.Model
             Id = _examId;
             _exams.Add(Id, this);
         }
+
+        public List<int> StudentIds { get; set; }
 
         public int Id { get; }
 
@@ -79,6 +79,17 @@ namespace LangLang.Model
             if (examDate < today)
             {
                 throw new ArgumentNullException("Date of exam must be after today.");
+            }
+        }
+        public static Exam GetById(int id)
+        {
+            if (_exams.ContainsKey(id))
+            {
+                return _exams[id];
+            }
+            else
+            {
+                return null;
             }
         }
     }
