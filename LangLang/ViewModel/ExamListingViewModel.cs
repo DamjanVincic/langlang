@@ -61,8 +61,8 @@ namespace LangLang.ViewModel
                 ExamCollectionView.Refresh();
             }
         }
-        private DateOnly _dateSelected;
-        public DateOnly DateSelected
+        private DateTime _dateSelected;
+        public DateTime DateSelected
         {
             get
             {
@@ -108,7 +108,7 @@ namespace LangLang.ViewModel
                     examViewModel.FilterLevel(LanguageLevelSelected) &&
                     examViewModel.FilterDateHeld(DateSelected);
             }
-            return false; 
+            return false;
         }
         private RelayCommand _deleteCommand;
         public ICommand DeleteCommand => _deleteCommand ?? (_deleteCommand = new RelayCommand(Delete));
