@@ -5,12 +5,30 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Data;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
+using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Messaging;
 
 namespace LangLang.ViewModel
 {
     public class ExamListingViewModel : ViewModelBase
     {
         ObservableCollection<ExamViewModel> _exams;
+
+        private ExamViewModel _selectedItem;
+        public ExamViewModel SelectedItem
+        {
+            get { return _selectedItem; }
+            set
+            {
+                _selectedItem = value;
+                OnPropertyChanged(nameof(SelectedItem));
+            }
+        }
+
         public ICollectionView ExamCollectionView { get; set; }
         public IEnumerable<LanguageLevel> LanguageLevelValues => Enum.GetValues(typeof(LanguageLevel)).Cast<LanguageLevel>();
 
@@ -57,21 +75,6 @@ namespace LangLang.ViewModel
             }
         }
 
-        private string _examFilter = string.Empty;
-        public string ExamFilter
-        {
-            get
-            {
-                return _examFilter;
-            }
-            set
-            {
-                _examFilter = value;
-                OnPropertyChanged(nameof(ExamFilter));
-                ExamCollectionView.Refresh(); // Refresh the collection view when filter changes
-            }
-        }
-
         public ExamListingViewModel()
         {
             List<Language> languages = new List<Language>
@@ -92,6 +95,7 @@ namespace LangLang.ViewModel
             };
             ExamCollectionView = CollectionViewSource.GetDefaultView(_exams);
             ExamCollectionView.Filter = filterExams;
+            _deleteCommand = new RelayCommand(Delete);
         }
 
         public IEnumerable<ExamViewModel> Exams => _exams;
@@ -106,5 +110,29 @@ namespace LangLang.ViewModel
             }
             return false; 
         }
+        private RelayCommand _deleteCommand;
+        public ICommand DeleteCommand => _deleteCommand ?? (_deleteCommand = new RelayCommand(Delete));
+
+        public void Delete()
+        {
+            try
+            {
+                if (SelectedItem != null)
+                {
+                    _exams.Remove((ExamViewModel)SelectedItem);
+                    MessageBox.Show("Exam deleted successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Please select an exam to delete.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+
     }
 }

@@ -4,8 +4,10 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
-using LangLang.Commands;
+using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Messaging;
 using LangLang.Model;
 
 namespace LangLang.ViewModel
@@ -13,7 +15,7 @@ namespace LangLang.ViewModel
     public class ExamViewModel : ViewModelBase
     {
         // glues the model and the view
-        private readonly Exam exam;
+        private Exam exam;
 
         public string Id => exam.Id.ToString();
         public string Language { get; set; }
@@ -21,7 +23,7 @@ namespace LangLang.ViewModel
         public string MaxStudents => exam.MaxStudents.ToString();
         public DateOnly ExamDate => exam.ExamDate;
 
-
+        public ExamListingViewModel ObjExamListingViewModel;
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public ExamViewModel(Exam exam)
@@ -53,6 +55,7 @@ namespace LangLang.ViewModel
             }
             return exam.ExamDate == dateHeld;
         }
+
     }
 }
 
