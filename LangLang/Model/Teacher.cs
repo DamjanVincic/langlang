@@ -8,6 +8,7 @@ namespace LangLang.Model
 {
     public class Teacher : User
     {
+        public static List<int> TeacherIds {  get; set; }
         public List<Language> Qualifications {  get; set; }
         public DateOnly DateCreated { get;}
         public List<int> CourseIds { get; set; }
@@ -18,6 +19,11 @@ namespace LangLang.Model
             Qualifications=qualifications;
             DateCreated=DateOnly.FromDateTime(DateTime.Now);
             CourseIds=courseIds;
+            if (TeacherIds==null)
+            {
+                TeacherIds=new List<int>();
+            }
+            TeacherIds.Add(Id);
         }
     }
 }
