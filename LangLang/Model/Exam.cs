@@ -16,12 +16,13 @@ namespace LangLang.Model
 
         public Exam(Language language, int maxStudents, DateOnly examDate)
         {
-            _examId++;
-            Id = _examId;
             Language = language;
             MaxStudents = maxStudents;
             ExamDate = examDate;
             StudentIds = new List<int>();
+            _examId++;
+            Id = _examId;
+            _exams.Add(Id, this);
         }
 
         public int Id { get; }
