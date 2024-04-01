@@ -54,5 +54,10 @@ namespace LangLang.Model
         {
             return $"{Name} {Level}";
         }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(_name);
+        }
     }
 }
