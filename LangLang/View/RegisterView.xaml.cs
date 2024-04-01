@@ -1,9 +1,9 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
 using LangLang.ViewModel;
 
 namespace LangLang.View;
 
-public partial class RegisterView : UserControl
+public partial class RegisterView : Window
 {
     public RegisterView()
     {

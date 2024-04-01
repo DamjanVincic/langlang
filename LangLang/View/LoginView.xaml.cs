@@ -1,9 +1,9 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
 using LangLang.ViewModel;
 
 namespace LangLang.View;
 
-public partial class LoginView : UserControl
+public partial class LoginView : Window
 {
     public LoginView()
     {
