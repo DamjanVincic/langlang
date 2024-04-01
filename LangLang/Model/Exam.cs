@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace LangLang.Model
 {
-    public class Exam : Schedule
+    public class Exam
     {
         private static int _examId = 0;
         private static Dictionary<int, Exam> _exams = new Dictionary<int, Exam>();
