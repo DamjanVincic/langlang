@@ -17,9 +17,9 @@ namespace LangLang.ViewModel
         // glues the model and the view
         private Exam exam;
 
-        public string Id => exam.Id.ToString();
-        public string Language { get; set; }
-        public LanguageLevel LanguageLevel { get; set; }
+        public int Id => exam.Id;
+        public string Language => exam.Language.Name;
+        public LanguageLevel LanguageLevel => exam.Language.Level;
         public string MaxStudents => exam.MaxStudents.ToString();
         public DateOnly ExamDate => exam.ExamDate;
 

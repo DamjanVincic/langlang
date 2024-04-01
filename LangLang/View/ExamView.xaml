@@ -44,7 +44,7 @@
                     <GridViewColumn Header="Level">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Level}"/>
+                                <TextBlock Text="{Binding LanguageLevel}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>

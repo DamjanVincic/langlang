@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using LangLang.Model;
 
 namespace LangLang.View
 {
@@ -22,9 +23,9 @@ namespace LangLang.View
     /// </summary>
     public partial class AddExamView : Window
     {
-        public AddExamView()
+        public AddExamView(Exam exam = null)
         {
-            DataContext = new ExamListingViewModel();
+            DataContext = new AddExamViewModel(exam);
             InitializeComponent();
         }
         private void TextBox_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)

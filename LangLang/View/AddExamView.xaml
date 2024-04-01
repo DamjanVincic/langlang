@@ -27,24 +27,23 @@
 
         <TextBlock Text="Add exam:" Grid.Column="1" Grid.Row="0"/>
         <TextBlock Text="Date exam is held:" Grid.Column="1" Grid.Row="1"/>
-        <DatePicker x:Name="datePicker" SelectedDate="{Binding DateSelected}" Grid.Column="1" Grid.Row="2"/>
+        <DatePicker x:Name="datePicker" SelectedDate="{Binding ExamDate}" Grid.Column="1" Grid.Row="2"/>
         <TextBlock Text="Language:" Grid.Column="1" Grid.Row="3"/>
 
         <ComboBox ItemsSource="{x:Static model:Language.LanguageNames}"
-                  SelectedItem="{Binding LanguageNameSelected}" 
+                  SelectedItem="{Binding Name}" 
                   Grid.Column="1" Grid.Row="4" Margin="10" Width="{Binding ActualWidth, ElementName=datePicker}"/>
 
         <TextBlock Text="Level:" Grid.Column="1" Grid.Row="5"/>
 
 
         <ComboBox ItemsSource="{Binding LanguageLevelValues}"
-                  SelectedItem="{Binding LanguageLevelSelected, Mode=TwoWay}"
-                  Grid.Column="1" Grid.Row="6" Margin="10" SelectionChanged="ComboBox_SelectionChanged" Width="{Binding ActualWidth, ElementName=datePicker}"/>
+                  SelectedItem="{Binding LanguageLevel, Mode=TwoWay}"
+                  Grid.Column="1" Grid.Row="6" Margin="10" Width="{Binding ActualWidth, ElementName=datePicker}"/>
 
         <TextBlock Text="Max students:" Grid.Column="1" Grid.Row="7"/>
-        <TextBox Grid.Row="8" PreviewTextInput="TextBox_PreviewTextInput" Width="{Binding ActualWidth, ElementName=datePicker}"/>
+        <TextBox Grid.Row="8" Text="{Binding MaxStudents, Mode=TwoWay}" PreviewTextInput="TextBox_PreviewTextInput" Width="{Binding ActualWidth, ElementName=datePicker}"/>
 
         <Button Command="{Binding AddCommand}" Content="Add" Grid.Column="1" Grid.Row="9"/>
-
     </Grid>
 </Window>

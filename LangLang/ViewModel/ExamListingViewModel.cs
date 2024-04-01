@@ -33,6 +33,7 @@ namespace LangLang.ViewModel
         public ICollectionView ExamCollectionView { get; set; }
         public IEnumerable<LanguageLevel> LanguageLevelValues => Enum.GetValues(typeof(LanguageLevel)).Cast<LanguageLevel>();
 
+
         // Add a property to access language names directly from the model
         public IEnumerable<string> LanguageNames => Language.LanguageNames;
 
@@ -78,21 +79,13 @@ namespace LangLang.ViewModel
 
         public ExamListingViewModel()
         {
-            List<Language> languages = new List<Language>
-            {
-                new Language("Serbian", LanguageLevel.B2),
-                new Language("Serbian", LanguageLevel.B1),
-                new Language("English", LanguageLevel.A1),
-                new Language("German", LanguageLevel.C1)
-            };
-
             _exams = new ObservableCollection<ExamViewModel>
             {
-                new ExamViewModel(new Exam(languages[0], 20, new DateOnly(2024, 4, 15))),
-                new ExamViewModel(new Exam(languages[1], 30, new DateOnly(2024, 5, 20))),
-                new ExamViewModel(new Exam(languages[2], 25, new DateOnly(2024, 6, 10))),
-                new ExamViewModel(new Exam(languages[0], 35, new DateOnly(2024, 7, 5))),
-                new ExamViewModel(new Exam(languages[1], 28, new DateOnly(2024, 8, 15)))
+                new ExamViewModel(new Exam(new Language("Serbian", LanguageLevel.B2), 20, new DateOnly(2024, 4, 15))),
+                new ExamViewModel(new Exam(new Language("Serbian", LanguageLevel.B1), 30, new DateOnly(2024, 5, 20))),
+                new ExamViewModel(new Exam(new Language("English", LanguageLevel.A1), 25, new DateOnly(2024, 6, 10))),
+                new ExamViewModel(new Exam(new Language("English", LanguageLevel.A1), 35, new DateOnly(2024, 7, 5))),
+                new ExamViewModel(new Exam(new Language("English", LanguageLevel.C2), 28, new DateOnly(2024, 8, 15)))
             };
             ExamCollectionView = CollectionViewSource.GetDefaultView(_exams);
             ExamCollectionView.Filter = filterExams;
@@ -142,17 +135,62 @@ namespace LangLang.ViewModel
                 {
                     _addCommand = new RelayCommand(() =>
                     {
-                        // Kreiranje novog prozora
                         var newWindow = new AddExamView();
 
-                        // Prikaži novi prozor
                         newWindow.Show();
 
-                        // Zatvori trenutni prozor
-                        Application.Current.MainWindow.Close();
+                        //Application.Current.MainWindow.Close();
                     });
                 }
+                Application.Current.MainWindow.Closed += (sender, e) =>
+                {
+                    foreach (Window window in Application.Current.Windows)
+                    {
+                        if (window != Application.Current.MainWindow)
+                        {
+                            window.Close();
+                        }
+                    }
+                };
                 return _addCommand;
+            }
+        }
+
+        private RelayCommand _editCommand;
+
+        public ICommand EditCommand
+        {
+            get
+            {
+                if (_editCommand == null)
+                {
+                    _editCommand = new RelayCommand(() =>
+                    {
+                        if (SelectedItem != null)
+                        {
+                            var newWindow = new AddExamView(Exam.GetById(SelectedItem.Id));
+
+                            newWindow.Show();
+
+                            //Application.Current.MainWindow.Close();
+                        }
+                        else
+                        {
+                            MessageBox.Show("Please select an exam to edit.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    });
+                }
+                Application.Current.MainWindow.Closed += (sender, e) =>
+                {
+                    foreach (Window window in Application.Current.Windows)
+                    {
+                        if (window != Application.Current.MainWindow)
+                        {
+                            window.Close();
+                        }
+                    }
+                };
+                return _editCommand;
             }
         }
 
