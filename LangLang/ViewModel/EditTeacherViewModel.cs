@@ -46,7 +46,7 @@ namespace LangLang.ViewModel
         {
             try
             {
-                teacher.Edit(FirstName,LastName,Email,Password,Gender,Phone);
+                teacher.Edit(FirstName,LastName,Password,Gender,Phone);
                 teachersCollectionView.Refresh();
                 MessageBox.Show("Teacher edited successfully.", "Success", MessageBoxButton.OK,
                     MessageBoxImage.Information);

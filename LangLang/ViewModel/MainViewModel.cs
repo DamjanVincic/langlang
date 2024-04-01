@@ -1,18 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Input;
+using System.Windows.Navigation;
+using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
+using LangLang.View;
 
-namespace LangLang.ViewModel
+namespace LangLang.ViewModel;
+
+public class MainViewModel : ViewModelBase
 {
-    public class MainViewModel:ViewModelBase
+    public ICommand NavigateToRegisterCommand { get; }
+    
+    private readonly NavigationService _navigationService;
+    
+    public MainViewModel()
     {
-        public ViewModelBase CurrentViewModel { get; }
+        // _navigationService = navigationService;
+        NavigateToRegisterCommand = new RelayCommand(NavigateToRegister);
+    }
 
-        public MainViewModel()
-        {
-            CurrentViewModel = new TeacherListingViewModel();
-        }
+    public void NavigateToRegister()
+    {
+        _navigationService.Navigate(new RegisterView());
     }
 }

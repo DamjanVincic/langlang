@@ -80,16 +80,16 @@ namespace LangLang.ViewModel
                 enga1,
                 gera1
             };
-            Teacher t1 = new Teacher("Pera", "Peric", "mijat2004@gmail.com", "Lozinkaa2", Gender.Male, "0638662250", peraLangs, new List<int> { 1, 2, 3 });
-            Teacher t2 = new Teacher("Pera2", "Peric2", "kffjsdlk@gmail.com", "Lozinkaa2", Gender.Male, "0638662250", peraLangs, new List<int> { 1, 2, 3 });
-            Teacher t3 = new Teacher("Pera3", "Peric3", "kfjsfdlk@gmail.com", "Lozinkaa2", Gender.Male, "0638662250", peraLangs, new List<int> { 1, 2, 3 });
-            Teacher t4 = new Teacher("Pera4", "Peric4", "kfjsfdlk@gmkail.com", "Lozinkaa2", Gender.Male, "0638662250", peraLangs, new List<int> { 1, 2, 3 });
-            Teacher t5 = new Teacher("Pera5", "Peric5", "kfjsfdlk@gjmail.com", "Lozinkaa2", Gender.Male, "0638662250", peraLangs, new List<int> { 1, 2, 3 });
-            Teacher t6 = new Teacher("Pera6", "Peric6", "kfjsfdlk@fgmail.com", "Lozinkaa2", Gender.Male, "0638662250", peraLangs, new List<int> { 1, 2, 3 });
+            Teacher t1 = new Teacher("Pera", "Peric", "mijat2004@gmail.com", "Lozinkaa2", Gender.Male, "0638662250", peraLangs);
+            Teacher t2 = new Teacher("Pera2", "Peric2", "kffjsdlk@gmail.com", "Lozinkaa2", Gender.Male, "0638662250", peraLangs);
+            Teacher t3 = new Teacher("Pera3", "Peric3", "kfjsfdlk@gmail.com", "Lozinkaa2", Gender.Male, "0638662250", peraLangs);
+            Teacher t4 = new Teacher("Pera4", "Peric4", "kfjsfdlk@gmkail.com", "Lozinkaa2", Gender.Male, "0638662250", peraLangs);
+            Teacher t5 = new Teacher("Pera5", "Peric5", "kfjsfdlk@gjmail.com", "Lozinkaa2", Gender.Male, "0638662250", peraLangs);
+            Teacher t6 = new Teacher("Pera6", "Peric6", "kfjsfdlk@fgmail.com", "Lozinkaa2", Gender.Male, "0638662250", peraLangs);
 
             foreach (int teacherId in Teacher.TeacherIds)
             {
-                teachers.Add(new TeacherViewModel((Teacher)User.GetById(teacherId)));
+                teachers.Add(new TeacherViewModel((Teacher)User.GetUserById(teacherId)));
             }
 
             TeachersCollectionView.Filter=filterTeachers;
@@ -114,7 +114,7 @@ namespace LangLang.ViewModel
                 MessageBox.Show("No teacher selected", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            var newWindow = new EditTeacherView((Teacher)User.GetById(SelectedItem.Id), TeachersCollectionView);
+            var newWindow = new EditTeacherView((Teacher)User.GetUserById(SelectedItem.Id), TeachersCollectionView);
 
             newWindow.Show();
 
