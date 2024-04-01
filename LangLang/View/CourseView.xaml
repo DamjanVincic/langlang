@@ -63,7 +63,7 @@
                     <GridViewColumn Header="Format">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding isOnline}"/>
+                                <TextBlock Text="{Binding IsOnline}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
@@ -116,18 +116,25 @@
         </ListView>
         <TextBlock Text="FILTER COURSES" Grid.Column="1" Grid.Row="0"/>
         <TextBlock Text="Language:" Grid.Column="1" Grid.Row="1"/>
-        <ComboBox Grid.Column="1" Grid.Row="2" Margin="10"/>
+        <ComboBox  ItemsSource="{Binding LanguageNameValues}"
+                   SelectedItem="{Binding SelectedLanguageName, Mode=TwoWay}"
+                   Grid.Column="1" Grid.Row="2" Margin="10"/>
         <TextBlock Text="Level:" Grid.Column="1" Grid.Row="3"/>
-        <ComboBox Grid.Column="1" Grid.Row="4" Margin="10"/>
+        <ComboBox ItemsSource="{Binding LanguageLevelValues}"
+                  SelectedItem="{Binding SelectedLanguageLevel, Mode=TwoWay}"
+                  Grid.Column="1" Grid.Row="4" Margin="10"/>
         <TextBlock Text="Start date:" Grid.Column="1" Grid.Row="5"/>
-        <DatePicker Grid.Column="1" Grid.Row="6"/>
+        <DatePicker SelectedDate="{Binding SelectedDate}" Grid.Column="1" Grid.Row="6"/>
         <TextBlock Text="Duration in weeks:" Grid.Column="1" Grid.Row="7"/>
-        <ComboBox Grid.Column="1" Grid.Row="8" Margin="10"/>
-        <TextBlock Text="Format:" Grid.Column="1" Grid.Row="9"/>
-        <ComboBox Grid.Column="1" Grid.Row="10" Margin="10"/>
-        <Button Content="Add" Grid.Column="1" Grid.Row="11" Command="AddCourseCommand"/>
-        <Button Content="Edit" Grid.Column="1" Grid.Row="12" Command="EditCourseCommand"/>
-        <Button Content="Delete" Grid.Column="1" Grid.Row="13" Command="DeleteCourseCommand"/>
+        <TextBox Text="{Binding SelectedDuration, Mode=TwoWay}"
+                 Grid.Column="1" Grid.Row="8"/>
+        <TextBlock Text="Format:" Grid.Column="1" Grid.Row="9" />
+        <ComboBox  ItemsSource="{Binding FormatValues}"
+                  SelectedItem="{Binding SelectedFormat, Mode=TwoWay}"
+                   Grid.Column="1" Grid.Row="10" />
+        <Button Command="{Binding AddCourse}"  Content="Add" Grid.Column="1" Grid.Row="11" />
+        <Button Command="{Binding EditCourse}" Content="Edit" Grid.Column="1" Grid.Row="12" />
+        <Button Command="{Binding DeleteCourse}" Content="Delete" Grid.Column="1" Grid.Row="13" />
 
     </Grid>
 </UserControl>

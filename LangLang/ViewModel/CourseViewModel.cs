@@ -33,8 +33,6 @@ namespace LangLang.ViewModel
             return user != null ? $"{user.FirstName} {user.LastName}" : "error";
         }));
 
-        public IEnumerable<LanguageLevel> LanguageLevelValues => Enum.GetValues(typeof(LanguageLevel)).Cast<LanguageLevel>();
-        public IEnumerable<Weekday> WeekdayValues => Enum.GetValues(typeof(Weekday)).Cast<Weekday>();
 
         public ICommand AddCourseCommand { get; }
         public ICommand EditCourseCommand { get; }
@@ -75,6 +73,37 @@ namespace LangLang.ViewModel
         private void EditCourse() { }
         private void DeleteCourse() { }
 
+        public bool FilterLanguageLevel(string languageLevel)
+        {
+            return languageLevel == null || course.Language.Level.ToString().Equals(languageLevel);
+        }
 
+        public bool FilterLanguageName(string languageName)
+        {
+            return languageName == null || course.Language.Name.Equals(languageName);
+        }
+        public bool FilterStartDate(DateTime date)
+        {
+            if (date == DateTime.MinValue)
+            {
+                return true;
+            }
+            DateOnly chosenDate = new DateOnly(date.Year, date.Month, date.Day);
+            return chosenDate == course.StartDate;
+        }
+        public bool FilterDuration(string duration)
+        {
+            if (duration == null)
+            {
+                return true;
+            }
+            int.TryParse(duration.Split(" ")[0], out int result);
+            return course.Duration == result;
+        }
+
+        public bool FilterFormat(string format)
+        { 
+            return format == null || format.Equals("online") == course.IsOnline;
+        }
     }
 }
