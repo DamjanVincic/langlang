@@ -7,12 +7,22 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <StackPanel>
-            <Label Content="Email" />
-            <TextBox x:Name="EmailTextBox" Text="{Binding Email}" />
-            <Label Content="Password" />
-            <TextBox x:Name="PasswordBox" Text="{Binding Password}" />
-            <Button Content="Login" Command="{Binding LoginCommand}" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <TextBlock Text="Login" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,20,0,10"/>
+
+        <StackPanel Grid.Row="1" Margin="10">
+            <TextBlock Text="Email:" FontWeight="Bold"/>
+            <TextBox x:Name="UsernameTextBox" Text="{Binding Email}" Margin="0,5,0,10"/>
+            <TextBlock Text="Password:" FontWeight="Bold"/>
+            <TextBox x:Name="PasswordBox" Text="{Binding Password}" Margin="0,5,0,10"/>
         </StackPanel>
+
+        <Button Grid.Row="2" Content="Login" HorizontalAlignment="Center" Command="{Binding LoginCommand}" Margin="0,10"/>
     </Grid>
 </UserControl>

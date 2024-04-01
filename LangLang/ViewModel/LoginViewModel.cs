@@ -3,7 +3,9 @@ using System.Windows;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Views;
 using LangLang.Model;
+using LangLang.View;
 
 namespace LangLang.ViewModel;
 
@@ -28,8 +30,10 @@ public class LoginViewModel : ViewModelBase
             case null:
                 MessageBox.Show("Invalid email or password.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 break;
-            case Student:
-                throw new NotImplementedException(); // else if (user is Teacher) { } ...
+            case Student student:
+                new StudentView(student).Show();
+                Application.Current.MainWindow?.Close();
+                break;
         }
     }
 }
