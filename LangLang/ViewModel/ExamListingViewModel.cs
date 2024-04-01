@@ -12,6 +12,7 @@ using System.Windows.Input;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using LangLang.View;
+using GalaSoft.MvvmLight;
 
 namespace LangLang.ViewModel
 {
@@ -26,7 +27,7 @@ namespace LangLang.ViewModel
             set
             {
                 _selectedItem = value;
-                OnPropertyChanged(nameof(SelectedItem));
+                //OnPropertyChanged(nameof(SelectedItem));
             }
         }
 
@@ -40,10 +41,7 @@ namespace LangLang.ViewModel
         private string _languageNameSelected;
         public string LanguageNameSelected
         {
-            get
-            {
-                return _languageNameSelected;
-            }
+            get => _languageNameSelected;
             set
             {
                 _languageNameSelected = value;
@@ -53,10 +51,7 @@ namespace LangLang.ViewModel
         private string _languageLevelSelected;
         public string LanguageLevelSelected
         {
-            get
-            {
-                return _languageLevelSelected;
-            }
+            get => _languageLevelSelected;
             set
             {
                 _languageLevelSelected = value;
@@ -66,10 +61,7 @@ namespace LangLang.ViewModel
         private DateTime _dateSelected;
         public DateTime DateSelected
         {
-            get
-            {
-                return _dateSelected;
-            }
+            get => _dateSelected;
             set
             {
                 _dateSelected = value;
@@ -88,13 +80,13 @@ namespace LangLang.ViewModel
                 new ExamViewModel(new Exam(new Language("English", LanguageLevel.C2), 28, new DateOnly(2024, 8, 15)))
             };
             ExamCollectionView = CollectionViewSource.GetDefaultView(_exams);
-            ExamCollectionView.Filter = filterExams;
+            ExamCollectionView.Filter = FilterExams;
             _deleteCommand = new RelayCommand(Delete);
         }
 
         public IEnumerable<ExamViewModel> Exams => _exams;
 
-        private bool filterExams(object obj)
+        private bool FilterExams(object obj)
         {
             if (obj is ExamViewModel examViewModel)
             {
@@ -172,7 +164,6 @@ namespace LangLang.ViewModel
 
                             newWindow.Show();
 
-                            //Application.Current.MainWindow.Close();
                         }
                         else
                         {

@@ -26,7 +26,7 @@
 
 
         <TextBlock Text="Add exam:" Grid.Column="1" Grid.Row="0"/>
-        <TextBlock Text="Date exam is held:" Grid.Column="1" Grid.Row="1"/>
+        <TextBlock Text="Date held:" Grid.Column="1" Grid.Row="1"/>
         <DatePicker x:Name="datePicker" SelectedDate="{Binding ExamDate}" Grid.Column="1" Grid.Row="2"/>
         <TextBlock Text="Language:" Grid.Column="1" Grid.Row="3"/>
 
