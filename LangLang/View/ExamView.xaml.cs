@@ -23,8 +23,13 @@ namespace LangLang.View
     {
         public ExamView()
         {
-            ExamListingViewModel examListingViewModel = new ExamListingViewModel(); 
+            DataContext = new ExamListingViewModel();
             InitializeComponent();
+        }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
         }
     }
 }

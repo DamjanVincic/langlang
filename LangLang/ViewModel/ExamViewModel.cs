@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using LangLang.Commands;
 using LangLang.Model;
 
 namespace LangLang.ViewModel
@@ -14,10 +16,11 @@ namespace LangLang.ViewModel
         private readonly Exam exam;
 
         public string Id => exam.Id.ToString();
-        public string Language => exam.Language.Name;
-        public LanguageLevel Level => exam.Language.Level;
+        public string Language { get; set; }
+        public LanguageLevel LanguageLevel { get; set; }
         public string MaxStudents => exam.MaxStudents.ToString();
         public DateOnly ExamDate => exam.ExamDate;
+
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -25,5 +28,6 @@ namespace LangLang.ViewModel
         {
             this.exam = exam;
         }
+
     }
 }
