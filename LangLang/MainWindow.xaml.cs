@@ -28,16 +28,6 @@ namespace LangLang
             // DataContext = new MainViewModel(this.NavigationService);
             MainFrame.Navigate(new LoginView());
         }
-        
-        // private void LoginButton_Click(object sender, RoutedEventArgs e)
-        // {
-        //     // MainContent.Content = new LoginView();
-        // }
-        //
-        // private void RegisterButton_Click(object sender, RoutedEventArgs e)
-        // {
-        //     // MainContent.Content = new RegisterView();
-        // }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
