@@ -12,8 +12,9 @@ namespace LangLang.Model
         private DateOnly _examDate;
 
 
-        public Exam(Language language, int maxStudents, DateOnly examDate)
+        public Exam(Language language, int maxStudents, DateOnly examDate) : base(0, new TimeOnly())
         {
+            throw new NotImplementedException();
             Language = language;
             MaxStudents = maxStudents;
             ExamDate = examDate;
