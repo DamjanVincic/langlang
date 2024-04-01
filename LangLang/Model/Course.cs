@@ -15,7 +15,7 @@ namespace LangLang.Model
         private DateOnly _startDate;
         private static List<int> _courseIds = new List<int>();
 
-        public Course(Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents, int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed, int teacherId, List<int> studentIds)
+        public Course(Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents, int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed, int teacherId, List<int> studentIds) : base(teacherId, scheduledTime)
         {
             Language = language;
             Duration = duration;
@@ -24,9 +24,7 @@ namespace LangLang.Model
             AreApplicationsClosed = areApplicationsClosed;
             IsOnline = isOnline;
             MaxStudents = maxStudents;
-            ScheduledTime = scheduledTime;
             StartDate = startDate;
-            TeacherId = teacherId;
             StudentIds = studentIds;
             Id = _idCounter++;
             _courses.Add(Id, this);
@@ -79,7 +77,6 @@ namespace LangLang.Model
             }
         }
         public int CreatorId { get; set;}
-        public TimeOnly ScheduledTime { get; set; }
         public DateOnly StartDate
         {
             get => _startDate;
@@ -90,7 +87,6 @@ namespace LangLang.Model
             }
         }
         public bool AreApplicationsClosed {get; set; }
-        public int TeacherId {get; set; }
         public List<int> StudentIds { get; set; }
 
         
