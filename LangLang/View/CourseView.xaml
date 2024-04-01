@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:LangLang.View"
+             xmlns:model ="clr-namespace:LangLang.Model"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     
@@ -34,14 +35,14 @@
                     <GridViewColumn Header="Language">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Language.Name}"/>
+                                <TextBlock Text="{Binding LanguageName}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                     <GridViewColumn Header="Level">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Language.Level}"/>
+                                <TextBlock Text="{Binding LanguageLevel}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
@@ -90,14 +91,21 @@
                     <GridViewColumn Header="Teacher">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding TeacherId}"/>
+                                <TextBlock Text="{Binding TeachersName}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Applications">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Applications}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                     <GridViewColumn Header="Students">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding StudentIds}"/>
+                                <TextBlock Text="{Binding Students}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
@@ -117,9 +125,9 @@
         <ComboBox Grid.Column="1" Grid.Row="8" Margin="10"/>
         <TextBlock Text="Format:" Grid.Column="1" Grid.Row="9"/>
         <ComboBox Grid.Column="1" Grid.Row="10" Margin="10"/>
-        <Button Content="Add" Grid.Column="1" Grid.Row="11"/>
-        <Button Content="Edit" Grid.Column="1" Grid.Row="12"/>
-        <Button Content="Delete" Grid.Column="1" Grid.Row="13"/>
+        <Button Content="Add" Grid.Column="1" Grid.Row="11" Command="AddCourseCommand"/>
+        <Button Content="Edit" Grid.Column="1" Grid.Row="12" Command="EditCourseCommand"/>
+        <Button Content="Delete" Grid.Column="1" Grid.Row="13" Command="DeleteCourseCommand"/>
 
     </Grid>
 </UserControl>
