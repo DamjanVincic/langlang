@@ -7,29 +7,35 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <StackPanel>
-            <Label Content="First Name"/>
-            <TextBox x:Name="FirstNameTextBox" Text="{Binding FirstName}"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <TextBlock Text="Registration" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,20,0,10"/>
 
-            <Label Content="Last Name"/>
-            <TextBox x:Name="LastNameTextBox" Text="{Binding LastName}"/>
-
-            <Label Content="Email"/>
-            <TextBox x:Name="EmailTextBox" Text="{Binding Email}"/>
-
-            <Label Content="Password"/>
-            <TextBox x:Name="PasswordBox" Text="{Binding Password}"/>
-
-            <Label Content="Gender"/>
-            <ComboBox x:Name="GenderComboBox" ItemsSource="{Binding GenderValues}" SelectedItem="{Binding Gender}"/>
-
-            <Label Content="Education"/>
-            <ComboBox x:Name="EducationComboBox" ItemsSource="{Binding EducationValues}" SelectedItem="{Binding Education}"/>
-            
-            <Label Content="Phone"/>
-            <TextBox x:Name="PhoneTextBox" Text="{Binding Phone}"/>
-
-            <Button Content="Register" Command="{Binding RegisterCommand}"/>
+        <StackPanel Grid.Row="1" Margin="10">
+            <TextBlock Text="First Name:" FontWeight="Bold"/>
+            <TextBox x:Name="FirstNameTextBox" Margin="0,5,0,10"/>
+            <TextBlock Text="Last Name:" FontWeight="Bold"/>
+            <TextBox x:Name="LastNameTextBox" Margin="0,5,0,10"/>
+            <TextBlock Text="Email:" FontWeight="Bold"/>
+            <TextBox x:Name="EmailTextBox" Margin="0,5,0,10"/>
+            <TextBlock Text="Password:" FontWeight="Bold"/>
+            <PasswordBox x:Name="PasswordBox" Margin="0,5,0,10"/>
+            <TextBlock Text="Gender:" FontWeight="Bold"/>
+            <ComboBox x:Name="GenderComboBox" Margin="0,5,0,10" ItemsSource="{Binding GenderValues}" SelectedItem="{Binding Gender}"/>
+            <TextBlock Text="Education:" FontWeight="Bold"/>
+            <ComboBox x:Name="EducationComboBox" Margin="0,5,0,10" ItemsSource="{Binding EducationValues}" SelectedItem="{Binding Education}"/>
+            <TextBlock Text="Phone Number:" FontWeight="Bold"/>
+            <TextBox x:Name="PhoneTextBox" Margin="0,5,0,10"/>
         </StackPanel>
+
+        <Button Grid.Row="2" Content="Register" HorizontalAlignment="Center" Command="{Binding RegisterCommand}" Margin="0,10"/>
     </Grid>
 </UserControl>
