@@ -13,7 +13,7 @@ using System.Windows.Data;
 namespace LangLang.ViewModel
 {
 
-    public class TeacherListingViewModel:ViewModelBase
+    public class TeacherListingViewModel : ViewModelBase
     {
         private ObservableCollection<TeacherViewModel> teachers;
         public ICollectionView TeachersCollectionView { get; }
@@ -21,17 +21,18 @@ namespace LangLang.ViewModel
         public IEnumerable<String> LanguageLevelValues => Enum.GetNames(typeof(LanguageLevel));
         private string selectedLanguageName;
         private string selectedLanguageLevel;
-        //private DateTimeOffset selectedDateCreated;
-        public string SelectedLanguageName {
-            get 
+        private DateTime selectedDateCreated;
+        public string SelectedLanguageName
+        {
+            get
             {
                 return selectedLanguageName;
-            } 
-            set 
-            { 
+            }
+            set
+            {
                 selectedLanguageName = value;
                 TeachersCollectionView.Refresh();
-            } 
+            }
         }
 
         public string SelectedLanguageLevel
@@ -46,18 +47,18 @@ namespace LangLang.ViewModel
                 TeachersCollectionView.Refresh();
             }
         }
-        //public DateTimeOffset SelectedDateCreated
-        //{
-        //    get
-        //    {
-        //        return selectedDateCreated;
-        //    }
-        //    set
-        //    {
-        //        selectedDateCreated = value;
-        //        TeachersCollectionView.Refresh();
-        //    }
-        //}
+        public DateTime SelectedDateCreated
+        {
+            get
+            {
+                return selectedDateCreated;
+            }
+            set
+            {
+                selectedDateCreated = value;
+                TeachersCollectionView.Refresh();
+            }
+        }
         public TeacherListingViewModel()
         {
             teachers=new ObservableCollection<TeacherViewModel>();
@@ -79,7 +80,7 @@ namespace LangLang.ViewModel
             Teacher t5 = new Teacher("Pera5", "Peric5", "kfjsfdlk@gjmail.com", "Lozinkaa2", Gender.Male, "0638662250", peraLangs, new List<int> { 1, 2, 3 });
             Teacher t6 = new Teacher("Pera6", "Peric6", "kfjsfdlk@fgmail.com", "Lozinkaa2", Gender.Male, "0638662250", peraLangs, new List<int> { 1, 2, 3 });
 
-            foreach(int teacherId in Teacher.TeacherIds)
+            foreach (int teacherId in Teacher.TeacherIds)
             {
                 teachers.Add(new TeacherViewModel((Teacher)User.GetById(teacherId)));
             }
@@ -89,7 +90,7 @@ namespace LangLang.ViewModel
 
         private bool filterTeachers(object obj)
         {
-            if(obj is TeacherViewModel teacherViewModel)
+            if (obj is TeacherViewModel teacherViewModel)
             {
                 return teacherViewModel.FilterLanguageName(SelectedLanguageName) && teacherViewModel.FilterLanguageLevel(SelectedLanguageLevel) && teacherViewModel.FilterDateCreated(SelectedDateCreated);
             }
@@ -101,5 +102,5 @@ namespace LangLang.ViewModel
 
         public IEnumerable<TeacherViewModel> Teachers => teachers;
     }
-        
+
 }
