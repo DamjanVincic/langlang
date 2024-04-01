@@ -17,12 +17,13 @@
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="3*"/>
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
-        <ListView Grid.Row="0" Grid.RowSpan="9" Padding="5" Margin="5" ItemsSource="{Binding Teachers}">
+        <ListView Grid.Row="0" Grid.RowSpan="10" Padding="5" Margin="5" ItemsSource="{Binding TeachersCollectionView}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="First Name">
@@ -36,6 +37,13 @@
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding LastName}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Date added">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding DateAdded}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
@@ -75,21 +83,19 @@
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
 
-
-                    <!--<GridViewColumn Header="Last Name" DisplayMemberBinding="{Binding Teachers.LastName}"></GridViewColumn>-->
-                    
                 </GridView>
             </ListView.View>
         </ListView>
         <TextBlock Text="Filter teachers:" Grid.Column="1" Grid.Row="0"/>
         <TextBlock Text="Date added:" Grid.Column="1" Grid.Row="1"/>
-        <DatePicker Grid.Column="1" Grid.Row="2"/>
+        <DatePicker Grid.Column="1" Grid.Row="2" SelectedDate="{Binding SelectedDateCreated}" />
         <TextBlock Text="Language:" Grid.Column="1" Grid.Row="3"/>
-        <ComboBox Grid.Column="1" Grid.Row="4" Margin="10"/>
+        <ComboBox Grid.Column="1" Grid.Row="4" Margin="10" ItemsSource="{Binding LanguageNameValues}" SelectedItem="{Binding SelectedLanguageName}"/>
         <TextBlock Text="Level:" Grid.Column="1" Grid.Row="5"/>
-        <ComboBox Grid.Column="1" Grid.Row="6" Margin="10"/>
-        <Button Content="Edit" Grid.Column="1" Grid.Row="7"/>
-        <Button Content="Delete" Grid.Column="1" Grid.Row="8"/>
+        <ComboBox Grid.Column="1" Grid.Row="6" Margin="10" ItemsSource="{Binding LanguageLevelValues}" SelectedItem="{Binding SelectedLanguageLevel}"/>
+        <Button Content="Add" Grid.Column="1" Grid.Row="7"/>
+        <Button Content="Edit" Grid.Column="1" Grid.Row="8"/>
+        <Button Content="Delete" Grid.Column="1" Grid.Row="9"/>
 
     </Grid>
 </UserControl>

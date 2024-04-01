@@ -23,7 +23,7 @@ namespace LangLang.View
     {
         public TeachersView()
         {
-            TeacherListingViewModel teachersViewModel = new TeacherListingViewModel();
+            //TeacherListingViewModel teachersViewModel = new TeacherListingViewModel();
 
             InitializeComponent();
         }
