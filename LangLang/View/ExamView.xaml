@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="LangLang.View.ExamView"
+﻿<Window x:Class="LangLang.View.ExamView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -85,4 +85,4 @@
         <Button Command="{Binding DeleteCommand}" Content="Delete" Grid.Column="1" Grid.Row="9"/>
 
     </Grid>
-</UserControl>
+</Window>

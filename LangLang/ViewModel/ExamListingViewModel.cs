@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Input;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
+using LangLang.View;
 
 namespace LangLang.ViewModel
 {
@@ -132,7 +133,28 @@ namespace LangLang.ViewModel
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+        private RelayCommand _addCommand;
+        public ICommand AddCommand
+        {
+            get
+            {
+                if (_addCommand == null)
+                {
+                    _addCommand = new RelayCommand(() =>
+                    {
+                        // Kreiranje novog prozora
+                        var newWindow = new AddExamView();
 
+                        // Prikaži novi prozor
+                        newWindow.Show();
+
+                        // Zatvori trenutni prozor
+                        Application.Current.MainWindow.Close();
+                    });
+                }
+                return _addCommand;
+            }
+        }
 
     }
 }

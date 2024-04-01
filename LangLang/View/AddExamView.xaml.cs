@@ -20,7 +20,7 @@ namespace LangLang.View
     /// <summary>
     /// Interaction logic for ExamView.xaml
     /// </summary>
-    public partial class AddExamView : UserControl
+    public partial class AddExamView : Window
     {
         public AddExamView()
         {
