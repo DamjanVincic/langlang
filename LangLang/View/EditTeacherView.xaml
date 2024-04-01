@@ -19,8 +19,9 @@
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
-            <RowDefinition Height="2*"/>
             <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="2*"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
             <Label Grid.Row="0" Margin="3" Width="100" Content="First Name"/>
@@ -38,13 +39,13 @@
             <Label Grid.Row="8" Content="Gender"/>
             <ComboBox Grid.Row="9" x:Name="GenderComboBox" ItemsSource="{Binding GenderValues}" SelectedItem="{Binding Gender}"/>
 
-            <Label Grid.Row="9" Content="Phone"/>
-            <TextBox Grid.Row="10" x:Name="PhoneTextBox" Text="{Binding Phone}"/>
+            <Label Grid.Row="10" Content="Phone"/>
+            <TextBox Grid.Row="11" x:Name="PhoneTextBox" Text="{Binding Phone}"/>
 
-            <Label Grid.Row="11" Content="Qualifications"/>
-            <ListBox Grid.Row="12" x:Name="QualificationsListBox" ItemsSource="{Binding QualificationsValues}"/>
+            <Label Grid.Row="12" Content="Qualifications"/>
+            <ListBox Grid.Row="13" x:Name="QualificationsListBox" ItemsSource="{Binding Qualifications}"/>
 
-            <Button Grid.Row="13" Content="Save edits" Command="{Binding SaveEditCommand}"/>
+            <Button Grid.Row="14" Content="Save edits" Command="{Binding SaveEditCommand}"/>
 
     </Grid>
 </UserControl>
