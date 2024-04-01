@@ -6,6 +6,8 @@ namespace LangLang.Model
     public class Course : ScheduleItem
     { 
         public const int CLASS_DURATION = 90; 
+        private static int _idCounter = 1;
+        private static Dictionary<int, Course> _courses = new Dictionary<int, Course>();
         public static List<int> CourseIds { get; set; }
         private Language _language;
         private int _duration;
@@ -15,6 +17,7 @@ namespace LangLang.Model
 
         public Course(Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents, int creator, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed, int teacher, List<int> students)
         {
+            Id = _idCounter++; 
             Language = language;
             Duration = duration;
             Held = held;
@@ -26,12 +29,14 @@ namespace LangLang.Model
             StartDate = startDate;
             TeacherId = teacher;
             StudentIds = students;
+            _courses.Add(Id, this);
             if (CourseIds == null)
             {
                 CourseIds = new List<int>();
             }
             CourseIds.Add(Id);
         }
+        public int Id { get; set; }
         public Language Language
         {
             get => _language;
@@ -126,6 +131,9 @@ namespace LangLang.Model
             }
         }
 
-        
+        public static Course GetById(int id)
+        {
+            return _courses[id];
+        }
     }
 }
