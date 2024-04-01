@@ -75,8 +75,8 @@
           Grid.Column="1" Grid.Row="4" Margin="10"/>
 
         <TextBlock Text="Level:" Grid.Column="1" Grid.Row="5"/>
-        
-        
+
+
         <ComboBox ItemsSource="{Binding LanguageLevelValues}"
                   SelectedItem="{Binding LanguageLevelSelected, Mode=TwoWay}"
                   Grid.Column="1" Grid.Row="6" Margin="10" SelectionChanged="ComboBox_SelectionChanged"/>

@@ -20,12 +20,17 @@ namespace LangLang.View
     /// <summary>
     /// Interaction logic for ExamView.xaml
     /// </summary>
-    public partial class ExamView : UserControl
+    public partial class AddExamView : UserControl
     {
-        public ExamView()
+        public AddExamView()
         {
             DataContext = new ExamListingViewModel();
             InitializeComponent();
+        }
+        private void TextBox_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
         }
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
