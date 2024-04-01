@@ -43,14 +43,9 @@ namespace LangLang.ViewModel
         {
             try
             {
-                teacher.FirstName = FirstName;
-                teacher.LastName = LastName;
-                teacher.Email= Email;
-                teacher.Password= Password;
-                teacher.Phone= Phone;
-                teacher.Gender = Gender;
+                teacher.Edit(FirstName,LastName,Email,Password,Gender,Phone);
                 User pera=User.GetById(1);
-                MessageBox.Show("User edited successfully.", "Success", MessageBoxButton.OK,
+                MessageBox.Show("Teacher edited successfully.", "Success", MessageBoxButton.OK,
                     MessageBoxImage.Information);
             }
             catch (InvalidInputException exception)
