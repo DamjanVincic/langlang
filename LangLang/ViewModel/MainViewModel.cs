@@ -9,17 +9,21 @@ namespace LangLang.ViewModel;
 public class MainViewModel : ViewModelBase
 {
     public ICommand NavigateToRegisterCommand { get; }
+    public ICommand NavigateToLoginCommand { get; }
     
-    private readonly NavigationService _navigationService;
-    
-    public MainViewModel(NavigationService navigationService)
+    public MainViewModel()
     {
-        _navigationService = navigationService;
         NavigateToRegisterCommand = new RelayCommand(NavigateToRegister);
+        NavigateToLoginCommand = new RelayCommand(NavigateToLogin);
     }
 
     public void NavigateToRegister()
     {
-        _navigationService.Navigate(new RegisterView());
+        new RegisterView().Show();
+    }
+
+    public void NavigateToLogin()
+    {
+        new LoginView().Show();
     }
 }
