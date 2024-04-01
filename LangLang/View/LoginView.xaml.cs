@@ -8,6 +8,6 @@ public partial class LoginView : Window
     public LoginView()
     {
         InitializeComponent();
-        DataContext = new LoginViewModel();
+        DataContext = new LoginViewModel(this);
     }
 }
