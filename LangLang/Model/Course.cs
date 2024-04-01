@@ -17,7 +17,6 @@ namespace LangLang.Model
 
         public Course(Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents, int creator, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed, int teacher, List<int> students)
         {
-            Id = _idCounter++; 
             Language = language;
             Duration = duration;
             Held = held;
@@ -29,6 +28,7 @@ namespace LangLang.Model
             StartDate = startDate;
             TeacherId = teacher;
             StudentIds = students;
+            Id = _idCounter++;
             _courses.Add(Id, this);
             if (CourseIds == null)
             {
