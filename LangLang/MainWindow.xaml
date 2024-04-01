@@ -3,15 +3,21 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:LangLang"
+        xmlns:view="clr-namespace:LangLang.View"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <ContentControl x:Name="MainContent" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+            
+        <!-- Back button -->
+        <Button x:Name="BackButton" Content="Back" Click="BackButton_Click" Margin="10"/>
+        <Button Grid.Row="1" x:Name="RegisterButton" Content="Register" Click="RegisterButton_Click" Margin="10"/>
         
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,20,0,10">
-            <Button Content="Login" Click="LoginButton_Click" Margin="5"/>
-            <Button Content="Register" Click="RegisterButton_Click" Margin="5"/>
-        </StackPanel>
+        <!-- Frame for page navigation -->
+        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" Grid.Row="2"/>
     </Grid>
 </Window>
