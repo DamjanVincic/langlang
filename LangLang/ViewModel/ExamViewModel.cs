@@ -17,7 +17,7 @@ namespace LangLang.ViewModel
 
         public string Id => exam.Id.ToString();
         public string Language { get; set; }
-        public LanguageLevel LanguageLevel { get; set; }
+        public LanguageLevel LanguageLevel { get; set; }      
         public string MaxStudents => exam.MaxStudents.ToString();
         public DateOnly ExamDate => exam.ExamDate;
 
@@ -29,5 +29,30 @@ namespace LangLang.ViewModel
             this.exam = exam;
         }
 
+        public bool FilterLevel(string level)
+        {
+            if(level == null)
+            {
+                return true;
+            }
+            return exam.Language.Level  == (LanguageLevel)Enum.Parse(typeof(LanguageLevel), level); 
+        }
+
+        public bool FilterLanguageName(string name)
+        {
+            if(name == null)
+            {
+                return true;
+            }
+            return exam.Language.Name == name;
+        }
+        public bool FilterDateHeld(DateOnly dateHeld)
+        {
+            if (dateHeld == DateOnly.MinValue) {
+                        return true;
+            }
+            return exam.ExamDate == dateHeld;
+        }
     }
 }
+

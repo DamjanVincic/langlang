@@ -24,7 +24,7 @@
             <ColumnDefinition Width="3*"/>
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
-        <ListView Grid.Row="0" Grid.RowSpan="9" Padding="5" Margin="5" ItemsSource="{Binding Exams}">
+        <ListView Grid.Row="0" Grid.RowSpan="9" Padding="5" Margin="5" ItemsSource="{Binding ExamCollectionView}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="ID">
@@ -67,18 +67,18 @@
         </ListView>
         <TextBlock Text="Filter exams:" Grid.Column="1" Grid.Row="0"/>
         <TextBlock Text="Date exam is held:" Grid.Column="1" Grid.Row="1"/>
-        <DatePicker Grid.Column="1" Grid.Row="2"/>
+        <DatePicker SelectedDate="{Binding DateSelected}" Grid.Column="1" Grid.Row="2"/>
         <TextBlock Text="Language:" Grid.Column="1" Grid.Row="3"/>
 
         <ComboBox ItemsSource="{x:Static model:Language.LanguageNames}"
-          SelectedItem="{Binding Language}" 
+          SelectedItem="{Binding LanguageNameSelected}" 
           Grid.Column="1" Grid.Row="4" Margin="10"/>
 
         <TextBlock Text="Level:" Grid.Column="1" Grid.Row="5"/>
         
         
         <ComboBox ItemsSource="{Binding LanguageLevelValues}"
-                  SelectedItem="{Binding LanguageLevel, Mode=TwoWay}"
+                  SelectedItem="{Binding LanguageLevelSelected, Mode=TwoWay}"
                   Grid.Column="1" Grid.Row="6" Margin="10" SelectionChanged="ComboBox_SelectionChanged"/>
         <Button Command="{Binding AddCommand}" Content="Add" Grid.Column="1" Grid.Row="7"/>
         <Button Command="{Binding EditCommand}" Content="Edit" Grid.Column="1" Grid.Row="8"/>
