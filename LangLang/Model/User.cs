@@ -54,6 +54,11 @@ namespace LangLang.Model
             return _users.Values.FirstOrDefault(user => user.Email.Equals(email) && user.Password.Equals(password));
         }
         
+        public static User GetUserById(int id)
+        {
+            return _users[id];
+        }
+        
         public int Id { get; }
 
         public string FirstName
