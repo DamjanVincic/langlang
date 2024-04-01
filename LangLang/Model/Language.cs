@@ -6,20 +6,37 @@ namespace LangLang.Model
     public class Language
     {
         private string _name;
-        private static List<Language> _laguages = new List<Language>();
-        private static List<string> _laguageNames = new List<string>();
+        private static List<Language> _languages = new List<Language>();
+        private static List<string> _languageNames = new List<string>();
 
         public Language(string name, LanguageLevel level)
         {
             Name = name;
             Level = level;
-            _laguages.Add(this);
-            if (!_laguageNames.Contains(name))
+            Languages.Add(this);
+            if (!LanguageNames.Contains(name))
             {
-                _laguageNames.Add(name);
+                LanguageNames.Add(name);
             }
         }
 
+        public static List<Language> Languages
+        {
+            get => _languages;
+            set
+            {
+                _languages = value;
+            }
+        }
+        public static List<string> LanguageNames
+        {
+            get => _languageNames;
+            set
+            {
+                _languageNames = value;
+            }
+        }
+        
         public string Name
         {
             get => _name;
@@ -48,6 +65,16 @@ namespace LangLang.Model
             return obj is Language language &&
                    Name == language.Name &&
                    Level == language.Level;
+        }
+
+        public override string ToString()
+        {
+            return $"{Name} {Level}";
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(_name);
         }
     }
 }

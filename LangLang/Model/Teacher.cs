@@ -1,23 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LangLang.Model
 {
     public class Teacher : User
     {
-        public List<Language> Qualifications {  get; set; }
-        public DateOnly DateCreated { get;}
-        public List<int> CourseIds { get; set; }
-
-
+        private static List<int> _teacherIds = new();
+        private List<int> _courseIds = new();
+        private List<int> _examIds  = new();
+        
         public Teacher(string firstName, string lastName, string email, string password, Gender gender, string phone, List<Language> qualifications, List<int> courseIds) : base(firstName, lastName, email, password, gender, phone)
         {
             Qualifications=qualifications;
             DateCreated=DateOnly.FromDateTime(DateTime.Now);
             CourseIds=courseIds;
+            TeacherIds.Add(Id);
+        }
+
+        public static List<int> TeacherIds 
+        {
+            get => _teacherIds;
+            set
+            {
+                _teacherIds = value;
+            }
+        }
+        public List<Language> Qualifications { get; set; }
+        public DateOnly DateCreated { get;}
+        public List<int> CourseIds
+        {
+            get => _courseIds;
+            set
+            {
+                _courseIds = value;
+            }
+        }
+        public List<int> ExamIds
+        {
+            get => _examIds;
+            set 
+            {
+                _examIds = value;
+            }
         }
     }
 }
