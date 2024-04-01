@@ -22,7 +22,7 @@ namespace LangLang.ViewModel
         public Gender Gender { get; set; }
         public string Phone { get; set; }
 
-        public string Qualifications { get; set; }
+        public List<string> Qualifications { get; set; }
 
         public ICommand SaveEditCommand { get; }
 
@@ -35,7 +35,7 @@ namespace LangLang.ViewModel
             Password = this.teacher.Password;
             Gender = this.teacher.Gender;
             Phone = this.teacher.Phone;
-            Qualifications = string.Join(", ", this.teacher.Qualifications);
+            Qualifications = this.teacher.Qualifications.ConvertAll(qualification => qualification.ToString()); ;
             SaveEditCommand = new RelayCommand(Edit);
         }
 
