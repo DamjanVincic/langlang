@@ -49,6 +49,10 @@ namespace LangLang.ViewModel
         public IEnumerable<String> LanguageLevelValues => Enum.GetNames(typeof(LanguageLevel));
         public IEnumerable<String> FormatValues => new List<String>{"online", "in-person"};
         public IEnumerable<CourseViewModel> Courses => _courses;
+        private void AddCourse(){}
+        private void EditCourse() { }
+        private void DeleteCourse() { }
+
 
         public string SelectedLanguageName
         {
