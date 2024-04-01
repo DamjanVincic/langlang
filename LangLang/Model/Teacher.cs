@@ -41,10 +41,6 @@ namespace LangLang.Model
             Qualifications=qualifications;
             DateCreated=DateOnly.FromDateTime(DateTime.Now);
             CourseIds=courseIds;
-            if (TeacherIds==null)
-            {
-                TeacherIds=new List<int>();
-            }
             TeacherIds.Add(Id);
         }
     }
