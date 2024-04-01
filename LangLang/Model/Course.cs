@@ -4,7 +4,11 @@ using System.Collections.Generic;
 namespace LangLang.Model
 {
     public class Course : ScheduleItem
-    {
+    { 
+        public const int CLASS_DURATION = 90; 
+        private static int _idCounter = 1;
+        private static Dictionary<int, Course> _courses = new Dictionary<int, Course>();
+        public static List<int> CourseIds { get; set; }
         private Language _language;
         private int _duration;
         private List<Weekday> _held;
@@ -16,12 +20,21 @@ namespace LangLang.Model
             Language = language;
             Duration = duration;
             Held = held;
+            CreatorId = creator;
+            AreApplicationsClosed = areApplicationsClosed;
             IsOnline = isOnline;
             MaxStudents = maxStudents;
             ScheduledTime = scheduledTime;
             StartDate = startDate;
             TeacherId = teacher;
             StudentIds = students;
+            Id = _idCounter++;
+            _courses.Add(Id, this);
+            if (CourseIds == null)
+            {
+                CourseIds = new List<int>();
+            }
+            CourseIds.Add(Id);
         }
         public int Id { get; set; }
         public Language Language
@@ -116,6 +129,11 @@ namespace LangLang.Model
             {
                 throw new ArgumentNullException(nameof(language));
             }
+        }
+
+        public static Course GetById(int id)
+        {
+            return _courses[id];
         }
     }
 }

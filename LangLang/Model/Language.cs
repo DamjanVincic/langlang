@@ -1,15 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace LangLang.Model
 {
     public class Language
     {
         private string _name;
+        public static List<Language> Languages = new List<Language>();
+        public static List<string> LanguageNames = new List<string>();
+
         public Language(string name, LanguageLevel level)
         {
             Name = name;
             Level = level;
+            Languages.Add(this);
+            if (!LanguageNames.Contains(name))
+            {
+                LanguageNames.Add(name);
+            }
         }
+
         public string Name
         {
             get => _name;
@@ -32,6 +42,22 @@ namespace LangLang.Model
                 throw new InvalidInputException("Name must include at least one character.");
             }
         }
-        
+
+        public override bool Equals(object? obj)
+        {
+            return obj is Language language &&
+                   Name == language.Name &&
+                   Level == language.Level;
+        }
+
+        public override string ToString()
+        {
+            return $"{Name} {Level}";
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(_name);
+        }
     }
 }
