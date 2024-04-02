@@ -12,6 +12,7 @@ namespace LangLang.Model
     public class Exam : ScheduleItem
     {
         public const int EXAM_DURATION = 360;
+        private const string EXAM_FILE_PATH = "C:\\faks 2\\usi\\projekat\\cp-usi-2024-3-b\\LangLang\\SourceDataFiles\\exams.json";
         private static Dictionary<int, Exam> _exams = new Dictionary<int, Exam>();
         private Language _language;
         private int _maxStudents;
@@ -97,9 +98,9 @@ namespace LangLang.Model
         /*
          * izmeniti jer se poziva nad objektnom
          */
-        public static void Delete(int id)
+        public void Delete()
         {
-            _exams.Remove(id);
+            _exams.Remove(Id);
         }
         
         public static void LoadExamFromJson(string jsonFilePath)
@@ -123,10 +124,10 @@ namespace LangLang.Model
             }
         }
 
-        public static void WriteExamToJson(string jsonFilePath)
+        public static void WriteExamToJson()
         {
             string jsonExamString = JsonConvert.SerializeObject(_exams);
-            File.WriteAllText(jsonFilePath, jsonExamString);
+            File.WriteAllText(EXAM_FILE_PATH, jsonExamString);
         }
 
         public static List<Exam> GetAvailableExams()
