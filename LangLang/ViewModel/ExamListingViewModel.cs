@@ -83,7 +83,7 @@ namespace LangLang.ViewModel
             ExamCollectionView.Filter = FilterExams;
             DeleteCommand = new RelayCommand(Delete);
             AddCommand = new RelayCommand(Add);
-            AddCommand = new RelayCommand(Edit);
+            EditCommand = new RelayCommand(Edit);
         }
 
         public IEnumerable<ExamViewModel> Exams => _exams;
