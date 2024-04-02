@@ -143,7 +143,7 @@ namespace LangLang.ViewModel
         public ICommand AddCommand { get; }
         public void Add()
         {
-            var newWindow = new AddExamView();
+            var newWindow = new AddExamView(null,_teacher);
             newWindow.Show();
             Application.Current.MainWindow.Closed += (sender, e) =>
             {
@@ -172,7 +172,7 @@ namespace LangLang.ViewModel
 
                 if (difference.TotalDays >= 14)
                 {
-                    var newWindow = new AddExamView(exam);
+                    var newWindow = new AddExamView(exam,_teacher);
                     newWindow.Show();
                 }
                 else
