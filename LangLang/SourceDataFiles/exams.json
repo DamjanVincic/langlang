@@ -1,0 +1,26 @@
+{
+  "17": {
+    "Id": 17,
+    "Language": {
+      "Name": "English",
+      "Level": "B2"
+    },
+    "MaxStudents": 30,
+    "ExamDate": "2024-05-15",
+    "TeacherId": 123,
+    "ExamTime": "09:00:00",
+    "StudentIds": [ 101, 102, 103 ]
+  } ,
+  "12": {
+    "Id": 1,
+    "Language": {
+      "Name": "English",
+      "Level": "B2"
+    },
+    "MaxStudents": 30,
+    "ExamDate": "2024-05-15",
+    "TeacherId": 123,
+    "ExamTime": "09:00:00",
+    "StudentIds": [ 101, 102, 103 ]
+  }
+}
