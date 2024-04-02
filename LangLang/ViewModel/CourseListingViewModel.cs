@@ -110,7 +110,8 @@ namespace LangLang.ViewModel
                     courseViewModel.FilterLanguageLevel(SelectedLanguageLevel) &&
                     courseViewModel.FilterStartDate(SelectedDate) &&
                     courseViewModel.FilterDuration(SelectedDuration) &&
-                    courseViewModel.FilterFormat(SelectedFormat); 
+                    courseViewModel.FilterFormat(SelectedFormat) &&
+                    courseViewModel.FilterTeacher(0); 
             }
             else
             {
