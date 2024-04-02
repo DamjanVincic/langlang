@@ -14,7 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
+using LangLang.Model;
 namespace LangLang.View
 {
     /// <summary>
@@ -22,9 +22,9 @@ namespace LangLang.View
     /// </summary>
     public partial class ExamView : Window
     {
-        public ExamView()
+        public ExamView(Teacher teacher = null)
         {
-            DataContext = new ExamListingViewModel();
+            DataContext = new ExamListingViewModel(teacher);
             InitializeComponent();
         }
     }

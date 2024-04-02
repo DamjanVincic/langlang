@@ -95,8 +95,8 @@ namespace LangLang.ViewModel
             {
                 return examViewModel.FilterLanguageName(LanguageNameSelected) &&
                     examViewModel.FilterLevel(LanguageLevelSelected) &&
-                    examViewModel.FilterDateHeld(DateSelected) &&
-                    examViewModel.FilterTeacherId(_teacher.ExamIds);
+                    examViewModel.FilterDateHeld(DateSelected);
+                    //examViewModel.FilterTeacherId(_teacher.ExamIds);
             }
             return false;
         }
