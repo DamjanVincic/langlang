@@ -1,0 +1,20 @@
+{
+  "99": {
+    "Id": 99,
+    "Language": {
+      "Name": "English",
+      "Level": "B2"
+    },
+    "Duration": 90,
+    "Held": [ "Monday", "Wednesday", "Friday" ],
+    "IsOnline": true,
+    "MaxStudents": 30,
+    "CreatorId": 123,
+    "StartDate": "2024-04-15",
+    "AreApplicationsClosed": false,
+    "TeacherId": 456,
+    "ScheduledTime": "10:00:00",
+    "StudentIds": [ 101, 102, 103 ]
+  }
+
+}

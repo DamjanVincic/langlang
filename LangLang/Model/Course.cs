@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace LangLang.Model
@@ -7,7 +9,6 @@ namespace LangLang.Model
     public class Course : ScheduleItem
     { 
         public const int CLASS_DURATION = 90; 
-        private static int _idCounter = 1;
         private static Dictionary<int, Course> _courses = new Dictionary<int, Course>();
         private Language _language;
         private int _duration;
@@ -27,11 +28,9 @@ namespace LangLang.Model
             MaxStudents = maxStudents;
             StartDate = startDate;
             StudentIds = studentIds;
-            Id = _idCounter++;
             _courses.Add(Id, this);
             CourseIds.Add(Id);
         }
-        public int Id { get; set; }
         public static List<int> CourseIds 
         {
             get => _courseIds;
@@ -137,7 +136,34 @@ namespace LangLang.Model
         {
             return _courses[id];
         }
-        
+
+        public static void LoadCourseFromJson(string jsonFilePath)
+        {
+            try
+            {
+                using (StreamReader r = new StreamReader(jsonFilePath))
+                {
+                    string json = r.ReadToEnd();
+                    Dictionary<int, Course> exams = JsonConvert.DeserializeObject<Dictionary<int, Course>>(json);
+
+                    foreach (var kvp in exams)
+                    {
+                        _courses.Add(kvp.Key, kvp.Value);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error loading courses from JSON: " + ex.Message);
+            }
+        }
+
+        public static void WriteCourseToJson(string jsonFilePath)
+        {
+            string jsonExamString = JsonConvert.SerializeObject(_courses);
+            File.WriteAllText(jsonFilePath, jsonExamString);
+        }
+
         public static List<Course> GetAvailableCourses()
         {
             //TODO: Validate to not show the courses that the student has already applied to and

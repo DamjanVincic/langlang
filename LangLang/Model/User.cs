@@ -263,6 +263,11 @@ namespace LangLang.Model
                 Console.WriteLine("Error loading users from JSON: " + ex.Message);
             }
         }
+        public static void WriteUserToJson(string jsonFilePath)
+        {
+            string jsonExamString = JsonConvert.SerializeObject(_users);
+            File.WriteAllText(jsonFilePath, jsonExamString);
+        }
 
 
 

@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Diagnostics.Eventing.Reader;
 
 namespace LangLang.Model
@@ -8,7 +10,7 @@ namespace LangLang.Model
     {
         private string _name;
         private static List<Language> _languages = new List<Language>();
-        private static List<string> _languageNames = new List<string>();
+        private static List<string> _languageNames = new List<string>() { "Serbian","English","German"};
 
         public Language(string name, LanguageLevel level)
         {
@@ -96,6 +98,29 @@ namespace LangLang.Model
         public override int GetHashCode()
         {
             return HashCode.Combine(_name);
+        }
+
+        public static void LoadLanguagesFromJson(string filePath)
+        {
+            try
+            {
+                string json = File.ReadAllText(filePath);
+                _languages = JsonConvert.DeserializeObject<List<Language>>(json);
+                foreach(Language language in _languages)
+                {
+                    _languageNames.Add(language.Name);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error reading languages: " + ex.Message);
+            }
+        }
+        public static void WriteLanguageToJson(string jsonFilePath)
+        {
+            string jsonExamString = JsonConvert.SerializeObject(_languages);
+            File.WriteAllText(jsonFilePath, jsonExamString);
         }
     }
 }
