@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Windows.Documents;
+using System.Windows;
 using System.Windows.Media.Animation;
+using System.Windows.Input;
 
 namespace LangLang.Model
 {
@@ -139,6 +142,54 @@ namespace LangLang.Model
             else
             {
                 return true;
+            }
+        }
+
+        internal static void ModifySchedule(ScheduleItem item, DateOnly startDate, int duration, List<Weekday> toDelete, List<Weekday> toAdd)
+        {
+            if (toDelete != null)
+            {
+                DeleteItem(item, startDate, duration, toDelete);
+            }
+            if (toAdd != null)
+            {
+                AddItem(item, startDate, duration, toAdd);
+            }
+        }
+
+        private static void AddItem(ScheduleItem item, DateOnly startDate, int duration, List<Weekday> toAdd)
+        {
+            List<int> dayDifferences = CalculateDateDifferences(toAdd);
+            while (duration > 0)
+            {
+                for (int i = 0; i < toAdd.Count; ++i)
+                {
+                    CourseDates.Add(startDate);
+                    startDate.AddDays(dayDifferences[i]);
+                }
+                duration--;
+            }
+            foreach (DateOnly courseDate in Schedule.CourseDates)
+            {
+                Schedule.Table[courseDate].Add(item);
+            }
+        }
+
+        private static void DeleteItem(ScheduleItem item, DateOnly startDate, int duration, List<Weekday> toDelete)
+        {
+            List<int> dayDifferences = CalculateDateDifferences(toDelete);
+            while (duration > 0)
+            {
+                for (int i = 0; i < toDelete.Count; ++i)
+                {
+                    CourseDates.Add(startDate);
+                    startDate.AddDays(dayDifferences[i]);
+                }
+                duration--;
+            }
+            foreach (DateOnly courseDate in Schedule.CourseDates)
+            {
+                Schedule.Table[courseDate].Remove(item);
             }
         }
     }
