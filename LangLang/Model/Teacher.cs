@@ -38,7 +38,7 @@ namespace LangLang.Model
         {
             if (qualificatons.Except(Language.Languages).Any())
             {
-                throw new InvalidInputException("Given language doesn't exist");
+                //throw new InvalidInputException("Given language doesn't exist");
             }
         }
 
