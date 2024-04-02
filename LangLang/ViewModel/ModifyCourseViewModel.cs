@@ -8,21 +8,26 @@ using System.Linq;
 using System.Windows.Input;
 using System.Windows;
 using System.Windows.Documents;
+using System.Windows.Controls;
 
 namespace LangLang.ViewModel
 {
-    class ModifyCourseViewModel
+    class ModifyCourseViewModel:ViewModelBase
     {
         private Course _course;
         public ModifyCourseViewModel(Course course)
         {
+            Language.Languages.Add(new("eng", LanguageLevel.A1));
+            Language.Languages.Add(new("eng", LanguageLevel.A2));
+            Language.Languages.Add(new("eng", LanguageLevel.B1));
+            Language.Languages.Add(new("eng", LanguageLevel.B2));
             this._course = course;
             if (course != null)
             {
                 LanguageName = course.Language.Name;
                 LanguageLevel = course.Language.Level;
                 MaxStudents = course.MaxStudents;
-                StartDate = course.StartDate;
+                StartDate = new DateTime(course.StartDate.Year, course.StartDate.Month, course.StartDate.Day);
                 Duration = course.Duration;
                 Held = course.Held;
                 CreatorId = course.CreatorId;
@@ -35,11 +40,60 @@ namespace LangLang.ViewModel
             EnterCourseCommand = new RelayCommand(AddCourse);
         }
 
+        private bool _isMondayChecked;
+        public bool IsMondayChecked
+        {
+            get => _isMondayChecked; 
+            set { Set(ref _isMondayChecked, value); }
+        }
+
+        private bool _isTuesdayChecked;
+        public bool IsTuesdayChecked
+        {
+            get => _isTuesdayChecked; 
+            set { Set(ref _isTuesdayChecked, value); }
+        }
+
+        private bool _isWednesdayChecked;
+        public bool IsWednesdayChecked
+        {
+            get => _isWednesdayChecked;
+            set { Set(ref _isWednesdayChecked, value); }
+        }
+
+        private bool _isThursdayChecked;
+        public bool IsThursdayChecked
+        {
+            get => _isThursdayChecked;
+            set { Set(ref _isThursdayChecked, value); }
+        }
+
+        private bool _isFridayChecked;
+        public bool IsFridayChecked
+        {
+            get => _isFridayChecked;
+            set { Set(ref _isFridayChecked, value); }
+        }
+
+        private bool _isSaturdayChecked;
+        public bool IsSaturdayChecked
+        {
+            get => _isSaturdayChecked;
+            set { Set(ref _isSaturdayChecked, value); }
+        }
+
+        private bool _isSundayChecked;
+        public bool IsSundayChecked
+        {
+            get => _isSundayChecked;
+            set { Set(ref _isSundayChecked, value); }
+        }
+
 
         public string LanguageName { get; set; }
         public LanguageLevel LanguageLevel { get; set; }
         public int MaxStudents { get; set; }
-        public DateOnly StartDate { get; set; }
+        public DateTime StartDate { get; set; }
         public string Format { get; set; }
         public bool AreApplicationsClosed { get; set; }
         public int Duration { get; set; }
@@ -49,11 +103,13 @@ namespace LangLang.ViewModel
         public int TeacherId { get; set; }
         public int Hours { get; set; }
         public int Minutes { get; set; }
+        public List<string> SelectedWeekdays = new();
 
 
         public ICommand EnterCourseCommand { get; }
 
         public IEnumerable<LanguageLevel> LanguageLevelValues => Enum.GetValues(typeof(LanguageLevel)).Cast<LanguageLevel>();
+        public IEnumerable<string> LanguageNameValues => Language.LanguageNames;
         public IEnumerable<string> FormatValues => new List<string> { "online", "in-person"};
         public IEnumerable<Weekday> WeekdayValues => Enum.GetValues(typeof(Weekday)).Cast<Weekday>();
         readonly List<string> hours = CreateHourValues();
@@ -85,20 +141,36 @@ namespace LangLang.ViewModel
         {
             try
             {
+                List<Weekday> selectedWeekdays = new List<Weekday>();
+                if (IsMondayChecked)
+                    selectedWeekdays.Add(Weekday.Monday);
+                if (IsTuesdayChecked)
+                    selectedWeekdays.Add(Weekday.Tuesday);
+                if (IsWednesdayChecked)
+                    selectedWeekdays.Add(Weekday.Wednesday);
+                if (IsThursdayChecked)
+                    selectedWeekdays.Add(Weekday.Thursday);
+                if (IsFridayChecked)
+                    selectedWeekdays.Add(Weekday.Friday);
+                if (IsSaturdayChecked)
+                    selectedWeekdays.Add(Weekday.Saturday);
+                if (IsSundayChecked)
+                    selectedWeekdays.Add(Weekday.Sunday);
+                Held = selectedWeekdays;
                 Language? language = IsValidLanguage(LanguageName, LanguageLevel);
                 ScheduledTime = new TimeOnly(Hours * 60 + Minutes);
                 bool isOnline = Format.Equals("online") ? true : false;
-                if (CanAddScheduleItem(StartDate, Duration, Held, TeacherId, ScheduledTime, true, isOnline) && !language.Equals(null))
+                DateOnly startDate = new DateOnly(StartDate.Year, StartDate.Month, StartDate.Day);
+                if (CanAddScheduleItem(startDate, Duration, Held, TeacherId, ScheduledTime, true, isOnline) && !language.Equals(null))
                 {
-                    MessageBox.Show("Exam added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     if (_course != null)
                     {
                         _course.Language.Name = LanguageName;
                         _course.Language.Level = LanguageLevel;
-                        if (StartDate != _course.StartDate)
+                        if (startDate != _course.StartDate)
                         {
                             Schedule.ModifySchedule(_course, _course.StartDate, _course.Duration, _course.Held, null);
-                            Schedule.ModifySchedule(_course, StartDate, Duration, null, Held);
+                            Schedule.ModifySchedule(_course, startDate, Duration, null, Held);
                         }
                         else if (!_course.Held.SequenceEqual(Held))
                         {
@@ -108,7 +180,7 @@ namespace LangLang.ViewModel
                             Schedule.ModifySchedule(_course, _course.StartDate, Duration, null, (List<Weekday>)addedDays);
                         }
 
-                        _course.StartDate = StartDate;
+                        _course.StartDate = startDate;
                         _course.MaxStudents = MaxStudents;
                         _course.ScheduledTime = ScheduledTime;
                         _course.IsOnline = isOnline;
@@ -120,12 +192,14 @@ namespace LangLang.ViewModel
                     }
                     else
                     {
-                        Course course = new(language, Duration, Held, isOnline, MaxStudents, CreatorId, ScheduledTime, StartDate, AreApplicationsClosed, TeacherId, new List<int>());
+                        Course course = new(language, Duration, Held, isOnline, MaxStudents, CreatorId, ScheduledTime, startDate, AreApplicationsClosed, TeacherId, new List<int>());
                         foreach (DateOnly courseDate in Schedule.CourseDates)
                         {
                             Schedule.Table[courseDate].Add(course);
                         }
                     }
+                    MessageBox.Show("Exam added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
                 }
                 else
                 {
@@ -161,6 +235,7 @@ namespace LangLang.ViewModel
             }
             return null;
         }
+
     }
     
 }
