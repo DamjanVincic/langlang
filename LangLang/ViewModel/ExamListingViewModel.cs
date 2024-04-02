@@ -121,7 +121,6 @@ namespace LangLang.ViewModel
                         Exam.GetById(SelectedItem.Id).Delete();
                         Teacher teacherOnExam = (Teacher)Teacher.GetUserById(exam.TeacherId);
                         teacherOnExam.ExamIds.Remove(exam.Id);
-                        Exam.WriteExamToJson();
                         MessageBox.Show("Exam deleted successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     else
