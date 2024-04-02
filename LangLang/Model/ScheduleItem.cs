@@ -12,11 +12,10 @@ namespace LangLang.Model
         {
             Id = _idCounter;
             _idCounter++;
-           TeacherId = teacherId;
-           ScheduledTime = scheduledTime;
+            TeacherId = teacherId;
+            ScheduledTime = scheduledTime;
         }
         public int Id { get; set; }
-
 
         public int TeacherId
         { 

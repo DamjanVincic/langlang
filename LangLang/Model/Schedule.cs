@@ -1,5 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Media.Animation;
 
@@ -7,6 +12,7 @@ namespace LangLang.Model
 {
     public class Schedule
     {
+
         public static Dictionary<DateOnly, List<ScheduleItem>> Table { get; set; }
         public static List<DateOnly> CourseDates {get; set; }
         
@@ -141,5 +147,76 @@ namespace LangLang.Model
                 return true;
             }
         }
+        public static void LoadScheduleFromJson(string jsonFilePath)
+        {
+            try
+            {
+                string json = File.ReadAllText(jsonFilePath);
+                dynamic jsonObject = JsonConvert.DeserializeObject(json);
+
+                dynamic tableToken = jsonObject["Table"];
+                Table = new Dictionary<DateOnly, List<ScheduleItem>>();
+
+                foreach (var tableEntry in tableToken)
+                {
+                    DateOnly date = DateOnly.ParseExact(tableEntry.Name, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                    List<ScheduleItem> scheduleItems = new List<ScheduleItem>();
+
+                    foreach (var item in tableEntry.Value)
+                    {
+                        var itemType = item["Held"] != null ? typeof(Course) : typeof(Exam);
+
+                        var scheduleItem = (ScheduleItem)item.ToObject(itemType);
+                        scheduleItems.Add(scheduleItem);
+                    }
+
+                    Table.Add(date, scheduleItems);
+                }
+
+                dynamic courseDatesToken = jsonObject["CourseDates"];
+                CourseDates = new List<DateOnly>();
+
+                foreach (var dateString in courseDatesToken)
+                {
+                    DateOnly date = DateOnly.ParseExact((string)dateString, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                    CourseDates.Add(date);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error loading schedule from JSON: " + ex.Message);
+            }
+        }
+        public static void WriteScheduleToJson(string jsonFilePath)
+        {
+            try
+            {
+                var jsonObject = new JObject();
+
+                var tableJson = new JObject();
+                foreach (var entry in Table)
+                {
+                    var dateKey = entry.Key.ToString("yyyy-MM-dd");
+                    var scheduleItemsJson = new JArray(entry.Value.Select(item => JObject.FromObject(item)));
+                    tableJson[dateKey] = scheduleItemsJson;
+                }
+                jsonObject["Table"] = tableJson;
+
+                var courseDatesJson = new JArray(CourseDates.Select(date => date.ToString("yyyy-MM-dd")));
+                jsonObject["CourseDates"] = courseDatesJson;
+
+                File.WriteAllText(jsonFilePath, jsonObject.ToString());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error writing schedule to JSON: " + ex.Message);
+            }
+        }
+
+
     }
+
+
+
 }
+
