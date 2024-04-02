@@ -4,7 +4,9 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Data;
+using System.Windows.Input;
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 using LangLang.Model;
 
 namespace LangLang.ViewModel;
@@ -13,11 +15,15 @@ public class StudentCourseViewModel : ViewModelBase
 {
     public ObservableCollection<CourseViewModel> AvailableCourses { get; }
     
+    public ICommand ResetFiltersCommand { get; }
+    
     public StudentCourseViewModel()
     {
         AvailableCourses = new ObservableCollection<CourseViewModel>(Course.GetAvailableCourses().Select(course => new CourseViewModel(course)));
         CoursesCollectionView = CollectionViewSource.GetDefaultView(AvailableCourses);
         CoursesCollectionView.Filter = filterCourses;
+        
+        ResetFiltersCommand = new RelayCommand(ResetFilters);
     }
     
     private string _selectedLanguageName;
@@ -30,9 +36,15 @@ public class StudentCourseViewModel : ViewModelBase
     public IEnumerable<String> LanguageNameValues => Language.LanguageNames;
     public IEnumerable<String> LanguageLevelValues => Enum.GetNames(typeof(LanguageLevel));
     public IEnumerable<String> FormatValues => new List<String>{"online", "in-person"};
-    private void AddCourse(){}
-    private void EditCourse() { }
-    private void DeleteCourse() { }
+
+    private void ResetFilters()
+    {
+        SelectedLanguageLevel = null;
+        SelectedLanguageName = null;
+        SelectedDate = DateTime.MinValue;
+        SelectedDuration = null;
+        SelectedFormat = null;
+    }
 
 
     public string SelectedLanguageName

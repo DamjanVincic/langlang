@@ -4,7 +4,9 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Data;
+using System.Windows.Input;
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 using LangLang.Model;
 
 namespace LangLang.ViewModel;
@@ -19,6 +21,23 @@ public class StudentExamViewModel : ViewModelBase
     public IEnumerable<LanguageLevel> LanguageLevelValues => Enum.GetValues(typeof(LanguageLevel)).Cast<LanguageLevel>();
     
     public IEnumerable<string> LanguageNames => Language.LanguageNames;
+    
+    public ICommand ResetFiltersCommand { get; }
+    
+    public StudentExamViewModel()
+    {
+        AvailableExams = new ObservableCollection<ExamViewModel>(Exam.GetAvailableExams().Select(exam => new ExamViewModel(exam)));
+        ExamCollectionView = CollectionViewSource.GetDefaultView(AvailableExams);
+        ExamCollectionView.Filter = FilterExams;
+        ResetFiltersCommand = new RelayCommand(ResetFilters);
+    }
+
+    private void ResetFilters()
+    {
+        LanguageNameSelected = null;
+        LanguageLevelSelected = null;
+        DateSelected = DateTime.MinValue;
+    }
 
     private string _languageNameSelected;
     public string LanguageNameSelected
@@ -49,13 +68,6 @@ public class StudentExamViewModel : ViewModelBase
             _dateSelected = value;
             ExamCollectionView.Refresh();
         }
-    }
-    
-    public StudentExamViewModel()
-    {
-        AvailableExams = new ObservableCollection<ExamViewModel>(Exam.GetAvailableExams().Select(exam => new ExamViewModel(exam)));
-        ExamCollectionView = CollectionViewSource.GetDefaultView(AvailableExams);
-        ExamCollectionView.Filter = FilterExams;
     }
     
     private bool FilterExams(object obj)

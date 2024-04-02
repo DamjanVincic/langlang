@@ -109,7 +109,7 @@
                   SelectedItem="{Binding SelectedFormat, Mode=TwoWay}"
                    Grid.Column="1" Grid.Row="10" />
         <!-- <Button Command="{Binding AddCourse}"  Content="Apply" Grid.Column="1" Grid.Row="11" /> -->
-        <Button Command="{Binding EditCourse}" Content="Apply" Grid.Column="1" Grid.Row="12" />
-        <!-- <Button Command="{Binding DeleteCourse}" Content="Delete" Grid.Column="1" Grid.Row="13" /> -->
+        <Button Command="{Binding ResetFiltersCommand}" Content="Clear filters" Grid.Column="1" Grid.Row="12" />
+        <Button Command="{Binding ApplyForCourseCommand}" Content="Apply for course" Grid.Column="1" Grid.Row="13" />
     </Grid>
 </Window>

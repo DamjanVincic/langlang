@@ -56,7 +56,7 @@
         <DatePicker SelectedDate="{Binding DateSelected}" Grid.Column="1" Grid.Row="2"/>
         <TextBlock Text="Language:" Grid.Column="1" Grid.Row="3"/>
 
-        <ComboBox ItemsSource="{x:Static model:Language.LanguageNames}"
+        <ComboBox ItemsSource="{Binding LanguageNames}"
           SelectedItem="{Binding LanguageNameSelected}" 
           Grid.Column="1" Grid.Row="4" Margin="10"/>
 
@@ -66,8 +66,8 @@
         <ComboBox ItemsSource="{Binding LanguageLevelValues}"
                   SelectedItem="{Binding LanguageLevelSelected, Mode=TwoWay}"
                   Grid.Column="1" Grid.Row="6" Margin="10"/>
-        <Button Command="{Binding AddCommand}" Content="Apply" Grid.Column="1" Grid.Row="7"/>
-        <!-- <Button Command="{Binding EditCommand}" Content="Edit" Grid.Column="1" Grid.Row="8"/> -->
-        <!-- <Button Command="{Binding DeleteCommand}" Content="Delete" Grid.Column="1" Grid.Row="9"/> -->
+        <!-- <Button Command="{Binding AddCommand}" Content="Apply" Grid.Column="1" Grid.Row="7"/> -->
+        <Button Command="{Binding ResetFiltersCommand}" Content="Clear Filters" Grid.Column="1" Grid.Row="8"/>
+        <Button Command="{Binding ApplyForExamCommand}" Content="Apply For Exam" Grid.Column="1" Grid.Row="9"/>
     </Grid>
 </Window>
