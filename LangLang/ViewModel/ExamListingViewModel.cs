@@ -157,15 +157,29 @@ namespace LangLang.ViewModel
         {
             if (SelectedItem != null)
             {
-                var newWindow = new AddExamView(Exam.GetById(SelectedItem.Id));
+                ExamViewModel selectedExam = (ExamViewModel)SelectedItem;
+                Exam exam = Exam.GetById(selectedExam.Id);
 
-                newWindow.Show();
+                DateTime todayDateTime = DateTime.Today;
+                DateTime examDateTime = new DateTime(exam.ExamDate.Year, exam.ExamDate.Month, exam.ExamDate.Day);
 
+                TimeSpan difference = examDateTime - todayDateTime;
+
+                if (difference.TotalDays >= 14)
+                {
+                    var newWindow = new AddExamView(exam);
+                    newWindow.Show();
+                }
+                else
+                {
+                    MessageBox.Show("You cannot edit the exam as it is less than two weeks away.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
             else
             {
                 MessageBox.Show("Please select an exam to edit.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+
             Application.Current.MainWindow.Closed += (sender, e) =>
             {
                 foreach (Window window in Application.Current.Windows)
@@ -177,6 +191,7 @@ namespace LangLang.ViewModel
                 }
             };
         }
+
 
     }
 }
