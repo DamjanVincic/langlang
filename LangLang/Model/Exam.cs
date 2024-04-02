@@ -12,7 +12,11 @@ namespace LangLang.Model
     public class Exam : ScheduleItem
     {
         public const int EXAM_DURATION = 360;
-        private const string EXAM_FILE_PATH = "C:\\faks 2\\usi\\projekat\\cp-usi-2024-3-b\\LangLang\\SourceDataFiles\\exams.json";
+
+        private static readonly string baseDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
+        private static readonly string EXAM_FILE_NAME = "exams.json";
+        private static readonly string EXAM_FILE_PATH = Path.Combine(baseDirectory, "SourceDataFiles", EXAM_FILE_NAME);
+
         private static Dictionary<int, Exam> _exams = new Dictionary<int, Exam>();
         private Language _language;
         private int _maxStudents;
@@ -125,7 +129,8 @@ namespace LangLang.Model
         public static void WriteExamToJson()
         {
             string jsonExamString = JsonConvert.SerializeObject(_exams);
-            File.WriteAllText(EXAM_FILE_PATH, jsonExamString);
+            File.WriteAllText("aegfhj.json", "sdfgjm");
+            
         }
 
         public static List<Exam> GetAvailableExams()

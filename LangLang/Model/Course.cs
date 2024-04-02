@@ -9,8 +9,10 @@ namespace LangLang.Model
     public class Course : ScheduleItem
     { 
         public const int CLASS_DURATION = 90;
-        private const string COURSE_FILE_PATH = @"C:\faks 2\usi\projekat\cp-usi-2024-3-b\LangLang\SourceDataFiles\courses.json";
         private static Dictionary<int, Course> _courses = new Dictionary<int, Course>();
+        private static readonly string baseDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
+        private static readonly string COURSE_FILE_NAME = "courses.json";
+        private static readonly string COURSE_FILE_PATH = Path.Combine(baseDirectory, "SourceDataFiles", COURSE_FILE_NAME);
         private Language _language;
         private int _duration;
         private List<Weekday> _held;

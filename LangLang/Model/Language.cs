@@ -9,7 +9,11 @@ namespace LangLang.Model
     public class Language
     {
         private string _name;
-        private const string LANGUAGE_FILE_PATH = @"C:\faks 2\usi\projekat\cp-usi-2024-3-b\LangLang\SourceDataFiles\language.json";
+        
+        private static readonly string baseDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
+        private static readonly string LANGUAGE_FILE_NAME = "language.json";
+        private static readonly string LANGUAGE_FILE_PATH = Path.Combine(baseDirectory, "SourceDataFiles", LANGUAGE_FILE_NAME);
+
         private static List<Language> _languages = new List<Language>();
         private static List<string> _languageNames = new List<string>() { "Serbian","English","German"};
 

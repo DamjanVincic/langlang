@@ -15,7 +15,11 @@ namespace LangLang.Model
     public abstract class User
     {
         private static int _idCounter = 1;
-        private const string USER_FILE_PATH = @"C:\faks 2\usi\projekat\cp-usi-2024-3-b\LangLang\SourceDataFiles\users.json";
+
+        private static readonly string baseDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
+        private static readonly string USER_FILE_NAME = "users.json";
+        private static readonly string USER_FILE_PATH = Path.Combine(baseDirectory, "SourceDataFiles", USER_FILE_NAME);
+
         private static Dictionary<int, User> _users = new Dictionary<int, User>();
         public static Dictionary<int, User> Users => _users;
 

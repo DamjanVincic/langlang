@@ -18,8 +18,9 @@ namespace LangLang.Model
 
         public static Dictionary<DateOnly, List<ScheduleItem>> Table { get; set; }
         public static List<DateOnly> CourseDates = new List<DateOnly>();
-        private const string SCHEDULE_FILE_PATH = @"C:\faks 2\usi\projekat\cp-usi-2024-3-b\LangLang\SourceDataFiles\schedule.json";
-
+        private static readonly string baseDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
+        private static readonly string SCHEDULE_FILE_NAME = "schedule.json";
+        private static readonly string SCHEDULE_FILE_PATH = Path.Combine(baseDirectory, "SourceDataFiles", SCHEDULE_FILE_NAME);
 
         public static bool CanAddScheduleItem(DateOnly date, int duration, List<Weekday> held, int teacherId, TimeOnly startTime, bool isCourse, bool isOnline)
         {
@@ -153,11 +154,11 @@ namespace LangLang.Model
             }
         }
 
-        public static void LoadScheduleFromJson(string jsonFilePath)
+        public static void LoadScheduleFromJson()
         {
             try
             {
-                string json = File.ReadAllText(jsonFilePath);
+                string json = File.ReadAllText(SCHEDULE_FILE_PATH);
                 dynamic jsonObject = JsonConvert.DeserializeObject(json);
 
                 dynamic tableToken = jsonObject["Table"];
