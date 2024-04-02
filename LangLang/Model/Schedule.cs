@@ -19,11 +19,7 @@ namespace LangLang.Model
             // Temp list of dates on which course can be held
             ScheduleItemDates = new();
             List<int> dateDifferences = CalculateDateDifferences(held);
-            if (!isCourse)
-            {
-                duration = 1;
-                held = new List<Weekday> {(Weekday)Enum.Parse(typeof(Weekday), date.DayOfWeek.ToString())};
-            }
+            
             while (duration > 0)
             {
                 for (int i = 0; i < held.Count; ++i) 
@@ -90,7 +86,7 @@ namespace LangLang.Model
             {
                 dayDifferences.Add((int)day - (int)held[0]);
             }
-            dayDifferences.Add(7 - (int)held[^1]);
+            dayDifferences.Add(7 - (int)held[^1] + (int)held[0]);
             return dayDifferences;
         }
 
@@ -225,6 +221,10 @@ namespace LangLang.Model
             }
             foreach (DateOnly courseDate in Schedule.ScheduleItemDates)
             {
+                if (!Schedule.Table.ContainsKey(courseDate))
+                {
+                    MessageBox.Show("The schedule item has already been deleted", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
                 Schedule.Table[courseDate].Remove(item);
             }
         }

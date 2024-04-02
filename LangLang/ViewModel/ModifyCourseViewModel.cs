@@ -7,16 +7,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
 using System.Windows;
-using System.Windows.Documents;
-using System.Windows.Controls;
+using System.ComponentModel;
+using System.Collections.ObjectModel;
+using System.Windows.Data;
 
 namespace LangLang.ViewModel
 {
     class ModifyCourseViewModel:ViewModelBase
     {
         private Course _course;
-        public ModifyCourseViewModel(Course course)
+        private ObservableCollection<CourseViewModel> _courses;
+        private ICollectionView _courseCollectionView;
+        private int _teacherId;
+
+        public ModifyCourseViewModel(ObservableCollection<CourseViewModel> courses, ICollectionView courseCollectionView, int teacherID, Course course)
         {
+            
+            this._courses = courses;
+            this._courseCollectionView = courseCollectionView;
             Language.Languages.Add(new("eng", LanguageLevel.A1));
             Language.Languages.Add(new("eng", LanguageLevel.A2));
             Language.Languages.Add(new("eng", LanguageLevel.B1));
@@ -35,9 +43,34 @@ namespace LangLang.ViewModel
                 Format = course.IsOnline?"online":"in-person";
                 CreatorId = course.CreatorId;
                 ScheduledTime = course.ScheduledTime;
+                Minutes = course.ScheduledTime.Minute;
+                Hours = course.ScheduledTime.Hour;
+                foreach(Weekday day in Held)
+                {
+                    switch ((int)day)
+                    {
+                        case 0:
+                            IsMondayChecked = true; break;
+                        case 1:
+                            IsTuesdayChecked = true; break;
+                        case 2:
+                            IsWednesdayChecked = true; break;
+                        case 3:
+                            IsThursdayChecked = true; break;
+                        case 4:
+                            IsFridayChecked = true; break;
+                        case 5:
+                            IsSaturdayChecked = true; break;
+                        case 6:
+                            IsSundayChecked = true; break;
+                        default:
+                            continue;
+                    }
+                }
             }
 
             EnterCourseCommand = new RelayCommand(AddCourse);
+            _teacherId = teacherID;
         }
 
         private bool _isMondayChecked;
@@ -89,7 +122,7 @@ namespace LangLang.ViewModel
             set { Set(ref _isSundayChecked, value); }
         }
 
-
+        public bool MaxStudentsEnabled => Format!=null && Format.Equals("in-person");
         public string LanguageName { get; set; }
         public LanguageLevel LanguageLevel { get; set; }
         public int MaxStudents { get; set; }
@@ -101,8 +134,17 @@ namespace LangLang.ViewModel
         public List<Weekday> Held { get; set; }
         public int CreatorId { get; set; }
         public int TeacherId { get; set; }
-        public int Hours { get; set; }
-        public int Minutes { get; set; }
+        public int Hours
+        {
+            get;set;
+        }
+
+        public int Minutes
+        {
+            get;
+            set; 
+        }
+
         public List<string> SelectedWeekdays = new();
 
 
@@ -139,6 +181,11 @@ namespace LangLang.ViewModel
 
         private void AddCourse()
         {
+            if (string.IsNullOrEmpty(LanguageName) || LanguageLevel == null || MaxStudents <= 0 || Duration <= 0 || StartDate == default || Hours < 0 || Minutes < 0)
+            {
+                MessageBox.Show("Please fill in all fields.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return; 
+            }
             try
             {
                 List<Weekday> selectedWeekdays = new List<Weekday>();
@@ -161,7 +208,10 @@ namespace LangLang.ViewModel
                 ScheduledTime = new TimeOnly(Hours * 60 + Minutes);
                 bool isOnline = Format.Equals("online") ? true : false;
                 DateOnly startDate = new DateOnly(StartDate.Year, StartDate.Month, StartDate.Day);
-                if (CanAddScheduleItem(startDate, Duration, Held, TeacherId, ScheduledTime, true, isOnline) && !language.Equals(null))
+               
+                
+                //Add MESSAGE BOX
+                if (Schedule.CanAddScheduleItem(startDate, Duration, Held, TeacherId, ScheduledTime, true, isOnline) && !language.Equals(null))
                 {
                     if (_course != null)
                     {
@@ -189,23 +239,24 @@ namespace LangLang.ViewModel
                         _course.Duration = Duration;
                         _course.CreatorId = CreatorId;
                         _course.AreApplicationsClosed = AreApplicationsClosed;
+                        //this._courseCollectionView.Refresh();
+
                     }
                     else
                     {
-                        Course course = new(language, Duration, Held, isOnline, MaxStudents, CreatorId, ScheduledTime, startDate, AreApplicationsClosed, TeacherId, new List<int>());
-                        foreach (DateOnly courseDate in Schedule.CourseDates)
-                        {
-                            Schedule.Table[courseDate].Add(course);
-                        }
+                        Course course = new(language, Duration, Held, isOnline, MaxStudents, _teacherId, ScheduledTime, startDate, AreApplicationsClosed, TeacherId, new List<int>());
+                        _courses.Add(new CourseViewModel(course));
+                        //this._courseCollectionView.Refresh();
+
+
                     }
                     MessageBox.Show("Exam added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-
                 }
                 else
                 {
                     MessageBox.Show("Unable to schedule the course. The selected date conflicts with an existing course schedule.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-            }
+        }
             catch (InvalidInputException ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -220,10 +271,6 @@ namespace LangLang.ViewModel
             }
         }
 
-        public static bool CanAddScheduleItem(DateOnly date, int duration, List<Weekday> held, int teacherId, TimeOnly startTime, bool isCourse, bool isOnline)
-        {
-            return true;
-        }
         public Language? IsValidLanguage(string languageName, LanguageLevel level)
         {
             foreach (Language language in Language.Languages)

@@ -16,7 +16,7 @@ namespace LangLang.ViewModel
     public class CourseViewModel : ViewModelBase
     {
         private readonly Course course;
-
+        public int Id => course.Id;
         public string LanguageName => course.Language.Name;
         public LanguageLevel LanguageLevel => course.Language.Level;
         public string Duration => course.Duration + " weeks";
