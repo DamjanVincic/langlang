@@ -159,5 +159,10 @@ namespace LangLang.Model
                 Console.WriteLine("Error loading courses from JSON: " + ex.Message);
             }
         }
+        public static void WriteCourseToJson(string jsonFilePath)
+        {
+            string jsonExamString = JsonConvert.SerializeObject(_courses);
+            File.WriteAllText(jsonFilePath, jsonExamString);
+        }
     }
 }

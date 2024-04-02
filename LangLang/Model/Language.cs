@@ -96,5 +96,10 @@ namespace LangLang.Model
                 Console.WriteLine("Error reading languages: " + ex.Message);
             }
         }
+        public static void WriteLanguageToJson(string jsonFilePath)
+        {
+            string jsonExamString = JsonConvert.SerializeObject(_languages);
+            File.WriteAllText(jsonFilePath, jsonExamString);
+        }
     }
 }
