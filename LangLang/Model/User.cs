@@ -15,17 +15,20 @@ namespace LangLang.Model
     public abstract class User
     {
         private static int _idCounter = 1;
-        private static Dictionary<int, User> _users = new Dictionary<int, User>();
+        private static Dictionary<int, User> _users = new Dictionary<int, User>()
+        {
+            {0,new Director("Nadja", "Zoric", "nadjazoric@gmail.com",
+                "PatrikZvezdasti011", Gender.Female, "123456789")}
+        };
         public static Dictionary<int, User> Users => _users;
-
-
+        
         private string _firstName;
         private string _lastName;
         private string _email;
         private string _password;
         private string _phone;
 
-        public User(string firstName, string lastName, string email, string password, Gender gender, string phone)
+        public User(string firstName, string lastName, string email, string password, Gender gender, string phone,int id=-1)
         {
             FirstName = firstName;
             LastName = lastName;
@@ -33,7 +36,10 @@ namespace LangLang.Model
             Password = password;
             Gender = gender;
             Phone = phone;
-            
+
+            if (id != -1)
+                return;
+
             Id = _idCounter++;
             _users.Add(Id, this);
         }
