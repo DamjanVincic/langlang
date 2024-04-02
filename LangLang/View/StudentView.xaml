@@ -18,6 +18,7 @@
             <Button Content="Exams" Command="{Binding ViewExamsCommand}" Margin="0 0 0 10"/>
             <Button Content="Edit Account" Command="{Binding EditAccountCommand}" Margin="0 0 0 10"/>
             <Button Content="Delete Account" Command="{Binding DeleteAccountCommand}" Margin="0 0 0 10"/>
+            <Button Content="Log Out" Command="{Binding LogOutCommand}" Margin="0 0 0 10"/>
         </StackPanel>
     </Grid>
 </Window>

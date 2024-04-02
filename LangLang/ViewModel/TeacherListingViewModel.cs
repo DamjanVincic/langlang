@@ -20,6 +20,8 @@ namespace LangLang.ViewModel
 
     public class TeacherListingViewModel : ViewModelBase
     {
+        private Window _teacherListingWindow;
+        
         private ObservableCollection<TeacherViewModel> teachers;
         public ICollectionView TeachersCollectionView { get; }
         public IEnumerable<String> LanguageNameValues => Language.LanguageNames;
@@ -30,6 +32,7 @@ namespace LangLang.ViewModel
         public ICommand EditCommand { get; }
         public ICommand AddCommand { get; }
         public ICommand DeleteCommand { get; }
+        public ICommand LogOutCommand { get; }
         public TeacherViewModel SelectedItem { get; set; }
         public string SelectedLanguageName
         {
@@ -68,13 +71,16 @@ namespace LangLang.ViewModel
                 TeachersCollectionView.Refresh();
             }
         }
-        public TeacherListingViewModel()
+        public TeacherListingViewModel(Window teacherListingWindow)
         {
+            _teacherListingWindow = teacherListingWindow;
+            
             teachers=new ObservableCollection<TeacherViewModel>();
             TeachersCollectionView=CollectionViewSource.GetDefaultView(teachers);
             EditCommand = new RelayCommand(OpenEditWindow);
             AddCommand = new RelayCommand(OpenAddWindow);
             DeleteCommand = new RelayCommand(DeleteTeacher);
+            LogOutCommand = new RelayCommand(LogOut);
 
             // Language enga1 = new Language("English", LanguageLevel.A1);
             // Language enga2 = new Language("English", LanguageLevel.A2);
@@ -210,6 +216,12 @@ namespace LangLang.ViewModel
             teachers.Remove(SelectedItem);
             //delete teacher object TBD
             TeachersCollectionView.Refresh();
+        }
+
+        private void LogOut()
+        {
+            new MainWindow().Show();
+            _teacherListingWindow.Close();
         }
 
 

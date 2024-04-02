@@ -18,6 +18,7 @@
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="3*"/>
@@ -96,6 +97,6 @@
         <Button Content="Add" Grid.Column="1" Grid.Row="7" Command="{Binding AddCommand}"/>
         <Button Content="Edit" Grid.Column="1" Grid.Row="8" Command="{Binding EditCommand}"/>
         <Button Content="Delete" Grid.Column="1" Grid.Row="9" Command="{Binding DeleteCommand}"/>
-
+        <Button Content="Log Out" Grid.Column="1" Grid.Row="10" Command="{Binding LogOutCommand}"/>
     </Grid>
 </Window>

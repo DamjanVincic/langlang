@@ -24,7 +24,7 @@ namespace LangLang.View
     {
         public TeachersView()
         {
-            DataContext = new TeacherListingViewModel();
+            DataContext = new TeacherListingViewModel(this);
 
             InitializeComponent();
         }

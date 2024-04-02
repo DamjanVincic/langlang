@@ -9,10 +9,14 @@ namespace LangLang.ViewModel
 {
     class TeacherMenuViewModel : ViewModelBase
     {
-        public TeacherMenuViewModel(Teacher teacher)
+        private Window _teacherMenuWindow;
+        
+        public TeacherMenuViewModel(Teacher teacher, Window teacherMenuWindow)
         {
+            _teacherMenuWindow = teacherMenuWindow;
             CourseCommand = new RelayCommand(Course);
             ExamCommand = new RelayCommand(Exam);
+            LogOutCommand = new RelayCommand(LogOut);
         }
 
         public ICommand CourseCommand { get; }
@@ -46,6 +50,14 @@ namespace LangLang.ViewModel
                     }
                 }
             };
+        }
+        
+        public ICommand LogOutCommand { get; }
+
+        private void LogOut()
+        {
+            new MainWindow().Show();
+            _teacherMenuWindow.Close();
         }
     }
 }

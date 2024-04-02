@@ -20,6 +20,7 @@ public class StudentViewModel : ViewModelBase
     public ICommand ViewExamsCommand { get; }
     public ICommand EditAccountCommand { get; }
     public ICommand DeleteAccountCommand { get; }
+    public ICommand LogOutCommand { get; }
     public ICommand ApplyForCourseCommand { get; }
     public ICommand ApplyForExamCommand { get; }
 
@@ -60,5 +61,11 @@ public class StudentViewModel : ViewModelBase
             new MainWindow().Show();
             _studentViewWindow.Close();
         }
+    }
+
+    private void LogOut()
+    {
+        new MainWindow().Show();
+        _studentViewWindow.Close();
     }
 }
