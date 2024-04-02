@@ -28,6 +28,7 @@ namespace LangLang.ViewModel
         private DateTime selectedDateCreated;
         public ICommand EditCommand { get; }
         public ICommand AddCommand { get; }
+        public ICommand DeleteCommand { get; }
         public TeacherViewModel SelectedItem { get; set; }
         public string SelectedLanguageName
         {
@@ -72,6 +73,7 @@ namespace LangLang.ViewModel
             TeachersCollectionView=CollectionViewSource.GetDefaultView(teachers);
             EditCommand = new RelayCommand(OpenEditWindow);
             AddCommand = new RelayCommand(OpenAddWindow);
+            DeleteCommand = new RelayCommand(DeleteTeacher);
 
             Language enga1 = new Language("English", LanguageLevel.A1);
             Language enga2 = new Language("English", LanguageLevel.A2);
@@ -163,7 +165,29 @@ namespace LangLang.ViewModel
                 }
             }
 
-            //ask for substitute teacher
+            Dictionary<Course, Teacher> substituteTeachers=new Dictionary<Course, Teacher>();
+
+            //ask for substitute teachers
+            foreach (Course course in ActiveCourses)
+            {
+                List<Teacher> availableTeachers = new List<Teacher>();
+                foreach(int teacherId in Teacher.TeacherIds)
+                {
+                    if (Schedule.CanAddScheduleItem(course.StartDate, course.Duration, course.Held, teacherId,
+                            course.ScheduledTime, true, true))
+                    {
+                        availableTeachers.Add((Teacher)User.GetUserById(teacherId));
+                    }
+                }
+                var newWindow = new PickSubstituteTeacherView(availableTeachers, substituteTeachers, course);
+
+                newWindow.ShowDialog();
+            }
+
+            foreach (Course course in substituteTeachers.Keys)
+            {
+                course.TeacherId = substituteTeachers[course].Id;
+            }
 
             foreach (int examId in teacher.ExamIds)
             {
@@ -178,10 +202,12 @@ namespace LangLang.ViewModel
 
             foreach (Course course in CoursesToBeDeleted)
             {
-                //delete course
+                //delete course TBD
             }
 
-            //delete teacher
+            teachers.Remove(SelectedItem);
+            //delete teacher object TBD
+            TeachersCollectionView.Refresh();
         }
 
 

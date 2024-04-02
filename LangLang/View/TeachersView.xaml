@@ -95,7 +95,7 @@
         <ComboBox Grid.Column="1" Grid.Row="6" Margin="10" ItemsSource="{Binding LanguageLevelValues}" SelectedItem="{Binding SelectedLanguageLevel}"/>
         <Button Content="Add" Grid.Column="1" Grid.Row="7" Command="{Binding AddCommand}"/>
         <Button Content="Edit" Grid.Column="1" Grid.Row="8" Command="{Binding EditCommand}"/>
-        <Button Content="Delete" Grid.Column="1" Grid.Row="9"/>
+        <Button Content="Delete" Grid.Column="1" Grid.Row="9" Command="{Binding DeleteCommand}"/>
 
     </Grid>
 </UserControl>
