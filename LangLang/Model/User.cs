@@ -15,14 +15,11 @@ namespace LangLang.Model
     public abstract class User
     {
         private static int _idCounter = 1;
-<<<<<<< HEAD
-=======
 
         private static readonly string baseDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
         private static readonly string USER_FILE_NAME = "users.json";
         private static readonly string USER_FILE_PATH = Path.Combine(baseDirectory, "SourceDataFiles", USER_FILE_NAME);
-
->>>>>>> origin/develop
+        
         private static Dictionary<int, User> _users = new Dictionary<int, User>();
         public static Dictionary<int, User> Users => _users;
 
@@ -31,11 +28,7 @@ namespace LangLang.Model
         private string _email;
         private string _password;
         private string _phone;
-<<<<<<< HEAD
 
-=======
-        
->>>>>>> origin/develop
         public User(string firstName, string lastName, string email, string password, Gender gender, string phone, bool director = false)
         {
             FirstName = firstName;
