@@ -1,6 +1,9 @@
-﻿using LangLang.ViewModel;
+﻿using LangLang.Model;
+using LangLang.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,10 +26,11 @@ namespace LangLang.View
     {
         private List<string> selectedWeekdays = new List<string>();
 
-        public ModifyCourseView()
+        public ModifyCourseView(ObservableCollection<CourseViewModel> _courses, ICollectionView courseCollectionView, Course course = null)
         {
-            InitializeComponent();
-        }
+            DataContext = new ModifyCourseViewModel(_courses, courseCollectionView, course);
+        InitializeComponent();
+    }
 
     }
 }

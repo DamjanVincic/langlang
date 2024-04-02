@@ -10,21 +10,27 @@ namespace LangLang.Model
 {
     public class Schedule
     {
-        public static Dictionary<DateOnly, List<ScheduleItem>> Table { get; set; }
-        public static List<DateOnly> CourseDates = new List<DateOnly>();
+        public static Dictionary<DateOnly, List<ScheduleItem>> Table = new Dictionary<DateOnly, List<ScheduleItem>>();
+        public static List<DateOnly> ScheduleItemDates = new List<DateOnly>();
         
         public static bool CanAddScheduleItem(DateOnly date, int duration, List<Weekday> held, int teacherId, TimeOnly startTime, bool isCourse, bool isOnline)
         {
             CheckInputValidability(date, duration, held, teacherId, startTime, isCourse);
-            CourseDates = new();
+            // Temp list of dates on which course can be held
+            ScheduleItemDates = new();
             List<int> dateDifferences = CalculateDateDifferences(held);
+            if (!isCourse)
+            {
+                duration = 1;
+                held = new List<Weekday> {(Weekday)Enum.Parse(typeof(Weekday), date.DayOfWeek.ToString())};
+            }
             while (duration > 0)
             {
                 for (int i = 0; i < held.Count; ++i) 
                 {
                     if (IsAvailable(date, teacherId, startTime, isCourse, isOnline))
                     {
-                        CourseDates.Add(date);
+                        ScheduleItemDates.Add(date);
                         date.AddDays(dateDifferences[i]);
                     }
                     else
@@ -37,21 +43,43 @@ namespace LangLang.Model
 
             return true;
         }
+        public Weekday ConvertToWeekday(string dayOfWeek)
+        {
+            switch (dayOfWeek)
+            {
+                case "Monday":
+                    return Weekday.Monday;
+                case "Tuesday":
+                    return Weekday.Tuesday;
+                case "Wednesday":
+                    return Weekday.Wednesday;
+                case "Thursday":
+                    return Weekday.Thursday;
+                case "Friday":
+                    return Weekday.Friday;
+                case "Saturday":
+                    return Weekday.Saturday;
+                case "Sunday":
+                    return Weekday.Sunday;
+                default:
+                    throw new ArgumentException("Invalid day of week string.");
+            }
+        }
 
         private static void CheckInputValidability(DateOnly date, int duration, List<Weekday> held, int teacherId, TimeOnly startTime, bool isCourse)
         {
             if (duration == 0)
             {
-                throw new ArgumentException("Invalid input: Duration must be greater than 0.", nameof(duration));
+                MessageBox.Show("Invalid input: Duration must be greater than 0.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             TimeSpan difference = date.ToDateTime(TimeOnly.MinValue) - DateTime.Now;
             if (difference.TotalDays < 7)
             {
-                throw new ArgumentException("The course can be created no later than 7 days before the start", nameof(date));
+                MessageBox.Show("The course can be created no later than 7 days before the start", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             if (held == null)
             {
-                throw new ArgumentNullException(nameof(held), "Required argument cannot be null.");
+                MessageBox.Show("Required argument cannot be null.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -68,6 +96,10 @@ namespace LangLang.Model
 
         private static bool IsAvailable(DateOnly date, int teacherId, TimeOnly startTime, bool isCourse, bool isOnline)
         {
+            if (!Table.ContainsKey(date))
+            {
+                return true;
+            }
             List<ScheduleItem> scheduleItems = Table[date];
             TimeOnly endTime;
             TimeOnly startTimeCheck;
@@ -164,13 +196,17 @@ namespace LangLang.Model
             {
                 for (int i = 0; i < toAdd.Count; ++i)
                 {
-                    CourseDates.Add(startDate);
+                    ScheduleItemDates.Add(startDate);
                     startDate.AddDays(dayDifferences[i]);
                 }
                 duration--;
             }
-            foreach (DateOnly courseDate in Schedule.CourseDates)
+            foreach (DateOnly courseDate in Schedule.ScheduleItemDates)
             {
+                if (!Schedule.Table.ContainsKey(courseDate))
+                {
+                    Schedule.Table.Add(courseDate, new());
+                }
                 Schedule.Table[courseDate].Add(item);
             }
         }
@@ -182,12 +218,12 @@ namespace LangLang.Model
             {
                 for (int i = 0; i < toDelete.Count; ++i)
                 {
-                    CourseDates.Add(startDate);
+                    ScheduleItemDates.Add(startDate);
                     startDate.AddDays(dayDifferences[i]);
                 }
                 duration--;
             }
-            foreach (DateOnly courseDate in Schedule.CourseDates)
+            foreach (DateOnly courseDate in Schedule.ScheduleItemDates)
             {
                 Schedule.Table[courseDate].Remove(item);
             }
