@@ -27,6 +27,7 @@ namespace LangLang.ViewModel
         private string _selectedLanguageLevel;
         private DateTime selectedDateCreated;
         public ICommand EditCommand { get; }
+        public ICommand AddCommand { get; }
         public TeacherViewModel SelectedItem { get; set; }
         public string SelectedLanguageName
         {
@@ -70,6 +71,7 @@ namespace LangLang.ViewModel
             teachers=new ObservableCollection<TeacherViewModel>();
             TeachersCollectionView=CollectionViewSource.GetDefaultView(teachers);
             EditCommand = new RelayCommand(OpenEditWindow);
+            AddCommand = new RelayCommand(OpenAddWindow);
 
             Language enga1 = new Language("English", LanguageLevel.A1);
             Language enga2 = new Language("English", LanguageLevel.A2);
@@ -115,6 +117,14 @@ namespace LangLang.ViewModel
                 return;
             }
             var newWindow = new EditTeacherView((Teacher)User.GetUserById(SelectedItem.Id), TeachersCollectionView);
+
+            newWindow.Show();
+
+        }
+
+        private void OpenAddWindow()
+        {
+            var newWindow = new AddTeacherView(TeachersCollectionView,teachers);
 
             newWindow.Show();
 
