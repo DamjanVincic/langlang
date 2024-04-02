@@ -5,8 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:LangLang.View"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="300">
-    <Grid>
+             d:DesignHeight="450" d:DesignWidth="250">
+    <Grid HorizontalAlignment="Center">
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
@@ -23,29 +23,30 @@
             <RowDefinition Height="1*"/>
             <RowDefinition Height="2*"/>
             <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
-            <Label Grid.Row="0" Margin="3" Width="100" Content="First Name"/>
-        <TextBox Grid.Row="1" Margin="3" x:Name="FirstNameTextBox" Text="{Binding FirstName}"/>
+        <Label Grid.Row="0" Content="First Name" HorizontalAlignment="Center" MinWidth="200"/>
+        <TextBox Grid.Row="1" Margin="3" x:Name="FirstNameTextBox" Text="{Binding FirstName}" HorizontalAlignment="Center" MinWidth="200"/>
 
-            <Label Grid.Row="2" Content="Last Name"/>
-            <TextBox Grid.Row="3" x:Name="LastNameTextBox" Text="{Binding LastName}"/>
+        <Label Grid.Row="2" Content="Last Name" HorizontalAlignment="Center" MinWidth="200"/>
+        <TextBox Grid.Row="3" x:Name="LastNameTextBox" Text="{Binding LastName}" HorizontalAlignment="Center" MinWidth="200"/>
 
-            <Label Grid.Row="4" Content="Email"/>
-            <TextBox Grid.Row="5" x:Name="EmailTextBox" Text="{Binding Email}"/>
+        <Label Grid.Row="4" Content="Email" HorizontalAlignment="Center" MinWidth="200"/>
+        <TextBox Grid.Row="5" x:Name="EmailTextBox" Text="{Binding Email}" MinWidth="200"/>
 
-            <Label Grid.Row="6" Content="Password"/>
-            <TextBox Grid.Row="7" x:Name="PasswordBox" Text="{Binding Password}"/>
+        <Label Grid.Row="6" Content="Password" HorizontalAlignment="Center" MinWidth="200"/>
+        <TextBox Grid.Row="7" x:Name="PasswordBox" Text="{Binding Password}" MinWidth="200"/>
 
-            <Label Grid.Row="8" Content="Gender"/>
-            <ComboBox Grid.Row="9" x:Name="GenderComboBox" ItemsSource="{Binding GenderValues}" SelectedItem="{Binding Gender}"/>
+        <Label Grid.Row="8" Content="Gender" HorizontalAlignment="Center" MinWidth="200"/>
+        <ComboBox Grid.Row="9" x:Name="GenderComboBox" ItemsSource="{Binding GenderValues}" SelectedItem="{Binding Gender}" HorizontalAlignment="Center" MinWidth="200"/>
 
-            <Label Grid.Row="10" Content="Phone"/>
-            <TextBox Grid.Row="11" x:Name="PhoneTextBox" Text="{Binding Phone}"/>
+        <Label Grid.Row="10" Content="Phone" HorizontalAlignment="Center" MinWidth="200"/>
+        <TextBox Grid.Row="11" x:Name="PhoneTextBox" Text="{Binding Phone}" MinWidth="200"/>
 
-            <Label Grid.Row="12" Content="Qualifications"/>
-            <ListBox Grid.Row="13" x:Name="QualificationsListBox" ItemsSource="{Binding Qualifications}"/>
+        <Label Grid.Row="12" Content="Qualifications" HorizontalAlignment="Center" MinWidth="200"/>
+        <ListBox Grid.Row="13" x:Name="QualificationsListBox" ItemsSource="{Binding Qualifications}" HorizontalAlignment="Center" MinWidth="200"/>
 
-            <Button Grid.Row="14" Content="Save edits" Command="{Binding SaveEditCommand}"/>
+        <Button Grid.Row="14" Content="Save edits" Command="{Binding SaveEditCommand}" HorizontalAlignment="Center" MinWidth="200" Margin="0,5,0,0"/>
 
     </Grid>
 </Window>
