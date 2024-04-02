@@ -66,7 +66,7 @@ namespace LangLang.ViewModel
                     }
                     else
                     {
-                        Exam exam = new Exam(language, MaxStudents, ExamDate,1, new TimeOnly(HourSelected, MinuteSelected));
+                        Exam exam = new Exam(language, MaxStudents, ExamDate,_loggedInTeacher.Id, new TimeOnly(HourSelected, MinuteSelected));
                     }
                 }
                 else

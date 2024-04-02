@@ -53,16 +53,7 @@ namespace LangLang.Model
             
         public static User? Login(string email, string password)
         {
-            List<Language> qualifications = new List<Language>
-            {
-                new Language("English",LanguageLevel.A2),
-                new Language("Serbian",LanguageLevel.A1),
-            };
-
-            // Sada možemo kreirati novog nastavnika
-            Teacher teacherLog = new Teacher("John", "Doe", "john.doe@example.com", "password123", Gender.Male, "123456789", qualifications);
-            return teacherLog;
-            // return _users.Values.FirstOrDefault(user => user.Email.Equals(email) && user.Password.Equals(password));
+            return _users.Values.FirstOrDefault(user => user.Email.Equals(email) && user.Password.Equals(password));
         }
         
         public static User GetUserById(int id)
