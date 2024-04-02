@@ -130,6 +130,60 @@ namespace LangLang.ViewModel
 
         }
 
+        private void DeleteTeacher()
+        {
+            if (SelectedItem == null)
+            {
+                MessageBox.Show("No teacher selected", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            Teacher teacher = (Teacher)User.GetUserById(SelectedItem.Id);
+            List<Course> ActiveCourses=new List<Course>();
+            List<Course> CoursesCreatedByDirector = new List<Course>();
+            List<Course> CoursesToBeDeleted=new List<Course>();
+
+            foreach(int courseId in teacher.CourseIds)
+            {
+                Course course = Course.GetById(courseId);
+                if (course.AreApplicationsClosed)
+                {
+                    ActiveCourses.Add(course);
+                }
+                else
+                {
+                    if (course.CreatorId != teacher.Id)
+                    {
+                        CoursesCreatedByDirector.Add(course);
+                    }
+                    else
+                    {
+                        CoursesToBeDeleted.Add(course);
+                    }
+                }
+            }
+
+            //ask for substitute teacher
+
+            foreach (int examId in teacher.ExamIds)
+            {
+                //shouldn't have id parameter
+                Exam.GetById(examId).Delete(examId);
+            }
+
+            foreach (Course course in CoursesCreatedByDirector)
+            {
+                course.CreatorId = -1;
+            }
+
+            foreach (Course course in CoursesToBeDeleted)
+            {
+                //delete course
+            }
+
+            //delete teacher
+        }
+
 
         public IEnumerable<TeacherViewModel> Teachers => teachers;
     }
