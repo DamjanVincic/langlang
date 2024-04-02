@@ -8,7 +8,8 @@ namespace LangLang.Model
 {
     public class Course : ScheduleItem
     { 
-        public const int CLASS_DURATION = 90; 
+        public const int CLASS_DURATION = 90;
+        private const string COURSE_FILE_PATH = @"C:\faks 2\usi\projekat\cp-usi-2024-3-b\LangLang\SourceDataFiles\courses.json";
         private static Dictionary<int, Course> _courses = new Dictionary<int, Course>();
         private Language _language;
         private int _duration;
@@ -137,11 +138,11 @@ namespace LangLang.Model
             return _courses[id];
         }
 
-        public static void LoadCourseFromJson(string jsonFilePath)
+        public static void LoadCourseFromJson()
         {
             try
             {
-                using (StreamReader r = new StreamReader(jsonFilePath))
+                using (StreamReader r = new StreamReader(COURSE_FILE_PATH))
                 {
                     string json = r.ReadToEnd();
                     Dictionary<int, Course> exams = JsonConvert.DeserializeObject<Dictionary<int, Course>>(json);
@@ -158,10 +159,10 @@ namespace LangLang.Model
             }
         }
 
-        public static void WriteCourseToJson(string jsonFilePath)
+        public static void WriteCourseToJson()
         {
             string jsonExamString = JsonConvert.SerializeObject(_courses);
-            File.WriteAllText(jsonFilePath, jsonExamString);
+            File.WriteAllText(COURSE_FILE_PATH, jsonExamString);
         }
 
         public static List<Course> GetAvailableCourses()

@@ -18,7 +18,9 @@ namespace LangLang.Model
 
         public static Dictionary<DateOnly, List<ScheduleItem>> Table { get; set; }
         public static List<DateOnly> CourseDates = new List<DateOnly>();
-        
+        private const string SCHEDULE_FILE_PATH = @"C:\faks 2\usi\projekat\cp-usi-2024-3-b\LangLang\SourceDataFiles\schedule.json";
+
+
         public static bool CanAddScheduleItem(DateOnly date, int duration, List<Weekday> held, int teacherId, TimeOnly startTime, bool isCourse, bool isOnline)
         {
             CheckInputValidability(date, duration, held, teacherId, startTime, isCourse);
@@ -191,7 +193,7 @@ namespace LangLang.Model
                 Console.WriteLine("Error loading schedule from JSON: " + ex.Message);
             }
         }
-        public static void WriteScheduleToJson(string jsonFilePath)
+        public static void WriteScheduleToJson()
         {
             try
             {
@@ -209,7 +211,7 @@ namespace LangLang.Model
                 var courseDatesJson = new JArray(CourseDates.Select(date => date.ToString("yyyy-MM-dd")));
                 jsonObject["CourseDates"] = courseDatesJson;
 
-                File.WriteAllText(jsonFilePath, jsonObject.ToString());
+                File.WriteAllText(SCHEDULE_FILE_PATH, jsonObject.ToString());
             }
             catch (Exception ex)
             {

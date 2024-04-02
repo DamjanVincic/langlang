@@ -103,11 +103,11 @@ namespace LangLang.Model
             _exams.Remove(Id);
         }
         
-        public static void LoadExamFromJson(string jsonFilePath)
+        public static void LoadExamFromJson()
         {
             try
             {
-                using (StreamReader r = new StreamReader(jsonFilePath))
+                using (StreamReader r = new StreamReader(EXAM_FILE_PATH))
                 {
                     string json = r.ReadToEnd();
                     Dictionary<int, Exam> exams = JsonConvert.DeserializeObject<Dictionary<int, Exam>>(json);

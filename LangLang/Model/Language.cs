@@ -9,6 +9,7 @@ namespace LangLang.Model
     public class Language
     {
         private string _name;
+        private const string LANGUAGE_FILE_PATH = @"C:\faks 2\usi\projekat\cp-usi-2024-3-b\LangLang\SourceDataFiles\language.json";
         private static List<Language> _languages = new List<Language>();
         private static List<string> _languageNames = new List<string>() { "Serbian","English","German"};
 
@@ -100,11 +101,11 @@ namespace LangLang.Model
             return HashCode.Combine(_name);
         }
 
-        public static void LoadLanguagesFromJson(string filePath)
+        public static void LoadLanguagesFromJson()
         {
             try
             {
-                string json = File.ReadAllText(filePath);
+                string json = File.ReadAllText(LANGUAGE_FILE_PATH);
                 _languages = JsonConvert.DeserializeObject<List<Language>>(json);
                 foreach(Language language in _languages)
                 {
@@ -117,10 +118,10 @@ namespace LangLang.Model
                 Console.WriteLine("Error reading languages: " + ex.Message);
             }
         }
-        public static void WriteLanguageToJson(string jsonFilePath)
+        public static void WriteLanguageToJson()
         {
             string jsonExamString = JsonConvert.SerializeObject(_languages);
-            File.WriteAllText(jsonFilePath, jsonExamString);
+            File.WriteAllText(LANGUAGE_FILE_PATH, jsonExamString);
         }
     }
 }
