@@ -33,6 +33,8 @@ namespace LangLang.Model
             StudentIds = studentIds;
             _courses.Add(Id, this);
             CourseIds.Add(Id);
+            Schedule.ModifySchedule(this, StartDate, Duration, null, Held);
+            
         }
         public static List<int> CourseIds 
         {
@@ -91,8 +93,7 @@ namespace LangLang.Model
         }
         public bool AreApplicationsClosed {get; set; }
         public List<int> StudentIds { get; set; }
-
-        
+        public static Dictionary<int, Course> Courses { get => _courses; set => _courses = value; }
 
         private void ValidateStartDate(DateOnly startDate)
         {
@@ -108,6 +109,10 @@ namespace LangLang.Model
             if (maxStudents < 0)
             {
                 throw new InvalidInputException("Maximum number of students must not be negative.");
+            }
+            if (!IsOnline && maxStudents <= 0)
+            {
+                throw new InvalidInputException("You must pass the max number of students if the course is in-person.");
             }
         }
 
@@ -137,7 +142,7 @@ namespace LangLang.Model
 
         public static Course GetById(int id)
         {
-            return _courses[id];
+            return Courses[id];
         }
 
         public static void LoadCourseFromJson()
