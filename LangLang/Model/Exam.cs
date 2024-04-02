@@ -129,7 +129,7 @@ namespace LangLang.Model
         public static void WriteExamToJson()
         {
             string jsonExamString = JsonConvert.SerializeObject(_exams);
-            File.WriteAllText("aegfhj.json", "sdfgjm");
+            File.WriteAllText(EXAM_FILE_PATH, jsonExamString);
             
         }
 
