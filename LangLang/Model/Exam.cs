@@ -1,5 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace LangLang.Model
 {
@@ -94,9 +98,32 @@ namespace LangLang.Model
                 return null;
             }
         }
-        public void Delete(int id)
+        /*
+         * izmeniti jer se poziva nad objektnom
+         */
+        public static void Delete(int id)
         {
             _exams.Remove(id);
+        }
+        public static void LoadExamFromJson(string jsonFilePath)
+        {
+            try
+            {
+                using (StreamReader r = new StreamReader(jsonFilePath))
+                {
+                    string json = r.ReadToEnd();
+                    Dictionary<int, Exam> exams = JsonConvert.DeserializeObject<Dictionary<int, Exam>>(json);
+
+                    foreach (var kvp in exams)
+                    {
+                        _exams.Add(kvp.Key, kvp.Value);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error loading users from JSON: " + ex.Message);
+            }
         }
     }
 }
