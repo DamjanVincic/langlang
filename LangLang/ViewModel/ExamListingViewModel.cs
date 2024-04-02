@@ -105,12 +105,27 @@ namespace LangLang.ViewModel
             {
                 if (SelectedItem != null)
                 {
-                    _exams.Remove((ExamViewModel)SelectedItem);
-                    MessageBox.Show("Exam deleted successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    ExamViewModel selectedExam = (ExamViewModel)SelectedItem;
+                    Exam exam = Exam.GetById(selectedExam.Id);
+
+                    DateTime todayDateTime = DateTime.Today;
+                    DateTime examDateTime = new DateTime(exam.ExamDate.Year, exam.ExamDate.Month, exam.ExamDate.Day);
+
+                    TimeSpan difference = examDateTime - todayDateTime;
+
+                    if (difference.TotalDays >= 14)
+                    {
+                        _exams.Remove(selectedExam);
+                        MessageBox.Show("Exam deleted successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show("You cannot cancel the exam as it is less than two weeks away.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
                 else
                 {
-                    MessageBox.Show("Please select an exam to delete.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("No exam selected.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch (Exception ex)
@@ -118,6 +133,8 @@ namespace LangLang.ViewModel
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+
         public ICommand AddCommand { get; }
         public void Add()
         {
