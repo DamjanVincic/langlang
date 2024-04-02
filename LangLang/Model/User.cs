@@ -68,6 +68,11 @@ namespace LangLang.Model
         {
             return _users[id];
         }
+
+        public static List<Teacher> GetTeachers()
+        {
+            return _users.Values.OfType<Teacher>().ToList();
+        }
         
         public int Id { get; }
 
