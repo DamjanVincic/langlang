@@ -6,6 +6,7 @@ namespace LangLang.Model
     public class Exam : ScheduleItem
     {
         private static int _examId = 0;
+        public const int EXAM_DURATION = 360;
         private static Dictionary<int, Exam> _exams = new Dictionary<int, Exam>();
         private Language _language;
         private int _maxStudents;
@@ -92,6 +93,10 @@ namespace LangLang.Model
             {
                 return null;
             }
+        }
+        public void Delete(int id)
+        {
+            _exams.Remove(id);
         }
     }
 }

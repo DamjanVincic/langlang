@@ -12,7 +12,7 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <Button Content="Courses" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
-        <Button Content="Exams" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+        <Button Command="{Binding CourseCommand}" Content="Courses" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+        <Button Command="{Binding ExamCommand}" Content="Exams" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
     </Grid>
 </Window>
