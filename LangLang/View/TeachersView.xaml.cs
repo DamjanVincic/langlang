@@ -20,7 +20,7 @@ namespace LangLang.View
     /// <summary>
     /// Interaction logic for TeachersView.xaml
     /// </summary>
-    public partial class TeachersView : UserControl
+    public partial class TeachersView : Window
     {
         public TeachersView()
         {

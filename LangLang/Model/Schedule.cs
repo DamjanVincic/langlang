@@ -18,7 +18,10 @@ namespace LangLang.Model
 
         public static Dictionary<DateOnly, List<ScheduleItem>> Table { get; set; }
         public static List<DateOnly> CourseDates = new List<DateOnly>();
-        
+        private static readonly string baseDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
+        private static readonly string SCHEDULE_FILE_NAME = "schedule.json";
+        private static readonly string SCHEDULE_FILE_PATH = Path.Combine(baseDirectory, "SourceDataFiles", SCHEDULE_FILE_NAME);
+
         public static bool CanAddScheduleItem(DateOnly date, int duration, List<Weekday> held, int teacherId, TimeOnly startTime, bool isCourse, bool isOnline)
         {
             CheckInputValidability(date, duration, held, teacherId, startTime, isCourse);
@@ -151,11 +154,11 @@ namespace LangLang.Model
             }
         }
 
-        public static void LoadScheduleFromJson(string jsonFilePath)
+        public static void LoadScheduleFromJson()
         {
             try
             {
-                string json = File.ReadAllText(jsonFilePath);
+                string json = File.ReadAllText(SCHEDULE_FILE_PATH);
                 dynamic jsonObject = JsonConvert.DeserializeObject(json);
 
                 dynamic tableToken = jsonObject["Table"];
@@ -191,7 +194,7 @@ namespace LangLang.Model
                 Console.WriteLine("Error loading schedule from JSON: " + ex.Message);
             }
         }
-        public static void WriteScheduleToJson(string jsonFilePath)
+        public static void WriteScheduleToJson()
         {
             try
             {
@@ -209,7 +212,7 @@ namespace LangLang.Model
                 var courseDatesJson = new JArray(CourseDates.Select(date => date.ToString("yyyy-MM-dd")));
                 jsonObject["CourseDates"] = courseDatesJson;
 
-                File.WriteAllText(jsonFilePath, jsonObject.ToString());
+                File.WriteAllText(SCHEDULE_FILE_PATH, jsonObject.ToString());
             }
             catch (Exception ex)
             {
