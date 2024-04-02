@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -14,38 +15,50 @@ public class StudentViewModel : ViewModelBase
     public ObservableCollection<Exam> AvailableExams { get; set; }
     
     public string FullName => $"{_student.FirstName} {_student.LastName}";
-    
-    public ICommand EditAccountCommand { get; }
+
     public ICommand ViewCoursesCommand { get; }
     public ICommand ViewExamsCommand { get; }
+    public ICommand EditAccountCommand { get; }
+    public ICommand DeleteAccountCommand { get; }
     public ICommand ApplyForCourseCommand { get; }
     public ICommand ApplyForExamCommand { get; }
+
+    private Window _studentViewWindow;
     
-    public StudentViewModel(Student student)
+    public StudentViewModel(Student student, Window studentViewWindow)
     {
+        _studentViewWindow = studentViewWindow;
         _student = student;
-        // AvailableCourses = new ObservableCollection<Course>(Course.GetAvailableCourses());
-        // AvailableExams = new ObservableCollection<Exam>(Exam.GetAvailableExams());
-        //
-        // ApplyForCourseCommand = new RelayCommand<Course>(ApplyForCourse);
-        // ApplyForExamCommand = new RelayCommand<Exam>(ApplyForExam);
-        EditAccountCommand = new RelayCommand(EditAccount);
+        
         ViewCoursesCommand = new RelayCommand(ViewCourses);
         ViewExamsCommand = new RelayCommand(ViewExams);
+        EditAccountCommand = new RelayCommand(EditAccount);
+        DeleteAccountCommand = new RelayCommand(DeleteAccount);
     }
-    
-    private void EditAccount()
-    {
-        new StudentEditView(_student).Show();
-    }
-    
+
     private void ViewCourses()
     {
         new StudentCourseView().Show();
     }
-    
+
     private void ViewExams()
     {
         new StudentExamView().Show();
+    }
+
+    private void EditAccount()
+    {
+        new StudentEditView(_student).Show();
+    }
+
+    private void DeleteAccount()
+    {
+        if (MessageBox.Show("Are you sure?", "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+        {
+            _student.Delete();
+            MessageBox.Show("Account deleted successfully");
+            new MainWindow().Show();
+            _studentViewWindow.Close();
+        }
     }
 }

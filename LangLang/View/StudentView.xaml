@@ -14,8 +14,8 @@
 
         <!-- Main Content -->
         <StackPanel Grid.Row="0" Margin="20">
-            <Button Content="Exams" Command="{Binding ViewExamsCommand}" Margin="0 0 0 10" Width="100"/>
             <Button Content="Courses" Command="{Binding ViewCoursesCommand}" Margin="0 0 0 10" Width="100"/>
+            <Button Content="Exams" Command="{Binding ViewExamsCommand}" Margin="0 0 0 10" Width="100"/>
             <Button Content="Edit Account" Command="{Binding EditAccountCommand}" Margin="0 0 0 10" Width="100"/>
             <Button Content="Delete Account" Command="{Binding DeleteAccountCommand}" Margin="0 0 0 10" Width="100"/>
         </StackPanel>
