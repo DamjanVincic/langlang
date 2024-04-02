@@ -13,6 +13,7 @@ public class Student : User
     public void Edit(string firstName, string lastName, string password, Gender gender, string phone,
         Education education)
     {
+        //TODO: Validate if user hasn't applied to any courses or exams
         base.Edit(firstName, lastName, password, gender, phone);
         Education = education;
     }
