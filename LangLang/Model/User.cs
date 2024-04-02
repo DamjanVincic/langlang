@@ -19,7 +19,7 @@ namespace LangLang.Model
         private static readonly string baseDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
         private static readonly string USER_FILE_NAME = "users.json";
         private static readonly string USER_FILE_PATH = Path.Combine(baseDirectory, "SourceDataFiles", USER_FILE_NAME);
-
+        
         private static Dictionary<int, User> _users = new Dictionary<int, User>();
         public static Dictionary<int, User> Users => _users;
 
@@ -28,7 +28,7 @@ namespace LangLang.Model
         private string _email;
         private string _password;
         private string _phone;
-        
+
         public User(string firstName, string lastName, string email, string password, Gender gender, string phone, bool director = false)
         {
             FirstName = firstName;
@@ -73,7 +73,12 @@ namespace LangLang.Model
         {
             return _users[id];
         }
-
+        
+        public static List<Teacher> GetTeachers()
+        {
+            return _users.Values.OfType<Teacher>().ToList();
+        }
+        
         public int Id { get; }
 
         public string FirstName

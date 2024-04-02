@@ -43,6 +43,11 @@ public class LoginViewModel : ViewModelBase
                 _loginWindow.Close();
                 Application.Current.MainWindow?.Close();
                 break;
+            case Teacher teacher:
+                new TeacherMenu(teacher).Show();
+                _loginWindow.Close();
+                Application.Current.MainWindow?.Close();
+                break;
         }
     }
 }

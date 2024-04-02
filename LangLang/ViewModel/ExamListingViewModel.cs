@@ -78,7 +78,7 @@ namespace LangLang.ViewModel
                 new ExamViewModel(new Exam(new Language("Serbian", LanguageLevel.B1), 30, new DateOnly(2024, 5, 20),1,TimeOnly.MaxValue)),
                 new ExamViewModel(new Exam(new Language("English", LanguageLevel.A1), 25, new DateOnly(2024, 6, 10), 1, TimeOnly.MaxValue)),
                 new ExamViewModel(new Exam(new Language("English", LanguageLevel.A1), 35, new DateOnly(2024, 7, 5), 1, TimeOnly.MaxValue)),
-                new ExamViewModel(new Exam(new Language("English", LanguageLevel.C2), 28, new DateOnly(2024, 8, 15),1,TimeOnly.MaxValue))
+                new ExamViewModel(new Exam(new Language("English", LanguageLevel.C2), 28, new DateOnly(2024, 8, 15),1,new TimeOnly(9,15,0)))
             };
             ExamCollectionView = CollectionViewSource.GetDefaultView(_exams);
             ExamCollectionView.Filter = FilterExams;
@@ -95,8 +95,8 @@ namespace LangLang.ViewModel
             {
                 return examViewModel.FilterLanguageName(LanguageNameSelected) &&
                     examViewModel.FilterLevel(LanguageLevelSelected) &&
-                    examViewModel.FilterDateHeld(DateSelected);
-                    //examViewModel.FilterTeacherId(_teacher.ExamIds);
+                    examViewModel.FilterDateHeld(DateSelected) &&
+                    examViewModel.FilterTeacherId(_teacher.Id);
             }
             return false;
         }
@@ -143,7 +143,7 @@ namespace LangLang.ViewModel
         public ICommand AddCommand { get; }
         public void Add()
         {
-            var newWindow = new AddExamView();
+            var newWindow = new AddExamView(null,_teacher);
             newWindow.Show();
             Application.Current.MainWindow.Closed += (sender, e) =>
             {
@@ -172,7 +172,7 @@ namespace LangLang.ViewModel
 
                 if (difference.TotalDays >= 14)
                 {
-                    var newWindow = new AddExamView(exam);
+                    var newWindow = new AddExamView(exam,_teacher);
                     newWindow.Show();
                 }
                 else
