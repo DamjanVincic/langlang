@@ -10,22 +10,21 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using LangLang.View;
+using LangLang.Model;
 using LangLang.ViewModel;
 
-namespace LangLang
+namespace LangLang.View
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for PickSubstituteTeacherView.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class PickSubstituteTeacherView : Window
     {
-        public MainWindow()
+        public PickSubstituteTeacherView(List<Teacher> availableTeachers, Dictionary<Course, Teacher> substituteTeachers, Course course)
         {
+            DataContext = new PickSubstituteTeacherViewModel(availableTeachers, substituteTeachers, course);
             InitializeComponent();
-            DataContext = new MainViewModel();
         }
     }
 }

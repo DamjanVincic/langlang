@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Diagnostics.Eventing.Reader;
 
 namespace LangLang.Model
 {
@@ -20,6 +21,26 @@ namespace LangLang.Model
             {
                 LanguageNames.Add(name);
             }
+        }
+
+        public static void MakeLanguage(string languageName, LanguageLevel languageLevel)
+        {
+            if(LanguageNames.Contains(languageName))
+            {
+                foreach (Language language in Languages)
+                {
+                    if (language.Name.Equals(languageName) && language.Level == languageLevel)
+                    {
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                LanguageNames.Add(languageName);
+            }
+
+            new Language(languageName, languageLevel);
         }
 
         public static List<Language> Languages

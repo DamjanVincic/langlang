@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using LangLang.Model;
 
 namespace LangLang
 {
@@ -16,13 +17,8 @@ namespace LangLang
     {
         protected override void OnStartup(StartupEventArgs e)
         {
-            MainWindow=new MainWindow()
-            {
-                DataContext=new MainViewModel()
-            };
-
-            MainWindow.Show();
-
+            new MainWindow().Show();
+        
             base.OnStartup(e);
         }
     }

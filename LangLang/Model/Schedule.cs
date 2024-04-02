@@ -6,7 +6,10 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Windows.Documents;
+using System.Windows;
 using System.Windows.Media.Animation;
+using System.Windows.Input;
 
 namespace LangLang.Model
 {
@@ -14,7 +17,7 @@ namespace LangLang.Model
     {
 
         public static Dictionary<DateOnly, List<ScheduleItem>> Table { get; set; }
-        public static List<DateOnly> CourseDates {get; set; }
+        public static List<DateOnly> CourseDates = new List<DateOnly>();
         
         public static bool CanAddScheduleItem(DateOnly date, int duration, List<Weekday> held, int teacherId, TimeOnly startTime, bool isCourse, bool isOnline)
         {
@@ -147,6 +150,7 @@ namespace LangLang.Model
                 return true;
             }
         }
+
         public static void LoadScheduleFromJson(string jsonFilePath)
         {
             try
@@ -213,10 +217,53 @@ namespace LangLang.Model
             }
         }
 
+        internal static void ModifySchedule(ScheduleItem item, DateOnly startDate, int duration, List<Weekday> toDelete, List<Weekday> toAdd)
+        {
+            if (toDelete != null)
+            {
+                DeleteItem(item, startDate, duration, toDelete);
+            }
+            if (toAdd != null)
+            {
+                AddItem(item, startDate, duration, toAdd);
+            }
+        }
 
+        private static void AddItem(ScheduleItem item, DateOnly startDate, int duration, List<Weekday> toAdd)
+        {
+            List<int> dayDifferences = CalculateDateDifferences(toAdd);
+            while (duration > 0)
+            {
+                for (int i = 0; i < toAdd.Count; ++i)
+                {
+                    CourseDates.Add(startDate);
+                    startDate.AddDays(dayDifferences[i]);
+                }
+                duration--;
+            }
+            foreach (DateOnly courseDate in Schedule.CourseDates)
+            {
+                Schedule.Table[courseDate].Add(item);
+            }
+        }
+
+        private static void DeleteItem(ScheduleItem item, DateOnly startDate, int duration, List<Weekday> toDelete)
+        {
+            List<int> dayDifferences = CalculateDateDifferences(toDelete);
+            while (duration > 0)
+            {
+                for (int i = 0; i < toDelete.Count; ++i)
+                {
+                    CourseDates.Add(startDate);
+                    startDate.AddDays(dayDifferences[i]);
+                }
+                duration--;
+            }
+            foreach (DateOnly courseDate in Schedule.CourseDates)
+            {
+                Schedule.Table[courseDate].Remove(item);
+            }
+        }
     }
-
-
-
 }
 

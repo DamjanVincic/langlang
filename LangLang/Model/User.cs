@@ -15,16 +15,20 @@ namespace LangLang.Model
     public abstract class User
     {
         private static int _idCounter = 1;
-        private static Dictionary<int, User> _users = new Dictionary<int, User>();
-
-
+        private static Dictionary<int, User> _users = new Dictionary<int, User>()
+        {
+            {0,new Director("Nadja", "Zoric", "nadjazoric@gmail.com",
+                "PatrikZvezdasti011", Gender.Female, "123456789")}
+        };
+        public static Dictionary<int, User> Users => _users;
+        
         private string _firstName;
         private string _lastName;
         private string _email;
         private string _password;
         private string _phone;
 
-        public User(string firstName, string lastName, string email, string password, Gender gender, string phone)
+        public User(string firstName, string lastName, string email, string password, Gender gender, string phone,int id=-1)
         {
             FirstName = firstName;
             LastName = lastName;
@@ -32,7 +36,10 @@ namespace LangLang.Model
             Password = password;
             Gender = gender;
             Phone = phone;
-            
+
+            if (id != -1)
+                return;
+
             Id = _idCounter++;
             _users.Add(Id, this);
         }
@@ -50,19 +57,17 @@ namespace LangLang.Model
             Gender = gender;
             _phone = phone;
         }
+        
+        public void Delete()
+        {
+            //TODO: Remove user from all courses and exams
+            // throw new NotImplementedException();
+            _users.Remove(Id);
+        }
             
         public static User? Login(string email, string password)
         {
-            List<Language> qualifications = new List<Language>
-            {
-                new Language("English",LanguageLevel.A2),
-                new Language("Serbian",LanguageLevel.A1),
-            };
-
-            // Sada možemo kreirati novog nastavnika
-            Teacher teacherLog = new Teacher("John", "Doe", "john.doe@example.com", "password123", Gender.Male, "123456789", qualifications);
-            return teacherLog;
-            // return _users.Values.FirstOrDefault(user => user.Email.Equals(email) && user.Password.Equals(password));
+            return _users.Values.FirstOrDefault(user => user.Email.Equals(email) && user.Password.Equals(password));
         }
         
         public static User GetUserById(int id)
@@ -160,10 +165,10 @@ namespace LangLang.Model
                 throw new InvalidInputException("Email not valid");
             }
             
-            // if (_users.Values.Any(user => user.Email.Equals(email)))
-            // {
-            //     throw new InvalidInputException("Email already exists");
-            // }
+            if (_users.Values.Any(user => user.Email.Equals(email)))
+            {
+                throw new InvalidInputException("Email already exists");
+            }
         }
 
         private void ValidatePassword(string password)

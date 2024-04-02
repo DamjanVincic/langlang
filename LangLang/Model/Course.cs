@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace LangLang.Model
 {
@@ -156,10 +157,17 @@ namespace LangLang.Model
                 Console.WriteLine("Error loading courses from JSON: " + ex.Message);
             }
         }
+
         public static void WriteCourseToJson(string jsonFilePath)
         {
             string jsonExamString = JsonConvert.SerializeObject(_courses);
             File.WriteAllText(jsonFilePath, jsonExamString);
+        }
+
+        public static List<Course> GetAvailableCourses()
+        {
+            //TODO: Validate to not show the courses that the student has already applied to and
+            return _courses.Values.Where(course => course.StudentIds.Count < course.MaxStudents && (course.StartDate.DayNumber - DateOnly.FromDateTime(DateTime.Today).DayNumber) >= 7).ToList();
         }
     }
 }

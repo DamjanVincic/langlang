@@ -62,7 +62,5 @@ namespace LangLang.ViewModel
         }
 
         public IEnumerable<Gender> GenderValues => Enum.GetValues(typeof(Gender)).Cast<Gender>();
-
-        public IEnumerable<Education> EducationValues => Enum.GetValues(typeof(Education)).Cast<Education>();
     }
 }

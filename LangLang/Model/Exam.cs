@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Collections;
+using System.Linq;
 
 namespace LangLang.Model
 {
@@ -19,7 +20,6 @@ namespace LangLang.Model
 
         public Exam(Language language, int maxStudents, DateOnly examDate, int teacherId, TimeOnly examTime) : base(teacherId, examTime)
         {
-            //throw new NotImplementedException();
             Language = language;
             MaxStudents = maxStudents;
             ExamDate = examDate;
@@ -101,6 +101,7 @@ namespace LangLang.Model
         {
             _exams.Remove(id);
         }
+        
         public static void LoadExamFromJson(string jsonFilePath)
         {
             try
@@ -121,10 +122,17 @@ namespace LangLang.Model
                 Console.WriteLine("Error loading emaxs from JSON: " + ex.Message);
             }
         }
+
         public static void WriteExamToJson(string jsonFilePath)
         {
             string jsonExamString = JsonConvert.SerializeObject(_exams);
-            File.WriteAllText(jsonFilePath,jsonExamString);
+            File.WriteAllText(jsonFilePath, jsonExamString);
+        }
+
+        public static List<Exam> GetAvailableExams()
+        {
+            //TODO: Add checking if the student has finished the course and don't show the ones they have applied to
+            return _exams.Values.Where(exam => exam.StudentIds.Count < exam.MaxStudents && (exam.ExamDate.DayNumber - DateOnly.FromDateTime(DateTime.Today).DayNumber) >= 30).ToList();
         }
     }
 }
