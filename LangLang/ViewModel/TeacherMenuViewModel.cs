@@ -1,46 +1,51 @@
 ﻿using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 using LangLang.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using LangLang.View;
+using System.Windows;
 using System.Windows.Input;
 
 namespace LangLang.ViewModel
 {
     class TeacherMenuViewModel : ViewModelBase
     {
-        private Exam _exam;
-        public string Name { get; set; }
-        public LanguageLevel LanguageLevel { get; set; }
-        public int MaxStudents { get; set; }
-        public DateOnly ExamDate { get; set; }
-
-        public ICommand EnterExamCommand { get; }
-
-        public IEnumerable<LanguageLevel> LanguageLevelValues => Enum.GetValues(typeof(LanguageLevel)).Cast<LanguageLevel>();
-
-        public TeacherMenuViewModel(Exam exam)
+        public TeacherMenuViewModel(Teacher teacher)
         {
-            // If exam is null, initialize it with default values
-            if (exam == null)
-            {
-                // ovo treba menjati kad dobijemo listu jezika
-                this._exam = new Exam(new Language("English", LanguageLevel.A1), 0, DateOnly.FromDateTime(DateTime.Today));
-
-            }
-            else
-            {
-                this._exam = exam;
-            }
-
-            EnterExamCommand = new RelayCommand(AddExam);
-            // Assigning properties from the exam object
-            Name = this._exam.Language.Name;
-            LanguageLevel = this._exam.Language.Level;
-            MaxStudents = this._exam.MaxStudents;
-            ExamDate = this._exam.ExamDate;
+            CourseCommand = new RelayCommand(Course);
+            ExamCommand = new RelayCommand(Exam);
         }
 
+        public ICommand CourseCommand { get; }
+        public void Course()
+        {
+            var newWindow = new CourseView();
+            newWindow.Show();
+            Application.Current.MainWindow.Closed += (sender, e) =>
+            {
+                foreach (Window window in Application.Current.Windows)
+                {
+                    if (window != Application.Current.MainWindow)
+                    {
+                        window.Close();
+                    }
+                }
+            };
+        }
+        public ICommand ExamCommand { get; }
+        public void Exam()
+        {
+            var newWindow = new ExamView();
+            newWindow.Show();
+            Application.Current.MainWindow.Closed += (sender, e) =>
+            {
+                foreach (Window window in Application.Current.Windows)
+                {
+                    if (window != Application.Current.MainWindow)
+                    {
+                        window.Close();
+                    }
+                }
+            };
+        }
     }
+}

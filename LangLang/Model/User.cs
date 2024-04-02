@@ -29,24 +29,18 @@ namespace LangLang.Model
             _users.Add(Id, this);
         }
         
-        public void Edit(string firstName, string lastName, string email, string password, Gender gender, string phone)
-        {
-            Validate(firstName, lastName, email, password, phone);
-            FirstName = firstName;
-            LastName = lastName;
-            Email = email;
-            Password = password;
-            Gender = gender;
-            Phone = phone;
-        }
-
-        private void Validate(string firstName, string lastName, string email, string password, string phone)
+        public void Edit(string firstName, string lastName, string password, Gender gender, string phone)
         {
             ValidateFirstName(firstName);
             ValidateLastName(lastName);
-            ValidateEmail(email, true);
             ValidatePassword(password);
             ValidatePhoneNumber(phone);
+            
+            _firstName = firstName;
+            _lastName = lastName;
+            _password = password;
+            Gender = gender;
+            _phone = phone;
         }
             
         public static User? Login(string email, string password)
@@ -137,7 +131,7 @@ namespace LangLang.Model
             }
         }
 
-        private void ValidateEmail(string email, bool exists = false)
+        private void ValidateEmail(string email)
         {
             if (email == null)
             {
@@ -149,10 +143,10 @@ namespace LangLang.Model
                 throw new InvalidInputException("Email not valid");
             }
             
-            if (!exists && _users.Values.Any(user => user.Email.Equals(email)))
-            {
-                throw new InvalidInputException("Email already exists");
-            }
+            // if (_users.Values.Any(user => user.Email.Equals(email)))
+            // {
+            //     throw new InvalidInputException("Email already exists");
+            // }
         }
 
         private void ValidatePassword(string password)

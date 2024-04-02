@@ -79,7 +79,7 @@
 
         <ComboBox ItemsSource="{Binding LanguageLevelValues}"
                   SelectedItem="{Binding LanguageLevelSelected, Mode=TwoWay}"
-                  Grid.Column="1" Grid.Row="6" Margin="10" SelectionChanged="ComboBox_SelectionChanged"/>
+                  Grid.Column="1" Grid.Row="6" Margin="10"/>
         <Button Command="{Binding AddCommand}" Content="Add" Grid.Column="1" Grid.Row="7"/>
         <Button Command="{Binding EditCommand}" Content="Edit" Grid.Column="1" Grid.Row="8"/>
         <Button Command="{Binding DeleteCommand}" Content="Delete" Grid.Column="1" Grid.Row="9"/>

@@ -12,15 +12,6 @@ namespace LangLang.ViewModel
     class AddExamViewModel : ViewModelBase
     {
         private Exam _exam;
-        public string Name { get; set; }
-        public LanguageLevel LanguageLevel { get; set; }
-        public int MaxStudents { get; set; }
-        public DateOnly ExamDate { get; set; }
-
-        public ICommand EnterExamCommand { get; }
-
-        public IEnumerable<LanguageLevel> LanguageLevelValues => Enum.GetValues(typeof(LanguageLevel)).Cast<LanguageLevel>();
-
         public AddExamViewModel(Exam exam)
         {
             this._exam = exam;
@@ -38,6 +29,15 @@ namespace LangLang.ViewModel
 
             EnterExamCommand = new RelayCommand(AddExam);
         }
+        public string Name { get; set; }
+        public LanguageLevel LanguageLevel { get; set; }
+        public int MaxStudents { get; set; }
+        public DateOnly ExamDate { get; set; }
+
+        public ICommand EnterExamCommand { get; }
+
+        public IEnumerable<LanguageLevel> LanguageLevelValues => Enum.GetValues(typeof(LanguageLevel)).Cast<LanguageLevel>();
+
 
 
         private void AddExam()
@@ -80,7 +80,7 @@ namespace LangLang.ViewModel
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
+        
         public static bool CanAddScheduleItem(DateOnly date, int duration, List<Weekday> held, int teacherId, TimeOnly startTime, bool isCourse, bool isOnline)
         {
             return true;

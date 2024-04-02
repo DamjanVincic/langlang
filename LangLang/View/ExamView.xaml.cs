@@ -27,9 +27,5 @@ namespace LangLang.View
             DataContext = new ExamListingViewModel();
             InitializeComponent();
         }
-        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
     }
 }

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using LangLang.Model;
@@ -15,21 +16,17 @@ namespace LangLang.ViewModel
     public class ExamViewModel : ViewModelBase
     {
         // glues the model and the view
-        private Exam exam;
-
-        public int Id => exam.Id;
-        public string Language => exam.Language.Name;
-        public LanguageLevel LanguageLevel => exam.Language.Level;
-        public string MaxStudents => exam.MaxStudents.ToString();
-        public DateOnly ExamDate => exam.ExamDate;
-
-        public ExamListingViewModel ObjExamListingViewModel;
-        public event PropertyChangedEventHandler? PropertyChanged;
-
+        private Exam _exam;
         public ExamViewModel(Exam exam)
         {
-            this.exam = exam;
+            this._exam = exam;
         }
+
+        public int Id => _exam.Id;
+        public string Language => _exam.Language.Name;
+        public LanguageLevel LanguageLevel => _exam.Language.Level;
+        public string MaxStudents => _exam.MaxStudents.ToString();
+        public DateOnly ExamDate => _exam.ExamDate;
 
         public bool FilterLevel(string level)
         {
@@ -37,7 +34,7 @@ namespace LangLang.ViewModel
             {
                 return true;
             }
-            return exam.Language.Level == (LanguageLevel)Enum.Parse(typeof(LanguageLevel), level);
+            return _exam.Language.Level == (LanguageLevel)Enum.Parse(typeof(LanguageLevel), level);
         }
 
         public bool FilterLanguageName(string name)
@@ -46,7 +43,7 @@ namespace LangLang.ViewModel
             {
                 return true;
             }
-            return exam.Language.Name == name;
+            return _exam.Language.Name == name;
         }
         public bool FilterDateHeld(DateTime date)
         {
@@ -55,7 +52,7 @@ namespace LangLang.ViewModel
                 return true;
             }
             DateOnly chosenDate = new DateOnly(date.Year, date.Month, date.Day);
-            return chosenDate == exam.ExamDate;
+            return chosenDate == _exam.ExamDate;
         }
 
     }

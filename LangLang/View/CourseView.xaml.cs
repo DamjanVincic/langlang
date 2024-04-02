@@ -18,7 +18,7 @@ namespace LangLang.View
     /// <summary>
     /// Interaction logic for CourseView.xaml
     /// </summary>
-    public partial class CourseView : UserControl
+    public partial class CourseView : Window
     {
         public CourseView()
         {

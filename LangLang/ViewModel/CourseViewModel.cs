@@ -41,38 +41,21 @@ namespace LangLang.ViewModel
         public CourseViewModel(Course course)
         {
             this.course = course;
-            AddCourseCommand = new RelayCommand(AddCourse);
-            EditCourseCommand = new RelayCommand(EditCourse);
-            DeleteCourseCommand = new RelayCommand(DeleteCourse);
+            //AddCourseCommand = new RelayCommand(AddCourse);
+            //EditCourseCommand = new RelayCommand(EditCourse);
+            //DeleteCourseCommand = new RelayCommand(DeleteCourse);
         }
-        private void AddCourse() 
-        {
-            //try
-            //{
-            //    var HeldList = Held
-            //        .Split(',')
-            //        .Select(day => (Weekday)Enum.Parse(typeof(Weekday), day.Trim()))
-            //        .ToList();
-            //    var IsOnlineBool = IsOnline == "online" ? true : false;
-            //    var AreApplicationsClosed = Applications == "closed" ? true : false;
-
-            //    //int creator, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed, int teacher, List<int> students)
-            //    Course course = new Course(new Language(LanguageName, LanguageLevel)!, Duration!, HeldList!, IsOnlineBool!, MaxStudents, this.course.CreatorId, ScheduledTime!, StartDate!, AreApplicationsClosed!, );
-            //    MessageBox.Show("Course created successfully.", "Success", MessageBoxButton.OK,
-            //        MessageBoxImage.Information);
-            //}
-            //catch (InvalidInputException exception)
-            //{
-            //    MessageBox.Show(exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            //}
-            //catch (ArgumentNullException exception)
-            //{
-            //    MessageBox.Show(exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            //}
-        }
-        private void EditCourse() { }
-        private void DeleteCourse() { }
-
+        //public void AddCourse(DateOnly date, int duration, List<Weekday> held, int teacherId, TimeOnly scheduledTime, bool isCourse, Language language, List<int> studentIds, int creatorId, bool isOnline, int maxStudents, bool areApplicationsClosed)
+        //{
+        //    if (Schedule.CanAddScheduleItem(date, duration, held, teacherId, scheduledTime, isCourse))
+        //    {
+        //        Course course = new(language, duration, held, isOnline, maxStudents, creatorId, scheduledTime, date, areApplicationsClosed, teacherId, studentIds);
+        //        foreach (DateOnly courseDate in Schedule.CourseDates)
+        //        {
+        //            Table[courseDate].Add(course);
+        //        }
+        //    }
+        //}
         public bool FilterLanguageLevel(string languageLevel)
         {
             return languageLevel == null || course.Language.Level.ToString().Equals(languageLevel);
@@ -87,7 +70,7 @@ namespace LangLang.ViewModel
             if (date == DateTime.MinValue)
             {
                 return true;
-            }
+            } 
             DateOnly chosenDate = new DateOnly(date.Year, date.Month, date.Day);
             return chosenDate == course.StartDate;
         }
