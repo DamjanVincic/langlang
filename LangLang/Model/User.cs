@@ -1,7 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using Newtonsoft.Json.Linq;
 
 namespace LangLang.Model
 {
@@ -9,6 +16,7 @@ namespace LangLang.Model
     {
         private static int _idCounter = 1;
         private static Dictionary<int, User> _users = new Dictionary<int, User>();
+
 
         private string _firstName;
         private string _lastName;
@@ -204,5 +212,46 @@ namespace LangLang.Model
         {
             return _users.TryAdd(user.Id, user);
         }
+        public static void LoadUsersFromJson(string jsonFilePath)
+        {
+            try
+            {
+                using (StreamReader r = new StreamReader(jsonFilePath))
+                {
+                    string json = r.ReadToEnd();
+                    var usersData = JsonConvert.DeserializeObject<Dictionary<string, JObject>>(json);
+
+                    foreach (var userData in usersData)
+                    {
+                        int id = int.Parse(userData.Key);
+                        var userType = userData.Value["Education"] != null ? typeof(Student) : typeof(Teacher);
+                        var user = (User)userData.Value.ToObject(userType);
+
+                        // Check if the key already exists in the _users dictionary
+                        if (!_users.ContainsKey(id))
+                        {
+                            _users.Add(id, user);
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Skipping user with duplicate ID: {id}");
+                        }
+
+                        if (id >= _idCounter)
+                        {
+                            _idCounter = id + 1;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error loading users from JSON: " + ex.Message);
+            }
+        }
+
+
+
+
     }
 }
