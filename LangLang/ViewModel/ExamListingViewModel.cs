@@ -35,7 +35,6 @@ namespace LangLang.ViewModel
         public ICollectionView ExamCollectionView { get; set; }
         public IEnumerable<LanguageLevel> LanguageLevelValues => Enum.GetValues(typeof(LanguageLevel)).Cast<LanguageLevel>();
 
-
         // Add a property to access language names directly from the model
         public IEnumerable<string> LanguageNames => Language.LanguageNames;
 
@@ -97,7 +96,7 @@ namespace LangLang.ViewModel
                 return examViewModel.FilterLanguageName(LanguageNameSelected) &&
                     examViewModel.FilterLevel(LanguageLevelSelected) &&
                     examViewModel.FilterDateHeld(DateSelected) &&
-                    examViewModel.FilterTeacherId(Teacher)
+                    examViewModel.FilterTeacherId(_teacher.ExamIds);
             }
             return false;
         }
@@ -119,6 +118,7 @@ namespace LangLang.ViewModel
                     if (difference.TotalDays >= 14)
                     {
                         _exams.Remove(selectedExam);
+                        Exam.Delete(selectedExam.Id);
                         MessageBox.Show("Exam deleted successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     else
