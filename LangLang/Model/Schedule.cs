@@ -11,7 +11,7 @@ namespace LangLang.Model
     public class Schedule
     {
         public static Dictionary<DateOnly, List<ScheduleItem>> Table { get; set; }
-        public static List<DateOnly> CourseDates {get; set; }
+        public static List<DateOnly> CourseDates = new List<DateOnly>();
         
         public static bool CanAddScheduleItem(DateOnly date, int duration, List<Weekday> held, int teacherId, TimeOnly startTime, bool isCourse, bool isOnline)
         {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LangLang.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,11 +19,14 @@ namespace LangLang.View
     /// <summary>
     /// Interaction logic for AddCourseView.xaml
     /// </summary>
-    public partial class AddCourseView : UserControl
+    public partial class ModifyCourseView : Window
     {
-        public AddCourseView()
+        private List<string> selectedWeekdays = new List<string>();
+
+        public ModifyCourseView()
         {
             InitializeComponent();
         }
+
     }
 }
