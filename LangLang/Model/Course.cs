@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace LangLang.Model
 {
@@ -135,6 +137,27 @@ namespace LangLang.Model
         public static Course GetById(int id)
         {
             return _courses[id];
+        }
+
+        public static void LoadCourseFromJson(string jsonFilePath)
+        {
+            try
+            {
+                using (StreamReader r = new StreamReader(jsonFilePath))
+                {
+                    string json = r.ReadToEnd();
+                    Dictionary<int, Course> exams = JsonConvert.DeserializeObject<Dictionary<int, Course>>(json);
+
+                    foreach (var kvp in exams)
+                    {
+                        _courses.Add(kvp.Key, kvp.Value);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error loading courses from JSON: " + ex.Message);
+            }
         }
     }
 }
