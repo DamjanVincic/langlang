@@ -15,7 +15,9 @@ public class StudentViewModel : ViewModelBase
     
     public string FullName => $"{_student.FirstName} {_student.LastName}";
     
-    public ICommand EditAccountCommand { get;  }
+    public ICommand EditAccountCommand { get; }
+    public ICommand ViewCoursesCommand { get; }
+    public ICommand ViewExamsCommand { get; }
     public ICommand ApplyForCourseCommand { get; }
     public ICommand ApplyForExamCommand { get; }
     
@@ -28,10 +30,22 @@ public class StudentViewModel : ViewModelBase
         // ApplyForCourseCommand = new RelayCommand<Course>(ApplyForCourse);
         // ApplyForExamCommand = new RelayCommand<Exam>(ApplyForExam);
         EditAccountCommand = new RelayCommand(EditAccount);
+        ViewCoursesCommand = new RelayCommand(ViewCourses);
+        ViewExamsCommand = new RelayCommand(ViewExams);
     }
     
-    public void EditAccount()
+    private void EditAccount()
     {
         new StudentEditView(_student).Show();
+    }
+    
+    private void ViewCourses()
+    {
+        new StudentCourseView().Show();
+    }
+    
+    private void ViewExams()
+    {
+        new StudentExamView().Show();
     }
 }
