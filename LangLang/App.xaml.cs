@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using LangLang.Model;
 
 namespace LangLang
 {
@@ -14,16 +15,19 @@ namespace LangLang
     /// </summary>
     public partial class App : Application
     {
-        protected override void OnStartup(StartupEventArgs e)
+        public App()
         {
-            MainWindow=new MainWindow()
-            {
-                DataContext=new MainViewModel()
-            };
-
-            MainWindow.Show();
-
-            base.OnStartup(e);
+            //TODO: Load data
+            new Director("Nadja", "Zoric", "nadjazoric@gmail.com", "PatrikZvezdasti011", Gender.Female, "1234567890123");
+            
+            new MainWindow().Show();
+            Exit += App_Exit;
+        }
+        
+        private void App_Exit(object sender, ExitEventArgs e)
+        {
+            //TODO: Save data
+            Console.WriteLine("haha");
         }
     }
 }

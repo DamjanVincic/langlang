@@ -19,6 +19,10 @@
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
@@ -27,7 +31,7 @@
 
         <TextBlock Text="Add exam:" Grid.Column="1" Grid.Row="0"/>
         <TextBlock Text="Date held:" Grid.Column="1" Grid.Row="1"/>
-        <DatePicker x:Name="datePicker" SelectedDate="{Binding ExamDate}" Grid.Column="1" Grid.Row="2"/>
+        <DatePicker x:Name="datePicker" SelectedDate="{Binding DateSelected}" Grid.Column="1" Grid.Row="2"/>
         <TextBlock Text="Language:" Grid.Column="1" Grid.Row="3"/>
 
         <ComboBox ItemsSource="{x:Static model:Language.LanguageNames}"
@@ -44,6 +48,16 @@
         <TextBlock Text="Max students:" Grid.Column="1" Grid.Row="7"/>
         <TextBox Grid.Row="8" Text="{Binding MaxStudents, Mode=TwoWay}" PreviewTextInput="TextBox_PreviewTextInput" Width="{Binding ActualWidth, ElementName=datePicker}"/>
 
-        <Button Command="{Binding AddCommand}" Content="Add" Grid.Column="1" Grid.Row="9"/>
+        <TextBlock Text="Hour:" Grid.Column="1" Grid.Row="9"/>
+        <ComboBox ItemsSource="{Binding Hours}"
+                  SelectedItem="{Binding HourSelected, Mode=TwoWay}"
+                  Grid.Column="1" Grid.Row="10" Margin="10" Width="{Binding ActualWidth, ElementName=datePicker}"/>
+
+        <TextBlock Text="Minutes:" Grid.Column="1" Grid.Row="11"/>
+        <ComboBox ItemsSource="{Binding Minutes}"
+                  SelectedItem="{Binding MinuteSelected, Mode=TwoWay}"
+                  Grid.Column="1" Grid.Row="12" Margin="10" Width="{Binding ActualWidth, ElementName=datePicker}"/>
+        <Button Command="{Binding EnterExamCommand}" Content="Save" Grid.Column="1" Grid.Row="13"/>
+
     </Grid>
 </Window>

@@ -28,6 +28,9 @@ namespace LangLang.ViewModel
         public string MaxStudents => _exam.MaxStudents.ToString();
         public DateOnly ExamDate => _exam.ExamDate;
 
+        public int Duration => Exam.EXAM_DURATION;
+        public TimeOnly ExamTime => _exam.ScheduledTime;
+
         public bool FilterLevel(string level)
         {
             if (level == null)
@@ -54,6 +57,9 @@ namespace LangLang.ViewModel
             DateOnly chosenDate = new DateOnly(date.Year, date.Month, date.Day);
             return chosenDate == _exam.ExamDate;
         }
-
+        public bool FilterTeacherId(int id)
+        {
+            return id == -1 || _exam.TeacherId == id;
+        }
     }
 }

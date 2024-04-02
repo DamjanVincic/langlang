@@ -1,5 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Documents;
 using System.Windows;
@@ -12,6 +17,9 @@ namespace LangLang.Model
     {
         public static Dictionary<DateOnly, List<ScheduleItem>> Table = new Dictionary<DateOnly, List<ScheduleItem>>();
         public static List<DateOnly> ScheduleItemDates = new List<DateOnly>();
+        private static readonly string baseDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
+        private static readonly string SCHEDULE_FILE_NAME = "schedule.json";
+        private static readonly string SCHEDULE_FILE_PATH = Path.Combine(baseDirectory, "SourceDataFiles", SCHEDULE_FILE_NAME);
         
         public static bool CanAddScheduleItem(DateOnly date, int duration, List<Weekday> held, int teacherId, TimeOnly startTime, bool isCourse, bool isOnline)
         {
@@ -173,6 +181,72 @@ namespace LangLang.Model
             }
         }
 
+        public static void LoadScheduleFromJson()
+        {
+            try
+            {
+                string json = File.ReadAllText(SCHEDULE_FILE_PATH);
+                dynamic jsonObject = JsonConvert.DeserializeObject(json);
+
+                dynamic tableToken = jsonObject["Table"];
+                Table = new Dictionary<DateOnly, List<ScheduleItem>>();
+
+                foreach (var tableEntry in tableToken)
+                {
+                    DateOnly date = DateOnly.ParseExact(tableEntry.Name, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                    List<ScheduleItem> scheduleItems = new List<ScheduleItem>();
+
+                    foreach (var item in tableEntry.Value)
+                    {
+                        var itemType = item["Held"] != null ? typeof(Course) : typeof(Exam);
+
+                        var scheduleItem = (ScheduleItem)item.ToObject(itemType);
+                        scheduleItems.Add(scheduleItem);
+                    }
+
+                    Table.Add(date, scheduleItems);
+                }
+
+                dynamic courseDatesToken = jsonObject["CourseDates"];
+                ScheduleItemDates = new List<DateOnly>();
+
+                foreach (var dateString in courseDatesToken)
+                {
+                    DateOnly date = DateOnly.ParseExact((string)dateString, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                    ScheduleItemDates.Add(date);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error loading schedule from JSON: " + ex.Message);
+            }
+        }
+        public static void WriteScheduleToJson()
+        {
+            try
+            {
+                var jsonObject = new JObject();
+
+                var tableJson = new JObject();
+                foreach (var entry in Table)
+                {
+                    var dateKey = entry.Key.ToString("yyyy-MM-dd");
+                    var scheduleItemsJson = new JArray(entry.Value.Select(item => JObject.FromObject(item)));
+                    tableJson[dateKey] = scheduleItemsJson;
+                }
+                jsonObject["Table"] = tableJson;
+
+                var courseDatesJson = new JArray(ScheduleItemDates.Select(date => date.ToString("yyyy-MM-dd")));
+                jsonObject["CourseDates"] = courseDatesJson;
+
+                File.WriteAllText(SCHEDULE_FILE_PATH, jsonObject.ToString());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error writing schedule to JSON: " + ex.Message);
+            }
+        }
+
         internal static void ModifySchedule(ScheduleItem item, DateOnly startDate, int duration, List<Weekday> toDelete, List<Weekday> toAdd)
         {
             if (toDelete != null)
@@ -230,3 +304,4 @@ namespace LangLang.Model
         }
     }
 }
+

@@ -25,21 +25,7 @@ namespace LangLang
         public MainWindow()
         {
             InitializeComponent();
-            // DataContext = new MainViewModel(this.NavigationService);
-            MainFrame.Navigate(new LoginView());
-        }
-
-        private void BackButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (MainFrame.CanGoBack)
-            {
-                MainFrame.GoBack();
-            }
-        }
-        
-        private void RegisterButton_Click(object sender, RoutedEventArgs e)
-        {
-            MainFrame.Navigate(new RegisterView());
+            DataContext = new MainViewModel();
         }
     }
 }

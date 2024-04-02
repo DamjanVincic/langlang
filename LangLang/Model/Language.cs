@@ -1,13 +1,21 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Diagnostics.Eventing.Reader;
 
 namespace LangLang.Model
 {
     public class Language
     {
         private string _name;
+        
+        private static readonly string baseDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
+        private static readonly string LANGUAGE_FILE_NAME = "language.json";
+        private static readonly string LANGUAGE_FILE_PATH = Path.Combine(baseDirectory, "SourceDataFiles", LANGUAGE_FILE_NAME);
+
         private static List<Language> _languages = new List<Language>();
-        private static List<string> _languageNames = new List<string>();
+        private static List<string> _languageNames = new List<string>() { "Serbian","English","German"};
 
         public Language(string name, LanguageLevel level)
         {
@@ -18,6 +26,26 @@ namespace LangLang.Model
             {
                 LanguageNames.Add(name);
             }
+        }
+
+        public static void MakeLanguage(string languageName, LanguageLevel languageLevel)
+        {
+            if(LanguageNames.Contains(languageName))
+            {
+                foreach (Language language in Languages)
+                {
+                    if (language.Name.Equals(languageName) && language.Level == languageLevel)
+                    {
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                LanguageNames.Add(languageName);
+            }
+
+            new Language(languageName, languageLevel);
         }
 
         public static List<Language> Languages
@@ -75,6 +103,29 @@ namespace LangLang.Model
         public override int GetHashCode()
         {
             return HashCode.Combine(_name);
+        }
+
+        public static void LoadLanguagesFromJson()
+        {
+            try
+            {
+                string json = File.ReadAllText(LANGUAGE_FILE_PATH);
+                _languages = JsonConvert.DeserializeObject<List<Language>>(json);
+                foreach(Language language in _languages)
+                {
+                    _languageNames.Add(language.Name);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error reading languages: " + ex.Message);
+            }
+        }
+        public static void WriteLanguageToJson()
+        {
+            string jsonExamString = JsonConvert.SerializeObject(_languages);
+            File.WriteAllText(LANGUAGE_FILE_PATH, jsonExamString);
         }
     }
 }

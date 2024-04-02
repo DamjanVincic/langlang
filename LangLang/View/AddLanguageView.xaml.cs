@@ -1,8 +1,8 @@
-﻿using LangLang.ViewModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,20 +12,20 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
+using LangLang.Model;
+using LangLang.ViewModel;
 
 namespace LangLang.View
 {
     /// <summary>
-    /// Interaction logic for TeachersView.xaml
+    /// Interaction logic for AddLanguageView.xaml
     /// </summary>
-    public partial class TeachersView : Window
+    public partial class AddLanguageView : Window
     {
-        public TeachersView()
+        public AddLanguageView(ICollectionView qualificationCollectionView)
         {
-            DataContext = new TeacherListingViewModel();
-
+            DataContext = new AddLanguageViewModel(qualificationCollectionView);
             InitializeComponent();
         }
     }

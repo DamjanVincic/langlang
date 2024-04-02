@@ -1,14 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using Newtonsoft.Json.Linq;
 
 namespace LangLang.Model
 {
     public abstract class User
     {
         private static int _idCounter = 1;
+
+        private static readonly string baseDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
+        private static readonly string USER_FILE_NAME = "users.json";
+        private static readonly string USER_FILE_PATH = Path.Combine(baseDirectory, "SourceDataFiles", USER_FILE_NAME);
+        
         private static Dictionary<int, User> _users = new Dictionary<int, User>();
+        public static Dictionary<int, User> Users => _users;
 
         private string _firstName;
         private string _lastName;
@@ -16,7 +29,7 @@ namespace LangLang.Model
         private string _password;
         private string _phone;
 
-        public User(string firstName, string lastName, string email, string password, Gender gender, string phone)
+        public User(string firstName, string lastName, string email, string password, Gender gender, string phone, bool director = false)
         {
             FirstName = firstName;
             LastName = lastName;
@@ -24,33 +37,46 @@ namespace LangLang.Model
             Password = password;
             Gender = gender;
             Phone = phone;
+
+            Id = director ? 0 : _idCounter++;
             
-            Id = _idCounter++;
             _users.Add(Id, this);
         }
-        
+
         public void Edit(string firstName, string lastName, string password, Gender gender, string phone)
         {
             ValidateFirstName(firstName);
             ValidateLastName(lastName);
             ValidatePassword(password);
             ValidatePhoneNumber(phone);
-            
+
             _firstName = firstName;
             _lastName = lastName;
             _password = password;
             Gender = gender;
             _phone = phone;
         }
-            
+
+        public void Delete()
+        {
+            //TODO: Remove user from all courses and exams
+            // throw new NotImplementedException();
+            _users.Remove(Id);
+        }
+
         public static User? Login(string email, string password)
         {
             return _users.Values.FirstOrDefault(user => user.Email.Equals(email) && user.Password.Equals(password));
         }
-        
+
         public static User GetUserById(int id)
         {
             return _users[id];
+        }
+        
+        public static List<Teacher> GetTeachers()
+        {
+            return _users.Values.OfType<Teacher>().ToList();
         }
         
         public int Id { get; }
@@ -137,16 +163,16 @@ namespace LangLang.Model
             {
                 throw new ArgumentNullException(nameof(email));
             }
-            
+
             if (!Regex.IsMatch(email, "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"))
             {
                 throw new InvalidInputException("Email not valid");
             }
-            
-            // if (_users.Values.Any(user => user.Email.Equals(email)))
-            // {
-            //     throw new InvalidInputException("Email already exists");
-            // }
+
+            if (_users.Values.Any(user => user.Email.Equals(email)))
+            {
+                throw new InvalidInputException("Email already exists");
+            }
         }
 
         private void ValidatePassword(string password)
@@ -199,10 +225,56 @@ namespace LangLang.Model
                 throw new InvalidInputException("Phone number must contain only numbers.");
             }
         }
-        
+
         public static bool TryAddUser(User user)
         {
             return _users.TryAdd(user.Id, user);
         }
+        public static void LoadUsersFromJson()
+        {
+            try
+            {
+                using (StreamReader r = new StreamReader(USER_FILE_PATH))
+                {
+                    string json = r.ReadToEnd();
+                    var usersData = JsonConvert.DeserializeObject<Dictionary<string, JObject>>(json);
+
+                    foreach (var userData in usersData)
+                    {
+                        int id = int.Parse(userData.Key);
+                        var userType = userData.Value["Education"] != null ? typeof(Student) : typeof(Teacher);
+                        var user = (User)userData.Value.ToObject(userType);
+
+                        // Check if the key already exists in the _users dictionary
+                        if (!_users.ContainsKey(id))
+                        {
+                            _users.Add(id, user);
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Skipping user with duplicate ID: {id}");
+                        }
+
+                        if (id >= _idCounter)
+                        {
+                            _idCounter = id + 1;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error loading users from JSON: " + ex.Message);
+            }
+        }
+        public static void WriteUserToJson()
+        {
+            string jsonExamString = JsonConvert.SerializeObject(_users);
+            File.WriteAllText(USER_FILE_PATH, jsonExamString);
+        }
+
+
+
+
     }
 }

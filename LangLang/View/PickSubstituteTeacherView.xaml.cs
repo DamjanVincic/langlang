@@ -1,8 +1,6 @@
-﻿using LangLang.ViewModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,20 +10,20 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
+using LangLang.Model;
+using LangLang.ViewModel;
 
 namespace LangLang.View
 {
     /// <summary>
-    /// Interaction logic for TeachersView.xaml
+    /// Interaction logic for PickSubstituteTeacherView.xaml
     /// </summary>
-    public partial class TeachersView : Window
+    public partial class PickSubstituteTeacherView : Window
     {
-        public TeachersView()
+        public PickSubstituteTeacherView(List<Teacher> availableTeachers, Dictionary<Course, Teacher> substituteTeachers, Course course)
         {
-            DataContext = new TeacherListingViewModel();
-
+            DataContext = new PickSubstituteTeacherViewModel(availableTeachers, substituteTeachers, course);
             InitializeComponent();
         }
     }

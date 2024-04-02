@@ -1,13 +1,18 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace LangLang.Model
 {
     public class Course : ScheduleItem
     { 
-        public const int CLASS_DURATION = 90; 
-        private static int _idCounter = 1;
+        public const int CLASS_DURATION = 90;
         private static Dictionary<int, Course> _courses = new Dictionary<int, Course>();
+        private static readonly string baseDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
+        private static readonly string COURSE_FILE_NAME = "courses.json";
+        private static readonly string COURSE_FILE_PATH = Path.Combine(baseDirectory, "SourceDataFiles", COURSE_FILE_NAME);
         private Language _language;
         private int _duration;
         private List<Weekday> _held;
@@ -26,13 +31,11 @@ namespace LangLang.Model
             MaxStudents = maxStudents;
             StartDate = startDate;
             StudentIds = studentIds;
-            Id = _idCounter++;
-            Courses.Add(Id, this);
+            _courses.Add(Id, this);
             CourseIds.Add(Id);
             Schedule.ModifySchedule(this, StartDate, Duration, null, Held);
             
         }
-        public int Id { get; set; }
         public static List<int> CourseIds 
         {
             get => _courseIds;
@@ -140,6 +143,39 @@ namespace LangLang.Model
         public static Course GetById(int id)
         {
             return Courses[id];
+        }
+
+        public static void LoadCourseFromJson()
+        {
+            try
+            {
+                using (StreamReader r = new StreamReader(COURSE_FILE_PATH))
+                {
+                    string json = r.ReadToEnd();
+                    Dictionary<int, Course> exams = JsonConvert.DeserializeObject<Dictionary<int, Course>>(json);
+
+                    foreach (var kvp in exams)
+                    {
+                        _courses.Add(kvp.Key, kvp.Value);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error loading courses from JSON: " + ex.Message);
+            }
+        }
+
+        public static void WriteCourseToJson()
+        {
+            string jsonExamString = JsonConvert.SerializeObject(_courses);
+            File.WriteAllText(COURSE_FILE_PATH, jsonExamString);
+        }
+
+        public static List<Course> GetAvailableCourses()
+        {
+            //TODO: Validate to not show the courses that the student has already applied to and
+            return _courses.Values.Where(course => course.StudentIds.Count < course.MaxStudents && (course.StartDate.DayNumber - DateOnly.FromDateTime(DateTime.Today).DayNumber) >= 7).ToList();
         }
     }
 }

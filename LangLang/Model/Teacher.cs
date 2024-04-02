@@ -6,7 +6,6 @@ namespace LangLang.Model
 {
     public class Teacher : User
     {
-        private static List<int> _teacherIds = new();
         private List<int> _courseIds = new();
         private List<int> _examIds  = new();
         
@@ -15,12 +14,6 @@ namespace LangLang.Model
             validateQualifications(qualifications);
             Qualifications=qualifications;
             DateCreated=DateOnly.FromDateTime(DateTime.Now);
-            TeacherIds.Add(Id);
-        }
-
-        public static List<int> TeacherIds 
-        {
-            get => _teacherIds;
         }
 
         public List<Language> Qualifications { get; }

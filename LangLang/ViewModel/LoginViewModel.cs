@@ -11,13 +11,16 @@ namespace LangLang.ViewModel;
 
 public class LoginViewModel : ViewModelBase
 {
+    private readonly Window _loginWindow;
+    
     public string? Email { get; set; }
     public string? Password { get; set; }
     
     public ICommand LoginCommand { get; }
     
-    public LoginViewModel()
+    public LoginViewModel(Window loginWindow)
     {
+        _loginWindow = loginWindow;
         LoginCommand = new RelayCommand(Login);
     }
     
@@ -32,6 +35,17 @@ public class LoginViewModel : ViewModelBase
                 break;
             case Student student:
                 new StudentView(student).Show();
+                _loginWindow.Close();
+                Application.Current.MainWindow?.Close();
+                break;
+            case Director:
+                new TeachersView().Show();
+                _loginWindow.Close();
+                Application.Current.MainWindow?.Close();
+                break;
+            case Teacher teacher:
+                new TeacherMenu(teacher).Show();
+                _loginWindow.Close();
                 Application.Current.MainWindow?.Close();
                 break;
         }
