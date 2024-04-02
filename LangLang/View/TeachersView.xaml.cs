@@ -1,6 +1,8 @@
-﻿using System;
+﻿using LangLang.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,20 +14,19 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using LangLang.View;
-using LangLang.ViewModel;
 
-namespace LangLang
+namespace LangLang.View
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for TeachersView.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class TeachersView : Window
     {
-        public MainWindow()
+        public TeachersView()
         {
+            DataContext = new TeacherListingViewModel(this);
+
             InitializeComponent();
-            DataContext = new MainViewModel();
         }
     }
 }
