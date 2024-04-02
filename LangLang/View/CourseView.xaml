@@ -7,7 +7,8 @@
              xmlns:model ="clr-namespace:LangLang.Model"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    
+  
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
@@ -29,7 +30,7 @@
             <ColumnDefinition Width="3*"/>
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
-        <ListView Grid.Row="0" Grid.RowSpan="9" Padding="5" Margin="5" ItemsSource="{Binding Courses}">
+        <ListView Grid.Row="0" Grid.RowSpan="9" Padding="5" Margin="5" ItemsSource="{Binding Courses}" SelectedItem="{Binding SelectedItem}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Language">
@@ -132,9 +133,9 @@
         <ComboBox  ItemsSource="{Binding FormatValues}"
                   SelectedItem="{Binding SelectedFormat, Mode=TwoWay}"
                    Grid.Column="1" Grid.Row="10" />
-        <Button Command="{Binding AddCourse}"  Content="Add" Grid.Column="1" Grid.Row="11" />
-        <Button Command="{Binding EditCourse}" Content="Edit" Grid.Column="1" Grid.Row="12" />
-        <Button Command="{Binding DeleteCourse}" Content="Delete" Grid.Column="1" Grid.Row="13" />
+        <Button Command="{Binding AddCommand}"  Content="Add" Grid.Column="1" Grid.Row="10" Grid.RowSpan="2" VerticalAlignment="Bottom" />
+        <Button Command="{Binding EditCommand}" Content="Edit" Grid.Column="1" Grid.Row="12" />
+        <Button Command="{Binding DeleteCommand}" Content="Delete" Grid.Column="1" Grid.Row="13" />
 
     </Grid>
 </Window>
