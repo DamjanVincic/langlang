@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LangLang.Model
 {
@@ -13,9 +14,8 @@ namespace LangLang.Model
         private DateOnly _examDate;
 
 
-        public Exam(Language language, int maxStudents, DateOnly examDate) : base(0, new TimeOnly())
+        public Exam(Language language, int maxStudents, DateOnly examDate, int teacherId, TimeOnly examTime) : base(teacherId, examTime)
         {
-            throw new NotImplementedException();
             Language = language;
             MaxStudents = maxStudents;
             ExamDate = examDate;
@@ -97,6 +97,12 @@ namespace LangLang.Model
         public void Delete(int id)
         {
             _exams.Remove(id);
+        }
+        
+        public static List<Exam> GetAvailableExams()
+        {
+            //TODO: Add checking if the student has finished the course and don't show the ones they have applied to
+            return _exams.Values.Where(exam => exam.StudentIds.Count < exam.MaxStudents && (exam.ExamDate.DayNumber - DateOnly.FromDateTime(DateTime.Today).DayNumber) >= 30).ToList();
         }
     }
 }

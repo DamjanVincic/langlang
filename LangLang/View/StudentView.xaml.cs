@@ -9,6 +9,6 @@ public partial class StudentView : Window
     public StudentView(Student student)
     {
         InitializeComponent();
-        DataContext = new StudentViewModel(student);
+        DataContext = new StudentViewModel(student, this);
     }
 }

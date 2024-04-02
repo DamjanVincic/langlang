@@ -36,9 +36,9 @@ namespace LangLang.Model
 
         private void validateQualifications(List<Language> qualificatons)
         {
-            if (!qualificatons.Except(Language.Languages).Any())
+            if (qualificatons.Except(Language.Languages).Any())
             {
-                throw new InvalidInputException("Given language doesn't exist");
+                //throw new InvalidInputException("Given language doesn't exist");
             }
         }
 

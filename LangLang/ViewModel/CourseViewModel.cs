@@ -45,17 +45,6 @@ namespace LangLang.ViewModel
             //EditCourseCommand = new RelayCommand(EditCourse);
             //DeleteCourseCommand = new RelayCommand(DeleteCourse);
         }
-        //public void AddCourse(DateOnly date, int duration, List<Weekday> held, int teacherId, TimeOnly scheduledTime, bool isCourse, Language language, List<int> studentIds, int creatorId, bool isOnline, int maxStudents, bool areApplicationsClosed)
-        //{
-        //    if (Schedule.CanAddScheduleItem(date, duration, held, teacherId, scheduledTime, isCourse))
-        //    {
-        //        Course course = new(language, duration, held, isOnline, maxStudents, creatorId, scheduledTime, date, areApplicationsClosed, teacherId, studentIds);
-        //        foreach (DateOnly courseDate in Schedule.CourseDates)
-        //        {
-        //            Table[courseDate].Add(course);
-        //        }
-        //    }
-        //}
         public bool FilterLanguageLevel(string languageLevel)
         {
             return languageLevel == null || course.Language.Level.ToString().Equals(languageLevel);
@@ -65,6 +54,12 @@ namespace LangLang.ViewModel
         {
             return languageName == null || course.Language.Name.Equals(languageName);
         }
+        public bool FilterTeacher(int teacherId)
+        {
+            return teacherId == -1 || course.TeacherId == teacherId;
+        }
+
+
         public bool FilterStartDate(DateTime date)
         {
             if (date == DateTime.MinValue)
