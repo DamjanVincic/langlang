@@ -18,7 +18,8 @@ namespace LangLang.ViewModel
 {
     public class ExamListingViewModel : ViewModelBase
     {
-        ObservableCollection<ExamViewModel> _exams;
+        private ObservableCollection<ExamViewModel> _exams;
+        private Teacher _teacher;
 
         private ExamViewModel _selectedItem;
         public ExamViewModel SelectedItem
@@ -69,8 +70,9 @@ namespace LangLang.ViewModel
             }
         }
 
-        public ExamListingViewModel()
+        public ExamListingViewModel(Teacher teacher)
         {
+            _teacher = teacher;
             _exams = new ObservableCollection<ExamViewModel>
             {
                 new ExamViewModel(new Exam(new Language("Serbian", LanguageLevel.B2), 20, new DateOnly(2024, 4, 15),1,TimeOnly.MaxValue)),
@@ -94,7 +96,8 @@ namespace LangLang.ViewModel
             {
                 return examViewModel.FilterLanguageName(LanguageNameSelected) &&
                     examViewModel.FilterLevel(LanguageLevelSelected) &&
-                    examViewModel.FilterDateHeld(DateSelected);
+                    examViewModel.FilterDateHeld(DateSelected) &&
+                    examViewModel.FilterTeacherId(Teacher)
             }
             return false;
         }
