@@ -6,6 +6,7 @@ using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Model;
+using LangLang.View;
 
 namespace LangLang.ViewModel;
 
@@ -23,9 +24,12 @@ public class RegisterViewModel : ViewModelBase
     public IEnumerable<Education> EducationValues => Enum.GetValues(typeof(Education)).Cast<Education>();
     
     public ICommand RegisterCommand { get; }
+
+    private readonly Window _registerWindow;
     
-    public RegisterViewModel()
+    public RegisterViewModel(Window registerWindow)
     {
+        _registerWindow = registerWindow;
         RegisterCommand = new RelayCommand(Register);
     }
 
@@ -36,6 +40,10 @@ public class RegisterViewModel : ViewModelBase
             Student student = new Student(FirstName!, LastName!, Email!, Password!, Gender, Phone!, Education);
             MessageBox.Show("User registered successfully.", "Success", MessageBoxButton.OK,
                 MessageBoxImage.Information);
+            
+            new StudentView(student).Show();
+            _registerWindow.Close();
+            Application.Current.MainWindow?.Close();
         }
         catch (InvalidInputException exception)
         {

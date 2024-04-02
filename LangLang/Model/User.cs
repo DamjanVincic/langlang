@@ -16,6 +16,7 @@ namespace LangLang.Model
     {
         private static int _idCounter = 1;
         private static Dictionary<int, User> _users = new Dictionary<int, User>();
+        public static Dictionary<int, User> Users => _users;
 
 
         private string _firstName;
@@ -49,6 +50,13 @@ namespace LangLang.Model
             _password = password;
             Gender = gender;
             _phone = phone;
+        }
+        
+        public void Delete()
+        {
+            //TODO: Remove user from all courses and exams
+            // throw new NotImplementedException();
+            _users.Remove(Id);
         }
             
         public static User? Login(string email, string password)
@@ -151,10 +159,10 @@ namespace LangLang.Model
                 throw new InvalidInputException("Email not valid");
             }
             
-            // if (_users.Values.Any(user => user.Email.Equals(email)))
-            // {
-            //     throw new InvalidInputException("Email already exists");
-            // }
+            if (_users.Values.Any(user => user.Email.Equals(email)))
+            {
+                throw new InvalidInputException("Email already exists");
+            }
         }
 
         private void ValidatePassword(string password)
