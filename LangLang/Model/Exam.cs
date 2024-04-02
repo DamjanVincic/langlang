@@ -32,6 +32,11 @@ namespace LangLang.Model
             _exams.Add(Id, this);
         }
 
+        public static List<Exam> GetTeacherExams(int teacherId)
+        {
+            return _exams.Values.Where(exam => exam.TeacherId == teacherId).ToList();
+        }
+
         public List<int> StudentIds { get; set; }
 
         public Language Language

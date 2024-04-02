@@ -16,7 +16,6 @@ namespace LangLang.ViewModel
     {
         private ObservableCollection<CourseViewModel> _courses;
         private CourseViewModel _selectedItem;
-        public ICollectionView CourseCollectionView { get; set; }
 
         private string _selectedLanguageName;
         private string _selectedLanguageLevel;
@@ -28,30 +27,15 @@ namespace LangLang.ViewModel
         public CourseListingViewModel(int teacherId)
         {
             this.TeacherID = teacherId;
-            Language enga1 = new Language("English", LanguageLevel.A1);
-            Language enga2 = new Language("English", LanguageLevel.A2);
-            Language gera1 = new Language("German", LanguageLevel.A1);
-            Language gera2 = new Language("German", LanguageLevel.A2);
-            List<Language> peraLangs = new List<Language>
+            _courses = new ObservableCollection<CourseViewModel>();
+
+            foreach (int courseId in Course.CourseIds)
             {
-                enga1,
-                gera1
-            };
-            int idT = Teacher.TeacherIds[0];
-            _courses = new ObservableCollection<CourseViewModel>
-            {
-                new CourseViewModel(new Course(new Language("en", LanguageLevel.B1), 5, new List<Weekday> { Weekday.Monday }, true, 1, 1, new TimeOnly(18), new DateOnly(2033, 4, 4), true, idT, new List<int> { 1 })),
-                new CourseViewModel(new Course(new Language("ger", LanguageLevel.A1), 5, new List<Weekday> { Weekday.Monday }, true, 1, 1, new TimeOnly(18), new DateOnly(2033, 4, 4), true, idT, new List<int> { 1 })),
-                new CourseViewModel(new Course(new Language("in", LanguageLevel.B1), 5, new List<Weekday> { Weekday.Monday }, true, 1, 1, new TimeOnly(18), new DateOnly(2033, 4, 4), true, idT, new List<int> { 1 })),
-                new CourseViewModel(new Course(new Language("it", LanguageLevel.C1), 5, new List<Weekday> { Weekday.Monday }, true, 1, 1, new TimeOnly(18), new DateOnly(2033, 4, 4), true, idT, new List<int> { 1 }))
-            };
+                _courses.Add(new CourseViewModel((Course)Course.GetById(courseId)));
+            }
+
             CoursesCollectionView = CollectionViewSource.GetDefaultView(_courses);
-
-            //foreach (int courseId in Course.CourseIds)
-            //{
-            //    _courses.Add(new CourseViewModel((Course)Course.GetById(courseId)));
-            //}
-
+            
             CoursesCollectionView.Filter = filterCourses;
             DeleteCommand = new RelayCommand(Delete);
             AddCommand = new RelayCommand(Add);
@@ -86,6 +70,7 @@ namespace LangLang.ViewModel
                     Schedule.ModifySchedule(course, course.StartDate, course.Duration, course.Held, null);
                     Course.Courses.Remove(course.Id);
                     Course.CourseIds.Remove(course.Id);
+                    ((Teacher)User.GetUserById(_teacherID)).DeleteCourse(course.Id);
                     MessageBox.Show("Course deleted successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     //obrisi fju
                 }
@@ -102,18 +87,8 @@ namespace LangLang.ViewModel
         public ICommand AddCommand { get; }
         public void Add()
         {
-            var newWindow = new ModifyCourseView( _courses, CourseCollectionView, TeacherID, null);
+            var newWindow = new ModifyCourseView( _courses, CoursesCollectionView, TeacherID, null);
             newWindow.Show();
-            Application.Current.MainWindow.Closed += (sender, e) =>
-            {
-                foreach (Window window in Application.Current.Windows)
-                {
-                    if (window != Application.Current.MainWindow)
-                    {
-                        window.Close();
-                    }
-                }
-            };
         }
 
         public ICommand EditCommand { get; }
@@ -121,7 +96,7 @@ namespace LangLang.ViewModel
         {
             if (SelectedItem != null)
             {
-                var newWindow = new ModifyCourseView(_courses, CourseCollectionView, TeacherID, Course.GetById(SelectedItem.Id));
+                var newWindow = new ModifyCourseView(_courses, CoursesCollectionView, TeacherID, Course.GetById(SelectedItem.Id));
 
                 newWindow.Show();
 
@@ -130,16 +105,6 @@ namespace LangLang.ViewModel
             {
                 MessageBox.Show("Please select an course to edit.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            Application.Current.MainWindow.Closed += (sender, e) =>
-            {
-                foreach (Window window in Application.Current.Windows)
-                {
-                    if (window != Application.Current.MainWindow)
-                    {
-                        window.Close();
-                    }
-                }
-            };
         }
 
 

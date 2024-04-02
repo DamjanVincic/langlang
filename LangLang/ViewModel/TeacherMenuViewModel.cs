@@ -9,43 +9,37 @@ namespace LangLang.ViewModel
 {
     class TeacherMenuViewModel : ViewModelBase
     {
-        public TeacherMenuViewModel(Teacher teacher)
+        private Window _teacherMenuWindow;
+        private Teacher _teacher;
+        
+        public TeacherMenuViewModel(Teacher teacher, Window teacherMenuWindow)
         {
+            _teacher = teacher;
+            _teacherMenuWindow = teacherMenuWindow;
             CourseCommand = new RelayCommand(Course);
             ExamCommand = new RelayCommand(Exam);
+            LogOutCommand = new RelayCommand(LogOut);
         }
 
         public ICommand CourseCommand { get; }
         public void Course()
         {
-            var newWindow = new CourseView();
+            var newWindow = new CourseView(_teacher);
             newWindow.Show();
-            Application.Current.MainWindow.Closed += (sender, e) =>
-            {
-                foreach (Window window in Application.Current.Windows)
-                {
-                    if (window != Application.Current.MainWindow)
-                    {
-                        window.Close();
-                    }
-                }
-            };
         }
         public ICommand ExamCommand { get; }
         public void Exam()
         {
-            var newWindow = new ExamView();
+            var newWindow = new ExamView(_teacher);
             newWindow.Show();
-            Application.Current.MainWindow.Closed += (sender, e) =>
-            {
-                foreach (Window window in Application.Current.Windows)
-                {
-                    if (window != Application.Current.MainWindow)
-                    {
-                        window.Close();
-                    }
-                }
-            };
+        }
+        
+        public ICommand LogOutCommand { get; }
+
+        private void LogOut()
+        {
+            new MainWindow().Show();
+            _teacherMenuWindow.Close();
         }
     }
 }

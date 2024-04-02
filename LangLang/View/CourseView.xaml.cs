@@ -13,6 +13,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using LangLang.Model;
+using LangLang.ViewModel;
 
 namespace LangLang.View
 {
@@ -21,9 +23,10 @@ namespace LangLang.View
     /// </summary>
     public partial class CourseView : Window
     {
-        public CourseView()
+        public CourseView(Teacher teacher)
         {
             InitializeComponent();
+            DataContext = new CourseListingViewModel(teacher.Id);
         }
         public class MaxStudentsVisibilityConverter : IValueConverter
         {

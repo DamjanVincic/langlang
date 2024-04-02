@@ -145,16 +145,6 @@ namespace LangLang.ViewModel
         {
             var newWindow = new AddExamView(null,_teacher);
             newWindow.Show();
-            Application.Current.MainWindow.Closed += (sender, e) =>
-            {
-                foreach (Window window in Application.Current.Windows)
-                {
-                    if (window != Application.Current.MainWindow)
-                    {
-                        window.Close();
-                    }
-                }
-            };
         }
 
         public ICommand EditCommand {  get; }
@@ -184,17 +174,6 @@ namespace LangLang.ViewModel
             {
                 MessageBox.Show("Please select an exam to edit.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
-            Application.Current.MainWindow.Closed += (sender, e) =>
-            {
-                foreach (Window window in Application.Current.Windows)
-                {
-                    if (window != Application.Current.MainWindow)
-                    {
-                        window.Close();
-                    }
-                }
-            };
         }
 
 

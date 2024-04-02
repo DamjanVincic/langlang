@@ -26,11 +26,11 @@ namespace LangLang.View
     {
         private List<string> selectedWeekdays = new List<string>();
 
-        public ModifyCourseView(ObservableCollection<CourseViewModel> _courses, ICollectionView courseCollectionView, int teacherId, Course course=null)
+        public ModifyCourseView(ObservableCollection<CourseViewModel> _courses, ICollectionView courseCollectionView,
+            int teacherId, Course course = null)
         {
+            InitializeComponent();
             DataContext = new ModifyCourseViewModel(_courses, courseCollectionView, teacherId, course);
-        InitializeComponent();
-    }
-
+        }
     }
 }

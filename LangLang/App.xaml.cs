@@ -27,7 +27,6 @@ namespace LangLang
         private void App_Exit(object sender, ExitEventArgs e)
         {
             //TODO: Save data
-            Console.WriteLine("haha");
         }
     }
 }

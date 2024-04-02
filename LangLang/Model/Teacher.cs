@@ -57,5 +57,15 @@ namespace LangLang.Model
             validateCourseId(courseId);
             _courseIds.Add(courseId);
         }
+        
+        public void DeleteExam(int examId)
+        {
+            _examIds.Remove(examId);
+        }
+
+        public void DeleteCourse(int courseId)
+        {
+            _courseIds.Remove(courseId);
+        }
     }
 }

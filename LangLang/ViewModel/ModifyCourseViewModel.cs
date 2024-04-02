@@ -25,10 +25,6 @@ namespace LangLang.ViewModel
             
             this._courses = courses;
             this._courseCollectionView = courseCollectionView;
-            Language.Languages.Add(new("eng", LanguageLevel.A1));
-            Language.Languages.Add(new("eng", LanguageLevel.A2));
-            Language.Languages.Add(new("eng", LanguageLevel.B1));
-            Language.Languages.Add(new("eng", LanguageLevel.B2));
             this._course = course;
             if (course != null)
             {
@@ -208,10 +204,8 @@ namespace LangLang.ViewModel
                 ScheduledTime = new TimeOnly(Hours * 60 + Minutes);
                 bool isOnline = Format.Equals("online") ? true : false;
                 DateOnly startDate = new DateOnly(StartDate.Year, StartDate.Month, StartDate.Day);
-               
                 
-                //Add MESSAGE BOX
-                if (Schedule.CanAddScheduleItem(startDate, Duration, Held, TeacherId, ScheduledTime, true, isOnline) && !language.Equals(null))
+                if (Schedule.CanAddScheduleItem(startDate, Duration, Held, TeacherId, ScheduledTime, true, isOnline))
                 {
                     if (_course != null)
                     {
@@ -239,16 +233,14 @@ namespace LangLang.ViewModel
                         _course.Duration = Duration;
                         _course.CreatorId = CreatorId;
                         _course.AreApplicationsClosed = AreApplicationsClosed;
-                        //this._courseCollectionView.Refresh();
+                        this._courseCollectionView.Refresh();
 
                     }
                     else
                     {
                         Course course = new(language, Duration, Held, isOnline, MaxStudents, _teacherId, ScheduledTime, startDate, AreApplicationsClosed, TeacherId, new List<int>());
                         _courses.Add(new CourseViewModel(course));
-                        //this._courseCollectionView.Refresh();
-
-
+                        this._courseCollectionView.Refresh();
                     }
                     MessageBox.Show("Exam added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
@@ -265,10 +257,10 @@ namespace LangLang.ViewModel
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            // catch (Exception ex)
+            // {
+            //     MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            // }
         }
 
         public Language? IsValidLanguage(string languageName, LanguageLevel level)
@@ -280,7 +272,8 @@ namespace LangLang.ViewModel
                     return language;
                 }
             }
-            return null;
+
+            throw new InvalidInputException("Language doesn't exist.");
         }
 
     }

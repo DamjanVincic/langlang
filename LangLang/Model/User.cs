@@ -15,10 +15,10 @@ namespace LangLang.Model
     public abstract class User
     {
         private static int _idCounter = 1;
-
-        private static readonly string baseDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
+        
         private static readonly string USER_FILE_NAME = "users.json";
-        private static readonly string USER_FILE_PATH = Path.Combine(baseDirectory, "SourceDataFiles", USER_FILE_NAME);
+        private static readonly string USER_DIRECTORY_PATH = Path.Combine(Directory.GetCurrentDirectory(), "SourceDataFiles");
+        private static readonly string USER_FILE_PATH = Path.Combine(Directory.GetCurrentDirectory(), "SourceDataFiles", USER_FILE_NAME);
         
         private static Dictionary<int, User> _users = new Dictionary<int, User>();
         public static Dictionary<int, User> Users => _users;
@@ -230,51 +230,38 @@ namespace LangLang.Model
         {
             return _users.TryAdd(user.Id, user);
         }
+        
         public static void LoadUsersFromJson()
         {
             try
             {
-                using (StreamReader r = new StreamReader(USER_FILE_PATH))
+                using StreamReader r = new StreamReader(USER_FILE_PATH);
+                string json = r.ReadToEnd();
+                var usersData = JsonConvert.DeserializeObject<Dictionary<string, JObject>>(json);
+
+                foreach (var userData in usersData)
                 {
-                    string json = r.ReadToEnd();
-                    var usersData = JsonConvert.DeserializeObject<Dictionary<string, JObject>>(json);
-
-                    foreach (var userData in usersData)
-                    {
-                        int id = int.Parse(userData.Key);
-                        var userType = userData.Value["Education"] != null ? typeof(Student) : typeof(Teacher);
-                        var user = (User)userData.Value.ToObject(userType);
-
-                        // Check if the key already exists in the _users dictionary
-                        if (!_users.ContainsKey(id))
-                        {
-                            _users.Add(id, user);
-                        }
-                        else
-                        {
-                            Console.WriteLine($"Skipping user with duplicate ID: {id}");
-                        }
-
-                        if (id >= _idCounter)
-                        {
-                            _idCounter = id + 1;
-                        }
-                    }
+                    int id = int.Parse(userData.Key);
+                    var userType = userData.Value["Education"] != null ? typeof(Student) : typeof(Teacher);
+                    var user = (User)userData.Value.ToObject(userType);
                 }
+                _idCounter = _users.Keys.Max() + 1;
             }
-            catch (Exception ex)
+            catch (FileNotFoundException)
             {
-                Console.WriteLine("Error loading users from JSON: " + ex.Message);
+                // If the file doesn't exist, don't read anything
             }
         }
-        public static void WriteUserToJson()
+        public static void WriteUsersToJson()
         {
             string jsonExamString = JsonConvert.SerializeObject(_users);
+            
+            if (!Directory.Exists(USER_DIRECTORY_PATH))
+            {
+                Directory.CreateDirectory(USER_DIRECTORY_PATH);
+            }
+            
             File.WriteAllText(USER_FILE_PATH, jsonExamString);
         }
-
-
-
-
     }
 }

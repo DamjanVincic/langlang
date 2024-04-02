@@ -9,7 +9,7 @@ namespace LangLang.View
         public TeacherMenu(Teacher teacher)
         {
             InitializeComponent();
-            DataContext = new TeacherMenuViewModel(teacher);
+            DataContext = new TeacherMenuViewModel(teacher, this);
         }
     }
 }
