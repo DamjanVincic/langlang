@@ -75,7 +75,7 @@ namespace LangLang.ViewModel
                 // validate
                 Language language = IsValidLanguage(Name,LanguageLevel);
                 // CanAddScheduleItem(DateOnly date, int duration, List<Weekday> held, int teacherId, TimeOnly startTime, bool isCourse)
-                if (Schedule.CanAddScheduleItem(ExamDate, 1, new List<Weekday> { (Weekday)ExamDate.DayOfWeek }, _loggedInTeacher.Id, new TimeOnly(HourSelected,MinuteSelected, 0),false,false) && !language.Equals(null))
+                if (language != null && Schedule.CanAddScheduleItem(ExamDate, 1, new List<Weekday> { (Weekday)ExamDate.DayOfWeek }, _loggedInTeacher.Id, new TimeOnly(HourSelected,MinuteSelected, 0),false,false))
                 {
                     MessageBox.Show("Exam added successfully.", "Success", MessageBoxButton.OK,MessageBoxImage.Information);
                     if (_exam != null)
@@ -92,7 +92,6 @@ namespace LangLang.ViewModel
                         Teacher teacherOnExam = (Teacher)Teacher.GetUserById(exam.TeacherId);
                         teacherOnExam.ExamIds.Add(exam.Id);
                     }
-                    Exam.WriteExamToJson();
                 }
                 else
                 {
@@ -107,10 +106,10 @@ namespace LangLang.ViewModel
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            catch(Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            // catch(Exception ex)
+            // {
+            //     MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            // }
         }
         
         public Language IsValidLanguage(string languageName, LanguageLevel level) 
@@ -122,7 +121,8 @@ namespace LangLang.ViewModel
                     return language;
                 }
             }
-            return null;
+
+            throw new InvalidInputException("Language doesn't exist");
         }
     }
 

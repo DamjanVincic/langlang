@@ -24,18 +24,8 @@ namespace LangLang.ViewModel
         public ICommand CourseCommand { get; }
         public void Course()
         {
-            var newWindow = new CourseView();
+            var newWindow = new CourseView(_teacher);
             newWindow.Show();
-            Application.Current.MainWindow.Closed += (sender, e) =>
-            {
-                foreach (Window window in Application.Current.Windows)
-                {
-                    if (window != Application.Current.MainWindow)
-                    {
-                        window.Close();
-                    }
-                }
-            };
         }
         public ICommand ExamCommand { get; }
         public void Exam()

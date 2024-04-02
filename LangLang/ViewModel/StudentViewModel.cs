@@ -35,6 +35,7 @@ public class StudentViewModel : ViewModelBase
         ViewExamsCommand = new RelayCommand(ViewExams);
         EditAccountCommand = new RelayCommand(EditAccount);
         DeleteAccountCommand = new RelayCommand(DeleteAccount);
+        LogOutCommand = new RelayCommand(LogOut);
     }
 
     private void ViewCourses()
