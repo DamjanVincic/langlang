@@ -140,9 +140,8 @@ namespace LangLang.Model
         
         public static List<Course> GetAvailableCourses()
         {
-            throw new NotImplementedException();
-            // return _courses.Values.Where(course => course.StudentIds.Count < course.MaxStudents && (course.StartDate.DayNumber - DateOnly.FromDateTime(DateTime.Today).DayNumber) >= 7).ToList();
-            return _courses.Values.ToList();
+            //TODO: Validate to not show the courses that the student has already applied to and
+            return _courses.Values.Where(course => course.StudentIds.Count < course.MaxStudents && (course.StartDate.DayNumber - DateOnly.FromDateTime(DateTime.Today).DayNumber) >= 7).ToList();
         }
     }
 }

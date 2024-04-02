@@ -102,10 +102,8 @@ namespace LangLang.Model
         
         public static List<Exam> GetAvailableExams()
         {
-            throw new NotImplementedException();
-            //TODO: Add checking if the student has finished the course
-            // return _exams.Values.Where(exam => exam.StudentIds.Count < exam.MaxStudents && (exam.ExamDate.DayNumber - DateOnly.FromDateTime(DateTime.Today).DayNumber) >= 30).ToList();
-            return _exams.Values.ToList();
+            //TODO: Add checking if the student has finished the course and don't show the ones they have applied to
+            return _exams.Values.Where(exam => exam.StudentIds.Count < exam.MaxStudents && (exam.ExamDate.DayNumber - DateOnly.FromDateTime(DateTime.Today).DayNumber) >= 30).ToList();
         }
     }
 }
