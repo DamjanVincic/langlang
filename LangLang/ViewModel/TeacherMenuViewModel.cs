@@ -10,9 +10,11 @@ namespace LangLang.ViewModel
     class TeacherMenuViewModel : ViewModelBase
     {
         private Window _teacherMenuWindow;
+        private Teacher _teacher;
         
         public TeacherMenuViewModel(Teacher teacher, Window teacherMenuWindow)
         {
+            _teacher = teacher;
             _teacherMenuWindow = teacherMenuWindow;
             CourseCommand = new RelayCommand(Course);
             ExamCommand = new RelayCommand(Exam);
@@ -38,18 +40,8 @@ namespace LangLang.ViewModel
         public ICommand ExamCommand { get; }
         public void Exam()
         {
-            var newWindow = new ExamView();
+            var newWindow = new ExamView(_teacher);
             newWindow.Show();
-            Application.Current.MainWindow.Closed += (sender, e) =>
-            {
-                foreach (Window window in Application.Current.Windows)
-                {
-                    if (window != Application.Current.MainWindow)
-                    {
-                        window.Close();
-                    }
-                }
-            };
         }
         
         public ICommand LogOutCommand { get; }

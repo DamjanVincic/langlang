@@ -75,33 +75,12 @@ namespace LangLang.ViewModel
         {
             _teacherListingWindow = teacherListingWindow;
             
-            teachers=new ObservableCollection<TeacherViewModel>();
+            teachers=new ObservableCollection<TeacherViewModel>(User.GetTeachers().Select(teacher => new TeacherViewModel(teacher)));
             TeachersCollectionView=CollectionViewSource.GetDefaultView(teachers);
             EditCommand = new RelayCommand(OpenEditWindow);
             AddCommand = new RelayCommand(OpenAddWindow);
             DeleteCommand = new RelayCommand(DeleteTeacher);
             LogOutCommand = new RelayCommand(LogOut);
-
-            // Language enga1 = new Language("English", LanguageLevel.A1);
-            // Language enga2 = new Language("English", LanguageLevel.A2);
-            // Language gera1 = new Language("German", LanguageLevel.A1);
-            // Language gera2 = new Language("German", LanguageLevel.A2);
-            // List<Language> peraLangs = new List<Language>
-            // {
-            //     enga1,
-            //     gera1
-            // };
-            // Teacher t1 = new Teacher("Pera", "Peric", "mijat2004@gmail.com", "Lozinkaa2", Gender.Male, "0638662250", peraLangs);
-            // Teacher t2 = new Teacher("Pera2", "Peric2", "kffjsdlk@gmail.com", "Lozinkaa2", Gender.Male, "0638662250", peraLangs);
-            // Teacher t3 = new Teacher("Pera3", "Peric3", "kfjsfdlk@gmail.com", "Lozinkaa2", Gender.Male, "0638662250", peraLangs);
-            // Teacher t4 = new Teacher("Pera4", "Peric4", "kfjsfdlk@gmkail.com", "Lozinkaa2", Gender.Male, "0638662250", peraLangs);
-            // Teacher t5 = new Teacher("Pera5", "Peric5", "kfjsfdlk@gjmail.com", "Lozinkaa2", Gender.Male, "0638662250", peraLangs);
-            // Teacher t6 = new Teacher("Pera6", "Peric6", "kfjsfdlk@fgmail.com", "Lozinkaa2", Gender.Male, "0638662250", peraLangs);
-            //
-            // foreach (int teacherId in Teacher.TeacherIds)
-            // {
-            //     teachers.Add(new TeacherViewModel((Teacher)User.GetUserById(teacherId)));
-            // }
 
             TeachersCollectionView.Filter=filterTeachers;
         }
@@ -214,7 +193,7 @@ namespace LangLang.ViewModel
             }
 
             teachers.Remove(SelectedItem);
-            //delete teacher object TBD
+            teacher.Delete();
             TeachersCollectionView.Refresh();
         }
 
