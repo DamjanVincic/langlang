@@ -4,9 +4,12 @@ using LangLang.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media.Animation;
 
 namespace LangLang.ViewModel
 {
@@ -14,10 +17,13 @@ namespace LangLang.ViewModel
     {
         private Exam _exam;
         private Teacher _loggedInTeacher;
+
         public AddExamViewModel(Exam exam, Teacher teacher)
         {
             this._exam = exam;
             this._loggedInTeacher = teacher;
+            ExamCollectionView = CollectionViewSource.GetDefaultView(_exam);
+
             // edit
             if (exam != null)
             {
@@ -25,6 +31,8 @@ namespace LangLang.ViewModel
                 LanguageLevel = this._exam.Language.Level;
                 MaxStudents = this._exam.MaxStudents;
                 ExamDate = this._exam.ExamDate;
+                HourSelected = this._exam.ScheduledTime.Hour;
+                MinuteSelected = this._exam.ScheduledTime.Minute;
                 // ovo treba menjati kad dobijemo listu jezika
                 // this._exam =  new Exam(new Language("English", LanguageLevel.A1), 0, DateOnly.FromDateTime(DateTime.Today));
 
@@ -32,10 +40,23 @@ namespace LangLang.ViewModel
 
             EnterExamCommand = new RelayCommand(AddExam);
         }
+        public ICollectionView ExamCollectionView { get; set; }
         public string Name { get; set; }
         public LanguageLevel LanguageLevel { get; set; }
         public int MaxStudents { get; set; }
         public DateOnly ExamDate { get; set; }
+
+        private DateTime _dateSelected;
+        public DateTime DateSelected
+        {
+            get => _dateSelected;
+            set
+            {
+                _dateSelected = value;
+                ExamDate = new DateOnly(value.Year, value.Month, value.Day);
+                RaisePropertyChanged(nameof(DateSelected));
+            }
+        }
 
         public int HourSelected {  get; set; }
         public int MinuteSelected {  get; set; }
@@ -63,6 +84,7 @@ namespace LangLang.ViewModel
                         _exam.Language.Level = LanguageLevel;
                         _exam.ExamDate = ExamDate;
                         _exam.MaxStudents = MaxStudents;
+                        _exam.ScheduledTime = new TimeOnly(HourSelected,MinuteSelected,0);
                     }
                     else
                     {
@@ -107,4 +129,5 @@ namespace LangLang.ViewModel
             return null;
         }
     }
+
 }

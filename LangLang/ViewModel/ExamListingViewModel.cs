@@ -78,7 +78,7 @@ namespace LangLang.ViewModel
                 new ExamViewModel(new Exam(new Language("Serbian", LanguageLevel.B1), 30, new DateOnly(2024, 5, 20),1,TimeOnly.MaxValue)),
                 new ExamViewModel(new Exam(new Language("English", LanguageLevel.A1), 25, new DateOnly(2024, 6, 10), 1, TimeOnly.MaxValue)),
                 new ExamViewModel(new Exam(new Language("English", LanguageLevel.A1), 35, new DateOnly(2024, 7, 5), 1, TimeOnly.MaxValue)),
-                new ExamViewModel(new Exam(new Language("English", LanguageLevel.C2), 28, new DateOnly(2024, 8, 15),1,TimeOnly.MaxValue))
+                new ExamViewModel(new Exam(new Language("English", LanguageLevel.C2), 28, new DateOnly(2024, 8, 15),1,new TimeOnly(9,15,0)))
             };
             ExamCollectionView = CollectionViewSource.GetDefaultView(_exams);
             ExamCollectionView.Filter = FilterExams;
