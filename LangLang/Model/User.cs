@@ -16,11 +16,7 @@ namespace LangLang.Model
     {
         private static int _idCounter = 1;
         private const string USER_FILE_PATH = @"C:\faks 2\usi\projekat\cp-usi-2024-3-b\LangLang\SourceDataFiles\users.json";
-        private static Dictionary<int, User> _users = new Dictionary<int, User>()
-        {
-            {0,new Director("Nadja", "Zoric", "nadjazoric@gmail.com",
-                "PatrikZvezdasti011", Gender.Female, "123456789")}
-        };
+        private static Dictionary<int, User> _users = new Dictionary<int, User>();
         public static Dictionary<int, User> Users => _users;
 
         private string _firstName;
@@ -28,8 +24,8 @@ namespace LangLang.Model
         private string _email;
         private string _password;
         private string _phone;
-
-        public User(string firstName, string lastName, string email, string password, Gender gender, string phone, int id = -1)
+        
+        public User(string firstName, string lastName, string email, string password, Gender gender, string phone, bool director = false)
         {
             FirstName = firstName;
             LastName = lastName;
@@ -38,10 +34,8 @@ namespace LangLang.Model
             Gender = gender;
             Phone = phone;
 
-            if (id != -1)
-                return;
-
-            Id = _idCounter++;
+            Id = director ? 0 : _idCounter++;
+            
             _users.Add(Id, this);
         }
 

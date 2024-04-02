@@ -192,7 +192,7 @@ namespace LangLang.ViewModel
             foreach (int examId in teacher.ExamIds)
             {
                 //shouldn't have id parameter
-                Exam.GetById(examId).Delete(examId);
+                Exam.GetById(examId).Delete();
             }
 
             foreach (Course course in CoursesCreatedByDirector)

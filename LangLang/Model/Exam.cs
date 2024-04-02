@@ -95,9 +95,7 @@ namespace LangLang.Model
                 return null;
             }
         }
-        /*
-         * izmeniti jer se poziva nad objektnom
-         */
+        
         public void Delete()
         {
             _exams.Remove(Id);

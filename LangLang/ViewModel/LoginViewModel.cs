@@ -38,6 +38,11 @@ public class LoginViewModel : ViewModelBase
                 _loginWindow.Close();
                 Application.Current.MainWindow?.Close();
                 break;
+            case Director:
+                new TeachersView().Show();
+                _loginWindow.Close();
+                Application.Current.MainWindow?.Close();
+                break;
         }
     }
 }
