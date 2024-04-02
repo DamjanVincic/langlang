@@ -94,12 +94,10 @@ namespace LangLang.Model
                 return null;
             }
         }
-        /*
-         * izmeniti jer se poziva nad objektnom
-         */
-        public static void Delete(int id)
+        
+        public void Delete()
         {
-            _exams.Remove(id);
+            _exams.Remove(Id);
         }
         
         public static void LoadExamFromJson(string jsonFilePath)

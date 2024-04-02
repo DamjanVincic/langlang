@@ -118,7 +118,7 @@ namespace LangLang.ViewModel
                     if (difference.TotalDays >= 14)
                     {
                         _exams.Remove(selectedExam);
-                        Exam.Delete(selectedExam.Id);
+                        Exam.GetById(selectedExam.Id).Delete();
                         MessageBox.Show("Exam deleted successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     else
