@@ -19,6 +19,7 @@ namespace LangLang
         {
             //TODO: Load data
             new Director("Nadja", "Zoric", "nadjazoric@gmail.com", "PatrikZvezdasti011", Gender.Female, "1234567890123");
+            
             new MainWindow().Show();
             Exit += App_Exit;
         }

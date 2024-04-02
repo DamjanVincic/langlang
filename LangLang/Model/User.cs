@@ -15,15 +15,27 @@ namespace LangLang.Model
     public abstract class User
     {
         private static int _idCounter = 1;
+<<<<<<< HEAD
+=======
+
+        private static readonly string baseDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
+        private static readonly string USER_FILE_NAME = "users.json";
+        private static readonly string USER_FILE_PATH = Path.Combine(baseDirectory, "SourceDataFiles", USER_FILE_NAME);
+
+>>>>>>> origin/develop
         private static Dictionary<int, User> _users = new Dictionary<int, User>();
         public static Dictionary<int, User> Users => _users;
-        
+
         private string _firstName;
         private string _lastName;
         private string _email;
         private string _password;
         private string _phone;
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> origin/develop
         public User(string firstName, string lastName, string email, string password, Gender gender, string phone, bool director = false)
         {
             FirstName = firstName;
@@ -37,38 +49,38 @@ namespace LangLang.Model
             
             _users.Add(Id, this);
         }
-        
+
         public void Edit(string firstName, string lastName, string password, Gender gender, string phone)
         {
             ValidateFirstName(firstName);
             ValidateLastName(lastName);
             ValidatePassword(password);
             ValidatePhoneNumber(phone);
-            
+
             _firstName = firstName;
             _lastName = lastName;
             _password = password;
             Gender = gender;
             _phone = phone;
         }
-        
+
         public void Delete()
         {
             //TODO: Remove user from all courses and exams
             // throw new NotImplementedException();
             _users.Remove(Id);
         }
-            
+
         public static User? Login(string email, string password)
         {
             return _users.Values.FirstOrDefault(user => user.Email.Equals(email) && user.Password.Equals(password));
         }
-        
+
         public static User GetUserById(int id)
         {
             return _users[id];
         }
-
+        
         public static List<Teacher> GetTeachers()
         {
             return _users.Values.OfType<Teacher>().ToList();
@@ -158,12 +170,12 @@ namespace LangLang.Model
             {
                 throw new ArgumentNullException(nameof(email));
             }
-            
+
             if (!Regex.IsMatch(email, "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"))
             {
                 throw new InvalidInputException("Email not valid");
             }
-            
+
             if (_users.Values.Any(user => user.Email.Equals(email)))
             {
                 throw new InvalidInputException("Email already exists");
@@ -220,16 +232,16 @@ namespace LangLang.Model
                 throw new InvalidInputException("Phone number must contain only numbers.");
             }
         }
-        
+
         public static bool TryAddUser(User user)
         {
             return _users.TryAdd(user.Id, user);
         }
-        public static void LoadUsersFromJson(string jsonFilePath)
+        public static void LoadUsersFromJson()
         {
             try
             {
-                using (StreamReader r = new StreamReader(jsonFilePath))
+                using (StreamReader r = new StreamReader(USER_FILE_PATH))
                 {
                     string json = r.ReadToEnd();
                     var usersData = JsonConvert.DeserializeObject<Dictionary<string, JObject>>(json);
@@ -262,10 +274,10 @@ namespace LangLang.Model
                 Console.WriteLine("Error loading users from JSON: " + ex.Message);
             }
         }
-        public static void WriteUserToJson(string jsonFilePath)
+        public static void WriteUserToJson()
         {
             string jsonExamString = JsonConvert.SerializeObject(_users);
-            File.WriteAllText(jsonFilePath, jsonExamString);
+            File.WriteAllText(USER_FILE_PATH, jsonExamString);
         }
 
 

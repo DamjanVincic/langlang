@@ -8,8 +8,11 @@ namespace LangLang.Model
 {
     public class Course : ScheduleItem
     { 
-        public const int CLASS_DURATION = 90; 
+        public const int CLASS_DURATION = 90;
         private static Dictionary<int, Course> _courses = new Dictionary<int, Course>();
+        private static readonly string baseDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
+        private static readonly string COURSE_FILE_NAME = "courses.json";
+        private static readonly string COURSE_FILE_PATH = Path.Combine(baseDirectory, "SourceDataFiles", COURSE_FILE_NAME);
         private Language _language;
         private int _duration;
         private List<Weekday> _held;
@@ -137,11 +140,11 @@ namespace LangLang.Model
             return _courses[id];
         }
 
-        public static void LoadCourseFromJson(string jsonFilePath)
+        public static void LoadCourseFromJson()
         {
             try
             {
-                using (StreamReader r = new StreamReader(jsonFilePath))
+                using (StreamReader r = new StreamReader(COURSE_FILE_PATH))
                 {
                     string json = r.ReadToEnd();
                     Dictionary<int, Course> exams = JsonConvert.DeserializeObject<Dictionary<int, Course>>(json);
@@ -158,10 +161,10 @@ namespace LangLang.Model
             }
         }
 
-        public static void WriteCourseToJson(string jsonFilePath)
+        public static void WriteCourseToJson()
         {
             string jsonExamString = JsonConvert.SerializeObject(_courses);
-            File.WriteAllText(jsonFilePath, jsonExamString);
+            File.WriteAllText(COURSE_FILE_PATH, jsonExamString);
         }
 
         public static List<Course> GetAvailableCourses()

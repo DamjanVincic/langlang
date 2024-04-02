@@ -9,6 +9,11 @@ namespace LangLang.Model
     public class Language
     {
         private string _name;
+        
+        private static readonly string baseDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
+        private static readonly string LANGUAGE_FILE_NAME = "language.json";
+        private static readonly string LANGUAGE_FILE_PATH = Path.Combine(baseDirectory, "SourceDataFiles", LANGUAGE_FILE_NAME);
+
         private static List<Language> _languages = new List<Language>();
         private static List<string> _languageNames = new List<string>() { "Serbian","English","German"};
 
@@ -100,11 +105,11 @@ namespace LangLang.Model
             return HashCode.Combine(_name);
         }
 
-        public static void LoadLanguagesFromJson(string filePath)
+        public static void LoadLanguagesFromJson()
         {
             try
             {
-                string json = File.ReadAllText(filePath);
+                string json = File.ReadAllText(LANGUAGE_FILE_PATH);
                 _languages = JsonConvert.DeserializeObject<List<Language>>(json);
                 foreach(Language language in _languages)
                 {
@@ -117,10 +122,10 @@ namespace LangLang.Model
                 Console.WriteLine("Error reading languages: " + ex.Message);
             }
         }
-        public static void WriteLanguageToJson(string jsonFilePath)
+        public static void WriteLanguageToJson()
         {
             string jsonExamString = JsonConvert.SerializeObject(_languages);
-            File.WriteAllText(jsonFilePath, jsonExamString);
+            File.WriteAllText(LANGUAGE_FILE_PATH, jsonExamString);
         }
     }
 }
