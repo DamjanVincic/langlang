@@ -23,9 +23,9 @@ namespace LangLang.View
     /// </summary>
     public partial class AddExamView : Window
     {
-        public AddExamView(Exam exam = null)
+        public AddExamView(Exam exam = null, Teacher teacher = null)
         {
-            DataContext = new AddExamViewModel(exam);
+            DataContext = new AddExamViewModel(exam, teacher);
             InitializeComponent();
         }
         private void TextBox_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)

@@ -73,11 +73,11 @@ namespace LangLang.ViewModel
         {
             _exams = new ObservableCollection<ExamViewModel>
             {
-                new ExamViewModel(new Exam(new Language("Serbian", LanguageLevel.B2), 20, new DateOnly(2024, 4, 15))),
-                new ExamViewModel(new Exam(new Language("Serbian", LanguageLevel.B1), 30, new DateOnly(2024, 5, 20))),
-                new ExamViewModel(new Exam(new Language("English", LanguageLevel.A1), 25, new DateOnly(2024, 6, 10))),
-                new ExamViewModel(new Exam(new Language("English", LanguageLevel.A1), 35, new DateOnly(2024, 7, 5))),
-                new ExamViewModel(new Exam(new Language("English", LanguageLevel.C2), 28, new DateOnly(2024, 8, 15)))
+                new ExamViewModel(new Exam(new Language("Serbian", LanguageLevel.B2), 20, new DateOnly(2024, 4, 15),1,TimeOnly.MaxValue)),
+                new ExamViewModel(new Exam(new Language("Serbian", LanguageLevel.B1), 30, new DateOnly(2024, 5, 20),1,TimeOnly.MaxValue)),
+                new ExamViewModel(new Exam(new Language("English", LanguageLevel.A1), 25, new DateOnly(2024, 6, 10), 1, TimeOnly.MaxValue)),
+                new ExamViewModel(new Exam(new Language("English", LanguageLevel.A1), 35, new DateOnly(2024, 7, 5), 1, TimeOnly.MaxValue)),
+                new ExamViewModel(new Exam(new Language("English", LanguageLevel.C2), 28, new DateOnly(2024, 8, 15),1,TimeOnly.MaxValue))
             };
             ExamCollectionView = CollectionViewSource.GetDefaultView(_exams);
             ExamCollectionView.Filter = FilterExams;
