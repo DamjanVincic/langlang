@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -27,13 +28,8 @@ namespace LangLang.ViewModel
         public CourseListingViewModel(int teacherId)
         {
             this.TeacherID = teacherId;
-            _courses = new ObservableCollection<CourseViewModel>();
-
-            foreach (int courseId in Course.CourseIds)
-            {
-                _courses.Add(new CourseViewModel((Course)Course.GetById(courseId)));
-            }
-
+            _courses = new ObservableCollection<CourseViewModel>(Course.GetTeacherCourses(teacherId).Select(course => new CourseViewModel(course)));
+            
             CoursesCollectionView = CollectionViewSource.GetDefaultView(_courses);
             
             CoursesCollectionView.Filter = filterCourses;
@@ -64,6 +60,11 @@ namespace LangLang.ViewModel
             {
                 if (SelectedItem != null)
                 {
+                    if (MessageBox.Show("Are you sure?", "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                    {
+                        return;
+                    }
+                    
                     Course course = Course.GetById(SelectedItem.Id);
                     _courses.Remove((CourseViewModel)SelectedItem);
 
@@ -72,7 +73,6 @@ namespace LangLang.ViewModel
                     Course.CourseIds.Remove(course.Id);
                     ((Teacher)User.GetUserById(_teacherID)).DeleteCourse(course.Id);
                     MessageBox.Show("Course deleted successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                    //obrisi fju
                 }
                 else
                 {
@@ -89,6 +89,7 @@ namespace LangLang.ViewModel
         {
             var newWindow = new ModifyCourseView( _courses, CoursesCollectionView, TeacherID, null);
             newWindow.Show();
+            CoursesCollectionView.Refresh();
         }
 
         public ICommand EditCommand { get; }

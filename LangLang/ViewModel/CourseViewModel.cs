@@ -20,7 +20,7 @@ namespace LangLang.ViewModel
         public string LanguageName => course.Language.Name;
         public LanguageLevel LanguageLevel => course.Language.Level;
         public string Duration => course.Duration + " weeks";
-        public string Held => string.Join("/n", course.Held);
+        public string Held => string.Join(", ", course.Held);
         public string IsOnline => course.IsOnline ? "online" : "in-person";
         public string Applications => course.AreApplicationsClosed ? "closed" : "opened";
         public int MaxStudents => course.MaxStudents;
@@ -28,7 +28,7 @@ namespace LangLang.ViewModel
         public DateOnly StartDate => course.StartDate;
         public User Teacher => User.GetUserById(course.TeacherId);
         public string TeachersName => $"{Teacher.FirstName} {Teacher.LastName}";
-        public string Students => string.Join("/n", course.StudentIds.Select(studentId => {
+        public string Students => string.Join(", ", course.StudentIds.Select(studentId => {
             User user = User.GetUserById(studentId);
             return user != null ? $"{user.FirstName} {user.LastName}" : "error";
         }));

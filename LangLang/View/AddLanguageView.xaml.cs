@@ -25,7 +25,7 @@ namespace LangLang.View
     {
         public AddLanguageView(ICollectionView qualificationCollectionView)
         {
-            DataContext = new AddLanguageViewModel(qualificationCollectionView);
+            DataContext = new AddLanguageViewModel(qualificationCollectionView, this);
             InitializeComponent();
         }
     }

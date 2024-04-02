@@ -19,9 +19,12 @@ namespace LangLang.ViewModel
         private ObservableCollection<CourseViewModel> _courses;
         private ICollectionView _courseCollectionView;
         private int _teacherId;
+        
+        private Window _modifyCourseWindow;
 
-        public ModifyCourseViewModel(ObservableCollection<CourseViewModel> courses, ICollectionView courseCollectionView, int teacherID, Course course)
+        public ModifyCourseViewModel(ObservableCollection<CourseViewModel> courses, ICollectionView courseCollectionView, int teacherID, Course course, Window modifyCourseWindow)
         {
+            _modifyCourseWindow = modifyCourseWindow;
             
             this._courses = courses;
             this._courseCollectionView = courseCollectionView;
@@ -129,7 +132,12 @@ namespace LangLang.ViewModel
         public TimeOnly ScheduledTime { get; set; }
         public List<Weekday> Held { get; set; }
         public int CreatorId { get; set; }
-        public int TeacherId { get; set; }
+
+        public int TeacherId
+        {
+            get => _teacherId;
+            set => _teacherId = value;
+        }
         public int Hours
         {
             get;set;
@@ -177,7 +185,7 @@ namespace LangLang.ViewModel
 
         private void AddCourse()
         {
-            if (string.IsNullOrEmpty(LanguageName) || LanguageLevel == null || MaxStudents <= 0 || Duration <= 0 || StartDate == default || Hours < 0 || Minutes < 0)
+            if (string.IsNullOrEmpty(LanguageName) || LanguageLevel == null || (!Format.Equals("online") && MaxStudents <= 0) || Duration <= 0 || StartDate == default || Hours < 0 || Minutes < 0)
             {
                 MessageBox.Show("Please fill in all fields.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return; 
@@ -205,7 +213,7 @@ namespace LangLang.ViewModel
                 bool isOnline = Format.Equals("online") ? true : false;
                 DateOnly startDate = new DateOnly(StartDate.Year, StartDate.Month, StartDate.Day);
                 
-                if (Schedule.CanAddScheduleItem(startDate, Duration, Held, TeacherId, ScheduledTime, true, isOnline))
+                if (Schedule.CanAddScheduleItem(startDate, Duration, Held, TeacherId, ScheduledTime, true, isOnline, _course))
                 {
                     if (_course != null)
                     {
@@ -218,8 +226,8 @@ namespace LangLang.ViewModel
                         }
                         else if (!_course.Held.SequenceEqual(Held))
                         {
-                            IEnumerable<Weekday> removedDays = _course.Held.Except(Held);
-                            IEnumerable<Weekday> addedDays = Held.Except(_course.Held);
+                            List<Weekday> removedDays = _course.Held.Except(Held).ToList();
+                            List<Weekday> addedDays = Held.Except(_course.Held).ToList();
                             Schedule.ModifySchedule(_course, _course.StartDate, _course.Duration, (List<Weekday>)removedDays, null);
                             Schedule.ModifySchedule(_course, _course.StartDate, Duration, null, (List<Weekday>)addedDays);
                         }
@@ -234,21 +242,22 @@ namespace LangLang.ViewModel
                         _course.CreatorId = CreatorId;
                         _course.AreApplicationsClosed = AreApplicationsClosed;
                         this._courseCollectionView.Refresh();
-
+                        MessageBox.Show("Course edited successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     else
                     {
                         Course course = new(language, Duration, Held, isOnline, MaxStudents, _teacherId, ScheduledTime, startDate, AreApplicationsClosed, TeacherId, new List<int>());
                         _courses.Add(new CourseViewModel(course));
                         this._courseCollectionView.Refresh();
+                        MessageBox.Show("Course added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
-                    MessageBox.Show("Exam added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    _modifyCourseWindow.Close();
                 }
                 else
                 {
                     MessageBox.Show("Unable to schedule the course. The selected date conflicts with an existing course schedule.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-        }
+            }
             catch (InvalidInputException ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);

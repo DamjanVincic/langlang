@@ -29,7 +29,7 @@ namespace LangLang.Model
         private string _password;
         private string _phone;
 
-        public User(string firstName, string lastName, string email, string password, Gender gender, string phone, bool director = false)
+        public User(string firstName, string lastName, string email, string password, Gender gender, string phone, int id = -1)
         {
             FirstName = firstName;
             LastName = lastName;
@@ -38,7 +38,7 @@ namespace LangLang.Model
             Gender = gender;
             Phone = phone;
 
-            Id = director ? 0 : _idCounter++;
+            Id = id != -1 ? id : _idCounter++;
             
             _users.Add(Id, this);
         }
@@ -254,7 +254,15 @@ namespace LangLang.Model
         }
         public static void WriteUsersToJson()
         {
-            string jsonExamString = JsonConvert.SerializeObject(_users);
+            if (!_users.Any())
+            {
+                return;
+            }
+            
+            string jsonExamString = JsonConvert.SerializeObject(_users, new JsonSerializerSettings()
+            {
+                Formatting = Formatting.Indented
+            });
             
             if (!Directory.Exists(USER_DIRECTORY_PATH))
             {

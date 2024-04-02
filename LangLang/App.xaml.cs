@@ -18,8 +18,12 @@ namespace LangLang
         public App()
         {
             //TODO: Load data
+            Language.LoadLanguagesFromJson();
+            Course.LoadCourseFromJson();
+            Exam.LoadExamFromJson();
+            User.LoadUsersFromJson();
             new Director("Nadja", "Zoric", "nadjazoric@gmail.com", "PatrikZvezdasti011", Gender.Female, "1234567890123");
-            
+
             new MainWindow().Show();
             Exit += App_Exit;
         }
@@ -27,6 +31,11 @@ namespace LangLang
         private void App_Exit(object sender, ExitEventArgs e)
         {
             //TODO: Save data
+            User.Users.Remove(0);
+            Course.WriteCourseToJson();
+            Exam.WriteExamToJson();
+            Language.WriteLanguageToJson();
+            User.WriteUsersToJson();
         }
     }
 }
