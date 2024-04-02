@@ -43,6 +43,13 @@ namespace LangLang.Model
             Gender = gender;
             _phone = phone;
         }
+        
+        public void Delete()
+        {
+            //TODO: Remove user from all courses and exams
+            throw new NotImplementedException();
+            _users.Remove(Id);
+        }
             
         public static User? Login(string email, string password)
         {
