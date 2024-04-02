@@ -8,7 +8,6 @@ namespace LangLang.Model
     public class Course : ScheduleItem
     { 
         public const int CLASS_DURATION = 90; 
-        private static int _idCounter = 1;
         private static Dictionary<int, Course> _courses = new Dictionary<int, Course>();
         private Language _language;
         private int _duration;
@@ -28,11 +27,9 @@ namespace LangLang.Model
             MaxStudents = maxStudents;
             StartDate = startDate;
             StudentIds = studentIds;
-            Id = _idCounter++;
             _courses.Add(Id, this);
             CourseIds.Add(Id);
         }
-        public int Id { get; set; }
         public static List<int> CourseIds 
         {
             get => _courseIds;

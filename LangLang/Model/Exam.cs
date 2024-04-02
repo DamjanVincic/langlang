@@ -4,12 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Collections;
 
 namespace LangLang.Model
 {
     public class Exam : ScheduleItem
     {
-        private static int _examId = 0;
         public const int EXAM_DURATION = 360;
         private static Dictionary<int, Exam> _exams = new Dictionary<int, Exam>();
         private Language _language;
@@ -24,14 +24,10 @@ namespace LangLang.Model
             MaxStudents = maxStudents;
             ExamDate = examDate;
             StudentIds = new List<int>();
-            _examId++;
-            Id = _examId;
             _exams.Add(Id, this);
         }
 
         public List<int> StudentIds { get; set; }
-
-        public int Id { get; }
 
         public Language Language
         {
@@ -122,8 +118,13 @@ namespace LangLang.Model
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error loading users from JSON: " + ex.Message);
+                Console.WriteLine("Error loading emaxs from JSON: " + ex.Message);
             }
+        }
+        public static void WriteExamToJson(string jsonFilePath)
+        {
+            string jsonExamString = JsonConvert.SerializeObject(_exams);
+            File.WriteAllText(jsonFilePath,jsonExamString);
         }
     }
 }
