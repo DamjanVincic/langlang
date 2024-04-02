@@ -1,6 +1,8 @@
-﻿using System;
+﻿using LangLang.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -16,12 +18,14 @@ using System.Windows.Shapes;
 namespace LangLang.View
 {
     /// <summary>
-    /// Interaction logic for CourseView.xaml
+    /// Interaction logic for TeachersView.xaml
     /// </summary>
-    public partial class CourseView : Window
+    public partial class TeachersView : UserControl
     {
-        public CourseView()
+        public TeachersView()
         {
+            DataContext = new TeacherListingViewModel();
+
             InitializeComponent();
         }
     }

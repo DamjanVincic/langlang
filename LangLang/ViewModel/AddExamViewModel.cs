@@ -14,24 +14,20 @@ namespace LangLang.ViewModel
         private Exam _exam;
         public AddExamViewModel(Exam exam)
         {
-            // If exam is null, initialize it with default values
-            if (exam == null)
+            this._exam = exam;
+            // edit
+            if (exam != null)
             {
+                Name = this._exam.Language.Name;
+                LanguageLevel = this._exam.Language.Level;
+                MaxStudents = this._exam.MaxStudents;
+                ExamDate = this._exam.ExamDate;
                 // ovo treba menjati kad dobijemo listu jezika
-                this._exam = new Exam(new Language("English", LanguageLevel.A1), 0, DateOnly.FromDateTime(DateTime.Today));
+                // this._exam =  new Exam(new Language("English", LanguageLevel.A1), 0, DateOnly.FromDateTime(DateTime.Today));
 
-            }
-            else
-            {
-                this._exam = exam;
             }
 
             EnterExamCommand = new RelayCommand(AddExam);
-            // Assigning properties from the exam object
-            Name = this._exam.Language.Name;
-            LanguageLevel = this._exam.Language.Level;
-            MaxStudents = this._exam.MaxStudents;
-            ExamDate = this._exam.ExamDate;
         }
         public string Name { get; set; }
         public LanguageLevel LanguageLevel { get; set; }
@@ -48,14 +44,23 @@ namespace LangLang.ViewModel
         {
             try
             {
-                _exam.Language.Name = Name;
-                _exam.Language.Level = LanguageLevel;
-                _exam.ExamDate = ExamDate;
-                _exam.MaxStudents = MaxStudents;
-                Exam exam = new Exam(new Language(Name, LanguageLevel), MaxStudents, ExamDate);
-                if (CheckExamSchedule(exam))
+                // validate
+                Language language = IsValidLanguage(Name,LanguageLevel);
+                // CanAddScheduleItem(DateOnly date, int duration, List<Weekday> held, int teacherId, TimeOnly startTime, bool isCourse)
+                if (CanAddScheduleItem(ExamDate, Exam.EXAM_DURATION, new List<Weekday> { (Weekday)ExamDate.DayOfWeek }, 1, TimeOnly.MaxValue,false,false) && !language.Equals(null))
                 {
                     MessageBox.Show("Exam added successfully.", "Success", MessageBoxButton.OK,MessageBoxImage.Information);
+                    if (_exam != null)
+                    {
+                        _exam.Language.Name = Name;
+                        _exam.Language.Level = LanguageLevel;
+                        _exam.ExamDate = ExamDate;
+                        _exam.MaxStudents = MaxStudents;
+                    }
+                    else
+                    {
+                        Exam exam = new Exam(language, MaxStudents, ExamDate);
+                    }
                 }
                 else
                 {
@@ -75,10 +80,21 @@ namespace LangLang.ViewModel
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
-        private bool CheckExamSchedule(Exam exam)
+        
+        public static bool CanAddScheduleItem(DateOnly date, int duration, List<Weekday> held, int teacherId, TimeOnly startTime, bool isCourse, bool isOnline)
         {
             return true;
+        }
+        public Language IsValidLanguage(string languageName, LanguageLevel level) 
+        {
+            foreach (Language language in Language.Languages)
+            {
+                if(language.Name.Equals(languageName) && language.Level.Equals(level))
+                {
+                    return language;
+                }
+            }
+            return null;
         }
     }
 }
