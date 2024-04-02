@@ -75,7 +75,7 @@ namespace LangLang.ViewModel
                 // validate
                 Language language = IsValidLanguage(Name,LanguageLevel);
                 // CanAddScheduleItem(DateOnly date, int duration, List<Weekday> held, int teacherId, TimeOnly startTime, bool isCourse)
-                if (CanAddScheduleItem(ExamDate, Exam.EXAM_DURATION, new List<Weekday> { (Weekday)ExamDate.DayOfWeek }, _loggedInTeacher.Id, new TimeOnly(HourSelected,MinuteSelected, 0),false,false) && !language.Equals(null))
+                if (Schedule.CanAddScheduleItem(ExamDate, 1, new List<Weekday> { (Weekday)ExamDate.DayOfWeek }, _loggedInTeacher.Id, new TimeOnly(HourSelected,MinuteSelected, 0),false,false) && !language.Equals(null))
                 {
                     MessageBox.Show("Exam added successfully.", "Success", MessageBoxButton.OK,MessageBoxImage.Information);
                     if (_exam != null)
@@ -113,10 +113,6 @@ namespace LangLang.ViewModel
             }
         }
         
-        public static bool CanAddScheduleItem(DateOnly date, int duration, List<Weekday> held, int teacherId, TimeOnly startTime, bool isCourse, bool isOnline)
-        {
-            return true;
-        }
         public Language IsValidLanguage(string languageName, LanguageLevel level) 
         {
             foreach (Language language in Language.Languages)
