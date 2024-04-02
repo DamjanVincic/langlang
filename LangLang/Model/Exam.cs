@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LangLang.Model
 {
@@ -15,7 +16,7 @@ namespace LangLang.Model
 
         public Exam(Language language, int maxStudents, DateOnly examDate) : base(0, new TimeOnly())
         {
-            throw new NotImplementedException();
+            // throw new NotImplementedException();
             Language = language;
             MaxStudents = maxStudents;
             ExamDate = examDate;
@@ -97,6 +98,14 @@ namespace LangLang.Model
         public void Delete(int id)
         {
             _exams.Remove(id);
+        }
+        
+        public static List<Exam> GetAvailableExams()
+        {
+            throw new NotImplementedException();
+            //TODO: Add checking if the student has finished the course
+            // return _exams.Values.Where(exam => exam.StudentIds.Count < exam.MaxStudents && (exam.ExamDate.DayNumber - DateOnly.FromDateTime(DateTime.Today).DayNumber) >= 30).ToList();
+            return _exams.Values.ToList();
         }
     }
 }

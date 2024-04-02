@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LangLang.Model
 {
@@ -135,6 +136,13 @@ namespace LangLang.Model
         public static Course GetById(int id)
         {
             return _courses[id];
+        }
+        
+        public static List<Course> GetAvailableCourses()
+        {
+            throw new NotImplementedException();
+            // return _courses.Values.Where(course => course.StudentIds.Count < course.MaxStudents && (course.StartDate.DayNumber - DateOnly.FromDateTime(DateTime.Today).DayNumber) >= 7).ToList();
+            return _courses.Values.ToList();
         }
     }
 }
