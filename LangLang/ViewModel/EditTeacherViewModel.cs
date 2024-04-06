@@ -28,8 +28,12 @@ namespace LangLang.ViewModel
         public ICommand SaveEditCommand { get; }
         private ICollectionView teachersCollectionView;
 
-        public EditTeacherViewModel(Teacher teacher, ICollectionView teachersCollectionView)
+        private Window _editTeacherWindow;
+
+        public EditTeacherViewModel(Teacher teacher, ICollectionView teachersCollectionView, Window editTeacherWindow)
         {
+            _editTeacherWindow = editTeacherWindow;
+            
             this.teacher=teacher;
             FirstName = this.teacher.FirstName;
             LastName = this.teacher.LastName;
@@ -50,6 +54,7 @@ namespace LangLang.ViewModel
                 teachersCollectionView.Refresh();
                 MessageBox.Show("Teacher edited successfully.", "Success", MessageBoxButton.OK,
                     MessageBoxImage.Information);
+                _editTeacherWindow.Close();
             }
             catch (InvalidInputException exception)
             {

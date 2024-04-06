@@ -1,6 +1,8 @@
 ﻿using LangLang.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -23,9 +25,9 @@ namespace LangLang.View
     /// </summary>
     public partial class AddExamView : Window
     {
-        public AddExamView(Exam exam = null, Teacher teacher = null)
+        public AddExamView(ObservableCollection<ExamViewModel> exams, ICollectionView examCollectionView, Exam exam = null, Teacher teacher = null)
         {
-            DataContext = new AddExamViewModel(exam, teacher);
+            DataContext = new AddExamViewModel(exams, examCollectionView, exam, teacher, this);
             InitializeComponent();
         }
         private void TextBox_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)

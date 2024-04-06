@@ -13,9 +13,9 @@ namespace LangLang.Model
     {
         public const int EXAM_DURATION = 360;
 
-        private static readonly string baseDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
         private static readonly string EXAM_FILE_NAME = "exams.json";
-        private static readonly string EXAM_FILE_PATH = Path.Combine(baseDirectory, "SourceDataFiles", EXAM_FILE_NAME);
+        private static readonly string EXAM_DIRECTORY_PATH = Path.Combine(Directory.GetCurrentDirectory(), "SourceDataFiles");
+        private static readonly string EXAM_FILE_PATH = Path.Combine(Directory.GetCurrentDirectory(), "SourceDataFiles", EXAM_FILE_NAME);
 
         private static Dictionary<int, Exam> _exams = new Dictionary<int, Exam>();
         private Language _language;
@@ -23,7 +23,7 @@ namespace LangLang.Model
         private DateOnly _examDate;
 
 
-        public Exam(Language language, int maxStudents, DateOnly examDate, int teacherId, TimeOnly examTime) : base(teacherId, examTime)
+        public Exam(Language language, int maxStudents, DateOnly examDate, int teacherId, TimeOnly examTime, int id = -1) : base(teacherId, examTime, id)
         {
             Language = language;
             MaxStudents = maxStudents;
@@ -119,10 +119,12 @@ namespace LangLang.Model
                     string json = r.ReadToEnd();
                     Dictionary<int, Exam> exams = JsonConvert.DeserializeObject<Dictionary<int, Exam>>(json);
 
-                    foreach (var kvp in exams)
-                    {
-                        _exams.Add(kvp.Key, kvp.Value);
-                    }
+                    // foreach (var kvp in exams)
+                    // {
+                    //     _exams.Add(kvp.Key, kvp.Value);
+                    // }
+                    
+                    IdCounter = Math.Max(IdCounter, _exams.Keys.Max() + 1);
                 }
             }
             catch (Exception ex)
@@ -133,9 +135,22 @@ namespace LangLang.Model
 
         public static void WriteExamToJson()
         {
-            string jsonExamString = JsonConvert.SerializeObject(_exams);
-            File.WriteAllText(EXAM_FILE_PATH, jsonExamString);
+            if (!_exams.Any())
+            {
+                return;
+            }
             
+            string jsonExamString = JsonConvert.SerializeObject(_exams, new JsonSerializerSettings()
+            {
+                Formatting = Formatting.Indented
+            });
+
+            if (!Directory.Exists(EXAM_DIRECTORY_PATH))
+            {
+                Directory.CreateDirectory(EXAM_DIRECTORY_PATH);
+            }
+            
+            File.WriteAllText(EXAM_FILE_PATH, jsonExamString);
         }
 
         public static List<Exam> GetAvailableExams()

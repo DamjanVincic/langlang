@@ -25,7 +25,7 @@ namespace LangLang.View
     {
         public EditTeacherView(Teacher teacher, ICollectionView teachersCollectionView)
         {
-            DataContext = new EditTeacherViewModel(teacher, teachersCollectionView);
+            DataContext = new EditTeacherViewModel(teacher, teachersCollectionView, this);
             InitializeComponent();
         }
     }

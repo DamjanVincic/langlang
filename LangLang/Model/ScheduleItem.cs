@@ -8,10 +8,9 @@ namespace LangLang.Model
 
         private int _teacherId;
         private TimeOnly _scheduledTime;
-        public ScheduleItem(int teacherId, TimeOnly scheduledTime)
+        public ScheduleItem(int teacherId, TimeOnly scheduledTime, int id = -1)
         {
-            Id = _idCounter;
-            _idCounter++;
+            Id = id != -1 ? id : _idCounter++;
             TeacherId = teacherId;
             ScheduledTime = scheduledTime;
         }
@@ -28,5 +27,7 @@ namespace LangLang.Model
             get => _scheduledTime;
             set => _scheduledTime = value; 
         }
+        
+        public static int IdCounter { get => _idCounter; set => _idCounter = value; }
     }
 }

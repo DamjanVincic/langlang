@@ -2,6 +2,7 @@
 using GalaSoft.MvvmLight.Command;
 using LangLang.Model;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -15,14 +16,23 @@ namespace LangLang.ViewModel
 {
     class AddExamViewModel : ViewModelBase
     {
+        private ObservableCollection<ExamViewModel> _exams;
+        private ICollectionView _examCollection;
+        
         private Exam _exam;
         private Teacher _loggedInTeacher;
 
-        public AddExamViewModel(Exam exam, Teacher teacher)
+        private Window _addExamWindow;
+
+        public AddExamViewModel(ObservableCollection<ExamViewModel> exams, ICollectionView examCollection, Exam exam, Teacher teacher, Window addExamWindow)
         {
+            _addExamWindow = addExamWindow;
+            
+            _exams = exams;
+            _examCollection = examCollection;
+            
             this._exam = exam;
             this._loggedInTeacher = teacher;
-            ExamCollectionView = CollectionViewSource.GetDefaultView(_exam);
 
             // edit
             if (exam != null)
@@ -33,14 +43,10 @@ namespace LangLang.ViewModel
                 ExamDate = this._exam.ExamDate;
                 HourSelected = this._exam.ScheduledTime.Hour;
                 MinuteSelected = this._exam.ScheduledTime.Minute;
-                // ovo treba menjati kad dobijemo listu jezika
-                // this._exam =  new Exam(new Language("English", LanguageLevel.A1), 0, DateOnly.FromDateTime(DateTime.Today));
-
             }
 
             EnterExamCommand = new RelayCommand(AddExam);
         }
-        public ICollectionView ExamCollectionView { get; set; }
         public string Name { get; set; }
         public LanguageLevel LanguageLevel { get; set; }
         public int MaxStudents { get; set; }
@@ -77,7 +83,6 @@ namespace LangLang.ViewModel
                 // CanAddScheduleItem(DateOnly date, int duration, List<Weekday> held, int teacherId, TimeOnly startTime, bool isCourse)
                 if (language != null && Schedule.CanAddScheduleItem(ExamDate, 1, new List<Weekday> { (Weekday)ExamDate.DayOfWeek }, _loggedInTeacher.Id, new TimeOnly(HourSelected,MinuteSelected, 0),false,false))
                 {
-                    MessageBox.Show("Exam added successfully.", "Success", MessageBoxButton.OK,MessageBoxImage.Information);
                     if (_exam != null)
                     {
                         _exam.Language.Name = Name;
@@ -91,7 +96,11 @@ namespace LangLang.ViewModel
                         Exam exam = new Exam(language, MaxStudents, ExamDate,_loggedInTeacher.Id, new TimeOnly(HourSelected, MinuteSelected)); 
                         Teacher teacherOnExam = (Teacher)Teacher.GetUserById(exam.TeacherId);
                         teacherOnExam.ExamIds.Add(exam.Id);
+                        _exams.Add(new ExamViewModel(exam));
                     }
+                    _examCollection.Refresh();
+                    MessageBox.Show("Exam added successfully.", "Success", MessageBoxButton.OK,MessageBoxImage.Information);
+                    _addExamWindow.Close();
                 }
                 else
                 {

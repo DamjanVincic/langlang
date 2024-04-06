@@ -21,7 +21,7 @@ namespace LangLang.Model
         private static readonly string SCHEDULE_FILE_NAME = "schedule.json";
         private static readonly string SCHEDULE_FILE_PATH = Path.Combine(baseDirectory, "SourceDataFiles", SCHEDULE_FILE_NAME);
         
-        public static bool CanAddScheduleItem(DateOnly date, int duration, List<Weekday> held, int teacherId, TimeOnly startTime, bool isCourse, bool isOnline)
+        public static bool CanAddScheduleItem(DateOnly date, int duration, List<Weekday> held, int teacherId, TimeOnly startTime, bool isCourse, bool isOnline, Course course = null)
         {
             CheckInputValidability(date, duration, held, teacherId, startTime, isCourse);
             // Temp list of dates on which course can be held
@@ -32,10 +32,10 @@ namespace LangLang.Model
             {
                 for (int i = 0; i < held.Count; ++i) 
                 {
-                    if (IsAvailable(date, teacherId, startTime, isCourse, isOnline))
+                    if (IsAvailable(date, teacherId, startTime, isCourse, isOnline, course))
                     {
                         ScheduleItemDates.Add(date);
-                        date.AddDays(dateDifferences[i]);
+                        date = date.AddDays(dateDifferences[i]);
                     }
                     else
                     {
@@ -92,13 +92,17 @@ namespace LangLang.Model
             List<int> dayDifferences = new();
             foreach(Weekday day in held)
             {
+                if (day == held[0])
+                {
+                    continue;
+                }
                 dayDifferences.Add((int)day - (int)held[0]);
             }
             dayDifferences.Add(7 - (int)held[^1] + (int)held[0]);
             return dayDifferences;
         }
 
-        private static bool IsAvailable(DateOnly date, int teacherId, TimeOnly startTime, bool isCourse, bool isOnline)
+        private static bool IsAvailable(DateOnly date, int teacherId, TimeOnly startTime, bool isCourse, bool isOnline, Course course = null)
         {
             if (!Table.ContainsKey(date))
             {
@@ -134,17 +138,23 @@ namespace LangLang.Model
                 }
                 else
                 {
-                    if ((item.TeacherId == teacherId))
+                    if (course == null && item.TeacherId == teacherId)
                     {
                         return false;
                     }
-                    else if (!isOnline)
+                    
+                    if (!isOnline)
                     {
                         ++overlaps;
                         if (overlaps >= 2)
                         {
                             return false;
                         }
+                    }
+                    else
+                    {
+                        if (course == null)
+                            return false;
                     }
                 }
             }
@@ -249,11 +259,11 @@ namespace LangLang.Model
 
         internal static void ModifySchedule(ScheduleItem item, DateOnly startDate, int duration, List<Weekday> toDelete, List<Weekday> toAdd)
         {
-            if (toDelete != null)
+            if (toDelete != null && toDelete.Count != 0)
             {
                 DeleteItem(item, startDate, duration, toDelete);
             }
-            if (toAdd != null)
+            if (toAdd != null && toAdd.Count != 0)
             {
                 AddItem(item, startDate, duration, toAdd);
             }
@@ -261,13 +271,14 @@ namespace LangLang.Model
 
         private static void AddItem(ScheduleItem item, DateOnly startDate, int duration, List<Weekday> toAdd)
         {
+            ScheduleItemDates = new();
             List<int> dayDifferences = CalculateDateDifferences(toAdd);
             while (duration > 0)
             {
                 for (int i = 0; i < toAdd.Count; ++i)
                 {
                     ScheduleItemDates.Add(startDate);
-                    startDate.AddDays(dayDifferences[i]);
+                    startDate = startDate.AddDays(dayDifferences[i]);
                 }
                 duration--;
             }
@@ -283,13 +294,14 @@ namespace LangLang.Model
 
         private static void DeleteItem(ScheduleItem item, DateOnly startDate, int duration, List<Weekday> toDelete)
         {
+            ScheduleItemDates = new List<DateOnly>();
             List<int> dayDifferences = CalculateDateDifferences(toDelete);
             while (duration > 0)
             {
                 for (int i = 0; i < toDelete.Count; ++i)
                 {
                     ScheduleItemDates.Add(startDate);
-                    startDate.AddDays(dayDifferences[i]);
+                    startDate = startDate.AddDays(dayDifferences[i]);
                 }
                 duration--;
             }
@@ -299,7 +311,10 @@ namespace LangLang.Model
                 {
                     MessageBox.Show("The schedule item has already been deleted", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-                Schedule.Table[courseDate].Remove(item);
+                else
+                {
+                    Schedule.Table[courseDate].Remove(item);
+                }
             }
         }
     }

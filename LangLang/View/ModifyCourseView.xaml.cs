@@ -30,7 +30,7 @@ namespace LangLang.View
             int teacherId, Course course = null)
         {
             InitializeComponent();
-            DataContext = new ModifyCourseViewModel(_courses, courseCollectionView, teacherId, course);
+            DataContext = new ModifyCourseViewModel(_courses, courseCollectionView, teacherId, course, this);
         }
     }
 }

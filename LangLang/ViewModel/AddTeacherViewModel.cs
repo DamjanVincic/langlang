@@ -33,8 +33,12 @@ namespace LangLang.ViewModel
         private ListBox qualificationsListBox;
         private ObservableCollection<TeacherViewModel> teachers;
 
-        public AddTeacherViewModel(ICollectionView teachersCollectionView,ListBox qualificationsListBox,ObservableCollection<TeacherViewModel> teachers)
+        private Window _addTeachetWindow;
+        
+        public AddTeacherViewModel(ICollectionView teachersCollectionView,ListBox qualificationsListBox,ObservableCollection<TeacherViewModel> teachers, Window addTeacherWindow)
         {
+            _addTeachetWindow = addTeacherWindow;
+            
             AddLanguageCommand = new RelayCommand(OpenAddLanguageWindow);
             AddTeacherCommand = new RelayCommand(AddTeacher);
             this.teachersCollectionView= teachersCollectionView;
@@ -65,6 +69,7 @@ namespace LangLang.ViewModel
                 teachersCollectionView.Refresh();
                 MessageBox.Show("Teacher added successfully.", "Success", MessageBoxButton.OK,
                     MessageBoxImage.Information);
+                _addTeachetWindow.Close();
             }
             catch (InvalidInputException exception)
             {

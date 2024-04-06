@@ -10,9 +10,11 @@ namespace LangLang.Model
     { 
         public const int CLASS_DURATION = 90;
         private static Dictionary<int, Course> _courses = new Dictionary<int, Course>();
-        private static readonly string baseDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
+
         private static readonly string COURSE_FILE_NAME = "courses.json";
-        private static readonly string COURSE_FILE_PATH = Path.Combine(baseDirectory, "SourceDataFiles", COURSE_FILE_NAME);
+        private static readonly string COURSE_DIRECTORY_PATH = Path.Combine(Directory.GetCurrentDirectory(), "SourceDataFiles");
+        private static readonly string COURSE_FILE_PATH = Path.Combine(Directory.GetCurrentDirectory(), "SourceDataFiles", COURSE_FILE_NAME);
+        
         private Language _language;
         private int _duration;
         private List<Weekday> _held;
@@ -20,7 +22,7 @@ namespace LangLang.Model
         private DateOnly _startDate;
         private static List<int> _courseIds = new List<int>();
 
-        public Course(Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents, int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed, int teacherId, List<int> studentIds) : base(teacherId, scheduledTime)
+        public Course(Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents, int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed, int teacherId, List<int> studentIds, int id = -1) : base(teacherId, scheduledTime, id)
         {
             Language = language;
             Duration = duration;
@@ -36,6 +38,12 @@ namespace LangLang.Model
             Schedule.ModifySchedule(this, StartDate, Duration, null, Held);
             
         }
+
+        public static List<Course> GetTeacherCourses(int teacherId)
+        {
+            return _courses.Values.Where(course => course.TeacherId == teacherId).ToList();
+        }
+        
         public static List<int> CourseIds 
         {
             get => _courseIds;
@@ -154,21 +162,37 @@ namespace LangLang.Model
                     string json = r.ReadToEnd();
                     Dictionary<int, Course> exams = JsonConvert.DeserializeObject<Dictionary<int, Course>>(json);
 
-                    foreach (var kvp in exams)
-                    {
-                        _courses.Add(kvp.Key, kvp.Value);
-                    }
+                    // foreach (var kvp in exams)
+                    // {
+                    //     _courses.Add(kvp.Key, kvp.Value);
+                    // }
+                    
+                    IdCounter = Math.Max(IdCounter, _courses.Keys.Max() + 1);
                 }
             }
-            catch (Exception ex)
+            catch (FileNotFoundException)
             {
-                Console.WriteLine("Error loading courses from JSON: " + ex.Message);
+                
             }
         }
 
         public static void WriteCourseToJson()
         {
-            string jsonExamString = JsonConvert.SerializeObject(_courses);
+            if (!_courses.Any())
+            {
+                return;
+            }
+            
+            string jsonExamString = JsonConvert.SerializeObject(_courses, new JsonSerializerSettings()
+            {
+                Formatting = Formatting.Indented
+            });
+
+            if (!Directory.Exists(COURSE_DIRECTORY_PATH))
+            {
+                Directory.CreateDirectory(COURSE_DIRECTORY_PATH);
+            }
+            
             File.WriteAllText(COURSE_FILE_PATH, jsonExamString);
         }
 

@@ -9,7 +9,7 @@ namespace LangLang.Model
         private List<int> _courseIds = new();
         private List<int> _examIds  = new();
         
-        public Teacher(string firstName, string lastName, string email, string password, Gender gender, string phone, List<Language> qualifications) : base(firstName, lastName, email, password, gender, phone)
+        public Teacher(string firstName, string lastName, string email, string password, Gender gender, string phone, List<Language> qualifications, int id = -1) : base(firstName, lastName, email, password, gender, phone, id)
         {
             validateQualifications(qualifications);
             Qualifications=qualifications;

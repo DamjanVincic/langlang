@@ -21,9 +21,13 @@ namespace LangLang.ViewModel
         private ICollectionView qualificationCollectionView;
 
         public ICommand AddLanguageCommand { get; }
+        
+        private Window _addLanguageWindow;
 
-        public AddLanguageViewModel(ICollectionView qualificationCollectionView)
+        public AddLanguageViewModel(ICollectionView qualificationCollectionView, Window addLanguageWindow)
         {
+            _addLanguageWindow = addLanguageWindow;
+            
             this.qualificationCollectionView = qualificationCollectionView;
             AddLanguageCommand = new RelayCommand(AddLanguage);
         }
@@ -35,6 +39,7 @@ namespace LangLang.ViewModel
                 qualificationCollectionView.Refresh();
                 MessageBox.Show("Language added successfully.", "Success", MessageBoxButton.OK,
                     MessageBoxImage.Information);
+                _addLanguageWindow.Close();
             }
             catch (InvalidInputException exception)
             {

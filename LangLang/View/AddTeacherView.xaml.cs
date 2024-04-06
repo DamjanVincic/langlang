@@ -26,7 +26,7 @@ namespace LangLang.View
         {
             
             InitializeComponent();
-            DataContext = new AddTeacherViewModel(teachersCollectionView, QualificationsListBox,teachers);
+            DataContext = new AddTeacherViewModel(teachersCollectionView, QualificationsListBox,teachers, this);
         }
     }
 }

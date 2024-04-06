@@ -3,26 +3,28 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics.Eventing.Reader;
+using System.Linq;
 
 namespace LangLang.Model
 {
     public class Language
     {
         private string _name;
-        
-        private static readonly string baseDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
+
         private static readonly string LANGUAGE_FILE_NAME = "language.json";
-        private static readonly string LANGUAGE_FILE_PATH = Path.Combine(baseDirectory, "SourceDataFiles", LANGUAGE_FILE_NAME);
+        private static readonly string LANGUAGE_DIRECTORY_PATH = Path.Combine(Directory.GetCurrentDirectory(), "SourceDataFiles");
+        private static readonly string LANGUAGE_FILE_PATH = Path.Combine(Directory.GetCurrentDirectory(), "SourceDataFiles", LANGUAGE_FILE_NAME);
 
         private static List<Language> _languages = new List<Language>();
-        private static List<string> _languageNames = new List<string>() { "Serbian","English","German"};
+        private static List<string> _languageNames = new List<string>();
 
         public Language(string name, LanguageLevel level)
         {
             Name = name;
             Level = level;
-            Languages.Add(this);
-            if (!LanguageNames.Contains(name))
+            if (!Languages.Any(language => language.Equals(this)))
+                Languages.Add(this);
+            if (!LanguageNames.Any(languageName => languageName.Equals(name)))
             {
                 LanguageNames.Add(name);
             }
@@ -115,16 +117,29 @@ namespace LangLang.Model
                 {
                     _languageNames.Add(language.Name);
                 }
-
             }
-            catch (Exception ex)
+            catch (FileNotFoundException)
             {
-                Console.WriteLine("Error reading languages: " + ex.Message);
+                
             }
         }
         public static void WriteLanguageToJson()
         {
-            string jsonExamString = JsonConvert.SerializeObject(_languages);
+            if (!_languages.Any())
+            {
+                return;
+            }
+            
+            string jsonExamString = JsonConvert.SerializeObject(_languages, new JsonSerializerSettings()
+            {
+                Formatting = Formatting.Indented
+            });
+            
+            if (!Directory.Exists(LANGUAGE_DIRECTORY_PATH))
+            {
+                Directory.CreateDirectory(LANGUAGE_DIRECTORY_PATH);
+            }
+            
             File.WriteAllText(LANGUAGE_FILE_PATH, jsonExamString);
         }
     }
