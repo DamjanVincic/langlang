@@ -68,10 +68,6 @@ public class UserFileRepository : IUserRepository
     private void SaveData()
     {
         string filePath = Path.Combine(Directory.GetCurrentDirectory(), UserDirectoryName, UserFileName);
-        if (!File.Exists(filePath))
-        {
-            File.Create(filePath);
-        }
 
         string json = JsonConvert.SerializeObject(_users, new JsonSerializerSettings
         {
