@@ -50,7 +50,8 @@ public class UserService : IUserService
                 student.Education = education;
                 break;
             case Teacher teacher:
-                teacher.Qualifications = languages ?? new List<Language>();
+                // TODO: Uncomment if teacher gets allowed to update their qualifications
+                // teacher.Qualifications = languages ?? new List<Language>();
                 break;
         }
         
