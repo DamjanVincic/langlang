@@ -39,6 +39,7 @@ public class UserFileRepository : IUserRepository
     {
         LoadData();
         _users[user.Id] = user;
+        SaveData();
     }
 
     public void Delete(int id)
