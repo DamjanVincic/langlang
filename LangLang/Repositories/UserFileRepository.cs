@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using LangLang.Model;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace LangLang.Repositories;
 
@@ -16,34 +14,38 @@ public class UserFileRepository : IUserRepository
     private int _idCounter = 1;
     private Dictionary<int, User> _users = new();
     
-    public UserFileRepository()
-    {
-        LoadData();
-    }
-    
     public List<User> GetAll()
     {
-        throw new System.NotImplementedException();
+        LoadData();
+        return _users.Values.ToList();
     }
 
-    public User GetById(int id)
+    public User? GetById(int id)
     {
-        throw new System.NotImplementedException();
+        LoadData();
+        _users.TryGetValue(id, out var user);
+        return user;
     }
 
     public void Add(User user)
     {
-        throw new System.NotImplementedException();
+        LoadData();
+        user.Id = _idCounter++;
+        _users.Add(user.Id, user);
+        SaveData();
     }
 
     public void Update(User user)
     {
-        throw new System.NotImplementedException();
+        LoadData();
+        _users[user.Id] = user;
     }
 
-    public void Delete(User user)
+    public void Delete(int id)
     {
-        throw new System.NotImplementedException();
+        LoadData();
+        _users.Remove(id);
+        SaveData();
     }
     
     private void LoadData()
