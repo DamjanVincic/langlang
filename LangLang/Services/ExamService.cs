@@ -33,7 +33,8 @@ public class ExamService : IExamService
     
     public void Update(Language language, int maxStudents, DateOnly examDate, int teacherId, TimeOnly examTime)
     {
-        //TODO: Decide which information should be updated
+        // TODO: Check if teacher is allowed to update the exam
+        // TODO: Decide which information should be updated
         throw new NotImplementedException();
     }
     
