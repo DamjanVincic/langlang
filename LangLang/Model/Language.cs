@@ -38,5 +38,17 @@ namespace LangLang.Model
         {
             return $"{Name} {Level}";
         }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is Language language &&
+                   Name == language.Name &&
+                   Level == language.Level;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Name, (int)Level);
+        }
     }
 }

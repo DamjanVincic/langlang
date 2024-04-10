@@ -48,7 +48,20 @@ public class UserFileRepository : IUserRepository
         _users.Remove(id);
         SaveData();
     }
-    
+
+    private void SaveData()
+    {
+        string filePath = Path.Combine(Directory.GetCurrentDirectory(), UserDirectoryName, UserFileName);
+
+        string json = JsonConvert.SerializeObject(_users, new JsonSerializerSettings
+        {
+            Formatting = Formatting.Indented,
+            TypeNameHandling = TypeNameHandling.Auto
+        });
+
+        File.WriteAllText(filePath, json);
+    }
+
     private void LoadData()
     {
         string filePath = Path.Combine(Directory.GetCurrentDirectory(), UserDirectoryName, UserFileName);
@@ -63,18 +76,5 @@ public class UserFileRepository : IUserRepository
         
         if (_users.Any())
             _idCounter = _users.Keys.Max() + 1;
-    }
-
-    private void SaveData()
-    {
-        string filePath = Path.Combine(Directory.GetCurrentDirectory(), UserDirectoryName, UserFileName);
-
-        string json = JsonConvert.SerializeObject(_users, new JsonSerializerSettings
-        {
-            Formatting = Formatting.Indented,
-            TypeNameHandling = TypeNameHandling.Auto
-        });
-
-        File.WriteAllText(filePath, json);
     }
 }

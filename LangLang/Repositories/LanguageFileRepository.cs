@@ -31,19 +31,6 @@ public class LanguageFileRepository : ILanguageRepository
         SaveData();
     }
 
-    private void LoadData()
-    {
-        string filePath = Path.Combine(Directory.GetCurrentDirectory(), LanguageDirectoryName, LanguageFileName);
-        
-        if (!File.Exists(filePath)) return;
-        
-        string json = File.ReadAllText(filePath);
-        _languages = JsonConvert.DeserializeObject<List<Language>>(json, new JsonSerializerSettings
-        {
-            TypeNameHandling = TypeNameHandling.Auto
-        }) ?? new List<Language>();
-    }
-
     private void SaveData()
     {
         string filePath = Path.Combine(Directory.GetCurrentDirectory(), LanguageDirectoryName, LanguageFileName);
@@ -55,5 +42,18 @@ public class LanguageFileRepository : ILanguageRepository
         });
             
         File.WriteAllText(filePath, json);
+    }
+
+    private void LoadData()
+    {
+        string filePath = Path.Combine(Directory.GetCurrentDirectory(), LanguageDirectoryName, LanguageFileName);
+        
+        if (!File.Exists(filePath)) return;
+        
+        string json = File.ReadAllText(filePath);
+        _languages = JsonConvert.DeserializeObject<List<Language>>(json, new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.Auto
+        }) ?? new List<Language>();
     }
 }
