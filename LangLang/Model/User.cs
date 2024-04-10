@@ -1,27 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using LangLang.Repositories;
-using Newtonsoft.Json.Linq;
 
 namespace LangLang.Model
 {
     public abstract class User
     {
-        private string _firstName;
-        private string _lastName;
-        private string _email;
-        private string _password;
-        private string _phone;
+        // = null! to suppress nullable warning because the values are validated
+        private string _firstName = null!;
+        private string _lastName = null!;
+        private string _email = null!;
+        private string _password = null!;
+        private string _phone = null!;
 
-        public User(string firstName, string lastName, string email, string password, Gender gender, string phone)
+        protected User(string firstName, string lastName, string email, string password, Gender gender, string phone)
         {
             FirstName = firstName;
             LastName = lastName;
@@ -30,11 +22,6 @@ namespace LangLang.Model
             Gender = gender;
             Phone = phone;
         }
-        
-        // public static List<Teacher> GetTeachers()
-        // {
-        //     return _users.Values.OfType<Teacher>().ToList();
-        // }
         
         public int Id { get; set; }
 
@@ -61,7 +48,7 @@ namespace LangLang.Model
         public string Email
         {
             get => _email;
-            set
+            private set
             {
                 ValidateEmail(value);
                 _email = value;
@@ -90,20 +77,18 @@ namespace LangLang.Model
             }
         }
 
-        private void ValidateFirstName(string firstName)
+        private static void ValidateFirstName(string firstName)
         {
-            if (firstName == null)
+            switch (firstName)
             {
-                throw new ArgumentNullException(nameof(firstName));
-            }
-
-            if (firstName.Equals(""))
-            {
-                throw new InvalidInputException("First name must include at least one character.");
+                case null:
+                    throw new ArgumentNullException(nameof(firstName));
+                case "":
+                    throw new InvalidInputException("First name must include at least one character.");
             }
         }
 
-        private void ValidateLastName(string lastName)
+        private static void ValidateLastName(string lastName)
         {
             switch (lastName)
             {
@@ -114,7 +99,7 @@ namespace LangLang.Model
             }
         }
 
-        private void ValidateEmail(string email)
+        private static void ValidateEmail(string email)
         {
             if (email == null)
             {
@@ -127,11 +112,11 @@ namespace LangLang.Model
             }
         }
 
-        private void ValidatePassword(string password)
+        private static void ValidatePassword(string password)
         {
             if (password == null)
             {
-                throw new InvalidInputException(nameof(password));
+                throw new ArgumentNullException(nameof(password));
             }
 
             if (password.Length < 8)
@@ -155,16 +140,14 @@ namespace LangLang.Model
             }
         }
 
-        private void ValidatePhoneNumber(string phoneNumber)
+        private static void ValidatePhoneNumber(string phoneNumber)
         {
-            if (phoneNumber == null)
+            switch (phoneNumber)
             {
-                throw new ArgumentNullException(nameof(phoneNumber));
-            }
-
-            if (phoneNumber.Equals(""))
-            {
-                throw new InvalidInputException("Phone number must not be empty.");
+                case null:
+                    throw new ArgumentNullException(nameof(phoneNumber));
+                case "":
+                    throw new InvalidInputException("Phone number must not be empty.");
             }
 
             if (phoneNumber.Length < 10)

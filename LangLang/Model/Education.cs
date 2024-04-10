@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LangLang.Model
+﻿namespace LangLang.Model
 {
     public enum Education
     {
         ElementarySchool,
-        Highschool,
+        HighSchool,
         Bachelors,
         Masters,
         Doctorate
-
     }
 }

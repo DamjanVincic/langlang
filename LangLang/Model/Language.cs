@@ -4,7 +4,7 @@ namespace LangLang.Model
 {
     public class Language
     {
-        private string _name;
+        private string _name = null!;
 
         public Language(string name, LanguageLevel level)
         {
