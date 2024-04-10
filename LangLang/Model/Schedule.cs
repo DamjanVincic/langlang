@@ -19,7 +19,7 @@ namespace LangLang.Model
         public static List<DateOnly> ScheduleItemDates = new List<DateOnly>();
         private static readonly string baseDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
         private static readonly string SCHEDULE_FILE_NAME = "schedule.json";
-        private static readonly string SCHEDULE_FILE_PATH = Path.Combine(baseDirectory, "SourceDataFiles", SCHEDULE_FILE_NAME);
+        private static readonly string SCHEDULE_FILE_PATH = Path.Combine(baseDirectory, "data", SCHEDULE_FILE_NAME);
         
         public static bool CanAddScheduleItem(DateOnly date, int duration, List<Weekday> held, int teacherId, TimeOnly startTime, bool isCourse, bool isOnline, Course course = null)
         {
@@ -74,16 +74,16 @@ namespace LangLang.Model
         {
             if (duration == 0)
             {
-                MessageBox.Show("Invalid input: Duration must be greater than 0.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw new InvalidInputException("Invalid input: Duration must be greater than 0.");
             }
             TimeSpan difference = date.ToDateTime(TimeOnly.MinValue) - DateTime.Now;
             if (difference.TotalDays < 7)
             {
-                MessageBox.Show("The course can be created no later than 7 days before the start", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw new InvalidInputException("The course can be created no later than 7 days before the start");
             }
             if (held == null)
             {
-                MessageBox.Show("Required argument cannot be null.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw new InvalidInputException("Required argument cannot be null.");
             }
         }
 
