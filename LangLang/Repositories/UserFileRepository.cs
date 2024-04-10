@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using LangLang.Model;
@@ -56,7 +57,25 @@ public class UserFileRepository : IUserRepository
         {
             TypeNameHandling = TypeNameHandling.Auto
         }) ?? new Dictionary<int, User>();
-            
-        _idCounter = _users.Keys.Max() + 1;
+        
+        if (_users.Any())
+            _idCounter = _users.Keys.Max() + 1;
+    }
+
+    private void SaveData()
+    {
+        string filePath = Path.Combine(Directory.GetCurrentDirectory(), UserDirectoryName, UserFileName);
+        if (!File.Exists(filePath))
+        {
+            File.Create(filePath);
+        }
+
+        string json = JsonConvert.SerializeObject(_users, new JsonSerializerSettings
+        {
+            Formatting = Formatting.Indented,
+            TypeNameHandling = TypeNameHandling.Auto
+        });
+
+        File.WriteAllText(filePath, json);
     }
 }
