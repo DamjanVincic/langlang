@@ -1,40 +1,22 @@
-﻿using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Collections;
-using System.Linq;
 
 namespace LangLang.Model
 {
     public class Exam : ScheduleItem
     {
-        public const int EXAM_DURATION = 360;
-
-        private static readonly string EXAM_FILE_NAME = "exams.json";
-        private static readonly string EXAM_DIRECTORY_PATH = Path.Combine(Directory.GetCurrentDirectory(), "SourceDataFiles");
-        private static readonly string EXAM_FILE_PATH = Path.Combine(Directory.GetCurrentDirectory(), "SourceDataFiles", EXAM_FILE_NAME);
-
-        private static Dictionary<int, Exam> _exams = new Dictionary<int, Exam>();
-        private Language _language;
+        public const int ExamDuration = 360;
+        
+        private Language _language = null!;
         private int _maxStudents;
         private DateOnly _examDate;
 
-
-        public Exam(Language language, int maxStudents, DateOnly examDate, int teacherId, TimeOnly examTime, int id = -1) : base(teacherId, examTime, id)
+        public Exam(Language language, int maxStudents, DateOnly examDate, int teacherId, TimeOnly examTime) : base(teacherId, examTime)
         {
             Language = language;
             MaxStudents = maxStudents;
             ExamDate = examDate;
             StudentIds = new List<int>();
-            _exams.Add(Id, this);
-        }
-
-        public static List<Exam> GetTeacherExams(int teacherId)
-        {
-            return _exams.Values.Where(exam => exam.TeacherId == teacherId).ToList();
         }
 
         public List<int> StudentIds { get; set; }
@@ -69,7 +51,7 @@ namespace LangLang.Model
             }
         }
 
-        public void ValidateMaxStudents(int maxStudents)
+        private static void ValidateMaxStudents(int maxStudents)
         {
             if (maxStudents < 0)
             {
@@ -77,7 +59,7 @@ namespace LangLang.Model
             }
         }
 
-        public void ValidateLanguage(Language language)
+        private static void ValidateLanguage(Language language)
         {
             if (language == null)
             {
@@ -85,78 +67,13 @@ namespace LangLang.Model
             }
         }
 
-        public void ValidateExamDate(DateOnly examDate)
+        private static void ValidateExamDate(DateOnly examDate)
         {
             DateOnly today = new DateOnly();
             if (examDate < today)
             {
-                throw new ArgumentNullException("Date of exam must be after today.");
+                throw new InvalidInputException("Date of exam must be after today.");
             }
-        }
-        public static Exam GetById(int id)
-        {
-            if (_exams.ContainsKey(id))
-            {
-                return _exams[id];
-            }
-            else
-            {
-                return null;
-            }
-        }
-        
-        public void Delete()
-        {
-            _exams.Remove(Id);
-        }
-        
-        public static void LoadExamFromJson()
-        {
-            try
-            {
-                using (StreamReader r = new StreamReader(EXAM_FILE_PATH))
-                {
-                    string json = r.ReadToEnd();
-                    Dictionary<int, Exam> exams = JsonConvert.DeserializeObject<Dictionary<int, Exam>>(json);
-
-                    // foreach (var kvp in exams)
-                    // {
-                    //     _exams.Add(kvp.Key, kvp.Value);
-                    // }
-                    
-                    IdCounter = Math.Max(IdCounter, _exams.Keys.Max() + 1);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error loading emaxs from JSON: " + ex.Message);
-            }
-        }
-
-        public static void WriteExamToJson()
-        {
-            if (!_exams.Any())
-            {
-                return;
-            }
-            
-            string jsonExamString = JsonConvert.SerializeObject(_exams, new JsonSerializerSettings()
-            {
-                Formatting = Formatting.Indented
-            });
-
-            if (!Directory.Exists(EXAM_DIRECTORY_PATH))
-            {
-                Directory.CreateDirectory(EXAM_DIRECTORY_PATH);
-            }
-            
-            File.WriteAllText(EXAM_FILE_PATH, jsonExamString);
-        }
-
-        public static List<Exam> GetAvailableExams()
-        {
-            //TODO: Add checking if the student has finished the course and don't show the ones they have applied to
-            return _exams.Values.Where(exam => exam.StudentIds.Count < exam.MaxStudents && (exam.ExamDate.DayNumber - DateOnly.FromDateTime(DateTime.Today).DayNumber) >= 30).ToList();
         }
     }
 }
