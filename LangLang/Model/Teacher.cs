@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using LangLang.Services;
 
 namespace LangLang.Model
 {
@@ -29,7 +30,7 @@ namespace LangLang.Model
 
         private void ValidateQualifications(List<Language> qualifications)
         {
-            if (qualifications.Except(Language.Languages).Any())
+            if (qualifications.Except(new LanguageService().GetAll()).Any())
             {
                 throw new InvalidInputException("Given language doesn't exist");
             }
