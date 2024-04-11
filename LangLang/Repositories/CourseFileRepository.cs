@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using LangLang.Model;
@@ -11,10 +10,10 @@ public class CourseFileRepository : ICourseRepository
 {
     private const string CourseFileName = "courses.json";
     private const string CourseDirectoryName = "data";
-    
+
     private int _idCounter = 1;
     private Dictionary<int, Course> _courses = new();
-    
+
     public List<Course> GetAll()
     {
         LoadData();
@@ -53,13 +52,13 @@ public class CourseFileRepository : ICourseRepository
     private void SaveData()
     {
         string filePath = Path.Combine(Directory.GetCurrentDirectory(), CourseDirectoryName, CourseFileName);
-        
+
         string json = JsonConvert.SerializeObject(_courses, new JsonSerializerSettings
         {
             Formatting = Formatting.Indented,
             TypeNameHandling = TypeNameHandling.Auto
         });
-            
+
         File.WriteAllText(filePath, json);
     }
 
@@ -72,7 +71,7 @@ public class CourseFileRepository : ICourseRepository
         {
             TypeNameHandling = TypeNameHandling.Auto
         }) ?? new Dictionary<int, Course>();
-            
+
         if (_courses.Any())
             _idCounter = _courses.Keys.Max() + 1;
     }

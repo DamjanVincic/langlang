@@ -9,7 +9,7 @@ namespace LangLang.Model
             TeacherId = teacherId;
             ScheduledTime = scheduledTime;
         }
-        
+
         public int Id { get; set; }
 
         public int TeacherId { get; set; }

@@ -22,7 +22,7 @@ namespace LangLang.Model
             Gender = gender;
             Phone = phone;
         }
-        
+
         public int Id { get; set; }
 
         public string FirstName

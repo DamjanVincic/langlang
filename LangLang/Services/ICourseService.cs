@@ -8,7 +8,13 @@ public interface ICourseService
 {
     public List<Course> GetAll();
     public Course? GetById(int id);
-    public void Add(Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents, int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed, int teacherId, List<int> studentIds);
-    public void Update(Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents, int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed, int teacherId, List<int> studentIds);
+
+    public void Add(Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents, int creatorId,
+        TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed, int teacherId, List<int> studentIds);
+
+    public void Update(Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents,
+        int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed, int teacherId,
+        List<int> studentIds);
+
     public void Delete(int id);
 }

@@ -11,7 +11,7 @@ namespace LangLang.Model
             Name = name;
             Level = level;
         }
-        
+
         public string Name
         {
             get => _name;
@@ -21,6 +21,7 @@ namespace LangLang.Model
                 _name = value;
             }
         }
+
         public LanguageLevel Level { get; set; }
 
         private void ValidateName(string name)

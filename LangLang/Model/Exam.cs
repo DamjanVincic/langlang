@@ -6,7 +6,7 @@ namespace LangLang.Model
     public class Exam : ScheduleItem
     {
         public const int ExamDuration = 360;
-        
+
         private Language _language = null!;
         private int _maxStudents;
         private DateOnly _examDate;

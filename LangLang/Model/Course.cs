@@ -4,16 +4,18 @@ using System.Collections.Generic;
 namespace LangLang.Model
 {
     public class Course : ScheduleItem
-    { 
+    {
         public const int ClassDuration = 90;
-        
+
         private Language _language = null!;
         private int _duration;
         private List<Weekday> _held = null!;
         private int _maxStudents;
         private DateOnly _startDate;
 
-        public Course(Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents, int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed, int teacherId, List<int> studentIds) : base(teacherId, scheduledTime)
+        public Course(Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents,
+            int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed, int teacherId,
+            List<int> studentIds) : base(teacherId, scheduledTime)
         {
             Language = language;
             Duration = duration;
@@ -24,7 +26,7 @@ namespace LangLang.Model
             MaxStudents = maxStudents;
             StartDate = startDate;
             StudentIds = studentIds;
-            
+
             Schedule.ModifySchedule(this, StartDate, Duration, null, Held);
         }
 
@@ -37,7 +39,8 @@ namespace LangLang.Model
                 _language = value;
             }
         }
-        public int Duration 
+
+        public int Duration
         {
             get => _duration;
             set
@@ -46,16 +49,20 @@ namespace LangLang.Model
                 _duration = value;
             }
         }
-        public List<Weekday> Held {
+
+        public List<Weekday> Held
+        {
             get => _held;
-            set 
+            set
             {
                 ValidateHeld(value);
                 _held = value;
             }
         }
+
         public bool IsOnline { get; set; }
-        public int MaxStudents 
+
+        public int MaxStudents
         {
             get => _maxStudents;
             set
@@ -64,7 +71,9 @@ namespace LangLang.Model
                 _maxStudents = value;
             }
         }
-        public int CreatorId { get; set;}
+
+        public int CreatorId { get; set; }
+
         public DateOnly StartDate
         {
             get => _startDate;
@@ -74,14 +83,15 @@ namespace LangLang.Model
                 _startDate = value;
             }
         }
-        public bool AreApplicationsClosed {get; set; }
+
+        public bool AreApplicationsClosed { get; set; }
         public List<int> StudentIds { get; set; }
 
         private void ValidateStartDate(DateOnly startDate)
         {
             DateOnly today = DateOnly.FromDateTime(DateTime.Today);
             if (startDate < today)
-            { 
+            {
                 throw new InvalidInputException("Start date of course must be after today.");
             }
         }
@@ -92,6 +102,7 @@ namespace LangLang.Model
             {
                 throw new InvalidInputException("Maximum number of students must not be negative.");
             }
+
             if (!IsOnline && maxStudents <= 0)
             {
                 throw new InvalidInputException("You must pass the max number of students if the course is in-person.");

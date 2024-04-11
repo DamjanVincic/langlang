@@ -11,6 +11,5 @@ namespace LangLang.Model
         public InvalidInputException(string message) : base(message)
         {
         }
-
     }
 }

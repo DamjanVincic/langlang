@@ -48,33 +48,33 @@ public class ExamFileRepository : IExamFileRepository
         _exams.Remove(id);
         SaveData();
     }
-    
+
     private void SaveData()
     {
         string filePath = Path.Combine(Directory.GetCurrentDirectory(), ExamDirectoryName, ExamFileName);
-            
+
         string json = JsonConvert.SerializeObject(_exams, new JsonSerializerSettings()
         {
             Formatting = Formatting.Indented,
             TypeNameHandling = TypeNameHandling.Auto
         });
-            
+
         File.WriteAllText(filePath, json);
     }
 
     private void LoadData()
     {
         string filePath = Path.Combine(Directory.GetCurrentDirectory(), ExamDirectoryName, ExamFileName);
-        
+
         if (!File.Exists(filePath))
             return;
-        
+
         string json = File.ReadAllText(filePath);
         _exams = JsonConvert.DeserializeObject<Dictionary<int, Exam>>(json, new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.Auto
         }) ?? new Dictionary<int, Exam>();
-        
+
         if (_exams.Any())
             _idCounter = _exams.Keys.Max() + 1;
     }

@@ -8,7 +8,7 @@ namespace LangLang.Services;
 public class LanguageService : ILanguageService
 {
     private readonly ILanguageRepository _languageRepository = new LanguageFileRepository();
-    
+
     public List<Language> GetAll()
     {
         return _languageRepository.GetAll();

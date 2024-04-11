@@ -13,7 +13,7 @@ public class UserFileRepository : IUserRepository
 
     private int _idCounter = 1;
     private Dictionary<int, User> _users = new();
-    
+
     public List<User> GetAll()
     {
         LoadData();
@@ -65,7 +65,7 @@ public class UserFileRepository : IUserRepository
     private void LoadData()
     {
         string filePath = Path.Combine(Directory.GetCurrentDirectory(), UserDirectoryName, UserFileName);
-        
+
         if (!File.Exists(filePath)) return;
 
         string json = File.ReadAllText(filePath);
@@ -73,7 +73,7 @@ public class UserFileRepository : IUserRepository
         {
             TypeNameHandling = TypeNameHandling.Auto
         }) ?? new Dictionary<int, User>();
-        
+
         if (_users.Any())
             _idCounter = _users.Keys.Max() + 1;
     }

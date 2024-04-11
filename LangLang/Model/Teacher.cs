@@ -8,8 +8,9 @@ namespace LangLang.Model
     public class Teacher : User
     {
         private List<Language> _qualifications = new();
-        
-        public Teacher(string firstName, string lastName, string email, string password, Gender gender, string phone, List<Language> qualifications) : base(firstName, lastName, email, password, gender, phone)
+
+        public Teacher(string firstName, string lastName, string email, string password, Gender gender, string phone,
+            List<Language> qualifications) : base(firstName, lastName, email, password, gender, phone)
         {
             Qualifications = qualifications;
             DateCreated = DateOnly.FromDateTime(DateTime.Now);
@@ -24,7 +25,8 @@ namespace LangLang.Model
                 _qualifications = value;
             }
         }
-        public DateOnly DateCreated { get;}
+
+        public DateOnly DateCreated { get; }
         public List<int> CourseIds { get; } = new();
         public List<int> ExamIds { get; } = new();
 
