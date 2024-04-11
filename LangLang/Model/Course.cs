@@ -6,37 +6,32 @@ namespace LangLang.Model
     public class Course : ScheduleItem
     {
         public const int ClassDuration = 90;
-
-        private Language _language = null!;
+        
         private int _duration;
         private List<Weekday> _held = null!;
-        private int _maxStudents;
-        private DateOnly _startDate;
 
         public Course(Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents,
             int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed, int teacherId,
-            List<int> studentIds) : base(teacherId, scheduledTime)
+            List<int> studentIds) : base(language, maxStudents, startDate, teacherId, scheduledTime)
         {
-            Language = language;
+            StartDate = startDate;
+            MaxStudents = maxStudents;
+            
             Duration = duration;
             Held = held;
             CreatorId = creatorId;
             AreApplicationsClosed = areApplicationsClosed;
             IsOnline = isOnline;
-            MaxStudents = maxStudents;
-            StartDate = startDate;
             StudentIds = studentIds;
-
-            Schedule.ModifySchedule(this, StartDate, Duration, null, Held);
         }
 
-        public Language Language
+        public new int MaxStudents
         {
-            get => _language;
+            get => base.MaxStudents;
             set
             {
-                ValidateLanguage(value);
-                _language = value;
+                ValidateMaxStudents(value);
+                base.MaxStudents = value;
             }
         }
 
@@ -62,75 +57,44 @@ namespace LangLang.Model
 
         public bool IsOnline { get; set; }
 
-        public int MaxStudents
-        {
-            get => _maxStudents;
-            set
-            {
-                ValidateMaxStudents(value);
-                _maxStudents = value;
-            }
-        }
-
         public int CreatorId { get; set; }
 
         public DateOnly StartDate
         {
-            get => _startDate;
+            get => Date;
             set
             {
-                ValidateStartDate(value);
-                _startDate = value;
+                ValidateDate(value);
+                Date = value;
             }
         }
 
         public bool AreApplicationsClosed { get; set; }
+        
         public List<int> StudentIds { get; set; }
 
-        private void ValidateStartDate(DateOnly startDate)
+        private static void ValidateDate(DateOnly startDate)
         {
-            DateOnly today = DateOnly.FromDateTime(DateTime.Today);
-            if (startDate < today)
-            {
-                throw new InvalidInputException("Start date of course must be after today.");
-            }
+            if ((startDate.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days < 7)
+                throw new InvalidInputException("The course has to be at least 7 days from now.");
         }
 
         private void ValidateMaxStudents(int maxStudents)
         {
-            if (maxStudents < 0)
-            {
-                throw new InvalidInputException("Maximum number of students must not be negative.");
-            }
-
             if (!IsOnline && maxStudents <= 0)
-            {
                 throw new InvalidInputException("You must pass the max number of students if the course is in-person.");
-            }
         }
 
-        private void ValidateHeld(List<Weekday> held)
+        private static void ValidateHeld(List<Weekday> held)
         {
             if (held == null)
-            {
                 throw new ArgumentNullException(nameof(held));
-            }
         }
 
-        private void ValidateDuration(int duration)
+        private static void ValidateDuration(int duration)
         {
             if (duration <= 0)
-            {
-                throw new InvalidInputException("Duration must be positive.");
-            }
-        }
-
-        private void ValidateLanguage(Language language)
-        {
-            if (language == null)
-            {
-                throw new ArgumentNullException(nameof(language));
-            }
+                throw new InvalidInputException("Invalid input: Duration must be greater than 0.");
         }
     }
 }

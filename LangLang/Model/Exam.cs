@@ -7,73 +7,24 @@ namespace LangLang.Model
     {
         public const int ExamDuration = 360;
 
-        private Language _language = null!;
-        private int _maxStudents;
-        private DateOnly _examDate;
-
-        public Exam(Language language, int maxStudents, DateOnly examDate, int teacherId, TimeOnly examTime) : base(teacherId, examTime)
+        public Exam(Language language, int maxStudents, DateOnly date, int teacherId, TimeOnly time) : base(language, maxStudents, date, teacherId, time)
         {
-            Language = language;
             MaxStudents = maxStudents;
-            ExamDate = examDate;
-            StudentIds = new List<int>();
+            Date = date;
         }
-
-        public List<int> StudentIds { get; set; }
-
-        public Language Language
+        
+        public new int MaxStudents
         {
-            get => _language;
-            set
-            {
-                ValidateLanguage(value);
-                _language = value;
-            }
+            get => base.MaxStudents;
+            set => base.MaxStudents = value;
+        }
+        
+        public new DateOnly Date
+        {
+            get => base.Date;
+            set => base.Date = value;
         }
 
-        public int MaxStudents
-        {
-            get => _maxStudents;
-            set
-            {
-                ValidateMaxStudents(value);
-                _maxStudents = value;
-            }
-        }
-
-        public DateOnly ExamDate
-        {
-            get => _examDate;
-            set
-            {
-                ValidateExamDate(value);
-                _examDate = value;
-            }
-        }
-
-        private static void ValidateMaxStudents(int maxStudents)
-        {
-            if (maxStudents < 0)
-            {
-                throw new InvalidInputException("Number of max students can not be negative.");
-            }
-        }
-
-        private static void ValidateLanguage(Language language)
-        {
-            if (language == null)
-            {
-                throw new ArgumentNullException(nameof(language));
-            }
-        }
-
-        private static void ValidateExamDate(DateOnly examDate)
-        {
-            DateOnly today = new DateOnly();
-            if (examDate < today)
-            {
-                throw new InvalidInputException("Date of exam must be after today.");
-            }
-        }
+        public List<int> StudentIds { get; set; } = new();
     }
 }
