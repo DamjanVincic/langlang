@@ -20,11 +20,6 @@ public class UserService : IUserService
     {
         return _userRepository.GetById(id);
     }
-    
-    public User? GetByEmail(string email)
-    {
-        return _userRepository.GetAll().FirstOrDefault(user => user.Email.Equals(email));
-    }
 
     public void Add(string firstName, string lastName, string email, string password, Gender gender, string phone,
         Education? education = null, List<Language>? languages = null)
@@ -64,11 +59,17 @@ public class UserService : IUserService
         }
 
         _userRepository.Update(user);
+        
+        if (LoggedInUser?.Id == id)
+            LoggedInUser = user;
     }
 
     public void Delete(int id)
     {
         _userRepository.Delete(id);
+        
+        if (LoggedInUser?.Id == id)
+            LoggedInUser = null;
     }
 
     public User? Login(string email, string password)

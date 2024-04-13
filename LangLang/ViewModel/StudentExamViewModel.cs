@@ -8,38 +8,34 @@ using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Model;
+using LangLang.Services;
 
 namespace LangLang.ViewModel;
 
 public class StudentExamViewModel : ViewModelBase
 {
-    public ObservableCollection<ExamViewModel> AvailableExams { get; }
-
-    public ExamViewModel SelectedItem { get; set; }
-
-    public ICollectionView ExamCollectionView { get; set; }
-    public IEnumerable<LanguageLevel> LanguageLevelValues => Enum.GetValues(typeof(LanguageLevel)).Cast<LanguageLevel>();
+    private readonly ILanguageService _languageService = new LanguageService();
+    private readonly IStudentService _studentService = new StudentService();
     
-    public IEnumerable<string> LanguageNames => Language.LanguageNames;
-    
-    public ICommand ResetFiltersCommand { get; }
+    private string _languageNameSelected;
+    private string _languageLevelSelected;
+    private DateTime _dateSelected;
     
     public StudentExamViewModel()
     {
-        AvailableExams = new ObservableCollection<ExamViewModel>(Exam.GetAvailableExams().Select(exam => new ExamViewModel(exam)));
+        AvailableExams = new ObservableCollection<ExamViewModel>(_studentService.GetAvailableExams().Select(exam => new ExamViewModel(exam)));
         ExamCollectionView = CollectionViewSource.GetDefaultView(AvailableExams);
         ExamCollectionView.Filter = FilterExams;
         ResetFiltersCommand = new RelayCommand(ResetFilters);
     }
-
-    private void ResetFilters()
-    {
-        LanguageNameSelected = null;
-        LanguageLevelSelected = null;
-        DateSelected = DateTime.MinValue;
-    }
-
-    private string _languageNameSelected;
+    
+    public ObservableCollection<ExamViewModel> AvailableExams { get; }
+    public ExamViewModel SelectedItem { get; set; }
+    public ICollectionView ExamCollectionView { get; set; }
+    public IEnumerable<LanguageLevel> LanguageLevelValues => Enum.GetValues(typeof(LanguageLevel)).Cast<LanguageLevel>();
+    public IEnumerable<string> LanguageNames => _languageService.GetAllNames();
+    public ICommand ResetFiltersCommand { get; }
+    
     public string LanguageNameSelected
     {
         get => _languageNameSelected;
@@ -49,7 +45,7 @@ public class StudentExamViewModel : ViewModelBase
             ExamCollectionView.Refresh();
         }
     }
-    private string _languageLevelSelected;
+    
     public string LanguageLevelSelected
     {
         get => _languageLevelSelected;
@@ -59,7 +55,7 @@ public class StudentExamViewModel : ViewModelBase
             ExamCollectionView.Refresh();
         }
     }
-    private DateTime _dateSelected;
+    
     public DateTime DateSelected
     {
         get => _dateSelected;
@@ -79,5 +75,12 @@ public class StudentExamViewModel : ViewModelBase
                    examViewModel.FilterDateHeld(DateSelected);
         }
         return false;
+    }
+    
+    private void ResetFilters()
+    {
+        LanguageNameSelected = null!;
+        LanguageLevelSelected = null!;
+        DateSelected = DateTime.MinValue;
     }
 }

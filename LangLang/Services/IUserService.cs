@@ -7,7 +7,6 @@ public interface IUserService
 {
     List<User> GetAll();
     User? GetById(int id);
-    User? GetByEmail(string email);
 
     public void Add(string firstName, string lastName, string email, string password, Gender gender, string phone,
         Education? education = null, List<Language>? languages = null);

@@ -33,9 +33,9 @@ public class LoginViewModel : ViewModelBase
         {
             case null:
                 MessageBox.Show("Invalid email or password.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                break;
+                return;
             case Student student:
-                new StudentView(student).Show();
+                new StudentView().Show();
                 break;
             case Director:
                 new TeachersView().Show();

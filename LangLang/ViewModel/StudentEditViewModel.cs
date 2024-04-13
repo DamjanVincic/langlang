@@ -4,39 +4,22 @@ using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Model;
+using LangLang.Services;
 
 namespace LangLang.ViewModel;
 
 public class StudentEditViewModel : ViewModelBase
 {
-    private Student _student;
+    private readonly IUserService _userService = new UserService();
     
-    // public string FirstName => _student.FirstName;
-    // public string LastName => _student.LastName;
-    // // public string Email => _student.Email;
-    // public string Phone => _student.Phone;
-    // public Gender Gender => _student.Gender;
-    // public Education Education => _student.Education;
-    
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public string Password { get; set; }
-    public string Phone { get; set; }
-    public Gender Gender { get; set; }
-    public Education Education { get; set; }
+    private readonly Student _student = UserService.LoggedInUser as Student ?? throw new InvalidInputException("No one is logged in.");
 
-    public Array GenderValues => Enum.GetValues(typeof(Gender));
-    public Array EducationValues => Enum.GetValues(typeof(Education));
+    private readonly Window _editWindow;
     
-    public ICommand SaveCommand { get; }
-
-    private Window _editWindow;
-    
-    public StudentEditViewModel(Student student, Window editWindow)
+    public StudentEditViewModel(Window editWindow)
     {
         _editWindow = editWindow;
         
-        _student = student;
         FirstName = _student.FirstName;
         LastName = _student.LastName;
         Password = _student.Password;
@@ -46,12 +29,24 @@ public class StudentEditViewModel : ViewModelBase
         
         SaveCommand = new RelayCommand(Save);
     }
+    
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string Password { get; set; }
+    public string Phone { get; set; }
+    public Gender Gender { get; set; }
+    public Education? Education { get; set; }
 
-    public void Save()
+    public Array GenderValues => Enum.GetValues(typeof(Gender));
+    public Array EducationValues => Enum.GetValues(typeof(Education));
+    
+    public ICommand SaveCommand { get; }
+
+    private void Save()
     {
         try
         {
-            _student.Edit(FirstName, LastName, Password, Gender, Phone, Education);
+            _userService.Update(_student.Id, FirstName, LastName, Password, Gender, Phone, Education);
             _editWindow.Close();
             MessageBox.Show("Information successfully edited.", "Success", MessageBoxButton.OK,
                 MessageBoxImage.Information);

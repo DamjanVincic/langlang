@@ -46,7 +46,7 @@ public class RegisterViewModel : ViewModelBase
             MessageBox.Show("User registered successfully.", "Success", MessageBoxButton.OK,
                 MessageBoxImage.Information);
             
-            new StudentView((Student)_userService.GetByEmail(Email!)!).Show();
+            new StudentView().Show();
             _registerWindow.Close();
             Application.Current.MainWindow?.Close();
         }

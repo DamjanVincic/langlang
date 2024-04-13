@@ -8,23 +8,14 @@ using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Model;
+using LangLang.Services;
 
 namespace LangLang.ViewModel;
 
 public class StudentCourseViewModel : ViewModelBase
 {
-    public ObservableCollection<CourseViewModel> AvailableCourses { get; }
-    
-    public ICommand ResetFiltersCommand { get; }
-    
-    public StudentCourseViewModel()
-    {
-        AvailableCourses = new ObservableCollection<CourseViewModel>(Course.GetAvailableCourses().Select(course => new CourseViewModel(course)));
-        CoursesCollectionView = CollectionViewSource.GetDefaultView(AvailableCourses);
-        CoursesCollectionView.Filter = filterCourses;
-        
-        ResetFiltersCommand = new RelayCommand(ResetFilters);
-    }
+    private readonly ILanguageService _languageService = new LanguageService();
+    private readonly IStudentService _studentService = new StudentService();
     
     private string _selectedLanguageName;
     private string _selectedLanguageLevel;
@@ -32,20 +23,22 @@ public class StudentCourseViewModel : ViewModelBase
     private string _selectedDuration;
     private string _selectedFormat;
     
-    public ICollectionView CoursesCollectionView { get; }
-    public IEnumerable<String> LanguageNameValues => Language.LanguageNames;
-    public IEnumerable<String> LanguageLevelValues => Enum.GetNames(typeof(LanguageLevel));
-    public IEnumerable<String> FormatValues => new List<String>{"online", "in-person"};
-
-    private void ResetFilters()
+    public StudentCourseViewModel()
     {
-        SelectedLanguageLevel = null;
-        SelectedLanguageName = null;
-        SelectedDate = DateTime.MinValue;
-        SelectedDuration = null;
-        SelectedFormat = null;
+        AvailableCourses = new ObservableCollection<CourseViewModel>(_studentService.GetAvailableCourses().Select(course => new CourseViewModel(course)));
+        CoursesCollectionView = CollectionViewSource.GetDefaultView(AvailableCourses);
+        CoursesCollectionView.Filter = FilterCourses;
+        
+        ResetFiltersCommand = new RelayCommand(ResetFilters);
     }
 
+    public ICommand ResetFiltersCommand { get; }
+    
+    public ObservableCollection<CourseViewModel> AvailableCourses { get; }
+    public ICollectionView CoursesCollectionView { get; }
+    public IEnumerable<string> LanguageNameValues => _languageService.GetAllNames();
+    public IEnumerable<string> LanguageLevelValues => Enum.GetNames(typeof(LanguageLevel));
+    public IEnumerable<string> FormatValues => new List<string>{"online", "in-person"};
 
     public string SelectedLanguageName
     {
@@ -95,7 +88,7 @@ public class StudentCourseViewModel : ViewModelBase
         }
     }
 
-    private bool filterCourses(object obj)
+    private bool FilterCourses(object obj)
     {
         if (obj is CourseViewModel courseViewModel)
         {
@@ -105,9 +98,16 @@ public class StudentCourseViewModel : ViewModelBase
                 courseViewModel.FilterDuration(SelectedDuration) &&
                 courseViewModel.FilterFormat(SelectedFormat); 
         }
-        else
-        {
-            return false;
-        }
+
+        return false;
+    }
+    
+    private void ResetFilters()
+    {
+        SelectedLanguageLevel = null!;
+        SelectedLanguageName = null!;
+        SelectedDate = DateTime.MinValue;
+        SelectedDuration = null!;
+        SelectedFormat = null!;
     }
 }
