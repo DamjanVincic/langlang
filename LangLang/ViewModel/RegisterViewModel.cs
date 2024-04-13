@@ -6,12 +6,16 @@ using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Model;
+using LangLang.Repositories;
+using LangLang.Services;
 using LangLang.View;
 
 namespace LangLang.ViewModel;
 
 public class RegisterViewModel : ViewModelBase
 {
+    private readonly IUserService _userService = new UserService();
+    
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
     public string? Email { get; set; }
@@ -37,11 +41,12 @@ public class RegisterViewModel : ViewModelBase
     {
         try
         {
-            Student student = new Student(FirstName!, LastName!, Email!, Password!, Gender, Phone!, Education);
+            _userService.Add(FirstName!, LastName!, Email!, Password!, Gender, Phone!, Education);
+            
             MessageBox.Show("User registered successfully.", "Success", MessageBoxButton.OK,
                 MessageBoxImage.Information);
             
-            new StudentView(student).Show();
+            new StudentView((Student)_userService.GetByEmail(Email!)!).Show();
             _registerWindow.Close();
             Application.Current.MainWindow?.Close();
         }

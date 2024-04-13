@@ -1,16 +1,17 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Views;
 using LangLang.Model;
+using LangLang.Services;
 using LangLang.View;
 
 namespace LangLang.ViewModel;
 
 public class LoginViewModel : ViewModelBase
 {
+    private readonly IUserService _userService = new UserService();
+    
     private readonly Window _loginWindow;
     
     public string? Email { get; set; }
@@ -26,7 +27,7 @@ public class LoginViewModel : ViewModelBase
     
     private void Login()
     {
-        User? user = User.Login(Email!, Password!);
+        User? user = _userService.Login(Email!, Password!);
         
         switch (user)
         {
@@ -35,19 +36,16 @@ public class LoginViewModel : ViewModelBase
                 break;
             case Student student:
                 new StudentView(student).Show();
-                _loginWindow.Close();
-                Application.Current.MainWindow?.Close();
                 break;
             case Director:
                 new TeachersView().Show();
-                _loginWindow.Close();
-                Application.Current.MainWindow?.Close();
                 break;
             case Teacher teacher:
                 new TeacherMenu(teacher).Show();
-                _loginWindow.Close();
-                Application.Current.MainWindow?.Close();
                 break;
         }
+        
+        _loginWindow.Close();
+        Application.Current.MainWindow?.Close();
     }
 }
