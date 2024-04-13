@@ -42,11 +42,39 @@ public class ExamService : IExamService
         _userRepository.Update(teacher);
     }
 
-    public void Update(Language language, int maxStudents, DateOnly examDate, int teacherId, TimeOnly examTime)
+    public void Update(int id, string languageName, LanguageLevel languageLevel, int maxStudents, DateOnly date, int teacherId, TimeOnly time)
     {
-        // TODO: Check if teacher is allowed to update the exam
         // TODO: Decide which information should be updated
-        throw new NotImplementedException();
+
+        Exam exam = _examFileRepository.GetById(id) ?? throw new InvalidInputException("Exam doesn't exist.");
+        
+        if ((exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days < 14)
+            throw new InvalidInputException("The exam can't be changed if it's less than 2 weeks from now.");
+        
+        Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
+                          throw new InvalidInputException("User doesn't exist.");
+        
+        Language language = _languageService.GetLanguage(languageName, languageLevel) ??
+                            throw new InvalidInputException("Language with the given level doesn't exist.");
+
+        exam.Language = language;
+        exam.MaxStudents = maxStudents;
+        exam.Date = date;
+        exam.ScheduledTime = time;
+
+        if (teacher.Id != exam.TeacherId)
+        {
+            Teacher? oldTeacher = _userRepository.GetById(exam.TeacherId) as Teacher;
+            
+            oldTeacher!.ExamIds.Remove(exam.Id);
+            _userRepository.Update(oldTeacher);
+            
+            teacher.ExamIds.Add(exam.Id);
+            _userRepository.Update(teacher);
+        }
+
+        _scheduleService.Update(exam);
+        _examFileRepository.Update(exam);
     }
 
     public void Delete(int id)
