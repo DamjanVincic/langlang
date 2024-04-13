@@ -54,6 +54,13 @@ public class CourseService : ICourseService
 
     public void Delete(int id)
     {
+        Course course = _courseRepository.GetById(id) ?? throw new InvalidInputException("Course doesn't exist.");
+
+        Teacher? teacher = _userRepository.GetById(course.TeacherId) as Teacher;
+
+        teacher!.CourseIds.Remove(id);
+        _userRepository.Update(teacher);
+        
         _courseRepository.Delete(id);
     }
 }

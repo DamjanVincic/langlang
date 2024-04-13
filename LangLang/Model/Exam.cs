@@ -41,7 +41,7 @@ namespace LangLang.Model
         private static void ValidateDate(DateOnly date)
         {
             if ((date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days < 14)
-                throw new InvalidInputException("The course has to be at least 7 days from now.");
+                throw new InvalidInputException("The exam has to be at least 2 weeks from now.");
         }
     }
 }
