@@ -8,6 +8,9 @@ namespace LangLang.Services;
 public class CourseService : ICourseService
 {
     private readonly ICourseRepository _courseRepository = new CourseFileRepository();
+    private readonly IUserRepository _userRepository = new UserFileRepository();
+    private readonly ILanguageService _languageService = new LanguageService();
+    private readonly IScheduleService _scheduleService = new ScheduleService();
 
     public List<Course> GetAll()
     {
@@ -19,11 +22,25 @@ public class CourseService : ICourseService
         return _courseRepository.GetById(id);
     }
 
-    public void Add(Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents, int creatorId,
-        TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed, int teacherId, List<int> studentIds)
+    public void Add(string languageName, LanguageLevel languageLevel, int duration, List<Weekday> held, bool isOnline,
+        int maxStudents, int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed,
+        int teacherId, List<int> studentIds)
     {
-        _courseRepository.Add(new Course(language, duration, held, isOnline, maxStudents, creatorId, scheduledTime,
-            startDate, areApplicationsClosed, teacherId, studentIds));
+        Language language = _languageService.GetLanguage(languageName, languageLevel) ??
+                            throw new InvalidInputException("Language with the given level doesn't exist.");
+
+        Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
+                          throw new InvalidInputException("User doesn't exist.");
+
+        Course course = new Course(_courseRepository.GenerateId(), language, duration, held, isOnline, maxStudents,
+            creatorId, scheduledTime, startDate, areApplicationsClosed, teacherId, studentIds);
+
+        // Validates if it can be added to the current schedule
+        _scheduleService.Add(course);
+        _courseRepository.Add(course);
+
+        teacher.CourseIds.Add(course.Id);
+        _userRepository.Update(teacher);
     }
 
     public void Update(Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents,
