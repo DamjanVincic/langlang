@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 
 namespace LangLang.Model
 {
@@ -13,10 +14,23 @@ namespace LangLang.Model
             Language = language;
             TeacherId = teacherId;
             ScheduledTime = time;
+            MaxStudents = maxStudents;
+            Date = date;
+        }
+
+        // Constructor without date validation for deserializing
+        protected ScheduleItem(int id, Language language, int maxStudents, DateOnly date, int teacherId, TimeOnly time)
+        {
+            Id = id;
+            Language = language;
+            TeacherId = teacherId;
+            MaxStudents = maxStudents;
+            _date = date;
+            ScheduledTime = time;
         }
 
         public int Id { get; set; }
-        
+
         public Language Language
         {
             get => _language;
@@ -26,7 +40,7 @@ namespace LangLang.Model
                 _language = value;
             }
         }
-        
+
         public int MaxStudents
         {
             get => _maxStudents;
@@ -36,43 +50,37 @@ namespace LangLang.Model
                 _maxStudents = value;
             }
         }
-        
+
         public int TeacherId { get; set; }
 
         public DateOnly Date
         {
             get => _date;
-            set
+            protected set
             {
                 ValidateDate(value);
                 _date = value;
             }
         }
-        
+
         public TimeOnly ScheduledTime { get; set; }
-        
+
         private static void ValidateLanguage(Language language)
         {
             if (language == null)
-            {
                 throw new ArgumentNullException(nameof(language));
-            }
         }
-        
+
         private static void ValidateMaxStudents(int maxStudents)
         {
             if (maxStudents < 0)
-            {
                 throw new InvalidInputException("Number of max students can not be negative.");
-            }
         }
-        
-        private static void ValidateDate(DateOnly examDate)
+
+        private static void ValidateDate(DateOnly date)
         {
-            if (examDate < DateOnly.FromDateTime(DateTime.Today))
-            {
+            if (date < DateOnly.FromDateTime(DateTime.Today))
                 throw new InvalidInputException("Date must be after today.");
-            }
         }
     }
 }

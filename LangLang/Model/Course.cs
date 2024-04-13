@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace LangLang.Model
 {
     public class Course : ScheduleItem
     {
         public const int ClassDuration = 90;
-        
+
         private int _duration;
         private List<Weekday> _held = null!;
 
@@ -14,9 +15,20 @@ namespace LangLang.Model
             int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed, int teacherId,
             List<int> studentIds) : base(language, maxStudents, startDate, teacherId, scheduledTime)
         {
-            StartDate = startDate;
-            MaxStudents = maxStudents;
-            
+            Duration = duration;
+            Held = held;
+            CreatorId = creatorId;
+            AreApplicationsClosed = areApplicationsClosed;
+            IsOnline = isOnline;
+            StudentIds = studentIds;
+        }
+
+        // Constructor without date validation for deserializing
+        [JsonConstructor]
+        public Course(int id, Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents,
+            int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed, int teacherId,
+            List<int> studentIds) : base(id, language, maxStudents, startDate, teacherId, scheduledTime)
+        {
             Duration = duration;
             Held = held;
             CreatorId = creatorId;
@@ -70,7 +82,7 @@ namespace LangLang.Model
         }
 
         public bool AreApplicationsClosed { get; set; }
-        
+
         public List<int> StudentIds { get; set; }
 
         private static void ValidateDate(DateOnly startDate)
