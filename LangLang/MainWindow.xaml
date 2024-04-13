@@ -5,18 +5,77 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:view="clr-namespace:LangLang.View"
         mc:Ignorable="d"
-        Title="LangLang" Height="250" Width="400">
+        d:DesignHeight="393" d:DesignWidth="700"
+        WindowStartupLocation="CenterScreen"
+        Title="LangLang" Width="700" Height="393">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
 
-        <!-- Main Content -->
-        <StackPanel Grid.Row="0" Margin="20" VerticalAlignment="Center">
-            <TextBlock Text="Welcome!" Margin="0 0 0 20" HorizontalAlignment="Center"/>
-            <Button Content="Login" Command="{Binding NavigateToLoginCommand}" Margin="0 0 0 10" Padding="10" FontSize="14" FontWeight="Bold"/>
-            <Button Content="Register" Command="{Binding NavigateToRegisterCommand}" Margin="0 0 0 10" Padding="10" FontSize="14" FontWeight="Bold"/>
-        </StackPanel>
+        <Image Source="https://internationallanguageschool.it/wp-content/uploads/2020/05/language-learning.jpg" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" Grid.Row="0">
+                <Run Text="WELCOME TO "/>
+                <Run Text="LANG" Foreground="#ec3629"/>
+                <Run Text="LANG" Foreground="#55bcbb"/>
+            </TextBlock>
+
+
+            <TextBlock Text="Email:" FontWeight="Bold" Grid.Row="1"/>
+            <TextBox x:Name="UsernameTextBox" Text="{Binding Email}"  Width="200" Height="40" Grid.Row="2"/>
+
+            <TextBlock Text="Password:" FontWeight="Bold" Grid.Row="3"/>
+            <TextBox x:Name="PasswordBox" Text="{Binding Password}" Width="200" Height="40" Grid.Row="4"/>
+
+            <Button Content="LOGIN" Width="100" Command="{Binding LoginCommand}"  Grid.Row="5" Height="40" Background="#55bcbb" HorizontalAlignment="Center">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Foreground" Value="White" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="5">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+            <TextBlock Grid.Row="6">
+            Don't have an account? 
+            <Hyperlink Foreground="#55bcbb"  Command="{Binding NavigateToRegisterCommand}">
+                 <TextBlock Text="Register now!">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Foreground" Value="#f46231"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                 </TextBlock>
+             </Hyperlink>
+         </TextBlock>
+        </Grid>
     </Grid>
 </Window>
