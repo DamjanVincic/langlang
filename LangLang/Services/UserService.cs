@@ -7,6 +7,8 @@ namespace LangLang.Services;
 
 public class UserService : IUserService
 {
+    public static User? LoggedInUser { get; private set; }
+    
     private readonly IUserRepository _userRepository = new UserFileRepository();
 
     public List<User> GetAll()
@@ -71,6 +73,16 @@ public class UserService : IUserService
 
     public User? Login(string email, string password)
     {
-        return _userRepository.GetAll().FirstOrDefault(user => user.Email.Equals(email) && user.Password.Equals(password));
+        User? user = _userRepository.GetAll().FirstOrDefault(user => user.Email.Equals(email) && user.Password.Equals(password));
+        LoggedInUser = user;
+        return user;
+    }
+    
+    public void Logout()
+    {
+        if (LoggedInUser == null)
+            throw new InvalidInputException("Already logged out.");
+        
+        LoggedInUser = null;
     }
 }

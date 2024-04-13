@@ -17,4 +17,5 @@ public interface IUserService
 
     void Delete(int id);
     User? Login(string email, string password);
+    void Logout();
 }
