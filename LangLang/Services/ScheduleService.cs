@@ -10,16 +10,16 @@ public class ScheduleService : IScheduleService
 {
     private readonly IScheduleRepository _scheduleRepository = new ScheduleFileRepository();
     
-    public void Add(ScheduleItem item)
+    public void Add(ScheduleItem scheduleItem)
     {
-        if (!ValidateScheduleItem(item))
+        if (!ValidateScheduleItem(scheduleItem))
             throw new InvalidInputException("Schedule overlaps with existing items.");
         
-        switch (item)
+        switch (scheduleItem)
         {
             case Course course:
                 List<int> dayDifferences = CalculateDateDifferences(course.Held);
-                DateOnly startDate = item.Date;
+                DateOnly startDate = scheduleItem.Date;
 
                 for (int i = 0; i < course.Duration; ++i)
                 {
@@ -27,18 +27,30 @@ public class ScheduleService : IScheduleService
                     {
                         // No need to change the date if we add it to Add method as a parameter
                         course.StartDate = startDate;
-                        _scheduleRepository.Add(item);
+                        _scheduleRepository.Add(scheduleItem);
                         startDate = startDate.AddDays(day);
                     }
                 }
                 break;
             case Exam:
-                _scheduleRepository.Add(item);
+                _scheduleRepository.Add(scheduleItem);
                 break;
         }
     }
 
-    private bool ValidateScheduleItem(ScheduleItem scheduleItem)
+    public void Update(ScheduleItem scheduleItem)
+    {
+        ValidateScheduleItem(scheduleItem, true);
+        Delete(scheduleItem);
+        Add(scheduleItem);
+    }
+
+    public void Delete(ScheduleItem scheduleItem)
+    {
+        _scheduleRepository.Delete(scheduleItem);
+    }
+
+    private bool ValidateScheduleItem(ScheduleItem scheduleItem, bool toEdit = false)
     {
         switch (scheduleItem)
         {
@@ -48,7 +60,7 @@ public class ScheduleService : IScheduleService
                 {
                     foreach (int day in CalculateDateDifferences(course.Held))
                     {
-                        if (!IsAvailable(scheduleItem, date))
+                        if (!IsAvailable(scheduleItem, date, toEdit))
                             return false;
                         
                         date = date.AddDays(day);
@@ -56,7 +68,7 @@ public class ScheduleService : IScheduleService
                 }
                 break;
             case Exam exam:
-                if (!IsAvailable(exam, exam.Date))
+                if (!IsAvailable(exam, exam.Date, toEdit))
                     return false;
                 break;
         }
@@ -77,7 +89,7 @@ public class ScheduleService : IScheduleService
         return dayDifferences;
     }
 
-    private bool IsAvailable(ScheduleItem scheduleItem, DateOnly date, bool toEdit = false)
+    private bool IsAvailable(ScheduleItem scheduleItem, DateOnly date, bool toEdit)
     {
         // TODO: Refactor this method
         
