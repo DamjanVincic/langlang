@@ -30,6 +30,6 @@ public class StudentService : IStudentService
         //TODO: Add checking if the student has finished the course and don't show the ones they have applied to
         return _examFileRepository.GetAll().Where(exam =>
             exam.StudentIds.Count < exam.MaxStudents &&
-            (exam.ExamDate.DayNumber - DateOnly.FromDateTime(DateTime.Today).DayNumber) >= 30).ToList();
+            (exam.Date.DayNumber - DateOnly.FromDateTime(DateTime.Today).DayNumber) >= 30).ToList();
     }
 }
