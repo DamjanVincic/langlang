@@ -12,15 +12,14 @@ namespace LangLang.Model
         private List<Weekday> _held = null!;
 
         public Course(Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents,
-            int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed, int teacherId,
-            List<int> studentIds) : base(language, maxStudents, startDate, teacherId, scheduledTime)
+            int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed,
+            int teacherId) : base(language, maxStudents, startDate, teacherId, scheduledTime)
         {
             Duration = duration;
             Held = held;
             CreatorId = creatorId;
             AreApplicationsClosed = areApplicationsClosed;
             IsOnline = isOnline;
-            StudentIds = studentIds;
         }
 
         // Constructor without date validation for deserializing
@@ -83,7 +82,7 @@ namespace LangLang.Model
 
         public bool AreApplicationsClosed { get; set; }
 
-        public List<int> StudentIds { get; set; }
+        public List<int> StudentIds { get; set; } = new();
 
         private static void ValidateDate(DateOnly startDate)
         {

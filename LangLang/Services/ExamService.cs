@@ -61,6 +61,9 @@ public class ExamService : IExamService
         exam.MaxStudents = maxStudents;
         exam.Date = date;
         exam.ScheduledTime = time;
+        
+        // Validates if it can be added to the current schedule
+        _scheduleService.Update(exam);
 
         if (teacher.Id != exam.TeacherId)
         {
@@ -72,8 +75,7 @@ public class ExamService : IExamService
             teacher.ExamIds.Add(exam.Id);
             _userRepository.Update(teacher);
         }
-
-        _scheduleService.Update(exam);
+        
         _examFileRepository.Update(exam);
     }
 

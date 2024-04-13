@@ -24,7 +24,7 @@ public class CourseService : ICourseService
 
     public void Add(string languageName, LanguageLevel languageLevel, int duration, List<Weekday> held, bool isOnline,
         int maxStudents, int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed,
-        int teacherId, List<int> studentIds)
+        int teacherId)
     {
         Language language = _languageService.GetLanguage(languageName, languageLevel) ??
                             throw new InvalidInputException("Language with the given level doesn't exist.");
@@ -32,8 +32,11 @@ public class CourseService : ICourseService
         Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
                           throw new InvalidInputException("User doesn't exist.");
 
-        Course course = new Course(_courseRepository.GenerateId(), language, duration, held, isOnline, maxStudents,
-            creatorId, scheduledTime, startDate, areApplicationsClosed, teacherId, studentIds);
+        Course course = new Course(language, duration, held, isOnline, maxStudents, creatorId, scheduledTime, startDate,
+            areApplicationsClosed, teacherId)
+        {
+            Id = _courseRepository.GenerateId()
+        };
 
         // Validates if it can be added to the current schedule
         _scheduleService.Add(course);
@@ -43,13 +46,49 @@ public class CourseService : ICourseService
         _userRepository.Update(teacher);
     }
 
-    public void Update(Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents,
-        int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed, int teacherId,
-        List<int> studentIds)
+    public void Update(int id, string languageName, LanguageLevel languageLevel, int duration, List<Weekday> held,
+        bool isOnline, int maxStudents, int creatorId, TimeOnly scheduledTime, DateOnly startDate,
+        bool areApplicationsClosed, int teacherId)
     {
-        // TODO: Check if teacher is allowed to update the exam
+        Course course = _courseRepository.GetById(id) ?? throw new InvalidInputException("Course doesn't exist.");
+
+        if ((course.StartDate.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days < 7)
+            throw new InvalidInputException("The course can't be changed if it's less than 1 week from now.");
+
         // TODO: Decide which information should be updated
-        throw new NotImplementedException();
+
+        Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
+                          throw new InvalidInputException("User doesn't exist.");
+
+        Language language = _languageService.GetLanguage(languageName, languageLevel) ??
+                            throw new InvalidInputException("Language with the given level doesn't exist.");
+
+        course.Language = language;
+        course.Duration = duration;
+        course.Held = held;
+        course.IsOnline = isOnline;
+        course.MaxStudents = maxStudents;
+        course.CreatorId = creatorId;
+        course.StartDate = startDate;
+        course.ScheduledTime = scheduledTime;
+        course.AreApplicationsClosed = areApplicationsClosed;
+        course.TeacherId = teacherId;
+
+        // Validates if it can be added to the current schedule
+        _scheduleService.Update(course);
+
+        if (teacher.Id != course.TeacherId)
+        {
+            Teacher? oldTeacher = _userRepository.GetById(course.TeacherId) as Teacher;
+
+            oldTeacher!.CourseIds.Remove(course.Id);
+            _userRepository.Update(oldTeacher);
+
+            teacher.CourseIds.Add(course.Id);
+            _userRepository.Update(teacher);
+        }
+
+        _courseRepository.Update(course);
     }
 
     public void Delete(int id)
@@ -60,7 +99,7 @@ public class CourseService : ICourseService
 
         teacher!.CourseIds.Remove(id);
         _userRepository.Update(teacher);
-        
+
         _courseRepository.Delete(id);
     }
 }
