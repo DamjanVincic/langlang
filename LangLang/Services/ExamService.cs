@@ -9,6 +9,8 @@ public class ExamService : IExamService
 {
     private readonly IExamFileRepository _examFileRepository = new ExamFileRepository();
     private readonly IUserRepository _userRepository = new UserFileRepository();
+    private readonly IScheduleService _scheduleService = new ScheduleService();
+    private readonly ILanguageService _languageService = new LanguageService();
 
     public List<Exam> GetAll()
     {
@@ -20,12 +22,20 @@ public class ExamService : IExamService
         return _examFileRepository.GetById(id);
     }
 
-    public void Add(Language language, int maxStudents, DateOnly examDate, int teacherId, TimeOnly examTime)
+    public void Add(string languageName, LanguageLevel languageLevel, int maxStudents, DateOnly examDate, int teacherId, TimeOnly examTime)
     {
         Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
                           throw new InvalidInputException("User doesn't exist.");
+        
+        Language language = _languageService.GetLanguage(languageName, languageLevel) ??
+                            throw new InvalidInputException("Language with the given level doesn't exist.");
 
-        Exam exam = new Exam(language, maxStudents, examDate, teacherId, examTime);
+        Exam exam = new Exam(language, maxStudents, examDate, teacherId, examTime)
+        {
+            Id = _examFileRepository.GenerateId()
+        };
+
+        _scheduleService.Add(exam);
         _examFileRepository.Add(exam);
 
         teacher.ExamIds.Add(exam.Id);
@@ -41,6 +51,15 @@ public class ExamService : IExamService
 
     public void Delete(int id)
     {
+        // TODO: Delete from schedule, students etc.
+        
+        Exam exam = _examFileRepository.GetById(id) ?? throw new InvalidInputException("Exam doesn't exist.");
+        Teacher teacher = _userRepository.GetById(exam.TeacherId) as Teacher ??
+                          throw new InvalidInputException("Teacher doesn't exist.");
+
+        teacher.ExamIds.Remove(exam.Id);
+        _userRepository.Update(teacher);
+        
         _examFileRepository.Delete(id);
     }
 }
