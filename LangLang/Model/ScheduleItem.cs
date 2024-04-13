@@ -65,6 +65,17 @@ namespace LangLang.Model
 
         public TimeOnly ScheduledTime { get; set; }
 
+        public bool IsOnline
+        {
+            get
+            {
+                if (this is Course course)
+                    return course.IsOnline;
+                
+                return false;
+            }
+        }
+
         private static void ValidateLanguage(Language language)
         {
             if (language == null)
