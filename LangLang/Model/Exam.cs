@@ -29,9 +29,19 @@ namespace LangLang.Model
         public new DateOnly Date
         {
             get => base.Date;
-            set => base.Date = value;
+            set
+            {
+                ValidateDate(value);
+                base.Date = value;
+            }
         }
 
         public List<int> StudentIds { get; set; } = new();
+
+        private static void ValidateDate(DateOnly date)
+        {
+            if ((date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days < 14)
+                throw new InvalidInputException("The course has to be at least 7 days from now.");
+        }
     }
 }
