@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using LangLang.Model;
 using Newtonsoft.Json;
 
@@ -29,6 +30,28 @@ public class ScheduleFileRepository : IScheduleRepository
         
         _table[item.Date].Add(item);
         
+        SaveData();
+    }
+    
+    public void Update(ScheduleItem item)
+    {
+        throw new NotImplementedException();
+    }
+    
+    /// <summary>
+    /// Deletes the item from the whole schedule
+    /// </summary>
+    /// <param name="item">The item to delete</param>
+    public void Delete(ScheduleItem item)
+    {
+        LoadData();
+        foreach (DateOnly date in _table.Keys)
+        {
+            List<ScheduleItem> scheduleItems = _table[date];
+            scheduleItems.RemoveAll(scheduleItem => scheduleItem.Id == item.Id);
+            if (!scheduleItems.Any())
+                _table.Remove(date);
+        }
         SaveData();
     }
     
