@@ -27,10 +27,17 @@ public class CourseFileRepository : ICourseRepository
         return course;
     }
 
+    public int GenerateId()
+    {
+        LoadData();
+        return _idCounter++;
+    }
+
     public void Add(Course course)
     {
         LoadData();
-        course.Id = _idCounter++;
+        if (course.Id == 0)
+            course.Id = _idCounter++;
         _courses.Add(course.Id, course);
         SaveData();
     }

@@ -26,11 +26,18 @@ public class ExamFileRepository : IExamFileRepository
         _exams.TryGetValue(id, out var exam);
         return exam;
     }
+    
+    public int GenerateId()
+    {
+        LoadData();
+        return _idCounter++;
+    }
 
     public void Add(Exam exam)
     {
         LoadData();
-        exam.Id = _idCounter++;
+        if (exam.Id == 0)
+            exam.Id = _idCounter++;
         _exams.Add(exam.Id, exam);
         SaveData();
     }
