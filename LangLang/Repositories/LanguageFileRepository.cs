@@ -24,7 +24,7 @@ public class LanguageFileRepository : ILanguageRepository
         LoadData();
 
         if (_languages.Any(lang => lang.Name == language.Name && lang.Level == language.Level))
-            return;
+            throw new InvalidInputException("Language already exists.");
 
         _languages.Add(language);
 
