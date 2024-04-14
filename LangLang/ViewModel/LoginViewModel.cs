@@ -11,40 +11,40 @@ namespace LangLang.ViewModel;
 public class LoginViewModel : ViewModelBase
 {
     private readonly IUserService _userService = new UserService();
-    
+
     private readonly Window _loginWindow;
-    
+
     public string? Email { get; set; }
     public string? Password { get; set; }
-    
+
     public ICommand LoginCommand { get; }
-    
+
     public LoginViewModel(Window loginWindow)
     {
         _loginWindow = loginWindow;
         LoginCommand = new RelayCommand(Login);
     }
-    
+
     private void Login()
     {
         User? user = _userService.Login(Email!, Password!);
-        
+
         switch (user)
         {
             case null:
                 MessageBox.Show("Invalid email or password.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
-            case Student student:
+            case Student:
                 new StudentView().Show();
                 break;
             case Director:
                 new TeachersView().Show();
                 break;
-            case Teacher teacher:
-                new TeacherMenu(teacher).Show();
+            case Teacher:
+                new TeacherMenu().Show();
                 break;
         }
-        
+
         _loginWindow.Close();
         Application.Current.MainWindow?.Close();
     }

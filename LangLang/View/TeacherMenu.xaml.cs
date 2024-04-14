@@ -1,15 +1,14 @@
-﻿using LangLang.Model;
-using LangLang.ViewModel;
+﻿using LangLang.ViewModel;
 using System.Windows;
 
 namespace LangLang.View
 {
     public partial class TeacherMenu : Window
     {
-        public TeacherMenu(Teacher teacher)
+        public TeacherMenu()
         {
             InitializeComponent();
-            DataContext = new TeacherMenuViewModel(teacher, this);
+            DataContext = new TeacherMenuViewModel(this);
         }
     }
 }
