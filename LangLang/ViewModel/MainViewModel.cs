@@ -20,8 +20,9 @@ public class MainViewModel : ViewModelBase
     public ICommand NavigateToLoginCommand { get; }
     public ICommand NavigateToExamViewCommand { get; }
     
-    public MainViewModel()
+    public MainViewModel(Window loginWindow)
     {
+        _loginWindow = loginWindow;
         NavigateToRegisterCommand = new RelayCommand(NavigateToRegister);
         // NavigateToLoginCommand = new RelayCommand(NavigateToLogin);
         NavigateToExamViewCommand = new RelayCommand(NavigateToExamView);
