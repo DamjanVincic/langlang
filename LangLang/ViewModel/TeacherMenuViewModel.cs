@@ -39,7 +39,7 @@ namespace LangLang.ViewModel
 
         private void Exam()
         {
-            var newWindow = new ExamView(_teacher);
+            var newWindow = new ExamView();
             newWindow.Show();
         }
 

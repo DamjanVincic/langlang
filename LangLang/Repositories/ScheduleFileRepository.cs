@@ -41,14 +41,14 @@ public class ScheduleFileRepository : IScheduleRepository
     /// <summary>
     /// Deletes the item from the whole schedule
     /// </summary>
-    /// <param name="item">The item to delete</param>
-    public void Delete(ScheduleItem item)
+    /// <param name="id">The ID of item to delete</param>
+    public void Delete(int id)
     {
         LoadData();
         foreach (DateOnly date in _table.Keys)
         {
             List<ScheduleItem> scheduleItems = _table[date];
-            scheduleItems.RemoveAll(scheduleItem => scheduleItem.Id == item.Id);
+            scheduleItems.RemoveAll(scheduleItem => scheduleItem.Id == id);
             if (!scheduleItems.Any())
                 _table.Remove(date);
         }

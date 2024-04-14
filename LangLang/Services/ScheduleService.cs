@@ -41,13 +41,13 @@ public class ScheduleService : IScheduleService
     public void Update(ScheduleItem scheduleItem)
     {
         ValidateScheduleItem(scheduleItem, true);
-        Delete(scheduleItem);
+        Delete(scheduleItem.Id);
         Add(scheduleItem);
     }
 
-    public void Delete(ScheduleItem scheduleItem)
+    public void Delete(int id)
     {
-        _scheduleRepository.Delete(scheduleItem);
+        _scheduleRepository.Delete(id);
     }
 
     private bool ValidateScheduleItem(ScheduleItem scheduleItem, bool toEdit = false)

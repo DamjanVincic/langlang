@@ -89,6 +89,8 @@ public class ExamService : IExamService
 
         teacher.ExamIds.Remove(exam.Id);
         _userRepository.Update(teacher);
+
+        _scheduleService.Delete(id);
         
         _examFileRepository.Delete(id);
     }

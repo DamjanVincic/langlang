@@ -99,6 +99,8 @@ public class CourseService : ICourseService
 
         teacher!.CourseIds.Remove(id);
         _userRepository.Update(teacher);
+        
+        _scheduleService.Delete(id);
 
         _courseRepository.Delete(id);
     }

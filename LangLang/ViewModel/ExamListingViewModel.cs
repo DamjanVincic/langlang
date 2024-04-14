@@ -5,40 +5,55 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Data;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Messaging;
 using LangLang.View;
 using GalaSoft.MvvmLight;
+using LangLang.Services;
 
 namespace LangLang.ViewModel
 {
     public class ExamListingViewModel : ViewModelBase
     {
-        private ObservableCollection<ExamViewModel> _exams;
-        private Teacher _teacher;
+        private readonly ITeacherService _teacherService = new TeacherService();
+        private readonly ILanguageService _languageService = new LanguageService();
+        private readonly IExamService _examService = new ExamService();
 
-        private ExamViewModel _selectedItem;
-        public ExamViewModel SelectedItem
-        {
-            get { return _selectedItem; }
-            set
-            {
-                _selectedItem = value;
-                //OnPropertyChanged(nameof(SelectedItem));
-            }
-        }
+        private readonly ObservableCollection<ExamViewModel> _exams;
 
-        public ICollectionView ExamCollectionView { get; set; }
-        public IEnumerable<LanguageLevel> LanguageLevelValues => Enum.GetValues(typeof(LanguageLevel)).Cast<LanguageLevel>();
-
-        // Add a property to access language names directly from the model
-        public IEnumerable<string> LanguageNames => Language.LanguageNames;
+        private readonly Teacher _teacher = UserService.LoggedInUser as Teacher ??
+                                            throw new InvalidOperationException("No one is logged in.");
 
         private string _languageNameSelected;
+        private string _languageLevelSelected;
+        private DateTime _dateSelected;
+
+        public ExamListingViewModel()
+        {
+            _exams = new ObservableCollection<ExamViewModel>(_teacherService.GetExams(_teacher.Id)
+                .Select(exam => new ExamViewModel(exam)));
+            ExamCollectionView = CollectionViewSource.GetDefaultView(_exams);
+            ExamCollectionView.Filter = FilterExams;
+
+            AddCommand = new RelayCommand(Add);
+            EditCommand = new RelayCommand(Edit);
+            DeleteCommand = new RelayCommand(Delete);
+        }
+
+        public ExamViewModel? SelectedItem { get; set; }
+        public ICollectionView ExamCollectionView { get; set; }
+
+        public IEnumerable<LanguageLevel> LanguageLevelValues =>
+            Enum.GetValues(typeof(LanguageLevel)).Cast<LanguageLevel>();
+
+        public IEnumerable<string> LanguageNames => _languageService.GetAllNames();
+        public IEnumerable<ExamViewModel> Exams => _exams;
+
+        public ICommand AddCommand { get; }
+        public ICommand EditCommand { get; }
+        public ICommand DeleteCommand { get; }
+
         public string LanguageNameSelected
         {
             get => _languageNameSelected;
@@ -48,7 +63,7 @@ namespace LangLang.ViewModel
                 ExamCollectionView.Refresh();
             }
         }
-        private string _languageLevelSelected;
+
         public string LanguageLevelSelected
         {
             get => _languageLevelSelected;
@@ -58,7 +73,7 @@ namespace LangLang.ViewModel
                 ExamCollectionView.Refresh();
             }
         }
-        private DateTime _dateSelected;
+
         public DateTime DateSelected
         {
             get => _dateSelected;
@@ -69,105 +84,64 @@ namespace LangLang.ViewModel
             }
         }
 
-        public ExamListingViewModel(Teacher teacher)
-        {
-            _teacher = teacher;
-            _exams = new ObservableCollection<ExamViewModel>(Exam.GetTeacherExams(teacher.Id).Select(exam => new ExamViewModel(exam)));
-            ExamCollectionView = CollectionViewSource.GetDefaultView(_exams);
-            ExamCollectionView.Filter = FilterExams;
-            DeleteCommand = new RelayCommand(Delete);
-            AddCommand = new RelayCommand(Add);
-            EditCommand = new RelayCommand(Edit);
-        }
-
-        public IEnumerable<ExamViewModel> Exams => _exams;
-
         private bool FilterExams(object obj)
         {
             if (obj is ExamViewModel examViewModel)
             {
                 return examViewModel.FilterLanguageName(LanguageNameSelected) &&
-                    examViewModel.FilterLevel(LanguageLevelSelected) &&
-                    examViewModel.FilterDateHeld(DateSelected) &&
-                    examViewModel.FilterTeacherId(_teacher.Id);
+                       examViewModel.FilterLevel(LanguageLevelSelected) &&
+                       examViewModel.FilterDateHeld(DateSelected) &&
+                       examViewModel.FilterTeacherId(_teacher.Id);
             }
+
             return false;
         }
-        public ICommand DeleteCommand { get; }
-        public void Delete()
+
+        private void Add()
         {
-            if (SelectedItem != null)
-            {
-                if (MessageBox.Show("Are you sure?", "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.No)
-                {
-                    return;
-                }
-                
-                ExamViewModel selectedExam = (ExamViewModel)SelectedItem;
-                Exam exam = Exam.GetById(selectedExam.Id);
-
-                DateTime todayDateTime = DateTime.Today;
-                DateTime examDateTime = new DateTime(exam.ExamDate.Year, exam.ExamDate.Month, exam.ExamDate.Day);
-
-                TimeSpan difference = examDateTime - todayDateTime;
-
-                if (difference.TotalDays >= 14)
-                {
-                    Exam.GetById(SelectedItem.Id).Delete();
-                    Teacher teacherOnExam = (Teacher)Teacher.GetUserById(exam.TeacherId);
-                    teacherOnExam.ExamIds.Remove(exam.Id);
-                    _exams.Remove(selectedExam);
-                    ExamCollectionView.Refresh();
-                    MessageBox.Show("Exam deleted successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                else
-                {
-                    MessageBox.Show("You cannot cancel the exam as it is less than two weeks away.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
-            else
-            {
-                MessageBox.Show("No exam selected.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            var newWindow = new AddExamView();
+            newWindow.ShowDialog();
+            UpdateExamList();
         }
 
-
-        public ICommand AddCommand { get; }
-        public void Add()
+        private void Edit()
         {
-            var newWindow = new AddExamView(_exams, ExamCollectionView, null,_teacher);
-            newWindow.Show();
-        }
-
-        public ICommand EditCommand {  get; }
-        public void Edit()
-        {
-            if (SelectedItem != null)
-            {
-                ExamViewModel selectedExam = (ExamViewModel)SelectedItem;
-                Exam exam = Exam.GetById(selectedExam.Id);
-
-                DateTime todayDateTime = DateTime.Today;
-                DateTime examDateTime = new DateTime(exam.ExamDate.Year, exam.ExamDate.Month, exam.ExamDate.Day);
-
-                TimeSpan difference = examDateTime - todayDateTime;
-
-                if (difference.TotalDays >= 14)
-                {
-                    var newWindow = new AddExamView(_exams, ExamCollectionView, exam,_teacher);
-                    newWindow.Show();
-                }
-                else
-                {
-                    MessageBox.Show("You cannot edit the exam as it is less than two weeks away.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
-            else
+            if (SelectedItem == null)
             {
                 MessageBox.Show("Please select an exam to edit.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
             }
+
+            Exam exam = _examService.GetById(SelectedItem.Id) ?? throw new InvalidOperationException("Exam not found.");
+
+            new AddExamView(exam).ShowDialog();
+            UpdateExamList();
         }
 
+        private void Delete()
+        {
+            if (SelectedItem == null)
+            {
+                MessageBox.Show("No exam selected.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
 
+            if (MessageBox.Show("Are you sure?", "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                return;
+
+            Exam exam = _examService.GetById(SelectedItem.Id) ?? throw new InvalidOperationException("Exam not found.");
+            _examService.Delete(exam.Id);
+            UpdateExamList();
+
+            MessageBox.Show("Exam deleted successfully.", "Success", MessageBoxButton.OK,
+                MessageBoxImage.Information);
+        }
+
+        private void UpdateExamList()
+        {
+            _exams.Clear();
+            _teacherService.GetExams(_teacher.Id).ForEach(exam => _exams.Add(new ExamViewModel(exam)));
+            ExamCollectionView.Refresh();
+        }
     }
 }
