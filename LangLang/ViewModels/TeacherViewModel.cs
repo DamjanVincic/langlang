@@ -1,9 +1,9 @@
-﻿using GalaSoft.MvvmLight;
-using System;
+﻿using System;
 using System.Linq;
+using GalaSoft.MvvmLight;
 using LangLang.Models;
 
-namespace LangLang.ViewModel
+namespace LangLang.ViewModels
 {
     public class TeacherViewModel : ViewModelBase
     {

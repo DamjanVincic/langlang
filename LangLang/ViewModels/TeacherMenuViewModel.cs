@@ -1,13 +1,13 @@
 ﻿using System;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
 using System.Windows;
 using System.Windows.Input;
+using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
 using LangLang.Services;
 using LangLang.Views;
 
-namespace LangLang.ViewModel
+namespace LangLang.ViewModels
 {
     class TeacherMenuViewModel : ViewModelBase
     {

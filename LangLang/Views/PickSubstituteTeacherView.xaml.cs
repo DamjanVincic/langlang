@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
 using LangLang.Models;
-using LangLang.ViewModel;
+using LangLang.ViewModels;
 
 namespace LangLang.Views
 {

@@ -1,5 +1,5 @@
 ﻿using System.Windows;
-using LangLang.ViewModel;
+using LangLang.ViewModels;
 
 namespace LangLang.Views
 {

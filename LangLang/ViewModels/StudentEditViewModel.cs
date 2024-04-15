@@ -6,7 +6,7 @@ using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
 using LangLang.Services;
 
-namespace LangLang.ViewModel;
+namespace LangLang.ViewModels;
 
 public class StudentEditViewModel : ViewModelBase
 {

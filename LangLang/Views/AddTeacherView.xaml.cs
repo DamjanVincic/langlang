@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using LangLang.ViewModel;
+using LangLang.ViewModels;
 
 namespace LangLang.Views
 {

@@ -6,7 +6,7 @@ using LangLang.Models;
 using LangLang.Services;
 using LangLang.Views;
 
-namespace LangLang.ViewModel;
+namespace LangLang.ViewModels;
 
 public class MainViewModel : ViewModelBase
 {

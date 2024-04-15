@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
-using LangLang.ViewModel;
+using LangLang.ViewModels;
 
 namespace LangLang.Views
 {

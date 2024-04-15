@@ -2,7 +2,7 @@
 using GalaSoft.MvvmLight;
 using LangLang.Models;
 
-namespace LangLang.ViewModel
+namespace LangLang.ViewModels
 {
     public class ExamViewModel : ViewModelBase
     {
