@@ -5,8 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LangLang.View"
         mc:Ignorable="d"
-        Title="AddTeacherView" Height="450" Width="479">
-    <Grid HorizontalAlignment="Center">
+        Title="AddTeacherView" Height="450" Width="800"
+        WindowStartupLocation="CenterScreen"
+        Background="#bbe5e4">
+    <Window.Resources>
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="Margin" Value="10,5,10,10"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
@@ -15,42 +27,44 @@
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="4*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width=".5*"/>
         </Grid.ColumnDefinitions>
-        <Label Grid.ColumnSpan="2" Grid.Row="0" Content="First Name" HorizontalAlignment="Center" MinWidth="200"/>
-        <TextBox Grid.ColumnSpan="2" Grid.Row="1" Margin="3" x:Name="FirstNameTextBox" Text="{Binding FirstName}" HorizontalAlignment="Center" MinWidth="200"/>
 
-        <Label Grid.ColumnSpan="2" Grid.Row="2" Content="Last Name" HorizontalAlignment="Center" MinWidth="200"/>
-        <TextBox Grid.ColumnSpan="2" Grid.Row="3" x:Name="LastNameTextBox" Text="{Binding LastName}" HorizontalAlignment="Center" MinWidth="200"/>
+        <TextBlock Grid.ColumnSpan="5" FontWeight="Bold">ADD NEW TEACHER</TextBlock>
 
-        <Label Grid.ColumnSpan="2" Grid.Row="4" Content="Email" HorizontalAlignment="Center" MinWidth="200"/>
-        <TextBox Grid.ColumnSpan="2" Grid.Row="5" x:Name="EmailTextBox" Text="{Binding Email}" MinWidth="200"/>
+        <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" Margin="10">First name</TextBlock>
+        <TextBox Grid.Column="1" Grid.Row="1" Margin="10" Width="200" Height="40" x:Name="FirstNameTextBox" Text="{Binding FirstName}" HorizontalAlignment="Center"/>
 
-        <Label Grid.ColumnSpan="2" Grid.Row="6" Content="Password" HorizontalAlignment="Center" MinWidth="200"/>
-        <TextBox Grid.ColumnSpan="2" Grid.Row="7" x:Name="PasswordBox" Text="{Binding Password}" MinWidth="200"/>
+        <TextBlock Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right" Margin="10">Last name</TextBlock>
+        <TextBox Grid.Column="3" Grid.Row="1" Margin="10" Width="200" Height="40" x:Name="LastNameTextBox" Text="{Binding LastName}" HorizontalAlignment="Center"/>
 
-        <Label Grid.ColumnSpan="2" Grid.Row="8" Content="Gender" HorizontalAlignment="Center" MinWidth="200"/>
-        <ComboBox Grid.ColumnSpan="2" Grid.Row="9" x:Name="GenderComboBox" ItemsSource="{Binding GenderValues}" SelectedItem="{Binding Gender}" HorizontalAlignment="Center" MinWidth="200"/>
+        <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" Margin="10">Email</TextBlock>
+        <TextBox Grid.Row="2" Grid.Column="1" Margin="10" Width="200" Height="40" x:Name="EmailTextBox" Text="{Binding Email}" />
 
-        <Label Grid.ColumnSpan="2"  Grid.Row="10" Content="Phone" HorizontalAlignment="Center" MinWidth="200"/>
-        <TextBox Grid.ColumnSpan="2" Grid.Row="11" x:Name="PhoneTextBox" Text="{Binding Phone}" MinWidth="200"/>
+        <TextBlock Grid.Row="2" Grid.Column="2" HorizontalAlignment="Right" Margin="10">Password</TextBlock>
+        <TextBox Grid.Row="2" Grid.Column="3" Margin="10" Width="200" Height="40" x:Name="PasswordBox" Text="{Binding Password}"/>
 
-        <Label Grid.ColumnSpan="2" Grid.Row="12" Content="Qualifications" HorizontalAlignment="Center" MinWidth="200"/>
-        <ListBox Grid.Row="13" Margin="5" x:Name="QualificationsListBox" ItemsSource="{Binding QualificationCollectionView}" HorizontalAlignment="Center" MinWidth="200" SelectionMode="Multiple"/>
-        <Button Grid.Column="1" Grid.Row="13" Content="Add language" Command="{Binding AddLanguageCommand}" HorizontalAlignment="Center" MinWidth="200" Margin="0,5,0,0"/>
-        <Button Grid.Row="14" Content="Add teacher" Command="{Binding AddTeacherCommand}" CommandParameter="{Binding ElementName=QualificationsListBox, Path=SelectedItems}" MinWidth="200" Height="46"/>
+        <TextBlock Grid.Row="3" Grid.Column="0" HorizontalAlignment="Right" Margin="10">Phone</TextBlock>
+        <TextBox Grid.Row="3" Grid.Column="1" Margin="10" Width="200" Height="40" x:Name="PhoneTextBox" Text="{Binding Phone}" MinWidth="200"/>
+        
+        <TextBlock Grid.Row="3" Grid.Column="2" HorizontalAlignment="Right" Margin="10">Gender</TextBlock>
+        <ComboBox Grid.Row="3" Grid.Column="3" Margin="10" Width="200" Height="40" x:Name="GenderComboBox" ItemsSource="{Binding GenderValues}" SelectedItem="{Binding Gender}" HorizontalAlignment="Center" MinWidth="200"/>
+
+        <TextBlock Grid.Row="4" Grid.Column="0" Grid.RowSpan="2" HorizontalAlignment="Right" Margin="10">Qualifications</TextBlock>
+        <ListBox Grid.Row="4" Grid.Column="1" Grid.RowSpan="2" Margin="5" x:Name="QualificationsListBox" ItemsSource="{Binding QualificationCollectionView}" HorizontalAlignment="Center" MinWidth="200" SelectionMode="Multiple"/>
+
+        <TextBlock Grid.Row="4" Grid.Column="2" Grid.RowSpan="2" HorizontalAlignment="Right" Margin="10 0 5 30">You need</TextBlock>
+        <TextBlock Grid.Row="4" Grid.Column="2" Grid.RowSpan="2" HorizontalAlignment="Right" Margin="10 20 5 0">another language?</TextBlock>
+
+        <Button Grid.Row="4" Grid.Column="3" Grid.RowSpan="2" Content="Add language" Command="{Binding AddLanguageCommand}" Background="#f46231" Foreground="White" HorizontalAlignment="Center" Width="140" Height="40" Margin="0,5,0,0"/>
+
+        <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="5" Content="Add teacher" Command="{Binding AddTeacherCommand}" Background="#55bcbb" Foreground="White" CommandParameter="{Binding ElementName=QualificationsListBox, Path=SelectedItems}" Width="140" Height="40"/>
 
     </Grid>
 </Window>

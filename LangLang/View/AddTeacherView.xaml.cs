@@ -28,5 +28,16 @@ namespace LangLang.View
             InitializeComponent();
             DataContext = new AddTeacherViewModel(teachersCollectionView, QualificationsListBox,teachers, this);
         }
+        private void OnTextBoxTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (sender is TextBox box)
+            {
+                if (string.IsNullOrEmpty(box.Text))
+                    box.Background = (ImageBrush)FindResource("watermark");
+                else
+                    box.Background = null;
+            }
+        }
     }
+
 }
