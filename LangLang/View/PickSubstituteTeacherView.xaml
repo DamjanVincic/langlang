@@ -77,6 +77,6 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <Button Grid.Row="2" Content="SAVE" Command="{Binding SaveCommand}" Width="100" Height="40" Background="#55bcbb" Foreground="White"/>
+        <Button Grid.Row="2" Content="SAVE" Command="{Binding SaveCommand}" Width="80" Height="30" Background="#55bcbb" Foreground="White"/>
     </Grid>
 </Window>
