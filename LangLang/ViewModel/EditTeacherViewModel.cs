@@ -51,10 +51,10 @@ namespace LangLang.ViewModel
             try
             {
                 _userService.Update(_teacher.Id, FirstName, LastName, Password, Gender, Phone);
-                
+
                 MessageBox.Show("Teacher edited successfully.", "Success", MessageBoxButton.OK,
                     MessageBoxImage.Information);
-                
+
                 _editTeacherWindow.Close();
             }
             catch (InvalidInputException exception)

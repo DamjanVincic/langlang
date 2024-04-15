@@ -12,7 +12,7 @@ public class MainViewModel : ViewModelBase
     public ICommand NavigateToRegisterCommand { get; }
     public ICommand NavigateToLoginCommand { get; }
     public ICommand NavigateToExamViewCommand { get; }
-    
+
     public MainViewModel()
     {
         NavigateToRegisterCommand = new RelayCommand(NavigateToRegister);
@@ -29,7 +29,7 @@ public class MainViewModel : ViewModelBase
     {
         new LoginView().Show();
     }
-    
+
     private void NavigateToExamView()
     {
         new ExamView().Show();

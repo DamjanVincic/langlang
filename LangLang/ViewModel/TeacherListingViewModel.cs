@@ -124,7 +124,7 @@ namespace LangLang.ViewModel
             newWindow.ShowDialog();
             UpdateTeacherList();
         }
-        
+
         private void DeleteTeacher()
         {
             // TODO: Move logic before and after foreach with new window to service

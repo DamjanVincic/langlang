@@ -6,7 +6,6 @@ using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Model;
-using LangLang.Repositories;
 using LangLang.Services;
 using LangLang.View;
 
@@ -15,7 +14,7 @@ namespace LangLang.ViewModel;
 public class RegisterViewModel : ViewModelBase
 {
     private readonly IUserService _userService = new UserService();
-    
+
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
     public string? Email { get; set; }
@@ -23,14 +22,14 @@ public class RegisterViewModel : ViewModelBase
     public Gender Gender { get; set; }
     public string? Phone { get; set; }
     public Education Education { get; set; }
-    
+
     public IEnumerable<Gender> GenderValues => Enum.GetValues(typeof(Gender)).Cast<Gender>();
     public IEnumerable<Education> EducationValues => Enum.GetValues(typeof(Education)).Cast<Education>();
-    
+
     public ICommand RegisterCommand { get; }
 
     private readonly Window _registerWindow;
-    
+
     public RegisterViewModel(Window registerWindow)
     {
         _registerWindow = registerWindow;
@@ -42,10 +41,10 @@ public class RegisterViewModel : ViewModelBase
         try
         {
             _userService.Add(FirstName!, LastName!, Email!, Password!, Gender, Phone!, Education);
-            
+
             MessageBox.Show("User registered successfully.", "Success", MessageBoxButton.OK,
                 MessageBoxImage.Information);
-            
+
             new StudentView().Show();
             _registerWindow.Close();
             Application.Current.MainWindow?.Close();

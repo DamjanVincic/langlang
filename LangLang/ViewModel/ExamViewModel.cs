@@ -6,7 +6,6 @@ namespace LangLang.ViewModel
 {
     public class ExamViewModel : ViewModelBase
     {
-        // glues the model and the view
         private readonly Exam _exam;
 
         public ExamViewModel(Exam exam)

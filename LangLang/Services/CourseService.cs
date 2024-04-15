@@ -33,10 +33,7 @@ public class CourseService : ICourseService
                           throw new InvalidInputException("User doesn't exist.");
 
         Course course = new Course(language, duration, held, isOnline, maxStudents, creatorId, scheduledTime, startDate,
-            areApplicationsClosed, teacherId)
-        {
-            Id = _courseRepository.GenerateId()
-        };
+            areApplicationsClosed, teacherId) { Id = _courseRepository.GenerateId() };
 
         // Validates if it can be added to the current schedule
         _scheduleService.Add(course);
@@ -99,7 +96,7 @@ public class CourseService : ICourseService
 
         teacher!.CourseIds.Remove(id);
         _userRepository.Update(teacher);
-        
+
         _scheduleService.Delete(id);
 
         _courseRepository.Delete(id);

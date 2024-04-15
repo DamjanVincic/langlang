@@ -16,17 +16,20 @@ namespace LangLang.ViewModel
     {
         private ILanguageService _languageService = new LanguageService();
         private ICourseService _courseService = new CourseService();
-        
+
+        private readonly Teacher _teacher = UserService.LoggedInUser as Teacher ??
+                                            throw new InvalidOperationException("No one is logged in.");
+
         private Course? _course;
         private ObservableCollection<CourseViewModel> _courses;
         private ICollectionView _courseCollectionView;
-        
+
         private Window _modifyCourseWindow;
 
         public ModifyCourseViewModel(Course? course, Window modifyCourseWindow)
         {
             _modifyCourseWindow = modifyCourseWindow;
-            
+
             _course = course;
             if (course != null)
             {
@@ -38,29 +41,36 @@ namespace LangLang.ViewModel
                 Held = course.Held;
                 CreatorId = course.CreatorId;
                 AreApplicationsClosed = course.AreApplicationsClosed;
-                Format = course.IsOnline?"online":"in-person";
+                Format = course.IsOnline ? "online" : "in-person";
                 CreatorId = course.CreatorId;
                 ScheduledTime = course.ScheduledTime;
                 Minutes = course.ScheduledTime.Minute;
                 Hours = course.ScheduledTime.Hour;
-                foreach(Weekday day in Held)
+                foreach (Weekday day in Held)
                 {
                     switch ((int)day)
                     {
                         case 0:
-                            IsMondayChecked = true; break;
+                            IsMondayChecked = true;
+                            break;
                         case 1:
-                            IsTuesdayChecked = true; break;
+                            IsTuesdayChecked = true;
+                            break;
                         case 2:
-                            IsWednesdayChecked = true; break;
+                            IsWednesdayChecked = true;
+                            break;
                         case 3:
-                            IsThursdayChecked = true; break;
+                            IsThursdayChecked = true;
+                            break;
                         case 4:
-                            IsFridayChecked = true; break;
+                            IsFridayChecked = true;
+                            break;
                         case 5:
-                            IsSaturdayChecked = true; break;
+                            IsSaturdayChecked = true;
+                            break;
                         case 6:
-                            IsSundayChecked = true; break;
+                            IsSundayChecked = true;
+                            break;
                         default:
                             continue;
                     }
@@ -71,20 +81,23 @@ namespace LangLang.ViewModel
         }
 
         private bool _isMondayChecked;
+
         public bool IsMondayChecked
         {
-            get => _isMondayChecked; 
+            get => _isMondayChecked;
             set { Set(ref _isMondayChecked, value); }
         }
 
         private bool _isTuesdayChecked;
+
         public bool IsTuesdayChecked
         {
-            get => _isTuesdayChecked; 
+            get => _isTuesdayChecked;
             set { Set(ref _isTuesdayChecked, value); }
         }
 
         private bool _isWednesdayChecked;
+
         public bool IsWednesdayChecked
         {
             get => _isWednesdayChecked;
@@ -92,6 +105,7 @@ namespace LangLang.ViewModel
         }
 
         private bool _isThursdayChecked;
+
         public bool IsThursdayChecked
         {
             get => _isThursdayChecked;
@@ -99,6 +113,7 @@ namespace LangLang.ViewModel
         }
 
         private bool _isFridayChecked;
+
         public bool IsFridayChecked
         {
             get => _isFridayChecked;
@@ -106,6 +121,7 @@ namespace LangLang.ViewModel
         }
 
         private bool _isSaturdayChecked;
+
         public bool IsSaturdayChecked
         {
             get => _isSaturdayChecked;
@@ -113,13 +129,14 @@ namespace LangLang.ViewModel
         }
 
         private bool _isSundayChecked;
+
         public bool IsSundayChecked
         {
             get => _isSundayChecked;
             set { Set(ref _isSundayChecked, value); }
         }
 
-        public bool MaxStudentsEnabled => Format!=null && Format.Equals("in-person");
+        public bool MaxStudentsEnabled => Format != null && Format.Equals("in-person");
         public string LanguageName { get; set; }
         public LanguageLevel LanguageLevel { get; set; }
         public int MaxStudents { get; set; }
@@ -130,28 +147,24 @@ namespace LangLang.ViewModel
         public TimeOnly ScheduledTime { get; set; }
         public List<Weekday> Held { get; set; }
         public int CreatorId { get; set; }
-        
-        public int Hours
-        {
-            get;set;
-        }
 
-        public int Minutes
-        {
-            get;
-            set; 
-        }
+        public int Hours { get; set; }
+
+        public int Minutes { get; set; }
 
         public List<string> SelectedWeekdays = new();
 
 
         public ICommand EnterCourseCommand { get; }
 
-        public IEnumerable<LanguageLevel> LanguageLevelValues => Enum.GetValues(typeof(LanguageLevel)).Cast<LanguageLevel>();
+        public IEnumerable<LanguageLevel> LanguageLevelValues =>
+            Enum.GetValues(typeof(LanguageLevel)).Cast<LanguageLevel>();
+
         public IEnumerable<string> LanguageNameValues => _languageService.GetAllNames();
-        public IEnumerable<string> FormatValues => new List<string> { "online", "in-person"};
+        public IEnumerable<string> FormatValues => new List<string> { "online", "in-person" };
         public IEnumerable<Weekday> WeekdayValues => Enum.GetValues(typeof(Weekday)).Cast<Weekday>();
         readonly List<string> hours = CreateHourValues();
+
         private static List<string> CreateHourValues()
         {
             List<string> hours = new();
@@ -159,8 +172,10 @@ namespace LangLang.ViewModel
             {
                 hours.Add(hour.ToString("00"));
             }
+
             return hours;
         }
+
         readonly List<string> minutes = CreateMinuteValues();
 
         private static List<string> CreateMinuteValues()
@@ -170,19 +185,24 @@ namespace LangLang.ViewModel
             {
                 minutes.Add(minute.ToString("00"));
             }
+
             return minutes;
         }
+
         public IEnumerable<string> HourValues => hours;
         public IEnumerable<string> MinuteValues => minutes;
 
 
         private void AddCourse()
         {
-            if (string.IsNullOrEmpty(LanguageName) || LanguageLevel == null || (!Format.Equals("online") && MaxStudents <= 0) || Duration <= 0 || StartDate == default || Hours < 0 || Minutes < 0)
+            if (string.IsNullOrEmpty(LanguageName) || LanguageLevel == null ||
+                (!Format.Equals("online") && MaxStudents <= 0) || Duration <= 0 || StartDate == default || Hours < 0 ||
+                Minutes < 0)
             {
                 MessageBox.Show("Please fill in all fields.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return; 
+                return;
             }
+
             try
             {
                 List<Weekday> selectedWeekdays = new List<Weekday>();
@@ -205,7 +225,34 @@ namespace LangLang.ViewModel
                 ScheduledTime = new TimeOnly(Hours * 60 + Minutes);
                 bool isOnline = Format.Equals("online") ? true : false;
                 DateOnly startDate = new DateOnly(StartDate.Year, StartDate.Month, StartDate.Day);
+
+                // TODO: Call course service to add or update the course, something similar to the comment below, refactor the rest
                 
+                /* try
+                {
+                    if (_course == null)
+                    {
+                        _courseService.Add(LanguageName, LanguageLevel, Duration, Held, isOnline, MaxStudents,
+                            CreatorId, ScheduledTime, startDate, AreApplicationsClosed, _teacher.Id);
+                        
+                        MessageBox.Show("Course added successfully.", "Success", MessageBoxButton.OK,
+                            MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        _courseService.Update(_course.Id, LanguageName, LanguageLevel, Duration, Held, isOnline,
+                            MaxStudents, CreatorId, ScheduledTime, startDate, AreApplicationsClosed, _teacher.Id);
+                        
+                        MessageBox.Show("Exam added successfully.", "Success", MessageBoxButton.OK,
+                            MessageBoxImage.Information);
+                    }
+                }
+                catch (InvalidInputException ex)
+                {
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                } */
+
+                // vv Old Code vv
                 // if (Schedule.CanAddScheduleItem(startDate, Duration, Held, TeacherId, ScheduledTime, true, isOnline, _course))
                 // {
                 //     if (_course != null)
@@ -225,7 +272,7 @@ namespace LangLang.ViewModel
                 //             Schedule.ModifySchedule(_course, _course.StartDate, Duration, null, (List<Weekday>)addedDays);
                 //         }
                 //
-                //         // TODO: Call course service to update the course
+                //         
                 //         _course.StartDate = startDate;
                 //         _course.MaxStudents = MaxStudents;
                 //         _course.ScheduledTime = ScheduledTime;
@@ -261,10 +308,6 @@ namespace LangLang.ViewModel
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            // catch (Exception ex)
-            // {
-            //     MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            // }
         }
 
         public Language? IsValidLanguage(string languageName, LanguageLevel level)
@@ -279,8 +322,5 @@ namespace LangLang.ViewModel
 
             throw new InvalidInputException("Language doesn't exist.");
         }
-
     }
-    
 }
-

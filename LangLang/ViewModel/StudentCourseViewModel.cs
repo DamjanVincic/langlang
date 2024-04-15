@@ -16,29 +16,30 @@ public class StudentCourseViewModel : ViewModelBase
 {
     private readonly ILanguageService _languageService = new LanguageService();
     private readonly IStudentService _studentService = new StudentService();
-    
+
     private string _selectedLanguageName;
     private string _selectedLanguageLevel;
     private DateTime _selectedDate;
     private string _selectedDuration;
     private string _selectedFormat;
-    
+
     public StudentCourseViewModel()
     {
-        AvailableCourses = new ObservableCollection<CourseViewModel>(_studentService.GetAvailableCourses().Select(course => new CourseViewModel(course)));
+        AvailableCourses = new ObservableCollection<CourseViewModel>(_studentService.GetAvailableCourses()
+            .Select(course => new CourseViewModel(course)));
         CoursesCollectionView = CollectionViewSource.GetDefaultView(AvailableCourses);
         CoursesCollectionView.Filter = FilterCourses;
-        
+
         ResetFiltersCommand = new RelayCommand(ResetFilters);
     }
 
     public ICommand ResetFiltersCommand { get; }
-    
+
     public ObservableCollection<CourseViewModel> AvailableCourses { get; }
     public ICollectionView CoursesCollectionView { get; }
     public IEnumerable<string> LanguageNameValues => _languageService.GetAllNames();
     public IEnumerable<string> LanguageLevelValues => Enum.GetNames(typeof(LanguageLevel));
-    public IEnumerable<string> FormatValues => new List<string>{"online", "in-person"};
+    public IEnumerable<string> FormatValues => new List<string> { "online", "in-person" };
 
     public string SelectedLanguageName
     {
@@ -59,6 +60,7 @@ public class StudentCourseViewModel : ViewModelBase
             CoursesCollectionView.Refresh();
         }
     }
+
     public DateTime SelectedDate
     {
         get => _selectedDate;
@@ -68,6 +70,7 @@ public class StudentCourseViewModel : ViewModelBase
             CoursesCollectionView.Refresh();
         }
     }
+
     public string SelectedDuration
     {
         get => _selectedDuration;
@@ -93,15 +96,15 @@ public class StudentCourseViewModel : ViewModelBase
         if (obj is CourseViewModel courseViewModel)
         {
             return courseViewModel.FilterLanguageName(SelectedLanguageName) &&
-                courseViewModel.FilterLanguageLevel(SelectedLanguageLevel) &&
-                courseViewModel.FilterStartDate(SelectedDate) &&
-                courseViewModel.FilterDuration(SelectedDuration) &&
-                courseViewModel.FilterFormat(SelectedFormat); 
+                   courseViewModel.FilterLanguageLevel(SelectedLanguageLevel) &&
+                   courseViewModel.FilterStartDate(SelectedDate) &&
+                   courseViewModel.FilterDuration(SelectedDuration) &&
+                   courseViewModel.FilterFormat(SelectedFormat);
         }
 
         return false;
     }
-    
+
     private void ResetFilters()
     {
         SelectedLanguageLevel = null!;

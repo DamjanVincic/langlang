@@ -32,10 +32,10 @@ namespace LangLang.ViewModel
             try
             {
                 _languageService.Add(LanguageName, SelectedLanguageLevel);
-                
+
                 MessageBox.Show("Language added successfully.", "Success", MessageBoxButton.OK,
                     MessageBoxImage.Information);
-                
+
                 _addLanguageWindow.Close();
             }
             catch (InvalidInputException exception)

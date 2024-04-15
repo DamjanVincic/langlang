@@ -12,25 +12,26 @@ namespace LangLang.ViewModel;
 public class StudentViewModel : ViewModelBase
 {
     private readonly IUserService _userService = new UserService();
-    
-    private readonly Student _student = UserService.LoggedInUser as Student ?? throw new InvalidInputException("No one is logged in.");
+
+    private readonly Student _student =
+                                                                                                               UserService.LoggedInUser as Student ?? throw new InvalidInputException("No one is logged in.");
 
     private readonly Window _studentViewWindow;
-    
+
     public StudentViewModel(Window studentViewWindow)
     {
         _studentViewWindow = studentViewWindow;
-        
+
         ViewCoursesCommand = new RelayCommand(ViewCourses);
         ViewExamsCommand = new RelayCommand(ViewExams);
         EditAccountCommand = new RelayCommand(EditAccount);
         DeleteAccountCommand = new RelayCommand(DeleteAccount);
         LogOutCommand = new RelayCommand(LogOut);
     }
-    
+
     public ObservableCollection<Course> AvailableCourses { get; set; }
     public ObservableCollection<Exam> AvailableExams { get; set; }
-    
+
     public string FullName => $"{_student.FirstName} {_student.LastName}";
 
     public ICommand ViewCoursesCommand { get; }
@@ -59,7 +60,7 @@ public class StudentViewModel : ViewModelBase
     private void DeleteAccount()
     {
         if (MessageBox.Show("Are you sure?", "Confirmation", MessageBoxButton.YesNo) != MessageBoxResult.Yes) return;
-        
+
         _userService.Delete(_student.Id);
         MessageBox.Show("Account deleted successfully");
         new MainWindow().Show();

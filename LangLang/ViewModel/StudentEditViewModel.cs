@@ -11,25 +11,26 @@ namespace LangLang.ViewModel;
 public class StudentEditViewModel : ViewModelBase
 {
     private readonly IUserService _userService = new UserService();
-    
-    private readonly Student _student = UserService.LoggedInUser as Student ?? throw new InvalidInputException("No one is logged in.");
+
+    private readonly Student _student =
+        UserService.LoggedInUser as Student ?? throw new InvalidInputException("No one is logged in.");
 
     private readonly Window _editWindow;
-    
+
     public StudentEditViewModel(Window editWindow)
     {
         _editWindow = editWindow;
-        
+
         FirstName = _student.FirstName;
         LastName = _student.LastName;
         Password = _student.Password;
         Phone = _student.Phone;
         Gender = _student.Gender;
         Education = _student.Education;
-        
+
         SaveCommand = new RelayCommand(Save);
     }
-    
+
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string Password { get; set; }
@@ -39,7 +40,7 @@ public class StudentEditViewModel : ViewModelBase
 
     public Array GenderValues => Enum.GetValues(typeof(Gender));
     public Array EducationValues => Enum.GetValues(typeof(Education));
-    
+
     public ICommand SaveCommand { get; }
 
     private void Save()
