@@ -6,7 +6,9 @@
         xmlns:local="clr-namespace:LangLang.View"
         xmlns:model="clr-namespace:LangLang.Model"
         mc:Ignorable="d"
-        Title="StudentCourseView" Height="450" Width="800">
+        Title="StudentCourseView" Height="450" Width="800"
+        WindowStartupLocation="CenterScreen"
+        Background="#bbe5e4">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
@@ -24,11 +26,9 @@
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*"/>
-            <ColumnDefinition Width="1*"/>
-        </Grid.ColumnDefinitions>
-        <ListView Grid.Row="0" Grid.RowSpan="9" Padding="5" Margin="5" ItemsSource="{Binding AvailableCourses}">
+
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" FontWeight="Bold">COURSES AVAILABLE FOR ENROLLMENT</TextBlock>
+        <ListView Grid.Row="3" Grid.RowSpan="9" Padding="5" Margin="5" ItemsSource="{Binding AvailableCourses}" >
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Language">
@@ -90,26 +90,49 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <TextBlock Text="FILTER COURSES" Grid.Column="1" Grid.Row="0"/>
-        <TextBlock Text="Language:" Grid.Column="1" Grid.Row="1"/>
-        <ComboBox  ItemsSource="{Binding LanguageNameValues}"
-                   SelectedItem="{Binding SelectedLanguageName, Mode=TwoWay}"
-                   Grid.Column="1" Grid.Row="2" Margin="10"/>
-        <TextBlock Text="Level:" Grid.Column="1" Grid.Row="3"/>
-        <ComboBox ItemsSource="{Binding LanguageLevelValues}"
-                  SelectedItem="{Binding SelectedLanguageLevel, Mode=TwoWay}"
-                  Grid.Column="1" Grid.Row="4" Margin="10"/>
-        <TextBlock Text="Start date:" Grid.Column="1" Grid.Row="5"/>
-        <DatePicker SelectedDate="{Binding SelectedDate}" Grid.Column="1" Grid.Row="6"/>
-        <TextBlock Text="Duration in weeks:" Grid.Column="1" Grid.Row="7"/>
-        <TextBox Text="{Binding SelectedDuration, Mode=TwoWay}"
-                 Grid.Column="1" Grid.Row="8"/>
-        <TextBlock Text="Format:" Grid.Column="1" Grid.Row="9" />
-        <ComboBox  ItemsSource="{Binding FormatValues}"
-                  SelectedItem="{Binding SelectedFormat, Mode=TwoWay}"
-                   Grid.Column="1" Grid.Row="10" />
-        <!-- <Button Command="{Binding AddCourse}"  Content="Apply" Grid.Column="1" Grid.Row="11" /> -->
-        <Button Command="{Binding ResetFiltersCommand}" Content="Clear filters" Grid.Column="1" Grid.Row="12" />
-        <Button Command="{Binding ApplyForCourseCommand}" Content="Apply for course" Grid.Column="1" Grid.Row="13" />
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="Language:" Grid.Column="0"/>
+            <TextBlock Text="Level:" Grid.Column="1"/>
+            <TextBlock Text="Start date:" Grid.Column="2"/>
+            <TextBlock Text="Duration(weeks):" Grid.Column="3"/>
+            <TextBlock Text="Format:" Grid.Column="4"/>
+
+        </Grid>
+        <Button Command="{Binding ResetFiltersCommand}" Content="Clear" Grid.Row="1" Grid.RowSpan="2" HorizontalAlignment="Right" Margin="0 0 30 0" Width="80" Height="40" Background="White" Foreground="#55bcbb"/>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <ComboBox  ItemsSource="{Binding LanguageNameValues}" SelectedItem="{Binding SelectedLanguageName, Mode=TwoWay}" Grid.Column="0" Margin="5"/>
+
+            <ComboBox ItemsSource="{Binding LanguageLevelValues}" SelectedItem="{Binding SelectedLanguageLevel, Mode=TwoWay}" Grid.Column="1" Margin="5"/>
+
+            <DatePicker SelectedDate="{Binding SelectedDate}" Grid.Column="2" Margin="5"/>
+
+            <TextBox Text="{Binding SelectedDuration, Mode=TwoWay}" Grid.Column="3" Margin="5"/>
+
+            <ComboBox  ItemsSource="{Binding FormatValues}" SelectedItem="{Binding SelectedFormat, Mode=TwoWay}" Grid.Column="4" Margin="5"/>
+        </Grid>
+
+        <!--<Button Command="{Binding AddCourse}"  Content="Apply" Grid.Column="1" Grid.Row="11" />-->
+
+        <Button Command="{Binding ApplyForCourseCommand}" Content="Apply" Grid.Column="1" Grid.Row="12" Grid.RowSpan="2"  Margin="0 0 120 0" Width="80" Height="40" Background="#55bcbb" Foreground="White"/>
+        <Button Command="{Binding ApplyForCourseCommand}" Content="Drop" Grid.Column="1" Grid.Row="12" Grid.RowSpan="2"  Margin="120 0 0 0" Width="80" Height="40" Background="#ec3629" Foreground="White"/>
     </Grid>
 </Window>
