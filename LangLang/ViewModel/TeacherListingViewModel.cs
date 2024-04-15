@@ -1,5 +1,4 @@
 ﻿using GalaSoft.MvvmLight;
-using LangLang.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,8 +9,9 @@ using System.Windows.Input;
 using LangLang.View;
 using System.Windows;
 using GalaSoft.MvvmLight.Command;
+using LangLang.Models;
 using LangLang.Services;
-using Teacher = LangLang.Model.Teacher;
+using Teacher = LangLang.Models.Teacher;
 
 namespace LangLang.ViewModel
 {

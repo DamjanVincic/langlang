@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using LangLang.Model;
+using LangLang.Models;
 using Newtonsoft.Json;
 
 namespace LangLang.Repositories;

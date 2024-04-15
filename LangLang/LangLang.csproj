@@ -12,4 +12,11 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ViewModel\Student\" />
+    <Folder Include="ViewModel\Teaher\" />
+    <Folder Include="View\Student\" />
+    <Folder Include="View\Teacher\" />
+  </ItemGroup>
+
 </Project>

@@ -1,4 +1,4 @@
-﻿namespace LangLang.Model
+﻿namespace LangLang.Models
 {
     public enum Gender
     {

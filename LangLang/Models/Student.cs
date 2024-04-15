@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LangLang.Model;
+namespace LangLang.Models;
 
 public class Student : User
 {

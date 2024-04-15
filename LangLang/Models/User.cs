@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace LangLang.Model
+namespace LangLang.Models
 {
     public abstract class User
     {

@@ -4,7 +4,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:LangLang.View"
-        xmlns:model="clr-namespace:LangLang.Model"
         mc:Ignorable="d"
         Title="StudentExamView" Height="450" Width="800"
         WindowStartupLocation="CenterScreen"

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LangLang.Services;
 
-namespace LangLang.Model
+namespace LangLang.Models
 {
     public class Teacher : User
     {

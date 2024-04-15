@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using LangLang.Model;
+using LangLang.Models;
 
 namespace LangLang.Repositories;
 

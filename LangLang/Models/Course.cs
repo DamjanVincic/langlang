@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace LangLang.Model
+namespace LangLang.Models
 {
     public class Course : ScheduleItem
     {

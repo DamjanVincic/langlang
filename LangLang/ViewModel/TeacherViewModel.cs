@@ -1,7 +1,7 @@
 ﻿using GalaSoft.MvvmLight;
-using LangLang.Model;
 using System;
 using System.Linq;
+using LangLang.Models;
 
 namespace LangLang.ViewModel
 {

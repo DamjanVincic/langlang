@@ -1,6 +1,6 @@
-﻿using LangLang.Model;
-using LangLang.ViewModel;
+﻿using LangLang.ViewModel;
 using System.Windows;
+using LangLang.Models;
 
 namespace LangLang.View
 {
