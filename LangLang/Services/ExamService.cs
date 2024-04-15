@@ -7,7 +7,7 @@ namespace LangLang.Services;
 
 public class ExamService : IExamService
 {
-    private readonly IExamRepository _examRepository = new ExamRepository();
+    private readonly IExamRepository _examRepository = new ExamFileRepository();
     private readonly IUserRepository _userRepository = new UserFileRepository();
     private readonly IScheduleService _scheduleService = new ScheduleService();
     private readonly ILanguageService _languageService = new LanguageService();

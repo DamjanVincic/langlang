@@ -25,7 +25,6 @@ public class ScheduleService : IScheduleService
                 {
                     foreach (int day in dayDifferences)
                     {
-                        // No need to change the date if we add it to Add method as a parameter
                         course.StartDate = startDate;
                         _scheduleRepository.Add(scheduleItem);
                         startDate = startDate.AddDays(day);
@@ -92,7 +91,6 @@ public class ScheduleService : IScheduleService
     private bool IsAvailable(ScheduleItem scheduleItem, DateOnly date, bool toEdit)
     {
         // TODO: Refactor this method
-        
         List<ScheduleItem> scheduleItems = _scheduleRepository.GetByDate(date);
 
         if (!scheduleItems.Any())

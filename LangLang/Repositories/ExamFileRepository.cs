@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace LangLang.Repositories;
 
-public class ExamRepository : IExamRepository
+public class ExamFileRepository : IExamRepository
 {
     private const string ExamFileName = "exams.json";
     private const string ExamDirectoryName = "data";
