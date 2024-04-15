@@ -1,6 +1,6 @@
 ﻿using LangLang.ViewModel;
 using System.Windows;
-using LangLang.Model;
+
 namespace LangLang.View
 {
     /// <summary>
@@ -8,9 +8,9 @@ namespace LangLang.View
     /// </summary>
     public partial class ExamView : Window
     {
-        public ExamView(Teacher teacher = null)
+        public ExamView()
         {
-            DataContext = new ExamListingViewModel(teacher);
+            DataContext = new ExamListingViewModel();
             InitializeComponent();
         }
     }

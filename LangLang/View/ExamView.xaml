@@ -86,7 +86,7 @@
         <DatePicker SelectedDate="{Binding DateSelected}" Grid.Column="1" Grid.Row="2"/>
         <TextBlock Text="Language:" Grid.Column="1" Grid.Row="3"/>
 
-        <ComboBox ItemsSource="{x:Static model:Language.LanguageNames}"
+        <ComboBox ItemsSource="{Binding LanguageNames}"
           SelectedItem="{Binding LanguageNameSelected}" 
           Grid.Column="1" Grid.Row="4" Margin="10"/>
 

@@ -1,43 +1,53 @@
-﻿using GalaSoft.MvvmLight;
+﻿using System;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Model;
 using LangLang.View;
 using System.Windows;
 using System.Windows.Input;
+using LangLang.Services;
 
 namespace LangLang.ViewModel
 {
     class TeacherMenuViewModel : ViewModelBase
     {
-        private Window _teacherMenuWindow;
-        private Teacher _teacher;
-        
-        public TeacherMenuViewModel(Teacher teacher, Window teacherMenuWindow)
+        private readonly IUserService _userService = new UserService();
+
+        private readonly Teacher _teacher = UserService.LoggedInUser as Teacher ??
+                                            throw new InvalidOperationException("No one is logged in.");
+
+        private readonly Window _teacherMenuWindow;
+
+        public TeacherMenuViewModel(Window teacherMenuWindow)
         {
-            _teacher = teacher;
             _teacherMenuWindow = teacherMenuWindow;
+
             CourseCommand = new RelayCommand(Course);
             ExamCommand = new RelayCommand(Exam);
             LogOutCommand = new RelayCommand(LogOut);
         }
 
         public ICommand CourseCommand { get; }
-        public void Course()
+
+        private void Course()
         {
-            var newWindow = new CourseView(_teacher);
+            var newWindow = new CourseView();
             newWindow.Show();
         }
+
         public ICommand ExamCommand { get; }
-        public void Exam()
+
+        private void Exam()
         {
-            var newWindow = new ExamView(_teacher);
+            var newWindow = new ExamView();
             newWindow.Show();
         }
-        
+
         public ICommand LogOutCommand { get; }
 
         private void LogOut()
         {
+            _userService.Logout();
             new MainWindow().Show();
             _teacherMenuWindow.Close();
         }

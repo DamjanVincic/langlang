@@ -4,42 +4,61 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO.Packaging;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
 using LangLang.View;
 using System.Windows;
 using GalaSoft.MvvmLight.Command;
+using LangLang.Services;
 using Teacher = LangLang.Model.Teacher;
 
 namespace LangLang.ViewModel
 {
-
     public class TeacherListingViewModel : ViewModelBase
     {
-        private Window _teacherListingWindow;
-        
-        private ObservableCollection<TeacherViewModel> teachers;
-        public ICollectionView TeachersCollectionView { get; }
-        public IEnumerable<String> LanguageNameValues => Language.LanguageNames;
-        public IEnumerable<String> LanguageLevelValues => Enum.GetNames(typeof(LanguageLevel));
+        private readonly IUserService _userService = new UserService();
+        private readonly ITeacherService _teacherService = new TeacherService();
+        private readonly ILanguageService _languageService = new LanguageService();
+        private readonly ICourseService _courseService = new CourseService();
+        private readonly IExamService _examService = new ExamService();
+
         private string _selectedLanguageName;
         private string _selectedLanguageLevel;
-        private DateTime selectedDateCreated;
+        private DateTime _selectedDateCreated;
+
+        private readonly ObservableCollection<TeacherViewModel> _teachers;
+        private readonly Window _teacherListingWindow;
+
+        public TeacherListingViewModel(Window teacherListingWindow)
+        {
+            _teacherListingWindow = teacherListingWindow;
+
+            _teachers = new ObservableCollection<TeacherViewModel>(_teacherService.GetAll()
+                .Select(teacher => new TeacherViewModel(teacher)));
+            TeachersCollectionView = CollectionViewSource.GetDefaultView(_teachers);
+
+            EditCommand = new RelayCommand(OpenEditWindow);
+            AddCommand = new RelayCommand(OpenAddWindow);
+            DeleteCommand = new RelayCommand(DeleteTeacher);
+            LogOutCommand = new RelayCommand(LogOut);
+
+            TeachersCollectionView.Filter = FilterTeachers;
+        }
+
+        public ICollectionView TeachersCollectionView { get; }
+        public IEnumerable<TeacherViewModel> Teachers => _teachers;
+        public IEnumerable<String> LanguageNameValues => _languageService.GetAllNames();
+        public IEnumerable<String> LanguageLevelValues => Enum.GetNames(typeof(LanguageLevel));
         public ICommand EditCommand { get; }
         public ICommand AddCommand { get; }
         public ICommand DeleteCommand { get; }
         public ICommand LogOutCommand { get; }
-        public TeacherViewModel SelectedItem { get; set; }
+        public TeacherViewModel? SelectedItem { get; set; }
+
         public string SelectedLanguageName
         {
-            get
-            {
-                return _selectedLanguageName;
-            }
+            get => _selectedLanguageName;
             set
             {
                 _selectedLanguageName = value;
@@ -49,91 +68,80 @@ namespace LangLang.ViewModel
 
         public string SelectedLanguageLevel
         {
-            get
-            {
-                return _selectedLanguageLevel;
-            }
+            get => _selectedLanguageLevel;
             set
             {
                 _selectedLanguageLevel = value;
                 TeachersCollectionView.Refresh();
             }
         }
+
         public DateTime SelectedDateCreated
         {
-            get
-            {
-                return selectedDateCreated;
-            }
+            get => _selectedDateCreated;
             set
             {
-                selectedDateCreated = value;
+                _selectedDateCreated = value;
                 TeachersCollectionView.Refresh();
             }
         }
-        public TeacherListingViewModel(Window teacherListingWindow)
-        {
-            _teacherListingWindow = teacherListingWindow;
-            
-            teachers=new ObservableCollection<TeacherViewModel>(User.GetTeachers().Select(teacher => new TeacherViewModel(teacher)));
-            TeachersCollectionView=CollectionViewSource.GetDefaultView(teachers);
-            EditCommand = new RelayCommand(OpenEditWindow);
-            AddCommand = new RelayCommand(OpenAddWindow);
-            DeleteCommand = new RelayCommand(DeleteTeacher);
-            LogOutCommand = new RelayCommand(LogOut);
 
-            TeachersCollectionView.Filter=filterTeachers;
-        }
-
-        private bool filterTeachers(object obj)
+        private bool FilterTeachers(object obj)
         {
             if (obj is TeacherViewModel teacherViewModel)
             {
-                return teacherViewModel.FilterLanguageName(SelectedLanguageName) && teacherViewModel.FilterLanguageLevel(SelectedLanguageLevel) && teacherViewModel.FilterDateCreated(SelectedDateCreated);
+                return teacherViewModel.FilterLanguageName(SelectedLanguageName) &&
+                       teacherViewModel.FilterLanguageLevel(SelectedLanguageLevel) &&
+                       teacherViewModel.FilterDateCreated(SelectedDateCreated);
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
 
         private void OpenEditWindow()
         {
             if (SelectedItem == null)
             {
-                MessageBox.Show("No teacher selected", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("No teacher selected.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            var newWindow = new EditTeacherView((Teacher)User.GetUserById(SelectedItem.Id), TeachersCollectionView);
 
-            newWindow.Show();
+            if (_userService.GetById(SelectedItem!.Id) is not Teacher teacher)
+            {
+                MessageBox.Show("Teacher not found.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
 
+            var newWindow = new EditTeacherView(teacher);
+
+            newWindow.ShowDialog();
+            UpdateTeacherList();
         }
 
         private void OpenAddWindow()
         {
-            var newWindow = new AddTeacherView(TeachersCollectionView,teachers);
-
-            newWindow.Show();
-
+            var newWindow = new AddTeacherView();
+            newWindow.ShowDialog();
+            UpdateTeacherList();
         }
 
         private void DeleteTeacher()
         {
+            // TODO: Move logic before and after foreach with new window to service
             if (SelectedItem == null)
             {
                 MessageBox.Show("No teacher selected", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
-            Teacher teacher = (Teacher)User.GetUserById(SelectedItem.Id);
-            List<Course> ActiveCourses=new List<Course>();
+            Teacher teacher = (Teacher)_userService.GetById(SelectedItem.Id);
+            List<Course> ActiveCourses = new List<Course>();
             List<Course> CoursesCreatedByDirector = new List<Course>();
-            List<Course> CoursesToBeDeleted=new List<Course>();
+            List<Course> CoursesToBeDeleted = new List<Course>();
 
-            foreach(int courseId in teacher.CourseIds)
+            foreach (int courseId in teacher.CourseIds)
             {
-                Course course = Course.GetById(courseId);
+                Course course = _courseService.GetById(courseId);
                 if (course.AreApplicationsClosed)
                 {
                     ActiveCourses.Add(course);
@@ -151,20 +159,21 @@ namespace LangLang.ViewModel
                 }
             }
 
-            Dictionary<Course, Teacher> substituteTeachers=new Dictionary<Course, Teacher>();
+            Dictionary<Course, Teacher> substituteTeachers = new Dictionary<Course, Teacher>();
 
             //ask for substitute teachers
             foreach (Course course in ActiveCourses)
             {
                 List<Teacher> availableTeachers = new List<Teacher>();
-                foreach(Teacher teacher_ in User.GetTeachers())
-                {
-                    if (Schedule.CanAddScheduleItem(course.StartDate, course.Duration, course.Held, teacher_.Id,
-                            course.ScheduledTime, true, true))
-                    {
-                        availableTeachers.Add(teacher_);
-                    }
-                }
+                // TODO: uncomment below code
+                // foreach(Teacher teacher_ in User.GetTeachers())
+                // {
+                //     if (Schedule.CanAddScheduleItem(course.StartDate, course.Duration, course.Held, teacher_.Id,
+                //             course.ScheduledTime, true, true))
+                //     {
+                //         availableTeachers.Add(teacher_);
+                //     }
+                // }
                 //TODO: If there are no available teachers, return
                 var newWindow = new PickSubstituteTeacherView(availableTeachers, substituteTeachers, course);
 
@@ -179,7 +188,7 @@ namespace LangLang.ViewModel
             foreach (int examId in teacher.ExamIds)
             {
                 //shouldn't have id parameter
-                Exam.GetById(examId).Delete();
+                _examService.Delete(examId);
             }
 
             foreach (Course course in CoursesCreatedByDirector)
@@ -192,19 +201,23 @@ namespace LangLang.ViewModel
                 //delete course TBD
             }
 
-            teachers.Remove(SelectedItem);
-            teacher.Delete();
+            _teachers.Remove(SelectedItem);
+            _userService.Delete(teacher.Id);
             TeachersCollectionView.Refresh();
         }
 
         private void LogOut()
         {
+            _userService.Logout();
             new MainWindow().Show();
             _teacherListingWindow.Close();
         }
 
-
-        public IEnumerable<TeacherViewModel> Teachers => teachers;
+        private void UpdateTeacherList()
+        {
+            _teachers.Clear();
+            _teacherService.GetAll().ForEach(teacher => _teachers.Add(new TeacherViewModel(teacher)));
+            TeachersCollectionView.Refresh();
+        }
     }
-
 }

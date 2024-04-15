@@ -6,9 +6,9 @@ namespace LangLang.View;
 
 public partial class StudentView : Window
 {
-    public StudentView(Student student)
+    public StudentView()
     {
         InitializeComponent();
-        DataContext = new StudentViewModel(student, this);
+        DataContext = new StudentViewModel(this);
     }
 }

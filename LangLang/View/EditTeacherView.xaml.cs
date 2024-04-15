@@ -1,18 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Windows;
 using LangLang.Model;
 using LangLang.ViewModel;
 
@@ -23,9 +9,9 @@ namespace LangLang.View
     /// </summary>
     public partial class EditTeacherView : Window
     {
-        public EditTeacherView(Teacher teacher, ICollectionView teachersCollectionView)
+        public EditTeacherView(Teacher teacher)
         {
-            DataContext = new EditTeacherViewModel(teacher, teachersCollectionView, this);
+            DataContext = new EditTeacherViewModel(teacher, this);
             InitializeComponent();
         }
     }

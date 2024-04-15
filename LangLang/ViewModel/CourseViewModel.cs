@@ -1,62 +1,55 @@
-﻿using LangLang.Model;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GalaSoft.MvvmLight;
-using System.Configuration;
-using System.Windows.Input;
-using GalaSoft.MvvmLight.Command;
-using System.Windows;
+using LangLang.Model;
+using LangLang.Services;
 
 namespace LangLang.ViewModel
 {
     public class CourseViewModel : ViewModelBase
     {
-        private readonly Course course;
-        public int Id => course.Id;
-        public string LanguageName => course.Language.Name;
-        public LanguageLevel LanguageLevel => course.Language.Level;
-        public string Duration => course.Duration + " weeks";
-        public string Held => string.Join(", ", course.Held);
-        public string IsOnline => course.IsOnline ? "online" : "in-person";
-        public string Applications => course.AreApplicationsClosed ? "closed" : "opened";
-        public int MaxStudents => course.MaxStudents;
-        public TimeOnly ScheduledTime => course.ScheduledTime;
-        public DateOnly StartDate => course.StartDate;
-        public User Teacher => User.GetUserById(course.TeacherId);
-        public string TeachersName => $"{Teacher.FirstName} {Teacher.LastName}";
-        public string Students => string.Join(", ", course.StudentIds.Select(studentId => {
-            User user = User.GetUserById(studentId);
-            return user != null ? $"{user.FirstName} {user.LastName}" : "error";
-        }));
+        private readonly IUserService _userService = new UserService();
 
-
-        public ICommand AddCourseCommand { get; }
-        public ICommand EditCourseCommand { get; }
-        public ICommand DeleteCourseCommand { get; }
+        private readonly Course _course;
+        private readonly Teacher? _teacher;
 
         public CourseViewModel(Course course)
         {
-            this.course = course;
-            //AddCourseCommand = new RelayCommand(AddCourse);
-            //EditCourseCommand = new RelayCommand(EditCourse);
-            //DeleteCourseCommand = new RelayCommand(DeleteCourse);
-        }
-        public bool FilterLanguageLevel(string languageLevel)
-        {
-            return languageLevel == null || course.Language.Level.ToString().Equals(languageLevel);
+            _course = course;
+            _teacher = _userService.GetById(course.TeacherId) as Teacher;
         }
 
-        public bool FilterLanguageName(string languageName)
+        public int Id => _course.Id;
+        public string LanguageName => _course.Language.Name;
+        public LanguageLevel LanguageLevel => _course.Language.Level;
+        public string Duration => _course.Duration + " weeks";
+        public string Held => string.Join(", ", _course.Held);
+        public string IsOnline => _course.IsOnline ? "online" : "in-person";
+        public string Applications => _course.AreApplicationsClosed ? "closed" : "opened";
+        public int MaxStudents => _course.MaxStudents;
+        public TimeOnly ScheduledTime => _course.ScheduledTime;
+        public DateOnly StartDate => _course.StartDate;
+        public string TeachersName => $"{_teacher?.FirstName} {_teacher?.LastName}";
+
+        public string Students => string.Join(", ", _course.StudentIds.Select(studentId =>
         {
-            return languageName == null || course.Language.Name.Equals(languageName);
+            User? user = _userService.GetById(studentId);
+            return user != null ? $"{user.FirstName} {user.LastName}" : "error";
+        }));
+
+        public bool FilterLanguageLevel(string? languageLevel)
+        {
+            return languageLevel == null || _course.Language.Level.ToString().Equals(languageLevel);
         }
+
+        public bool FilterLanguageName(string? languageName)
+        {
+            return languageName == null || _course.Language.Name.Equals(languageName);
+        }
+
         public bool FilterTeacher(int teacherId)
         {
-            return teacherId == -1 || course.TeacherId == teacherId;
+            return teacherId == -1 || _course.TeacherId == teacherId;
         }
 
 
@@ -65,23 +58,24 @@ namespace LangLang.ViewModel
             if (date == DateTime.MinValue)
             {
                 return true;
-            } 
-            DateOnly chosenDate = new DateOnly(date.Year, date.Month, date.Day);
-            return chosenDate == course.StartDate;
-        }
-        public bool FilterDuration(string duration)
-        {
-            if (duration == null)
-            {
-                return true;
             }
-            int.TryParse(duration.Split(" ")[0], out int result);
-            return course.Duration == result;
+
+            DateOnly chosenDate = new DateOnly(date.Year, date.Month, date.Day);
+            return chosenDate == _course.StartDate;
         }
 
-        public bool FilterFormat(string format)
-        { 
-            return format == null || format.Equals("online") == course.IsOnline;
+        public bool FilterDuration(string? duration)
+        {
+            if (duration == null)
+                return true;
+
+            int.TryParse(duration.Split(" ")[0], out int result);
+            return _course.Duration == result;
+        }
+
+        public bool FilterFormat(string? format)
+        {
+            return format == null || format.Equals("online") == _course.IsOnline;
         }
     }
 }
