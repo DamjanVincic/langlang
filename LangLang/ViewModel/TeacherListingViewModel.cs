@@ -124,10 +124,10 @@ namespace LangLang.ViewModel
             newWindow.ShowDialog();
             UpdateTeacherList();
         }
-
-        // TODO: Move logic to service
+        
         private void DeleteTeacher()
         {
+            // TODO: Move logic before and after foreach with new window to service
             if (SelectedItem == null)
             {
                 MessageBox.Show("No teacher selected", "Error", MessageBoxButton.OK, MessageBoxImage.Error);

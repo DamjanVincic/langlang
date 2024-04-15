@@ -5,8 +5,8 @@ namespace LangLang.Services;
 
 public interface IUserService
 {
-    List<User> GetAll();
-    User? GetById(int id);
+    public List<User> GetAll();
+    public User? GetById(int id);
 
     public void Add(string firstName, string lastName, string email, string password, Gender gender, string phone,
         Education? education = null, List<Language>? languages = null);
@@ -14,7 +14,7 @@ public interface IUserService
     public void Update(int id, string firstName, string lastName, string password, Gender gender, string phone,
         Education? education = null, List<Language>? languages = null);
 
-    void Delete(int id);
-    User? Login(string email, string password);
-    void Logout();
+    public void Delete(int id);
+    public User? Login(string email, string password);
+    public void Logout();
 }
