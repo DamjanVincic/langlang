@@ -8,6 +8,7 @@ using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
 using LangLang.Services;
 using LangLang.Views;
+using LangLang.Views.StudentViews;
 
 namespace LangLang.ViewModels;
 

@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using LangLang.ViewModels;
 
-namespace LangLang.Views;
+namespace LangLang.Views.StudentViews;
 
 public partial class StudentExamView : Window
 {
