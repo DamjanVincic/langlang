@@ -19,7 +19,7 @@ public class MainViewModel : ViewModelBase
     public ICommand NavigateToRegisterCommand { get; }
     public ICommand NavigateToLoginCommand { get; }
     public ICommand NavigateToExamViewCommand { get; }
-    
+
     public MainViewModel(Window loginWindow)
     {
         _loginWindow = loginWindow;
@@ -36,9 +36,9 @@ public class MainViewModel : ViewModelBase
 
     public void NavigateToLogin()
     {
-        new LoginView().Show();
+        new MainWindow().Show();
     }
-    
+
     private void NavigateToExamView()
     {
         new ExamView().Show();
