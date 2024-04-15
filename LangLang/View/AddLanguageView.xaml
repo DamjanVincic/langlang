@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         Title="AddLanguageView" Height="450" Width="800"
-        Background="#f7916e">
+        Background="#bbe5e4">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -28,7 +28,7 @@
             <TextBox Grid.Row="1"  Text="{Binding LanguageName}" Width="200" Height="40" Grid.Column="1"/>
             <TextBlock Text="Level:"  Grid.Row="2" Grid.Column="1"/>
             <ComboBox Grid.Row="3" Margin="10" ItemsSource="{Binding LanguageLevelValues}" SelectedItem="{Binding SelectedLanguageLevel}" Width="200" Height="40" Grid.Column="1"/>
-            <Button Grid.Row="4" Content="Add" Command="{Binding AddLanguageCommand}" Grid.Column="1"/>
+            <Button Grid.Row="4" Content="Add" Command="{Binding AddLanguageCommand}" Grid.Column="1" Background="#55bcbb" Foreground="White" Width="100" Height="40"/>
         </Grid>
     </Grid>
 </Window>
