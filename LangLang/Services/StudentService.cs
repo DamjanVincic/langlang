@@ -10,7 +10,7 @@ public class StudentService : IStudentService
 {
     private readonly IUserRepository _userRepository = new UserFileRepository();
     private readonly ICourseRepository _courseRepository = new CourseFileRepository();
-    private readonly IExamFileRepository _examFileRepository = new ExamFileRepository();
+    private readonly IExamRepository _examRepository = new ExamRepository();
 
     public List<Student> GetAll()
     {
@@ -28,7 +28,7 @@ public class StudentService : IStudentService
     public List<Exam> GetAvailableExams()
     {
         //TODO: Add checking if the student has finished the course and don't show the ones they have applied to
-        return _examFileRepository.GetAll().Where(exam =>
+        return _examRepository.GetAll().Where(exam =>
             exam.StudentIds.Count < exam.MaxStudents &&
             (exam.Date.DayNumber - DateOnly.FromDateTime(DateTime.Today).DayNumber) >= 30).ToList();
     }

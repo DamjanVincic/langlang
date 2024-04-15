@@ -3,7 +3,7 @@ using LangLang.Model;
 
 namespace LangLang.Repositories;
 
-public interface IExamFileRepository
+public interface IExamRepository
 {
     public List<Exam> GetAll();
     public Exam? GetById(int id);
