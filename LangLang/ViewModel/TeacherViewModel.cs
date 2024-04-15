@@ -1,53 +1,44 @@
 ﻿using GalaSoft.MvvmLight;
 using LangLang.Model;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO.Packaging;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Input;
 
 namespace LangLang.ViewModel
 {
     public class TeacherViewModel : ViewModelBase
     {
-        private readonly Teacher teacher;
-
-        public int Id => teacher.Id;
-        public string FirstName => teacher.FirstName;
-        public string LastName => teacher.LastName;
-        public string Email => teacher.Email;
-        public string Password => teacher.Password;
-        public Gender Gender => teacher.Gender;
-        public string Phone => teacher.Phone;
-
-        public string Qualifications => string.Join(", ", teacher.Qualifications);
-
-        public string DateAdded => teacher.DateCreated.ToString();
-
-        public event PropertyChangedEventHandler? PropertyChanged;
+        private readonly Teacher _teacher;
 
         public TeacherViewModel(Teacher teacher)
         {
-            this.teacher=teacher;
+            _teacher = teacher;
         }
 
-        public bool FilterLanguageLevel(string languageLevel)
+        public int Id => _teacher.Id;
+        public string FirstName => _teacher.FirstName;
+        public string LastName => _teacher.LastName;
+        public string Email => _teacher.Email;
+        public string Password => _teacher.Password;
+        public Gender Gender => _teacher.Gender;
+        public string Phone => _teacher.Phone;
+
+        public string Qualifications => string.Join(", ", _teacher.Qualifications);
+
+        public string DateAdded => _teacher.DateCreated.ToString();
+
+        public bool FilterLanguageLevel(string? languageLevel)
         {
-            return languageLevel==null || teacher.Qualifications.Where(language => language.Level == (LanguageLevel)Enum.Parse(typeof(LanguageLevel), languageLevel)).Count()!=0;
+            return languageLevel==null || _teacher.Qualifications.Any(language => language.Level == (LanguageLevel)Enum.Parse(typeof(LanguageLevel), languageLevel));
         }
 
-        public bool FilterLanguageName(string languageName)
+        public bool FilterLanguageName(string? languageName)
         {
-            return languageName==null || teacher.Qualifications.Where(language => language.Name.Equals(languageName)).Count()!=0;
+            return languageName==null || _teacher.Qualifications.Any(language => language.Name.Equals(languageName));
         }
 
         public bool FilterDateCreated(DateTime dateCreated)
         {
-            return dateCreated==DateTime.MinValue || teacher.DateCreated==DateOnly.FromDateTime(dateCreated.Date);
+            return dateCreated == DateTime.MinValue || _teacher.DateCreated == DateOnly.FromDateTime(dateCreated.Date);
         }
     }
 }

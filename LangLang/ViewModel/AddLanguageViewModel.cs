@@ -1,44 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Model;
+using LangLang.Services;
 
 namespace LangLang.ViewModel
 {
-    internal class AddLanguageViewModel:ViewModelBase
+    internal class AddLanguageViewModel : ViewModelBase
     {
-        public string LanguageName { get; set; }
-        public LanguageLevel SelectedLanguageLevel { get; set; }
-        public IEnumerable<String> LanguageLevelValues => Enum.GetNames(typeof(LanguageLevel));
-        private ICollectionView qualificationCollectionView;
+        private readonly ILanguageService _languageService = new LanguageService();
 
-        public ICommand AddLanguageCommand { get; }
-        
-        private Window _addLanguageWindow;
+        private readonly Window _addLanguageWindow;
 
-        public AddLanguageViewModel(ICollectionView qualificationCollectionView, Window addLanguageWindow)
+        public AddLanguageViewModel(Window addLanguageWindow)
         {
             _addLanguageWindow = addLanguageWindow;
-            
-            this.qualificationCollectionView = qualificationCollectionView;
             AddLanguageCommand = new RelayCommand(AddLanguage);
         }
-        public void AddLanguage()
+
+        public string LanguageName { get; set; }
+        public LanguageLevel SelectedLanguageLevel { get; set; }
+        public IEnumerable<string> LanguageLevelValues => Enum.GetNames(typeof(LanguageLevel));
+
+        public ICommand AddLanguageCommand { get; }
+
+        private void AddLanguage()
         {
             try
             {
-                Language.MakeLanguage(LanguageName, SelectedLanguageLevel);
-                qualificationCollectionView.Refresh();
+                _languageService.Add(LanguageName, SelectedLanguageLevel);
+
                 MessageBox.Show("Language added successfully.", "Success", MessageBoxButton.OK,
                     MessageBoxImage.Information);
+
                 _addLanguageWindow.Close();
             }
             catch (InvalidInputException exception)
@@ -49,7 +46,6 @@ namespace LangLang.ViewModel
             {
                 MessageBox.Show(exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            
         }
     }
 }

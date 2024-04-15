@@ -1,41 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Security.RightsManagement;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using LangLang.Model;
+using LangLang.Services;
 
 namespace LangLang.ViewModel
 {
-    internal class PickSubstituteTeacherViewModel:ViewModelBase
+    internal class PickSubstituteTeacherViewModel : ViewModelBase
     {
-        private ObservableCollection<TeacherViewModel> displayedTeachers=new ObservableCollection<TeacherViewModel>();
+        private readonly IUserService _userService = new UserService();
+
+        private readonly ObservableCollection<TeacherViewModel> _displayedTeachers = new();
+        private readonly Dictionary<Course, Teacher> _substituteTeachers;
+        private readonly Course _course;
+
+        public PickSubstituteTeacherViewModel(List<Teacher> availableTeachers,
+            Dictionary<Course, Teacher> substituteTeachers, Course course)
+        {
+            Title = $"Select substitute teacher for course {course.Language}";
+
+            _substituteTeachers = substituteTeachers;
+            _course = course;
+
+            foreach (Teacher teacher in availableTeachers)
+                _displayedTeachers.Add(new TeacherViewModel(teacher));
+
+            TeachersCollectionView = CollectionViewSource.GetDefaultView(_displayedTeachers);
+            SaveCommand = new RelayCommand(SaveSubstitute);
+        }
+
         public ICollectionView TeachersCollectionView { get; }
         public ICommand SaveCommand { get; }
         public string Title { get; set; }
-        public TeacherViewModel SelectedItem { get; set; }
-        private Dictionary<Course, Teacher> substituteTeachers;
-        private Course course;
-        public PickSubstituteTeacherViewModel(List<Teacher> availableTeachers,Dictionary<Course,Teacher> substituteTeachers,Course course)
-        {
-            Title = "Select substitute teacher for course " + course.Language.ToString();
-            this.substituteTeachers=substituteTeachers;
-            this.course=course;
-            foreach (Teacher teacher in availableTeachers)
-            {
-                displayedTeachers.Add(new TeacherViewModel(teacher));
-            }
-            TeachersCollectionView=CollectionViewSource.GetDefaultView(displayedTeachers); 
-            SaveCommand = new RelayCommand(SaveSubstitute);
-        }
+        public TeacherViewModel? SelectedItem { get; set; }
 
         private void SaveSubstitute()
         {
@@ -45,7 +47,14 @@ namespace LangLang.ViewModel
                 return;
             }
 
-            substituteTeachers[course] = (Teacher)User.GetUserById(SelectedItem.Id);
+            Teacher? teacher = _userService.GetById(SelectedItem.Id) as Teacher;
+            if (teacher == null)
+            {
+                MessageBox.Show("User doesn't exist.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            _substituteTeachers[_course] = teacher!;
             MessageBox.Show("Substitute teacher picked successfully.", "Success", MessageBoxButton.OK,
                 MessageBoxImage.Information);
         }

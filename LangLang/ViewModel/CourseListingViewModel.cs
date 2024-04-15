@@ -10,102 +10,95 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using LangLang.Services;
 
 namespace LangLang.ViewModel
 {
     public class CourseListingViewModel : ViewModelBase
     {
-        private ObservableCollection<CourseViewModel> _courses;
-        private CourseViewModel _selectedItem;
+        private readonly ITeacherService _teacherService = new TeacherService();
+        private readonly ILanguageService _languageService = new LanguageService();
+        private readonly ICourseService _courseService = new CourseService();
+
+        private readonly Teacher _teacher = UserService.LoggedInUser as Teacher ??
+                                            throw new InvalidOperationException("No one is logged in.");
+
+        private readonly ObservableCollection<CourseViewModel> _courses;
 
         private string _selectedLanguageName;
         private string _selectedLanguageLevel;
         private DateTime _selectedDate;
         private string _selectedDuration;
         private string _selectedFormat;
-        private int _teacherID;
 
-        public CourseListingViewModel(int teacherId)
+        public CourseListingViewModel()
         {
-            this.TeacherID = teacherId;
-            _courses = new ObservableCollection<CourseViewModel>(Course.GetTeacherCourses(teacherId).Select(course => new CourseViewModel(course)));
-            
+            _courses = new ObservableCollection<CourseViewModel>(_teacherService.GetCourses(_teacher.Id)
+                .Select(course => new CourseViewModel(course)));
             CoursesCollectionView = CollectionViewSource.GetDefaultView(_courses);
-            
-            CoursesCollectionView.Filter = filterCourses;
-            DeleteCommand = new RelayCommand(Delete);
+            CoursesCollectionView.Filter = FilterCourses;
+
             AddCommand = new RelayCommand(Add);
             EditCommand = new RelayCommand(Edit);
-
+            DeleteCommand = new RelayCommand(Delete);
         }
 
-        public CourseViewModel SelectedItem
-        {
-            get =>_selectedItem; 
-            set
-            {
-                _selectedItem = value;
-            }
-        }
+        public CourseViewModel? SelectedItem { get; set; }
 
         public ICollectionView CoursesCollectionView { get; }
-        public IEnumerable<String> LanguageNameValues => Language.LanguageNames;
+        public IEnumerable<String> LanguageNameValues => _languageService.GetAllNames();
         public IEnumerable<String> LanguageLevelValues => Enum.GetNames(typeof(LanguageLevel));
-        public IEnumerable<String> FormatValues => new List<String>{"online", "in-person"};
+        public IEnumerable<String> FormatValues => new List<String> { "online", "in-person" };
         public IEnumerable<CourseViewModel> Courses => _courses;
-        public ICommand DeleteCommand { get; }
-        public void Delete()
-        {
-            try
-            {
-                if (SelectedItem != null)
-                {
-                    if (MessageBox.Show("Are you sure?", "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.No)
-                    {
-                        return;
-                    }
-                    
-                    Course course = Course.GetById(SelectedItem.Id);
-                    _courses.Remove((CourseViewModel)SelectedItem);
 
-                    Schedule.ModifySchedule(course, course.StartDate, course.Duration, course.Held, null);
-                    Course.Courses.Remove(course.Id);
-                    Course.CourseIds.Remove(course.Id);
-                    ((Teacher)User.GetUserById(_teacherID)).DeleteCourse(course.Id);
-                    MessageBox.Show("Course deleted successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                else
-                {
-                    MessageBox.Show("Please select an Course to delete.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
         public ICommand AddCommand { get; }
-        public void Add()
+        public ICommand EditCommand { get; }
+        public ICommand DeleteCommand { get; }
+
+        private void Add()
         {
-            var newWindow = new ModifyCourseView( _courses, CoursesCollectionView, TeacherID, null);
-            newWindow.Show();
-            CoursesCollectionView.Refresh();
+            var newWindow = new ModifyCourseView();
+            newWindow.ShowDialog();
+            RefreshCourses();
         }
 
-        public ICommand EditCommand { get; }
-        public void Edit()
+        private void Edit()
         {
-            if (SelectedItem != null)
+            if (SelectedItem == null)
             {
-                var newWindow = new ModifyCourseView(_courses, CoursesCollectionView, TeacherID, Course.GetById(SelectedItem.Id));
-
-                newWindow.Show();
-
+                MessageBox.Show("Please select a course to edit.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
             }
-            else
+
+            var newWindow = new ModifyCourseView(_courseService.GetById(SelectedItem.Id));
+            newWindow.ShowDialog();
+            RefreshCourses();
+        }
+
+        private void Delete()
+        {
+            if (SelectedItem == null)
             {
-                MessageBox.Show("Please select an course to edit.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Please select an Course to delete.", "Error", MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                return;
             }
+
+            if (MessageBox.Show("Are you sure?", "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                return;
+
+            Course? course = _courseService.GetById(SelectedItem.Id);
+            if (course == null)
+            {
+                MessageBox.Show("Course doesn't exist.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            _courseService.Delete(course.Id);
+            RefreshCourses();
+
+            MessageBox.Show("Course deleted successfully.", "Success", MessageBoxButton.OK,
+                MessageBoxImage.Information);
         }
 
 
@@ -128,6 +121,7 @@ namespace LangLang.ViewModel
                 CoursesCollectionView.Refresh();
             }
         }
+
         public DateTime SelectedDate
         {
             get => _selectedDate;
@@ -137,6 +131,7 @@ namespace LangLang.ViewModel
                 CoursesCollectionView.Refresh();
             }
         }
+
         public string SelectedDuration
         {
             get => _selectedDuration;
@@ -157,24 +152,26 @@ namespace LangLang.ViewModel
             }
         }
 
-        public int TeacherID { get => _teacherID; set => _teacherID = value; }
-
-        private bool filterCourses(object obj)
+        private bool FilterCourses(object obj)
         {
             if (obj is CourseViewModel courseViewModel)
             {
                 return courseViewModel.FilterLanguageName(SelectedLanguageName) &&
-                    courseViewModel.FilterLanguageLevel(SelectedLanguageLevel) &&
-                    courseViewModel.FilterStartDate(SelectedDate) &&
-                    courseViewModel.FilterDuration(SelectedDuration) &&
-                    courseViewModel.FilterFormat(SelectedFormat) &&
-                    courseViewModel.FilterTeacher(this.TeacherID); 
+                       courseViewModel.FilterLanguageLevel(SelectedLanguageLevel) &&
+                       courseViewModel.FilterStartDate(SelectedDate) &&
+                       courseViewModel.FilterDuration(SelectedDuration) &&
+                       courseViewModel.FilterFormat(SelectedFormat) &&
+                       courseViewModel.FilterTeacher(_teacher.Id);
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
 
+        private void RefreshCourses()
+        {
+            _courses.Clear();
+            _teacherService.GetCourses(_teacher.Id).ForEach(course => _courses.Add(new CourseViewModel(course)));
+            CoursesCollectionView.Refresh();
+        }
     }
 }

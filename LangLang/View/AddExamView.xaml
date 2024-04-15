@@ -31,14 +31,13 @@
         </TextBlock>
         <TextBlock Text="Language:" Grid.Column="0" Grid.Row="1"/>
 
-        <ComboBox ItemsSource="{x:Static model:Language.LanguageNames}" SelectedItem="{Binding Name}" Grid.Column="1" Grid.Row="1" Margin="5" Height="30" Width="{Binding ActualWidth, ElementName=datePicker}"/>
+        <ComboBox ItemsSource="{Binding LanguageNames}" SelectedItem="{Binding Name}" Grid.Column="1" Grid.Row="1" Margin="5" Height="30" Width="{Binding ActualWidth, ElementName=datePicker}"/>
 
         <TextBlock Text="Level:" Grid.Column="2" Grid.Row="1"/>
         <ComboBox ItemsSource="{Binding LanguageLevelValues}" SelectedItem="{Binding LanguageLevel, Mode=TwoWay}" Grid.Column="3" Grid.Row="1" Margin="5" Height="30" Width="{Binding ActualWidth, ElementName=datePicker}"/>
 
         <TextBlock Text="Date held:" Grid.Column="0" Grid.Row="2"/>
         <DatePicker x:Name="datePicker" SelectedDate="{Binding DateSelected}" Grid.Column="1" Grid.Row="2"/>
-
 
         <TextBlock Text="Max students:" Grid.Column="2" Grid.Row="2"/>
         <TextBox Grid.Row="2" Grid.Column="3" Text="{Binding MaxStudents, Mode=TwoWay}" PreviewTextInput="TextBox_PreviewTextInput" Height="30" Width="{Binding ActualWidth, ElementName=datePicker}"/>

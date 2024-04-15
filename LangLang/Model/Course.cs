@@ -1,68 +1,52 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using Newtonsoft.Json;
 
 namespace LangLang.Model
 {
     public class Course : ScheduleItem
-    { 
-        public const int CLASS_DURATION = 90;
-        private static Dictionary<int, Course> _courses = new Dictionary<int, Course>();
+    {
+        public const int ClassDuration = 90;
 
-        private static readonly string COURSE_FILE_NAME = "courses.json";
-        private static readonly string COURSE_DIRECTORY_PATH = Path.Combine(Directory.GetCurrentDirectory(), "SourceDataFiles");
-        private static readonly string COURSE_FILE_PATH = Path.Combine(Directory.GetCurrentDirectory(), "SourceDataFiles", COURSE_FILE_NAME);
-        
-        private Language _language;
         private int _duration;
-        private List<Weekday> _held;
-        private int _maxStudents;
-        private DateOnly _startDate;
-        private static List<int> _courseIds = new List<int>();
+        private List<Weekday> _held = null!;
 
-        public Course(Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents, int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed, int teacherId, List<int> studentIds, int id = -1) : base(teacherId, scheduledTime, id)
+        public Course(Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents,
+            int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed,
+            int teacherId) : base(language, maxStudents, startDate, teacherId, scheduledTime)
         {
-            Language = language;
             Duration = duration;
             Held = held;
             CreatorId = creatorId;
             AreApplicationsClosed = areApplicationsClosed;
             IsOnline = isOnline;
-            MaxStudents = maxStudents;
-            StartDate = startDate;
+        }
+
+        // Constructor without date validation for deserializing
+        [JsonConstructor]
+        public Course(int id, Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents,
+            int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed, int teacherId,
+            List<int> studentIds) : base(id, language, maxStudents, startDate, teacherId, scheduledTime)
+        {
+            Duration = duration;
+            Held = held;
+            CreatorId = creatorId;
+            AreApplicationsClosed = areApplicationsClosed;
+            IsOnline = isOnline;
             StudentIds = studentIds;
-            _courses.Add(Id, this);
-            CourseIds.Add(Id);
-            Schedule.ModifySchedule(this, StartDate, Duration, null, Held);
-            
         }
 
-        public static List<Course> GetTeacherCourses(int teacherId)
+        public new int MaxStudents
         {
-            return _courses.Values.Where(course => course.TeacherId == teacherId).ToList();
-        }
-        
-        public static List<int> CourseIds 
-        {
-            get => _courseIds;
+            get => base.MaxStudents;
             set
             {
-                _courseIds = value;
+                ValidateMaxStudents(value);
+                base.MaxStudents = value;
             }
         }
 
-        public Language Language
-        {
-            get => _language;
-            set
-            {
-                ValidateLanguage(value);
-                _language = value;
-            }
-        }
-        public int Duration 
+        public int Duration
         {
             get => _duration;
             set
@@ -71,135 +55,57 @@ namespace LangLang.Model
                 _duration = value;
             }
         }
-        public List<Weekday> Held {
+
+        public List<Weekday> Held
+        {
             get => _held;
-            set 
+            set
             {
                 ValidateHeld(value);
                 _held = value;
             }
         }
+
         public bool IsOnline { get; set; }
-        public int MaxStudents 
-        {
-            get => _maxStudents;
-            set
-            {
-                ValidateMaxStudents(value);
-                _maxStudents = value;
-            }
-        }
-        public int CreatorId { get; set;}
+
+        public int CreatorId { get; set; }
+
         public DateOnly StartDate
         {
-            get => _startDate;
+            get => Date;
             set
             {
-                ValidateStartDate(value);
-                _startDate = value;
+                ValidateDate(value);
+                Date = value;
             }
         }
-        public bool AreApplicationsClosed {get; set; }
-        public List<int> StudentIds { get; set; }
-        public static Dictionary<int, Course> Courses { get => _courses; set => _courses = value; }
 
-        private void ValidateStartDate(DateOnly startDate)
+        public bool AreApplicationsClosed { get; set; }
+
+        public List<int> StudentIds { get; set; } = new();
+
+        private static void ValidateDate(DateOnly startDate)
         {
-            DateOnly today = DateOnly.FromDateTime(DateTime.Today);
-            if (startDate < today)
-            { 
-                throw new InvalidInputException("Start date of course must be after today.");
-            }
+            if ((startDate.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days < 7)
+                throw new InvalidInputException("The course has to be at least 7 days from now.");
         }
 
         private void ValidateMaxStudents(int maxStudents)
         {
-            if (maxStudents < 0)
-            {
-                throw new InvalidInputException("Maximum number of students must not be negative.");
-            }
             if (!IsOnline && maxStudents <= 0)
-            {
                 throw new InvalidInputException("You must pass the max number of students if the course is in-person.");
-            }
         }
 
-        private void ValidateHeld(List<Weekday> held)
+        private static void ValidateHeld(List<Weekday> held)
         {
             if (held == null)
-            {
                 throw new ArgumentNullException(nameof(held));
-            }
         }
 
-        private void ValidateDuration(int duration)
+        private static void ValidateDuration(int duration)
         {
             if (duration <= 0)
-            {
-                throw new InvalidInputException("Duration must be positive.");
-            }
-        }
-
-        private void ValidateLanguage(Language language)
-        {
-            if (language == null)
-            {
-                throw new ArgumentNullException(nameof(language));
-            }
-        }
-
-        public static Course GetById(int id)
-        {
-            return Courses[id];
-        }
-
-        public static void LoadCourseFromJson()
-        {
-            try
-            {
-                using (StreamReader r = new StreamReader(COURSE_FILE_PATH))
-                {
-                    string json = r.ReadToEnd();
-                    Dictionary<int, Course> exams = JsonConvert.DeserializeObject<Dictionary<int, Course>>(json);
-
-                    // foreach (var kvp in exams)
-                    // {
-                    //     _courses.Add(kvp.Key, kvp.Value);
-                    // }
-                    
-                    IdCounter = Math.Max(IdCounter, _courses.Keys.Max() + 1);
-                }
-            }
-            catch (FileNotFoundException)
-            {
-                
-            }
-        }
-
-        public static void WriteCourseToJson()
-        {
-            if (!_courses.Any())
-            {
-                return;
-            }
-            
-            string jsonExamString = JsonConvert.SerializeObject(_courses, new JsonSerializerSettings()
-            {
-                Formatting = Formatting.Indented
-            });
-
-            if (!Directory.Exists(COURSE_DIRECTORY_PATH))
-            {
-                Directory.CreateDirectory(COURSE_DIRECTORY_PATH);
-            }
-            
-            File.WriteAllText(COURSE_FILE_PATH, jsonExamString);
-        }
-
-        public static List<Course> GetAvailableCourses()
-        {
-            //TODO: Validate to not show the courses that the student has already applied to and
-            return _courses.Values.Where(course => course.StudentIds.Count < course.MaxStudents && (course.StartDate.DayNumber - DateOnly.FromDateTime(DateTime.Today).DayNumber) >= 7).ToList();
+                throw new InvalidInputException("Invalid input: Duration must be greater than 0.");
         }
     }
 }

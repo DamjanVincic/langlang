@@ -4,30 +4,93 @@ namespace LangLang.Model
 {
     public abstract class ScheduleItem
     {
-        private static int _idCounter = 1;
+        private Language _language = null!;
+        private int _maxStudents;
+        private DateOnly _date;
 
-        private int _teacherId;
-        private TimeOnly _scheduledTime;
-        public ScheduleItem(int teacherId, TimeOnly scheduledTime, int id = -1)
+        protected ScheduleItem(Language language, int maxStudents, DateOnly date, int teacherId, TimeOnly time)
         {
-            Id = id != -1 ? id : _idCounter++;
+            Language = language;
             TeacherId = teacherId;
-            ScheduledTime = scheduledTime;
+            ScheduledTime = time;
+            MaxStudents = maxStudents;
+            Date = date;
         }
+
+        // Constructor without date validation for deserializing
+        protected ScheduleItem(int id, Language language, int maxStudents, DateOnly date, int teacherId, TimeOnly time)
+        {
+            Id = id;
+            Language = language;
+            TeacherId = teacherId;
+            MaxStudents = maxStudents;
+            _date = date;
+            ScheduledTime = time;
+        }
+
         public int Id { get; set; }
 
-        public int TeacherId
-        { 
-            get => _teacherId; 
-            set =>_teacherId = value;
+        public Language Language
+        {
+            get => _language;
+            set
+            {
+                ValidateLanguage(value);
+                _language = value;
+            }
         }
 
-        public TimeOnly ScheduledTime
+        public int MaxStudents
         {
-            get => _scheduledTime;
-            set => _scheduledTime = value; 
+            get => _maxStudents;
+            protected set
+            {
+                ValidateMaxStudents(value);
+                _maxStudents = value;
+            }
         }
-        
-        public static int IdCounter { get => _idCounter; set => _idCounter = value; }
+
+        public int TeacherId { get; set; }
+
+        public DateOnly Date
+        {
+            get => _date;
+            protected set
+            {
+                ValidateDate(value);
+                _date = value;
+            }
+        }
+
+        public TimeOnly ScheduledTime { get; set; }
+
+        public bool IsOnline
+        {
+            get
+            {
+                if (this is Course course)
+                    return course.IsOnline;
+                
+                return false;
+            }
+        }
+
+        private static void ValidateLanguage(Language language)
+        {
+            if (language == null)
+                throw new ArgumentNullException(nameof(language));
+        }
+
+        private static void ValidateMaxStudents(int maxStudents)
+        {
+            if (maxStudents < 0)
+                throw new InvalidInputException("Number of max students can not be negative.");
+        }
+
+        private static void ValidateDate(DateOnly date)
+        {
+            if (date < DateOnly.FromDateTime(DateTime.Today))
+                throw new InvalidInputException("Date must be after today.");
+        }
     }
 }

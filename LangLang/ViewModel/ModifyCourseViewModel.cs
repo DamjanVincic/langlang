@@ -1,34 +1,36 @@
-﻿using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
-
-using LangLang.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Input;
-using System.Windows;
-using System.ComponentModel;
 using System.Collections.ObjectModel;
-using System.Windows.Data;
+using System.ComponentModel;
+using System.Linq;
+using System.Windows;
+using System.Windows.Input;
+using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
+using LangLang.Model;
+using LangLang.Services;
 
 namespace LangLang.ViewModel
 {
-    class ModifyCourseViewModel:ViewModelBase
+    class ModifyCourseViewModel : ViewModelBase
     {
-        private Course _course;
+        private ILanguageService _languageService = new LanguageService();
+        private ICourseService _courseService = new CourseService();
+
+        private readonly Teacher _teacher = UserService.LoggedInUser as Teacher ??
+                                            throw new InvalidOperationException("No one is logged in.");
+
+        private Course? _course;
         private ObservableCollection<CourseViewModel> _courses;
         private ICollectionView _courseCollectionView;
-        private int _teacherId;
-        
+
         private Window _modifyCourseWindow;
 
-        public ModifyCourseViewModel(ObservableCollection<CourseViewModel> courses, ICollectionView courseCollectionView, int teacherID, Course course, Window modifyCourseWindow)
+        public ModifyCourseViewModel(Course? course, Window modifyCourseWindow)
         {
             _modifyCourseWindow = modifyCourseWindow;
-            
-            this._courses = courses;
-            this._courseCollectionView = courseCollectionView;
-            this._course = course;
+
+            _course = course;
             if (course != null)
             {
                 LanguageName = course.Language.Name;
@@ -39,29 +41,36 @@ namespace LangLang.ViewModel
                 Held = course.Held;
                 CreatorId = course.CreatorId;
                 AreApplicationsClosed = course.AreApplicationsClosed;
-                Format = course.IsOnline?"online":"in-person";
+                Format = course.IsOnline ? "online" : "in-person";
                 CreatorId = course.CreatorId;
                 ScheduledTime = course.ScheduledTime;
                 Minutes = course.ScheduledTime.Minute;
                 Hours = course.ScheduledTime.Hour;
-                foreach(Weekday day in Held)
+                foreach (Weekday day in Held)
                 {
                     switch ((int)day)
                     {
                         case 0:
-                            IsMondayChecked = true; break;
+                            IsMondayChecked = true;
+                            break;
                         case 1:
-                            IsTuesdayChecked = true; break;
+                            IsTuesdayChecked = true;
+                            break;
                         case 2:
-                            IsWednesdayChecked = true; break;
+                            IsWednesdayChecked = true;
+                            break;
                         case 3:
-                            IsThursdayChecked = true; break;
+                            IsThursdayChecked = true;
+                            break;
                         case 4:
-                            IsFridayChecked = true; break;
+                            IsFridayChecked = true;
+                            break;
                         case 5:
-                            IsSaturdayChecked = true; break;
+                            IsSaturdayChecked = true;
+                            break;
                         case 6:
-                            IsSundayChecked = true; break;
+                            IsSundayChecked = true;
+                            break;
                         default:
                             continue;
                     }
@@ -69,24 +78,26 @@ namespace LangLang.ViewModel
             }
 
             EnterCourseCommand = new RelayCommand(AddCourse);
-            _teacherId = teacherID;
         }
 
         private bool _isMondayChecked;
+
         public bool IsMondayChecked
         {
-            get => _isMondayChecked; 
+            get => _isMondayChecked;
             set { Set(ref _isMondayChecked, value); }
         }
 
         private bool _isTuesdayChecked;
+
         public bool IsTuesdayChecked
         {
-            get => _isTuesdayChecked; 
+            get => _isTuesdayChecked;
             set { Set(ref _isTuesdayChecked, value); }
         }
 
         private bool _isWednesdayChecked;
+
         public bool IsWednesdayChecked
         {
             get => _isWednesdayChecked;
@@ -94,6 +105,7 @@ namespace LangLang.ViewModel
         }
 
         private bool _isThursdayChecked;
+
         public bool IsThursdayChecked
         {
             get => _isThursdayChecked;
@@ -101,6 +113,7 @@ namespace LangLang.ViewModel
         }
 
         private bool _isFridayChecked;
+
         public bool IsFridayChecked
         {
             get => _isFridayChecked;
@@ -108,6 +121,7 @@ namespace LangLang.ViewModel
         }
 
         private bool _isSaturdayChecked;
+
         public bool IsSaturdayChecked
         {
             get => _isSaturdayChecked;
@@ -115,13 +129,14 @@ namespace LangLang.ViewModel
         }
 
         private bool _isSundayChecked;
+
         public bool IsSundayChecked
         {
             get => _isSundayChecked;
             set { Set(ref _isSundayChecked, value); }
         }
 
-        public bool MaxStudentsEnabled => Format!=null && Format.Equals("in-person");
+        public bool MaxStudentsEnabled => Format != null && Format.Equals("in-person");
         public string LanguageName { get; set; }
         public LanguageLevel LanguageLevel { get; set; }
         public int MaxStudents { get; set; }
@@ -133,32 +148,23 @@ namespace LangLang.ViewModel
         public List<Weekday> Held { get; set; }
         public int CreatorId { get; set; }
 
-        public int TeacherId
-        {
-            get => _teacherId;
-            set => _teacherId = value;
-        }
-        public int Hours
-        {
-            get;set;
-        }
+        public int Hours { get; set; }
 
-        public int Minutes
-        {
-            get;
-            set; 
-        }
+        public int Minutes { get; set; }
 
         public List<string> SelectedWeekdays = new();
 
 
         public ICommand EnterCourseCommand { get; }
 
-        public IEnumerable<LanguageLevel> LanguageLevelValues => Enum.GetValues(typeof(LanguageLevel)).Cast<LanguageLevel>();
-        public IEnumerable<string> LanguageNameValues => Language.LanguageNames;
-        public IEnumerable<string> FormatValues => new List<string> { "online", "in-person"};
+        public IEnumerable<LanguageLevel> LanguageLevelValues =>
+            Enum.GetValues(typeof(LanguageLevel)).Cast<LanguageLevel>();
+
+        public IEnumerable<string> LanguageNameValues => _languageService.GetAllNames();
+        public IEnumerable<string> FormatValues => new List<string> { "online", "in-person" };
         public IEnumerable<Weekday> WeekdayValues => Enum.GetValues(typeof(Weekday)).Cast<Weekday>();
         readonly List<string> hours = CreateHourValues();
+
         private static List<string> CreateHourValues()
         {
             List<string> hours = new();
@@ -166,8 +172,10 @@ namespace LangLang.ViewModel
             {
                 hours.Add(hour.ToString("00"));
             }
+
             return hours;
         }
+
         readonly List<string> minutes = CreateMinuteValues();
 
         private static List<string> CreateMinuteValues()
@@ -177,19 +185,24 @@ namespace LangLang.ViewModel
             {
                 minutes.Add(minute.ToString("00"));
             }
+
             return minutes;
         }
+
         public IEnumerable<string> HourValues => hours;
         public IEnumerable<string> MinuteValues => minutes;
 
 
         private void AddCourse()
         {
-            if (string.IsNullOrEmpty(LanguageName) || LanguageLevel == null || (!Format.Equals("online") && MaxStudents <= 0) || Duration <= 0 || StartDate == default || Hours < 0 || Minutes < 0)
+            if (string.IsNullOrEmpty(LanguageName) || LanguageLevel == null ||
+                (!Format.Equals("online") && MaxStudents <= 0) || Duration <= 0 || StartDate == default || Hours < 0 ||
+                Minutes < 0)
             {
                 MessageBox.Show("Please fill in all fields.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return; 
+                return;
             }
+
             try
             {
                 List<Weekday> selectedWeekdays = new List<Weekday>();
@@ -212,51 +225,80 @@ namespace LangLang.ViewModel
                 ScheduledTime = new TimeOnly(Hours * 60 + Minutes);
                 bool isOnline = Format.Equals("online") ? true : false;
                 DateOnly startDate = new DateOnly(StartDate.Year, StartDate.Month, StartDate.Day);
-                
-                if (Schedule.CanAddScheduleItem(startDate, Duration, Held, TeacherId, ScheduledTime, true, isOnline, _course))
-                {
-                    if (_course != null)
-                    {
-                        _course.Language.Name = LanguageName;
-                        _course.Language.Level = LanguageLevel;
-                        if (startDate != _course.StartDate)
-                        {
-                            Schedule.ModifySchedule(_course, _course.StartDate, _course.Duration, _course.Held, null);
-                            Schedule.ModifySchedule(_course, startDate, Duration, null, Held);
-                        }
-                        else if (!_course.Held.SequenceEqual(Held))
-                        {
-                            List<Weekday> removedDays = _course.Held.Except(Held).ToList();
-                            List<Weekday> addedDays = Held.Except(_course.Held).ToList();
-                            Schedule.ModifySchedule(_course, _course.StartDate, _course.Duration, (List<Weekday>)removedDays, null);
-                            Schedule.ModifySchedule(_course, _course.StartDate, Duration, null, (List<Weekday>)addedDays);
-                        }
 
-                        _course.StartDate = startDate;
-                        _course.MaxStudents = MaxStudents;
-                        _course.ScheduledTime = ScheduledTime;
-                        _course.IsOnline = isOnline;
-                        _course.TeacherId = TeacherId;
-                        _course.Held = Held;
-                        _course.Duration = Duration;
-                        _course.CreatorId = CreatorId;
-                        _course.AreApplicationsClosed = AreApplicationsClosed;
-                        this._courseCollectionView.Refresh();
-                        MessageBox.Show("Course edited successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                // TODO: Call course service to add or update the course, something similar to the comment below, refactor the rest
+                
+                /* try
+                {
+                    if (_course == null)
+                    {
+                        _courseService.Add(LanguageName, LanguageLevel, Duration, Held, isOnline, MaxStudents,
+                            CreatorId, ScheduledTime, startDate, AreApplicationsClosed, _teacher.Id);
+                        
+                        MessageBox.Show("Course added successfully.", "Success", MessageBoxButton.OK,
+                            MessageBoxImage.Information);
                     }
                     else
                     {
-                        Course course = new(language, Duration, Held, isOnline, MaxStudents, _teacherId, ScheduledTime, startDate, AreApplicationsClosed, TeacherId, new List<int>());
-                        _courses.Add(new CourseViewModel(course));
-                        this._courseCollectionView.Refresh();
-                        MessageBox.Show("Course added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        _courseService.Update(_course.Id, LanguageName, LanguageLevel, Duration, Held, isOnline,
+                            MaxStudents, CreatorId, ScheduledTime, startDate, AreApplicationsClosed, _teacher.Id);
+                        
+                        MessageBox.Show("Exam added successfully.", "Success", MessageBoxButton.OK,
+                            MessageBoxImage.Information);
                     }
-                    _modifyCourseWindow.Close();
                 }
-                else
+                catch (InvalidInputException ex)
                 {
-                    MessageBox.Show("Unable to schedule the course. The selected date conflicts with an existing course schedule.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                } */
+
+                // vv Old Code vv
+                // if (Schedule.CanAddScheduleItem(startDate, Duration, Held, TeacherId, ScheduledTime, true, isOnline, _course))
+                // {
+                //     if (_course != null)
+                //     {
+                //         _course.Language.Name = LanguageName;
+                //         _course.Language.Level = LanguageLevel;
+                //         if (startDate != _course.StartDate)
+                //         {
+                //             Schedule.ModifySchedule(_course, _course.StartDate, _course.Duration, _course.Held, null);
+                //             Schedule.ModifySchedule(_course, startDate, Duration, null, Held);
+                //         }
+                //         else if (!_course.Held.SequenceEqual(Held))
+                //         {
+                //             List<Weekday> removedDays = _course.Held.Except(Held).ToList();
+                //             List<Weekday> addedDays = Held.Except(_course.Held).ToList();
+                //             Schedule.ModifySchedule(_course, _course.StartDate, _course.Duration, (List<Weekday>)removedDays, null);
+                //             Schedule.ModifySchedule(_course, _course.StartDate, Duration, null, (List<Weekday>)addedDays);
+                //         }
+                //
+                //         
+                //         _course.StartDate = startDate;
+                //         _course.MaxStudents = MaxStudents;
+                //         _course.ScheduledTime = ScheduledTime;
+                //         _course.IsOnline = isOnline;
+                //         _course.TeacherId = TeacherId;
+                //         _course.Held = Held;
+                //         _course.Duration = Duration;
+                //         _course.CreatorId = CreatorId;
+                //         _course.AreApplicationsClosed = AreApplicationsClosed;
+                //         this._courseCollectionView.Refresh();
+                //         MessageBox.Show("Course edited successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                //     }
+                //     else
+                //     {
+                //         // Course course = new(language, Duration, Held, isOnline, MaxStudents, _teacherId, ScheduledTime, startDate, AreApplicationsClosed, TeacherId, new List<int>());
+                //         // _courseService.Add(language, Duration, Held, isOnline, MaxStudents, _teacherId, ScheduledTime, startDate, AreApplicationsClosed, TeacherId, new List<int>());
+                //         // _courses.Add(new CourseViewModel(course));
+                //         this._courseCollectionView.Refresh();
+                //         MessageBox.Show("Course added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                //     }
+                //     _modifyCourseWindow.Close();
+                // }
+                // else
+                // {
+                //     MessageBox.Show("Unable to schedule the course. The selected date conflicts with an existing course schedule.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                // }
             }
             catch (InvalidInputException ex)
             {
@@ -266,15 +308,11 @@ namespace LangLang.ViewModel
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            // catch (Exception ex)
-            // {
-            //     MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            // }
         }
 
         public Language? IsValidLanguage(string languageName, LanguageLevel level)
         {
-            foreach (Language language in Language.Languages)
+            foreach (Language language in _languageService.GetAll())
             {
                 if (language.Name.Equals(languageName) && language.Level.Equals(level))
                 {
@@ -284,8 +322,5 @@ namespace LangLang.ViewModel
 
             throw new InvalidInputException("Language doesn't exist.");
         }
-
     }
-    
 }
-
