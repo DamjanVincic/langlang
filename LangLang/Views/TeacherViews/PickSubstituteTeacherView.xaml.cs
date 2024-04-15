@@ -3,7 +3,7 @@ using System.Windows;
 using LangLang.Models;
 using LangLang.ViewModels;
 
-namespace LangLang.Views
+namespace LangLang.Views.TeacherViews
 {
     /// <summary>
     /// Interaction logic for PickSubstituteTeacherView.xaml

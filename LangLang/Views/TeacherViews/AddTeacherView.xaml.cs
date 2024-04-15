@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using LangLang.ViewModels;
 
-namespace LangLang.Views
+namespace LangLang.Views.TeacherViews
 {
     /// <summary>
     /// Interaction logic for AddTeacherView.xaml

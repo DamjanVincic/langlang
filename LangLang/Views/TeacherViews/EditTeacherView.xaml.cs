@@ -2,7 +2,7 @@
 using LangLang.Models;
 using LangLang.ViewModels;
 
-namespace LangLang.Views
+namespace LangLang.Views.TeacherViews
 {
     /// <summary>
     /// Interaction logic for EditTeacherView.xaml
