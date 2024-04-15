@@ -1,7 +1,7 @@
-﻿using LangLang.ViewModel;
-using System.Windows;
+﻿using System.Windows;
+using LangLang.ViewModel;
 
-namespace LangLang.View
+namespace LangLang.Views
 {
     public partial class TeacherMenu : Window
     {

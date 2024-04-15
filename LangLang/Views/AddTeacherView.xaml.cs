@@ -1,9 +1,9 @@
-﻿using LangLang.ViewModel;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using LangLang.ViewModel;
 
-namespace LangLang.View
+namespace LangLang.Views
 {
     /// <summary>
     /// Interaction logic for AddTeacherView.xaml

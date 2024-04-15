@@ -1,6 +1,5 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using LangLang.View;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,6 +10,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using LangLang.Models;
 using LangLang.Services;
+using LangLang.Views;
 
 namespace LangLang.ViewModel
 {

@@ -15,8 +15,8 @@
   <ItemGroup>
     <Folder Include="ViewModel\Student\" />
     <Folder Include="ViewModel\Teaher\" />
-    <Folder Include="View\Student\" />
-    <Folder Include="View\Teacher\" />
+    <Folder Include="Views\Student\" />
+    <Folder Include="Views\Teacher\" />
   </ItemGroup>
 
 </Project>

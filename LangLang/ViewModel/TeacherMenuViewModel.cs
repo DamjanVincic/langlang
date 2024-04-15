@@ -1,11 +1,11 @@
 ﻿using System;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using LangLang.View;
 using System.Windows;
 using System.Windows.Input;
 using LangLang.Models;
 using LangLang.Services;
+using LangLang.Views;
 
 namespace LangLang.ViewModel
 {

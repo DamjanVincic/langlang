@@ -1,9 +1,9 @@
-﻿using LangLang.ViewModel;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using System.Windows;
 using LangLang.Models;
+using LangLang.ViewModel;
 
-namespace LangLang.View
+namespace LangLang.Views
 {
     /// <summary>
     /// Interaction logic for ExamView.xaml

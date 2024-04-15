@@ -6,11 +6,11 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows.Data;
 using System.Windows.Input;
-using LangLang.View;
 using System.Windows;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
 using LangLang.Services;
+using LangLang.Views;
 using Teacher = LangLang.Models.Teacher;
 
 namespace LangLang.ViewModel

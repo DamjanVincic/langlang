@@ -5,7 +5,7 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
 using LangLang.Services;
-using LangLang.View;
+using LangLang.Views;
 
 namespace LangLang.ViewModel;
 

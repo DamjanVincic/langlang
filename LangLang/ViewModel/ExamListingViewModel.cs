@@ -7,10 +7,10 @@ using System.Windows.Data;
 using System.Windows;
 using System.Windows.Input;
 using GalaSoft.MvvmLight.Command;
-using LangLang.View;
 using GalaSoft.MvvmLight;
 using LangLang.Models;
 using LangLang.Services;
+using LangLang.Views;
 
 namespace LangLang.ViewModel
 {
