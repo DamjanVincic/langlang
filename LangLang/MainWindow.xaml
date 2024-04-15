@@ -38,7 +38,7 @@
             <TextBox x:Name="UsernameTextBox" Text="{Binding Email}"  Width="200" Height="40" Grid.Row="2"/>
 
             <TextBlock Text="Password:" FontWeight="Bold" Grid.Row="3"/>
-            <TextBox x:Name="PasswordBox" Text="{Binding Password}" Width="200" Height="40" Grid.Row="4"/>
+            <PasswordBox x:Name="PasswordBox" Width="200" Height="40" Grid.Row="4" PasswordChanged="PasswordBox_PasswordChanged"/>
 
             <Button Content="LOGIN" Width="100" Command="{Binding LoginCommand}"  Grid.Row="5" Height="40" Background="#55bcbb" HorizontalAlignment="Center">
                 <Button.Style>
