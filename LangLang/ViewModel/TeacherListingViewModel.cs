@@ -135,34 +135,15 @@ namespace LangLang.ViewModel
             }
 
             Teacher teacher = (Teacher)_userService.GetById(SelectedItem.Id);
-            List<Course> ActiveCourses = new List<Course>();
-            List<Course> CoursesCreatedByDirector = new List<Course>();
-            List<Course> CoursesToBeDeleted = new List<Course>();
-
-            foreach (int courseId in teacher.CourseIds)
-            {
-                Course course = _courseService.GetById(courseId);
-                if (course.AreApplicationsClosed)
-                {
-                    ActiveCourses.Add(course);
-                }
-                else
-                {
-                    if (course.CreatorId != teacher.Id)
-                    {
-                        CoursesCreatedByDirector.Add(course);
-                    }
-                    else
-                    {
-                        CoursesToBeDeleted.Add(course);
-                    }
-                }
-            }
+            List<Course> activeTeachersCourses = _teacherService.GetActiveTeachersCourses(SelectedItem.Id);
+            List<Course> inactiveCoursesCreatedByDirector =
+                _teacherService.GetInactiveTeachersCoursesCreatedByDirector(SelectedItem.Id);
+            List<Course> inactiveCoursesCreatedByTeacher = _teacherService.GetInactiveCoursesCreatedByTeacher(SelectedItem.Id);
 
             Dictionary<Course, Teacher> substituteTeachers = new Dictionary<Course, Teacher>();
 
             //ask for substitute teachers
-            foreach (Course course in ActiveCourses)
+            foreach (Course course in activeTeachersCourses)
             {
                 List<Teacher> availableTeachers = new List<Teacher>();
                 // TODO: uncomment below code
@@ -191,12 +172,12 @@ namespace LangLang.ViewModel
                 _examService.Delete(examId);
             }
 
-            foreach (Course course in CoursesCreatedByDirector)
+            foreach (Course course in inactiveCoursesCreatedByDirector)
             {
                 course.CreatorId = -1;
             }
 
-            foreach (Course course in CoursesToBeDeleted)
+            foreach (Course course in inactiveCoursesCreatedByDirector)
             {
                 //delete course TBD
             }
