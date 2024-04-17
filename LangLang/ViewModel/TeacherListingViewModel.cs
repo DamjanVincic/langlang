@@ -1,10 +1,12 @@
 ﻿using GalaSoft.MvvmLight;
 using LangLang.Model;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Net;
 using System.Windows.Data;
 using System.Windows.Input;
 using LangLang.View;
@@ -22,6 +24,7 @@ namespace LangLang.ViewModel
         private readonly ILanguageService _languageService = new LanguageService();
         private readonly ICourseService _courseService = new CourseService();
         private readonly IExamService _examService = new ExamService();
+        private readonly IScheduleService _scheduleService = new ScheduleService();
 
         private string _selectedLanguageName;
         private string _selectedLanguageLevel;
@@ -127,7 +130,6 @@ namespace LangLang.ViewModel
 
         private void DeleteTeacher()
         {
-            // TODO: Move logic before and after foreach with new window to service
             if (SelectedItem == null)
             {
                 MessageBox.Show("No teacher selected", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -140,27 +142,8 @@ namespace LangLang.ViewModel
                 _teacherService.GetInactiveTeachersCoursesCreatedByDirector(SelectedItem.Id);
             List<Course> inactiveCoursesCreatedByTeacher = _teacherService.GetInactiveCoursesCreatedByTeacher(SelectedItem.Id);
 
-            Dictionary<Course, Teacher> substituteTeachers = new Dictionary<Course, Teacher>();
-
-            //ask for substitute teachers
-            foreach (Course course in activeTeachersCourses)
-            {
-                List<Teacher> availableTeachers = new List<Teacher>();
-                // TODO: uncomment below code
-                // foreach(Teacher teacher_ in User.GetTeachers())
-                // {
-                //     if (Schedule.CanAddScheduleItem(course.StartDate, course.Duration, course.Held, teacher_.Id,
-                //             course.ScheduledTime, true, true))
-                //     {
-                //         availableTeachers.Add(teacher_);
-                //     }
-                // }
-                //TODO: If there are no available teachers, return
-                var newWindow = new PickSubstituteTeacherView(availableTeachers, substituteTeachers, course);
-
-                newWindow.ShowDialog();
-            }
-
+            var substituteTeachers = GetSubstituteTeachers(activeTeachersCourses);
+            //TODO: catch exception when there are no substitute teachers available
             foreach (Course course in substituteTeachers.Keys)
             {
                 course.TeacherId = substituteTeachers[course].Id;
@@ -185,6 +168,41 @@ namespace LangLang.ViewModel
             _teachers.Remove(SelectedItem);
             _userService.Delete(teacher.Id);
             TeachersCollectionView.Refresh();
+        }
+
+        private Dictionary<Course, Teacher> GetSubstituteTeachers(List<Course> activeTeachersCourses)
+        {
+            Dictionary<Course, Teacher> substituteTeachers = new Dictionary<Course, Teacher>();
+
+            foreach (Course course in activeTeachersCourses)
+            {
+                List<Teacher> availableTeachers = GetAvailableTeachers(course);
+                //TODO: change exception type
+                if (!availableTeachers.Any())
+                    throw new Exception("There are no available substitute teachers");
+                var newWindow = new PickSubstituteTeacherView(availableTeachers, substituteTeachers, course);
+                newWindow.ShowDialog();
+            }
+
+            return substituteTeachers;
+        }
+
+        private List<Teacher> GetAvailableTeachers(Course course)
+        {
+            List<Teacher> availableTeachers = new List<Teacher>();
+            foreach (Teacher teacher_ in _teacherService.GetAll())
+            {
+                Course tempCourse = new Course(course.Language, course.Duration, course.Held, true,
+                    course.MaxStudents, course.CreatorId, course.ScheduledTime, course.StartDate,
+                    course.AreApplicationsClosed, teacher_.Id);
+
+                if (_scheduleService.ValidateScheduleItem(tempCourse,true))
+                {
+                    availableTeachers.Add(teacher_);
+                }
+            }
+
+            return availableTeachers;
         }
 
         private void LogOut()
