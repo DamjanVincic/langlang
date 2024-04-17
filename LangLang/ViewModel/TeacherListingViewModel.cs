@@ -137,12 +137,12 @@ namespace LangLang.ViewModel
             }
 
             Teacher teacher = (Teacher)_userService.GetById(SelectedItem.Id);
-            List<Course> activeTeachersCourses = _teacherService.GetActiveTeachersCourses(SelectedItem.Id);
             List<Course> inactiveCoursesCreatedByDirector =
                 _teacherService.GetInactiveTeachersCoursesCreatedByDirector(SelectedItem.Id);
             List<Course> inactiveCoursesCreatedByTeacher = _teacherService.GetInactiveCoursesCreatedByTeacher(SelectedItem.Id);
 
-            var substituteTeachers = GetSubstituteTeachers(activeTeachersCourses);
+            Dictionary<Course, Teacher> substituteTeachers =
+                GetSubstituteTeachers(_teacherService.GetActiveTeachersCourses(SelectedItem.Id));
             //TODO: catch exception when there are no substitute teachers available
             foreach (Course course in substituteTeachers.Keys)
             {
@@ -176,7 +176,7 @@ namespace LangLang.ViewModel
 
             foreach (Course course in activeTeachersCourses)
             {
-                List<Teacher> availableTeachers = GetAvailableTeachers(course);
+                List<Teacher> availableTeachers = _teacherService.GetAvailableTeachers(course);
                 //TODO: change exception type
                 if (!availableTeachers.Any())
                     throw new Exception("There are no available substitute teachers");
@@ -185,24 +185,6 @@ namespace LangLang.ViewModel
             }
 
             return substituteTeachers;
-        }
-
-        private List<Teacher> GetAvailableTeachers(Course course)
-        {
-            List<Teacher> availableTeachers = new List<Teacher>();
-            foreach (Teacher teacher_ in _teacherService.GetAll())
-            {
-                Course tempCourse = new Course(course.Language, course.Duration, course.Held, true,
-                    course.MaxStudents, course.CreatorId, course.ScheduledTime, course.StartDate,
-                    course.AreApplicationsClosed, teacher_.Id);
-
-                if (_scheduleService.ValidateScheduleItem(tempCourse,true))
-                {
-                    availableTeachers.Add(teacher_);
-                }
-            }
-
-            return availableTeachers;
         }
 
         private void LogOut()

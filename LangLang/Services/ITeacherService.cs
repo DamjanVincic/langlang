@@ -11,4 +11,5 @@ public interface ITeacherService
     public List<Course> GetInactiveCoursesCreatedByTeacher(int teacherId);
     public List<Course> GetActiveTeachersCourses(int teacherId);
     public List<Course> GetInactiveTeachersCoursesCreatedByDirector(int teacherId);
+    public List<Teacher> GetAvailableTeachers(Course course);
 }
