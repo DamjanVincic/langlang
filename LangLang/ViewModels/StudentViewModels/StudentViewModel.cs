@@ -5,10 +5,9 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
 using LangLang.Services;
-using LangLang.Views;
 using LangLang.Views.StudentViews;
 
-namespace LangLang.ViewModels;
+namespace LangLang.ViewModels.StudentViewModels;
 
 public class StudentViewModel : ViewModelBase
 {
