@@ -8,7 +8,7 @@ using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
 using LangLang.Services;
 
-namespace LangLang.ViewModels
+namespace LangLang.ViewModels.ExamViewModels
 {
     class AddExamViewModel : ViewModelBase
     {

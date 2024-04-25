@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using System.Windows;
 using LangLang.Models;
-using LangLang.ViewModels;
+using LangLang.ViewModels.ExamViewModels;
 
 namespace LangLang.Views.ExamViews
 {
