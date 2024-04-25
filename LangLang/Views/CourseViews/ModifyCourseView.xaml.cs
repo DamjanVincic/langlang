@@ -2,7 +2,7 @@
 using LangLang.Models;
 using LangLang.ViewModels;
 
-namespace LangLang.Views
+namespace LangLang.Views.CourseViews
 {
     /// <summary>
     /// Interaction logic for AddCourseView.xaml

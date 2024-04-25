@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Data;
 using LangLang.ViewModels;
 
-namespace LangLang.Views
+namespace LangLang.Views.CourseViews
 {
     /// <summary>
     /// Interaction logic for CourseView.xaml
