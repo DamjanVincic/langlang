@@ -4,7 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:LangLang.ViewModels"
-             d:DataContext="{d:DesignInstance Type=viewModels:TeacherListingViewModel}"
+             xmlns:teacherViewModels="clr-namespace:LangLang.ViewModels.TeacherViewModels"
+             d:DataContext="{d:DesignInstance Type=teacherViewModels:TeacherListingViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>

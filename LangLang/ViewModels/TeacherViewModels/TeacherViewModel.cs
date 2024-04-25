@@ -3,7 +3,7 @@ using System.Linq;
 using GalaSoft.MvvmLight;
 using LangLang.Models;
 
-namespace LangLang.ViewModels
+namespace LangLang.ViewModels.TeacherViewModels
 {
     public class TeacherViewModel : ViewModelBase
     {

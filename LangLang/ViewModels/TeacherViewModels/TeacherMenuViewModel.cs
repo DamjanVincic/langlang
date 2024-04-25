@@ -8,7 +8,7 @@ using LangLang.Services;
 using LangLang.Views.CourseViews;
 using LangLang.Views.ExamViews;
 
-namespace LangLang.ViewModels
+namespace LangLang.ViewModels.TeacherViewModels
 {
     class TeacherMenuViewModel : ViewModelBase
     {

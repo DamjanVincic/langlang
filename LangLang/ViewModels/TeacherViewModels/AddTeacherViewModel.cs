@@ -12,7 +12,7 @@ using LangLang.Models;
 using LangLang.Services;
 using LangLang.Views.LanguageViews;
 
-namespace LangLang.ViewModels
+namespace LangLang.ViewModels.TeacherViewModels
 {
     internal class AddTeacherViewModel : ViewModelBase
     {

@@ -9,7 +9,7 @@ using GalaSoft.MvvmLight.CommandWpf;
 using LangLang.Models;
 using LangLang.Services;
 
-namespace LangLang.ViewModels
+namespace LangLang.ViewModels.TeacherViewModels
 {
     internal class PickSubstituteTeacherViewModel : ViewModelBase
     {

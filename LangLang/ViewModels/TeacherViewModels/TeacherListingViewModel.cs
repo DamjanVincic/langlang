@@ -10,11 +10,10 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
 using LangLang.Services;
-using LangLang.Views;
 using LangLang.Views.TeacherViews;
 using Teacher = LangLang.Models.Teacher;
 
-namespace LangLang.ViewModels
+namespace LangLang.ViewModels.TeacherViewModels
 {
     public class TeacherListingViewModel : ViewModelBase
     {
