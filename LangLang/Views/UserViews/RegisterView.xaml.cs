@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using LangLang.ViewModels;
 
-namespace LangLang.Views;
+namespace LangLang.Views.UserViews;
 
 public partial class RegisterView : Window
 {
