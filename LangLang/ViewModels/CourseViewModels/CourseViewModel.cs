@@ -4,7 +4,7 @@ using GalaSoft.MvvmLight;
 using LangLang.Models;
 using LangLang.Services;
 
-namespace LangLang.ViewModels
+namespace LangLang.ViewModels.CourseViewModels
 {
     public class CourseViewModel : ViewModelBase
     {

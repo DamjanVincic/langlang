@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using LangLang.Models;
-using LangLang.ViewModels;
+using LangLang.ViewModels.CourseViewModels;
 
 namespace LangLang.Views.CourseViews
 {

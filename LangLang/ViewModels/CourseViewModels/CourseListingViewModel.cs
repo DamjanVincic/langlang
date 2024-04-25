@@ -12,7 +12,7 @@ using LangLang.Models;
 using LangLang.Services;
 using LangLang.Views.CourseViews;
 
-namespace LangLang.ViewModels
+namespace LangLang.ViewModels.CourseViewModels
 {
     public class CourseListingViewModel : ViewModelBase
     {
