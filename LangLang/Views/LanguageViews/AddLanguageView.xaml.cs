@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using LangLang.ViewModels;
 
-namespace LangLang.Views
+namespace LangLang.Views.LanguageViews
 {
     /// <summary>
     /// Interaction logic for AddLanguageView.xaml
