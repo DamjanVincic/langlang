@@ -7,7 +7,7 @@ using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
 using LangLang.Services;
 
-namespace LangLang.ViewModels
+namespace LangLang.ViewModels.LanguageViewModels
 {
     internal class AddLanguageViewModel : ViewModelBase
     {
