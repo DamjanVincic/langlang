@@ -6,6 +6,7 @@ using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
 using LangLang.Services;
 using LangLang.Views;
+using LangLang.Views.ExamViews;
 
 namespace LangLang.ViewModels
 {
