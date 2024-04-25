@@ -5,20 +5,80 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:LangLang.View"
         mc:Ignorable="d"
-        Title="StudentView" Height="450" Width="800">
+        WindowStartupLocation="CenterScreen"
+        Title="StudentView" Height="450" Width="800"
+        Background="#bbe5e4">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.5*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!-- Main Content -->
-        <StackPanel Grid.Row="0" Margin="20">
-            <Button Content="Courses" Command="{Binding ViewCoursesCommand}" Margin="0 0 0 10"/>
-            <Button Content="Exams" Command="{Binding ViewExamsCommand}" Margin="0 0 0 10"/>
-            <Button Content="Edit Account" Command="{Binding EditAccountCommand}" Margin="0 0 0 10"/>
-            <Button Content="Delete Account" Command="{Binding DeleteAccountCommand}" Margin="0 0 0 10"/>
-            <Button Content="Log Out" Command="{Binding LogOutCommand}" Margin="0 0 0 10"/>
-        </StackPanel>
+        <Grid Grid.Column="0" Background="LightBlue">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Margin="0 50 0 0" FontWeight="Bold">MANAGE YOUR ACCOUNT</TextBlock>
+            
+            <Image Source="https://cdn-icons-png.flaticon.com/512/1053/1053244.png" Grid.Row="1"/>
+            
+            <TextBlock Grid.Row="2" VerticalAlignment="Bottom">
+                <Run Text="penalty points "/>
+                <Run FontStyle="Italic" Text="3"/>
+                <Run Text=" 🚩"/>
+            </TextBlock>
+
+
+            <Button Content="Edit Account" HorizontalAlignment="Center" Command="{Binding EditAccountCommand}" Width="130" Height="40" Grid.Row="2" Margin="0 20 0 0" VerticalAlignment="Top" Background="#4daaa9" Foreground="White"/>
+            <Grid Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Button Content="Delete Account" Command="{Binding DeleteAccountCommand}" Background="Red" Width="130" Height="40" Foreground="White" Margin="10 10 10 10" Grid.Column="0"/>
+                <TextBlock HorizontalAlignment="Center" Grid.Row="3" Grid.Column="1" Margin="10 0 0 0">
+                    <Hyperlink Foreground="#f46231" Command="{Binding LogOutCommand}">
+                    <TextBlock Text="LOGOUT">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Foreground" Value="Red"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Hyperlink>
+                </TextBlock>
+
+            </Grid>
+        </Grid>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock FontWeight="Bold" Margin="0 50 0 0" Grid.Row="0">CURRENT ENROLLED COURSE</TextBlock>
+            <TextBlock FontStyle="Italic" Grid.Row="1" Margin="0 0 0 12">COURSE WILL BE HERE</TextBlock>
+            <Button Content="Drop the course" Command="{Binding LogOutCommand}" Width="140" Height="40" Margin="0 0 0 10" Background="#f46231" Foreground="White" Grid.Row="3" Grid.Column="1"/>
+
+            <Button Content="📩" Command="{Binding LogOutCommand}" Width="50" Height="40" Margin="10 10 10 10" Background="#4daaa9" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+            <Button Content="Courses" Command="{Binding ViewCoursesCommand}" Margin="0 10 70 0" Width="80" Height="40" Background="#4daaa9" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+            <Button Content="Exams" Command="{Binding ViewExamsCommand}" Margin="0 10 160 0" Width= "80" Height="40" Background="#4daaa9" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+            <Button Content="Applied Courses" Command="{Binding ViewExamsCommand}" Margin="0 10 250 0" Width= "140" Height="40" Background="#4daaa9" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+            <Button Content="Applied Exams" Command="{Binding ViewExamsCommand}" Margin="0 10 400 0" Width= "120" Height="40" Background="#4daaa9" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+
+        </Grid>
     </Grid>
 </Window>

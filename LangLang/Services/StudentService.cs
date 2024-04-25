@@ -22,7 +22,7 @@ public class StudentService : IStudentService
         // TODO: Validate to not show the courses that the student has already applied to and
         return _courseRepository.GetAll().Where(course =>
             course.StudentIds.Count < course.MaxStudents &&
-            (course.StartDate.DayNumber - DateOnly.FromDateTime(DateTime.Today).DayNumber) >= 7).ToList();
+            (course.StartDate.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days >= 7).ToList();
     }
 
     public List<Exam> GetAvailableExams()
@@ -30,6 +30,6 @@ public class StudentService : IStudentService
         // TODO: Add checking if the student has finished the course and don't show the ones they have applied to
         return _examRepository.GetAll().Where(exam =>
             exam.StudentIds.Count < exam.MaxStudents &&
-            (exam.Date.DayNumber - DateOnly.FromDateTime(DateTime.Today).DayNumber) >= 30).ToList();
+            (exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days >= 30).ToList();
     }
 }

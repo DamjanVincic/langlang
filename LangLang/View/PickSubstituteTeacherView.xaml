@@ -5,14 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LangLang.View"
         mc:Ignorable="d"
-        Title="PickSubstituteTeacherView" Height="450" Width="800">
+        Title="PickSubstituteTeacherView" Height="450" Width="800"
+        WindowStartupLocation="CenterScreen" Background="#bbe5e4">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="8*"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
-        <TextBlock Text="{Binding Title}"/>
+        <TextBlock Text="{Binding Title}" FontWeight="Bold">PICK SUBSTITUTE TEACHER</TextBlock>
         <ListView Grid.Row="1"  Padding="5" Margin="5" ItemsSource="{Binding TeachersCollectionView}" SelectedItem="{Binding SelectedItem}" SelectionMode="Single">
             <ListView.View>
                 <GridView>
@@ -76,6 +77,6 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <Button Grid.Row="2" Content="Save" Command="{Binding SaveCommand}"/>
+        <Button Grid.Row="2" Content="SAVE" Command="{Binding SaveCommand}" Width="80" Height="30" Background="#55bcbb" Foreground="White"/>
     </Grid>
 </Window>

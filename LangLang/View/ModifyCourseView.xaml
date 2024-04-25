@@ -5,7 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:LangLang.View"
              xmlns:model="clr-namespace:LangLang.Model"
-             Width="800" Height="900">
+             WindowStartupLocation="CenterScreen"
+             Width="800" Height="450">
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
@@ -14,40 +16,38 @@
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
-            <RowDefinition Height="auto"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="2*"/>
-            <ColumnDefinition Width="2*"/>
-            <ColumnDefinition Width="1*"/>
-
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
+        <Border Grid.RowSpan="9" Grid.Column="0" Background="#ccebeb"></Border>
+        <Border Grid.RowSpan="9" Grid.Column="1" Background="#bbe4e4"></Border>
+        <Border Grid.RowSpan="9" Grid.Column="2" Background="#aadedd"></Border>
+        <Border Grid.RowSpan="9" Grid.Column="3" Background="#99d7d6" Height="434" VerticalAlignment="Top"></Border>
 
-        <TextBlock Text="ADD COURSE" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0"/>
-        <TextBlock Text="LANGUAGE:" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="2"/>
-        <ComboBox ItemsSource="{Binding LanguageNameValues}"
-          SelectedItem="{Binding LanguageName, Mode=TwoWay}"
-          Grid.Column="1" Grid.Row="4" Margin="10"/>
-        <TextBlock Text="Name:" Grid.Column="1" Grid.Row="3"/>
 
-        <TextBlock Text="Level:" Grid.Column="2" Grid.Row="3"/>
-        <ComboBox ItemsSource="{Binding LanguageLevelValues}"
-                SelectedItem="{Binding LanguageLevel, Mode=TwoWay}"
-                Grid.Column="2" Grid.Row="4" Margin="10"/>
-        <TextBlock Text="Duration in weeks:" Grid.Column="1" Grid.Row="5"/>
-        <TextBox Text="{Binding Duration, Mode=TwoWay}"
-                 Grid.Column="1" Grid.Row="6"/>
-        <TextBlock Text="Days held:" Grid.Column="2" Grid.Row="5"/>
-        <StackPanel Grid.Row="6" Grid.Column="2">
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="4" FontWeight="Bold">ADD COURSE</TextBlock>
+
+        <TextBlock Grid.Row="1" Grid.Column="0" FontWeight="Bold">LANGUAGE</TextBlock>
+        <TextBlock Grid.Row="2" Grid.Column="0">Name:</TextBlock>
+        <ComboBox ItemsSource="{Binding LanguageNameValues}" SelectedItem="{Binding LanguageName, Mode=TwoWay}" Grid.Column="0" Grid.Row="3" Margin="10"/>
+
+        <TextBlock Grid.Row="4" Grid.Column="0">Level:</TextBlock>
+        <ComboBox ItemsSource="{Binding LanguageLevelValues}" SelectedItem="{Binding LanguageLevel, Mode=TwoWay}" Grid.Column="0" Grid.Row="5" Margin="10"/>
+
+        <TextBlock Grid.Row="1" Grid.Column="1" FontWeight="Bold">SCHEDULE</TextBlock>
+        
+        <TextBlock Text="Duration in weeks:" Grid.Column="1" Grid.Row="2"/>
+        <TextBox Text="{Binding Duration, Mode=TwoWay}" Grid.Column="1" Grid.Row="3" Margin="10"/>
+        
+        <TextBlock Text="Days held:" Grid.Column="1" Grid.Row="4"/>
+        <StackPanel Grid.Row="5" Grid.Column="1" Grid.RowSpan="4">
             <CheckBox Content="Monday" IsChecked="{Binding IsMondayChecked, Mode=TwoWay}"/>
             <CheckBox Content="Tuesday" IsChecked="{Binding IsTuesdayChecked, Mode=TwoWay}"/>
             <CheckBox Content="Wednesday" IsChecked="{Binding IsWednesdayChecked, Mode=TwoWay}"/>
@@ -57,25 +57,25 @@
             <CheckBox Content="Sunday" IsChecked="{Binding IsSundayChecked, Mode=TwoWay}"/>
         </StackPanel>
 
-        <TextBlock Text="Start date:" Grid.ColumnSpan="2" Grid.Column="1" Grid.Row="7"/>
-        <DatePicker x:Name="datePicker" Grid.ColumnSpan="2" SelectedDate="{Binding StartDate}" Grid.Column="1" Grid.Row="8"/>
-        <TextBlock Text="TIME:" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="9"/>
-        <TextBlock Text="Hours:" Grid.Column="1" Grid.Row="10"/>
-        <TextBlock Text="Minutes:" Grid.Column="2" Grid.Row="10"/>
-        <ComboBox ItemsSource="{Binding HourValues}"
-                SelectedItem="{Binding Hours, Mode=TwoWay}"
-                Grid.Column="1" Grid.Row="11" Margin="10"/>
-        <ComboBox ItemsSource="{Binding MinuteValues}"
-                SelectedItem="{Binding Minutes, Mode=TwoWay}" 
-                Grid.Column="2" Grid.Row="11" Margin="10"/>
-        <TextBlock Text="Format:" Grid.Column="1" Grid.Row="12"/>
-        <ComboBox ItemsSource="{Binding FormatValues}"
-                SelectedItem="{Binding Format, Mode=TwoWay}"
-                Grid.Column="1" Grid.Row="13" Margin="10"/>
-        <TextBlock Text="Max students:" Grid.Column="2" Grid.Row="12"/>
-        <TextBox Grid.Row="13" Grid.Column="2" Text="{Binding MaxStudents, Mode=TwoWay}" />
-        <Button Command="{Binding EnterCourseCommand}" Content="Add" Grid.Column="3" Grid.Row="12"/>
-        <Button Command="{Binding CancelCommand}" Content="Cancel" Grid.Column="3" Grid.Row="13"/>
+        <TextBlock Grid.Row="1" Grid.Column="2" FontWeight="Bold">TIME</TextBlock>
+        
+        <TextBlock Text="Start date:"  Grid.Column="2" Grid.Row="2"/>
+        <DatePicker x:Name="datePicker" SelectedDate="{Binding StartDate}" Grid.Column="2" Grid.Row="3" Width="170"/>
+        
+        <TextBlock Text="Hours:" Grid.Column="2" Grid.Row="4"/>
+        <TextBlock Text="Minutes:" Grid.Column="2" Grid.Row="6"/>
+        <ComboBox ItemsSource="{Binding HourValues}" SelectedItem="{Binding Hours, Mode=TwoWay}" Grid.Column="2" Grid.Row="5" Margin="10"/>
+        <ComboBox ItemsSource="{Binding MinuteValues}" SelectedItem="{Binding Minutes, Mode=TwoWay}" Grid.Column="2" Grid.Row="7" Margin="10"/>
+
+        <TextBlock Grid.Row="1" Grid.Column="3" FontWeight="Bold">DETAILS</TextBlock>
+        
+        <TextBlock Text="Format:" Grid.Column="3" Grid.Row="2"/>
+        <ComboBox ItemsSource="{Binding FormatValues}" SelectedItem="{Binding Format, Mode=TwoWay}" Grid.Column="3" Grid.Row="3" Margin="10"/>
+        <TextBlock Text="Max students:" Grid.Column="3" Grid.Row="4"/>
+        <TextBox Grid.Row="5" Grid.Column="3" Text="{Binding MaxStudents, Mode=TwoWay}" Margin="10"/>
+
+        <Button Command="{Binding EnterCourseCommand}" Content="Add" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="8" Width="100" Height=" 30" Background="#55bcbb" Foreground="White"/>
+        <Button Command="{Binding CancelCommand}" Content="Cancel" VerticalAlignment="Bottom" Grid.Column="3" Grid.Row="8" Margin="0 0 10 10" HorizontalAlignment="Right" Width="100" Height=" 30" Background="White" Foreground="#55bcbb"/>
     </Grid>
 
 </Window>

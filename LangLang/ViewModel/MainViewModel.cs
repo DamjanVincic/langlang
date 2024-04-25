@@ -1,37 +1,59 @@
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Navigation;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Model;
+using LangLang.Services;
 using LangLang.View;
 
 namespace LangLang.ViewModel;
 
 public class MainViewModel : ViewModelBase
 {
-    public ICommand NavigateToRegisterCommand { get; }
-    public ICommand NavigateToLoginCommand { get; }
-    public ICommand NavigateToExamViewCommand { get; }
+    private readonly IUserService _userService = new UserService();
+    
+    private readonly Window _loginWindow;
 
-    public MainViewModel()
+    public string? Email { get; set; }
+    public string? Password { get; set; }
+
+    public ICommand LoginCommand { get; }
+    public ICommand NavigateToRegisterCommand { get; }
+    
+    public MainViewModel(Window loginWindow)
     {
+        _loginWindow = loginWindow;
         NavigateToRegisterCommand = new RelayCommand(NavigateToRegister);
-        NavigateToLoginCommand = new RelayCommand(NavigateToLogin);
-        NavigateToExamViewCommand = new RelayCommand(NavigateToExamView);
+        LoginCommand = new RelayCommand(Login);
     }
 
-    public void NavigateToRegister()
+    private void NavigateToRegister()
     {
         new RegisterView().Show();
     }
-
-    public void NavigateToLogin()
+    
+    private void Login()
     {
-        new LoginView().Show();
-    }
+        User? user = _userService.Login(Email!, Password!);
 
-    private void NavigateToExamView()
-    {
-        new ExamView().Show();
+        switch (user)
+        {
+            case null:
+                MessageBox.Show("Invalid email or password.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            case Student:
+                new StudentView().Show();
+                break;
+            case Director:
+                new TeachersView().Show();
+                break;
+            case Teacher:
+                new TeacherMenu().Show();
+                break;
+        }
+
+        _loginWindow.Close();
+        Application.Current.MainWindow?.Close();
     }
 }
