@@ -8,7 +8,7 @@ using LangLang.Views.StudentViews;
 using LangLang.Views.TeacherViews;
 using LangLang.Views.UserViews;
 
-namespace LangLang.ViewModels;
+namespace LangLang.ViewModels.UserViewModels;
 
 public class MainViewModel : ViewModelBase
 {
