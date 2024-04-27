@@ -25,7 +25,7 @@ public class ScheduleService : IScheduleService
                 {
                     foreach (int day in dayDifferences)
                     {
-                        course.StartDate = startDate;
+                        //course.StartDate = startDate;
                         _scheduleRepository.Add(scheduleItem);
                         startDate = startDate.AddDays(day);
                     }
@@ -36,6 +36,7 @@ public class ScheduleService : IScheduleService
                 break;
         }
     }
+
 
     public void Update(ScheduleItem scheduleItem)
     {
@@ -48,6 +49,7 @@ public class ScheduleService : IScheduleService
     {
         _scheduleRepository.Delete(id);
     }
+
 
     private bool ValidateScheduleItem(ScheduleItem scheduleItem, bool toEdit = false)
     {
@@ -104,31 +106,13 @@ public class ScheduleService : IScheduleService
         {
             // If it's the same item, skip it
             if (item.Id == scheduleItem.Id && toEdit) continue;
+            if (item.TeacherId != scheduleItem.TeacherId) continue;
 
             TimeOnly startTimeCheck, endTimeCheck;
-            if (scheduleItem.IsOnline)
-            {
-                if (item.TeacherId != scheduleItem.TeacherId) continue;
-                
-                startTimeCheck = item.ScheduledTime;
-                endTimeCheck = scheduleItem is Course ? startTimeCheck.AddMinutes(Course.ClassDuration) : startTimeCheck.AddMinutes(Exam.ExamDuration);
-
-                if (!DoPeriodsOverlap(startTime, endTime, startTimeCheck, endTimeCheck)) continue;
-
-                return false;
-            }
-            
-            // If it's offline, it also can't overlap with two offline items, doesn't matter if it's the same teacher
-            
             startTimeCheck = item.ScheduledTime;
             endTimeCheck = scheduleItem is Course ? startTimeCheck.AddMinutes(Course.ClassDuration) : startTimeCheck.AddMinutes(Exam.ExamDuration);
-            
             if (!DoPeriodsOverlap(startTime, endTime, startTimeCheck, endTimeCheck)) continue;
-
-            if (scheduleItem.TeacherId == item.TeacherId)
-                return false;
-
-            if (!item.IsOnline && ++amountOverlapping >= 2)
+            if (item.IsOnline || (!item.IsOnline && ++amountOverlapping >= 2))
                 return false;
         }
         return true;
