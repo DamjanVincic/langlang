@@ -12,6 +12,7 @@ namespace LangLang.Model
         private string _email = null!;
         private string _password = null!;
         private string _phone = null!;
+        private bool _deleted;
 
         protected User(string firstName, string lastName, string email, string password, Gender gender, string phone)
         {
@@ -21,6 +22,7 @@ namespace LangLang.Model
             Password = password;
             Gender = gender;
             Phone = phone;
+            Deleted = false;
         }
 
         public int Id { get; set; }
@@ -74,6 +76,15 @@ namespace LangLang.Model
             {
                 ValidatePhoneNumber(value);
                 _phone = value;
+            }
+        }
+
+        public bool Deleted
+        {
+            get => _deleted;
+            set
+            {
+                _deleted = value;
             }
         }
 

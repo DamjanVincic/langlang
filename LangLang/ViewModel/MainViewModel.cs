@@ -43,6 +43,7 @@ public class MainViewModel : ViewModelBase
                 MessageBox.Show("Invalid email or password.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             case Student:
+                _userService.CheckIfFirstInMonth();
                 new StudentView().Show();
                 break;
             case Director:

@@ -13,8 +13,7 @@ public class StudentViewModel : ViewModelBase
 {
     private readonly IUserService _userService = new UserService();
 
-    private readonly Student _student =
-                                                                                                               UserService.LoggedInUser as Student ?? throw new InvalidInputException("No one is logged in.");
+    private readonly Student _student = UserService.LoggedInUser as Student ?? throw new InvalidInputException("No one is logged in.");
 
     private readonly Window _studentViewWindow;
 
@@ -28,6 +27,18 @@ public class StudentViewModel : ViewModelBase
         DeleteAccountCommand = new RelayCommand(DeleteAccount);
         LogOutCommand = new RelayCommand(LogOut);
     }
+
+    public int NumberOfPenaltyPoints
+    {
+        get => _student.PenaltyPoints;
+        set
+        {
+            // Set the penalty points value here if needed
+            // _student.PenaltyPoints = value;
+            RaisePropertyChanged(); // Notify the view that the property value has changed
+        }
+    }
+
 
     public ObservableCollection<Course> AvailableCourses { get; set; }
     public ObservableCollection<Exam> AvailableExams { get; set; }

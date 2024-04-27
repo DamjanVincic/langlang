@@ -45,8 +45,12 @@ public class UserFileRepository : IUserRepository
     public void Delete(int id)
     {
         LoadData();
-        _users.Remove(id);
-        SaveData();
+        User? user = GetById(id);
+        if (user != null)
+        {
+            user.Deleted = true;
+            SaveData();
+        }
     }
 
     private void SaveData()
