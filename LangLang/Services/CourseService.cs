@@ -32,6 +32,8 @@ public class CourseService : ICourseService
         Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
                           throw new InvalidInputException("User doesn't exist.");
 
+        startDate = SetValidStartDate(startDate, held);
+
         Course course = new Course(language, duration, held, isOnline, maxStudents, creatorId, scheduledTime, startDate,
             areApplicationsClosed, teacherId) { Id = _courseRepository.GenerateId() };
 
@@ -42,6 +44,7 @@ public class CourseService : ICourseService
         teacher.CourseIds.Add(course.Id);
         _userRepository.Update(teacher);
     }
+
 
     public void Update(int id, string languageName, LanguageLevel languageLevel, int duration, List<Weekday> held,
         bool isOnline, int maxStudents, int creatorId, TimeOnly scheduledTime, DateOnly startDate,
@@ -59,6 +62,7 @@ public class CourseService : ICourseService
 
         Language language = _languageService.GetLanguage(languageName, languageLevel) ??
                             throw new InvalidInputException("Language with the given level doesn't exist.");
+        startDate = SetValidStartDate(startDate, held);
 
         course.Language = language;
         course.Duration = duration;
@@ -100,5 +104,13 @@ public class CourseService : ICourseService
         _scheduleService.Delete(id);
 
         _courseRepository.Delete(id);
+    }
+
+    private DateOnly SetValidStartDate(DateOnly startDate, List<Weekday> held)
+    {
+        int a = (int)held[0] + 1;
+        int b = (int)startDate.DayOfWeek;
+        int difference =  a- b;
+        return startDate.AddDays((difference < 0 ? difference + 7 : difference) % 7);
     }
 }
