@@ -33,6 +33,7 @@ public class StudentViewModel : ViewModelBase
         get => _student.PenaltyPoints;
         set
         {
+            _student.PenaltyPoints = value;
             RaisePropertyChanged();
         }
     }
