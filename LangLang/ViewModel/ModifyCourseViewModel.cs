@@ -222,13 +222,11 @@ namespace LangLang.ViewModel
                     selectedWeekdays.Add(Weekday.Sunday);
                 Held = selectedWeekdays;
                 Language? language = IsValidLanguage(LanguageName, LanguageLevel);
-                ScheduledTime = new TimeOnly(Hours * 60 + Minutes);
+                ScheduledTime = new TimeOnly().AddHours(Hours).AddMinutes(Minutes);
                 bool isOnline = Format.Equals("online") ? true : false;
                 DateOnly startDate = new DateOnly(StartDate.Year, StartDate.Month, StartDate.Day);
-
-                // TODO: Call course service to add or update the course, something similar to the comment below, refactor the rest
-                
-                /* try
+              
+                try
                 {
                     if (_course == null)
                     {
@@ -250,55 +248,8 @@ namespace LangLang.ViewModel
                 catch (InvalidInputException ex)
                 {
                     MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                } */
+                } 
 
-                // vv Old Code vv
-                // if (Schedule.CanAddScheduleItem(startDate, Duration, Held, TeacherId, ScheduledTime, true, isOnline, _course))
-                // {
-                //     if (_course != null)
-                //     {
-                //         _course.Language.Name = LanguageName;
-                //         _course.Language.Level = LanguageLevel;
-                //         if (startDate != _course.StartDate)
-                //         {
-                //             Schedule.ModifySchedule(_course, _course.StartDate, _course.Duration, _course.Held, null);
-                //             Schedule.ModifySchedule(_course, startDate, Duration, null, Held);
-                //         }
-                //         else if (!_course.Held.SequenceEqual(Held))
-                //         {
-                //             List<Weekday> removedDays = _course.Held.Except(Held).ToList();
-                //             List<Weekday> addedDays = Held.Except(_course.Held).ToList();
-                //             Schedule.ModifySchedule(_course, _course.StartDate, _course.Duration, (List<Weekday>)removedDays, null);
-                //             Schedule.ModifySchedule(_course, _course.StartDate, Duration, null, (List<Weekday>)addedDays);
-                //         }
-                //
-                //         
-                //         _course.StartDate = startDate;
-                //         _course.MaxStudents = MaxStudents;
-                //         _course.ScheduledTime = ScheduledTime;
-                //         _course.IsOnline = isOnline;
-                //         _course.TeacherId = TeacherId;
-                //         _course.Held = Held;
-                //         _course.Duration = Duration;
-                //         _course.CreatorId = CreatorId;
-                //         _course.AreApplicationsClosed = AreApplicationsClosed;
-                //         this._courseCollectionView.Refresh();
-                //         MessageBox.Show("Course edited successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                //     }
-                //     else
-                //     {
-                //         // Course course = new(language, Duration, Held, isOnline, MaxStudents, _teacherId, ScheduledTime, startDate, AreApplicationsClosed, TeacherId, new List<int>());
-                //         // _courseService.Add(language, Duration, Held, isOnline, MaxStudents, _teacherId, ScheduledTime, startDate, AreApplicationsClosed, TeacherId, new List<int>());
-                //         // _courses.Add(new CourseViewModel(course));
-                //         this._courseCollectionView.Refresh();
-                //         MessageBox.Show("Course added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                //     }
-                //     _modifyCourseWindow.Close();
-                // }
-                // else
-                // {
-                //     MessageBox.Show("Unable to schedule the course. The selected date conflicts with an existing course schedule.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                // }
             }
             catch (InvalidInputException ex)
             {
