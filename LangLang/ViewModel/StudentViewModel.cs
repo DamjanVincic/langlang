@@ -33,9 +33,7 @@ public class StudentViewModel : ViewModelBase
         get => _student.PenaltyPoints;
         set
         {
-            // Set the penalty points value here if needed
-            // _student.PenaltyPoints = value;
-            RaisePropertyChanged(); // Notify the view that the property value has changed
+            RaisePropertyChanged();
         }
     }
 

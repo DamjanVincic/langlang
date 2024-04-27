@@ -8,9 +8,9 @@ namespace LangLang.Model
 {
     public enum PenaltyPointReason
     {
-        UCENIK_SE_NIJE_POJAVIO_U_TERMINU,
-        UCENIK_UZNEMIRAVA_OSTALE,
-        UCENIK_NIJE_URADIO_DOMACI,
-        OBRZALOZENJE_ODUSTAJANJA_ODBIJENO
+        STUDENT_DIDNT_SHOW,
+        STUDENT_DISTURBED_OTHERS,
+        STUDENT_DIDNT_DO_HOMEWORK,
+        DROPPING_OUT_DENIED
     }
 }

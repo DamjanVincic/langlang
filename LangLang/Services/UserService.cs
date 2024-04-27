@@ -55,10 +55,7 @@ public class UserService : IUserService
         switch (user)
         {
             case Student student:
-                if (penaltyPoints != -1)
-                {
-                    student.PenaltyPoints = penaltyPoints;
-                }
+                student.PenaltyPoints = penaltyPoints != -1 ? penaltyPoints : student.PenaltyPoints;
                 student.Education = education;
                 break;
             case Teacher teacher:
