@@ -70,8 +70,8 @@ namespace LangLang.ViewModel
                 return;
             }
 
-            var newWindow = new ModifyCourseView(_courseService.GetById(SelectedItem.Id));
-            newWindow.ShowDialog();
+            new ModifyCourseView(_courseService.GetById(SelectedItem.Id)).ShowDialog();
+
             RefreshCourses();
         }
 
@@ -87,12 +87,8 @@ namespace LangLang.ViewModel
             if (MessageBox.Show("Are you sure?", "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.No)
                 return;
 
-            Course? course = _courseService.GetById(SelectedItem.Id);
-            if (course == null)
-            {
-                MessageBox.Show("Course doesn't exist.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
+            Course course = _courseService.GetById(SelectedItem.Id) ?? throw new InvalidOperationException("Course doesn't exist.");
+                
 
             _courseService.Delete(course.Id);
             RefreshCourses();
