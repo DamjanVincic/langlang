@@ -101,4 +101,19 @@ public class CourseService : ICourseService
 
         _courseRepository.Delete(id);
     }
+
+    public List<Course> GetTeachersCourses(Teacher teacher, bool active, bool createdByTeacher)
+    {
+        List<Course> courses = new List<Course>();
+        foreach (int courseId in teacher.CourseIds)
+        {
+            Course course = _courseRepository.GetById(courseId);
+            if (active != course.AreApplicationsClosed)
+                continue;
+            if (createdByTeacher != (course.CreatorId == teacher.Id))
+                continue;
+            courses.Add(course);
+        }
+        return courses;
+    }
 }
