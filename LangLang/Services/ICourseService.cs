@@ -18,4 +18,5 @@ public interface ICourseService
         bool areApplicationsClosed, int teacherId);
 
     public void Delete(int id);
+    public List<Course> GetTeachersCourses(Teacher teacher, bool active, bool createdByTeacher);
 }
