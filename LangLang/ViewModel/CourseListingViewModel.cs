@@ -25,11 +25,11 @@ namespace LangLang.ViewModel
 
         private readonly ObservableCollection<CourseViewModel> _courses;
 
-        private string _selectedLanguageName;
-        private string _selectedLanguageLevel;
+        private string? _selectedLanguageName;
+        private string? _selectedLanguageLevel;
         private DateTime _selectedDate;
-        private string _selectedDuration;
-        private string _selectedFormat;
+        private string? _selectedDuration;
+        private string? _selectedFormat;
 
         public CourseListingViewModel()
         {
@@ -47,8 +47,8 @@ namespace LangLang.ViewModel
 
         public ICollectionView CoursesCollectionView { get; }
         public IEnumerable<String> LanguageNameValues => _languageService.GetAllNames();
-        public IEnumerable<String> LanguageLevelValues => Enum.GetNames(typeof(LanguageLevel));
-        public IEnumerable<String> FormatValues => new List<String> { "online", "in-person" };
+        public static IEnumerable<String> LanguageLevelValues => Enum.GetNames(typeof(LanguageLevel));
+        public static IEnumerable<String> FormatValues => new List<String> { "online", "in-person" };
         public IEnumerable<CourseViewModel> Courses => _courses;
 
         public ICommand AddCommand { get; }
@@ -57,7 +57,7 @@ namespace LangLang.ViewModel
 
         private void Add()
         {
-            var newWindow = new ModifyCourseView();
+            var newWindow = new AddCourseView();
             newWindow.ShowDialog();
             RefreshCourses();
         }
@@ -69,9 +69,7 @@ namespace LangLang.ViewModel
                 MessageBox.Show("Please select a course to edit.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-
-            new ModifyCourseView(_courseService.GetById(SelectedItem.Id)).ShowDialog();
-
+            new EditCourseView(_courseService.GetById(SelectedItem.Id)).ShowDialog();
             RefreshCourses();
         }
 
@@ -79,17 +77,13 @@ namespace LangLang.ViewModel
         {
             if (SelectedItem == null)
             {
-                MessageBox.Show("Please select an Course to delete.", "Error", MessageBoxButton.OK,
-                    MessageBoxImage.Error);
+                MessageBox.Show("Please select an Course to delete.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-
             if (MessageBox.Show("Are you sure?", "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.No)
                 return;
 
             Course course = _courseService.GetById(SelectedItem.Id) ?? throw new InvalidOperationException("Course doesn't exist.");
-                
-
             _courseService.Delete(course.Id);
             RefreshCourses();
 
@@ -98,7 +92,7 @@ namespace LangLang.ViewModel
         }
 
 
-        public string SelectedLanguageName
+        public string? SelectedLanguageName
         {
             get => _selectedLanguageName;
             set
@@ -108,7 +102,7 @@ namespace LangLang.ViewModel
             }
         }
 
-        public string SelectedLanguageLevel
+        public string? SelectedLanguageLevel
         {
             get => _selectedLanguageLevel;
             set
@@ -128,7 +122,7 @@ namespace LangLang.ViewModel
             }
         }
 
-        public string SelectedDuration
+        public string? SelectedDuration
         {
             get => _selectedDuration;
             set
@@ -138,7 +132,7 @@ namespace LangLang.ViewModel
             }
         }
 
-        public string SelectedFormat
+        public string? SelectedFormat
         {
             get => _selectedFormat;
             set
@@ -159,7 +153,6 @@ namespace LangLang.ViewModel
                        courseViewModel.FilterFormat(SelectedFormat) &&
                        courseViewModel.FilterTeacher(_teacher.Id);
             }
-
             return false;
         }
 
