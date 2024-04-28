@@ -7,12 +7,12 @@ namespace LangLang.View
     /// <summary>
     /// Interaction logic for AddCourseView.xaml
     /// </summary>
-    public partial class ModifyCourseView : Window
+    public partial class AddCourseView : Window
     {
-        public ModifyCourseView(Course? course = null)
+        public AddCourseView(/*Course? course = null*/)
         {
             InitializeComponent();
-            DataContext = new ModifyCourseViewModel(course, this);
+            DataContext = new AddCourseViewModel(/*course, this*/);
         }
     }
 }

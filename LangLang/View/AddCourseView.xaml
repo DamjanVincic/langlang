@@ -1,4 +1,4 @@
-﻿<Window x:Class="LangLang.View.ModifyCourseView"
+﻿<Window x:Class="LangLang.View.AddCourseView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -47,14 +47,14 @@
         <TextBox Text="{Binding Duration, Mode=TwoWay}" Grid.Column="1" Grid.Row="3" Margin="10"/>
         
         <TextBlock Text="Days held:" Grid.Column="1" Grid.Row="4"/>
-        <StackPanel Grid.Row="5" Grid.Column="1" Grid.RowSpan="4">
-            <CheckBox Content="Monday" IsChecked="{Binding IsMondayChecked, Mode=TwoWay}"/>
-            <CheckBox Content="Tuesday" IsChecked="{Binding IsTuesdayChecked, Mode=TwoWay}"/>
-            <CheckBox Content="Wednesday" IsChecked="{Binding IsWednesdayChecked, Mode=TwoWay}"/>
-            <CheckBox Content="Thursday" IsChecked="{Binding IsThursdayChecked, Mode=TwoWay}"/>
-            <CheckBox Content="Friday" IsChecked="{Binding IsFridayChecked, Mode=TwoWay}"/>
-            <CheckBox Content="Saturday" IsChecked="{Binding IsSaturdayChecked, Mode=TwoWay}"/>
-            <CheckBox Content="Sunday" IsChecked="{Binding IsSundayChecked, Mode=TwoWay}"/>
+        <StackPanel HorizontalAlignment="Center" Grid.Row="5" Grid.Column="1" Grid.RowSpan="4">
+            <CheckBox Content="Monday" IsChecked="{Binding SelectedWeekdays[0], Mode=TwoWay}"/>
+            <CheckBox Content="Tuesday" IsChecked="{Binding SelectedWeekdays[1], Mode=TwoWay}"/>
+            <CheckBox Content="Wednesday" IsChecked="{Binding SelectedWeekdays[2], Mode=TwoWay}"/>
+            <CheckBox Content="Thursday" IsChecked="{Binding SelectedWeekdays[3], Mode=TwoWay}"/>
+            <CheckBox Content="Friday" IsChecked="{Binding SelectedWeekdays[4], Mode=TwoWay}"/>
+            <CheckBox Content="Saturday" IsChecked="{Binding SelectedWeekdays[5], Mode=TwoWay}"/>
+            <CheckBox Content="Sunday" IsChecked="{Binding SelectedWeekdays[6], Mode=TwoWay}"/>
         </StackPanel>
 
         <TextBlock Grid.Row="1" Grid.Column="2" FontWeight="Bold">TIME</TextBlock>
