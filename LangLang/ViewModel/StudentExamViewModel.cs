@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
@@ -16,7 +17,9 @@ public class StudentExamViewModel : ViewModelBase
 {
     private readonly ILanguageService _languageService = new LanguageService();
     private readonly IStudentService _studentService = new StudentService();
-    
+    private readonly IExamService _examService = new ExamService();
+    private Student student = UserService.LoggedInUser as Student ??
+                              throw new InvalidOperationException("No one is logged in.");
     private string _languageNameSelected;
     private string _languageLevelSelected;
     private DateTime _dateSelected;
@@ -27,6 +30,8 @@ public class StudentExamViewModel : ViewModelBase
         ExamCollectionView = CollectionViewSource.GetDefaultView(AvailableExams);
         ExamCollectionView.Filter = FilterExams;
         ResetFiltersCommand = new RelayCommand(ResetFilters);
+
+        ApplyForExamCommand = new RelayCommand(Apply);
     }
     
     public ObservableCollection<ExamViewModel> AvailableExams { get; }
@@ -35,7 +40,9 @@ public class StudentExamViewModel : ViewModelBase
     public IEnumerable<LanguageLevel> LanguageLevelValues => Enum.GetValues(typeof(LanguageLevel)).Cast<LanguageLevel>();
     public IEnumerable<string> LanguageNames => _languageService.GetAllNames();
     public ICommand ResetFiltersCommand { get; }
-    
+    public ICommand ApplyForExamCommand { get; }
+
+
     public string LanguageNameSelected
     {
         get => _languageNameSelected;
@@ -82,5 +89,16 @@ public class StudentExamViewModel : ViewModelBase
         LanguageNameSelected = null!;
         LanguageLevelSelected = null!;
         DateSelected = DateTime.MinValue;
+    }
+
+    private void Apply()
+    {
+        if (SelectedItem == null)
+        {
+            MessageBox.Show("No exam selected.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
+        Exam exam = _examService.GetById(SelectedItem.Id) ?? throw new InvalidOperationException("Exam not found.");
+        _studentService.ApplyStudentExam(student, exam.Id);
     }
 }

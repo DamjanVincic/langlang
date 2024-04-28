@@ -9,4 +9,6 @@ public interface IStudentService
     public List<Student> GetAll();
     public List<Course> GetAvailableCourses();
     public List<Exam> GetAvailableExams();
+    public void ApplyStudentExam(Student student, int examId);
+
 }
