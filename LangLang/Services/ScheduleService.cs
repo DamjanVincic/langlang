@@ -14,7 +14,6 @@ public class ScheduleService : IScheduleService
     {
         if (!ValidateScheduleItem(scheduleItem))
             throw new InvalidInputException("Schedule overlaps with existing items.");
-        
         switch (scheduleItem)
         {
             case Course course:
@@ -25,7 +24,6 @@ public class ScheduleService : IScheduleService
                 {
                     foreach (int day in dayDifferences)
                     {
-                        //course.StartDate = startDate;
                         _scheduleRepository.Add(scheduleItem);
                         startDate = startDate.AddDays(day);
                     }
@@ -36,7 +34,6 @@ public class ScheduleService : IScheduleService
                 break;
         }
     }
-
 
     public void Update(ScheduleItem scheduleItem)
     {
@@ -49,7 +46,6 @@ public class ScheduleService : IScheduleService
     {
         _scheduleRepository.Delete(id);
     }
-
 
     private bool ValidateScheduleItem(ScheduleItem scheduleItem, bool toEdit = false)
     {
@@ -81,8 +77,7 @@ public class ScheduleService : IScheduleService
         List<int> dayDifferences = new();
         foreach(Weekday day in held)
         {
-            if (day == held[0])
-                continue;
+            if (day == held[0]) continue;
             
             dayDifferences.Add((int)day - (int)held[0]);
         }
@@ -92,7 +87,6 @@ public class ScheduleService : IScheduleService
 
     private bool IsAvailable(ScheduleItem scheduleItem, DateOnly date, bool toEdit)
     {
-        // TODO: Refactor this method
         List<ScheduleItem> scheduleItems = _scheduleRepository.GetByDate(date);
 
         if (!scheduleItems.Any())
@@ -100,11 +94,10 @@ public class ScheduleService : IScheduleService
 
         TimeOnly startTime = scheduleItem.ScheduledTime;
         TimeOnly endTime = scheduleItem is Course ? startTime.AddMinutes(Course.ClassDuration) : startTime.AddMinutes(Exam.ExamDuration);
-        // The amount of overlapping in person classes
         int amountOverlapping = 0;
+
         foreach (ScheduleItem item in scheduleItems)
         {
-            // If it's the same item, skip it
             if (item.Id == scheduleItem.Id && toEdit) continue;
             if (item.TeacherId != scheduleItem.TeacherId) continue;
 
