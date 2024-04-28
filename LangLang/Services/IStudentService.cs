@@ -11,4 +11,5 @@ public interface IStudentService
     public List<Exam> GetAvailableExams();
     public void ApplyStudentExam(Student student, int examId);
 
+
 }

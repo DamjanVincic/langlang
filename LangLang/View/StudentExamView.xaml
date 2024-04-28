@@ -91,8 +91,8 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Button Command="{Binding ApplyForExamCommand}" Content="Apply For Exam" Grid.Column="0" Background="#55bcbb" Foreground="White" Width="150" Height="40" />
-            <Button Command="{Binding CancledExamApplicationCommand}" Content="Cancel exam application" Grid.Column="2" Background="#ec3629" Foreground="White" Width="220" Height="40"/>
+            <Button Command="{Binding ApplyForExamCommand}" Content="Apply For Exam" Grid.Column="0" Background="#55bcbb" Foreground="White" Width="150" Height="40" Grid.ColumnSpan="2"/>
+            <!--<Button Command="{Binding CancledExamApplicationCommand}" Content="Cancel exam application" Grid.Column="2" Background="#ec3629" Foreground="White" Width="220" Height="40"/>-->
         </Grid>
     </Grid>
 </Window>

@@ -25,4 +25,21 @@ public class TeacherService : ITeacherService
     {
         return _examService.GetAll().Where(exam => exam.TeacherId == teacherId).ToList();
     }
+
+    public void FinishCourse() { }
+
+    /*
+     *  student and course - selected Items
+     */
+    public void AddLanguageToStudent(Student student, Course course)
+    {
+        if(student.LanguagesPassFail.ContainsKey(course.Language))
+        {
+            return;
+        }
+        // finished but not passed
+        student.LanguagesPassFail.Add(course.Language,false);
+        _userRepository.Update(student);
+
+    }
 }
