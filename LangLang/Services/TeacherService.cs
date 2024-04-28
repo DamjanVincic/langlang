@@ -40,6 +40,5 @@ public class TeacherService : ITeacherService
         // finished but not passed
         student.LanguagesPassFail.Add(course.Language,false);
         _userRepository.Update(student);
-
     }
 }
