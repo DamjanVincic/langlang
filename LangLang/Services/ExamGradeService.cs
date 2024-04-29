@@ -29,7 +29,7 @@ namespace LangLang.Services
         {
             Student student = _userRepository.GetById(studentId) as Student ??
                               throw new InvalidInputException("User doesn't exist.");
-            Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Course doesn't exist.");
+            Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
 
             ExamGrade examGrade = new ExamGrade(_examGradeRepository.GenerateId(), examId, studentId, readingPoints,
                 writingPoints, listeningPoints, talkingPoints);

@@ -120,31 +120,11 @@ namespace LangLang.Model
 
         private void CalculatePassed()
         {
-            if (_readingPoints < ReadingPointsMax / 2)
-            {
-                _passed = false;
-                return;
-            }
-
-            if (_writingPoints < WritingPointsMax / 2)
-            {
-                _passed = false;
-                return;
-            }
-
-            if (_listeningPoints < ListeningPointsMax / 2)
-            {
-                _passed = false;
-                return;
-            }
-
-            if (_talkingPoints < TalkingPointsMax / 2)
-            {
-                _passed = false;
-                return;
-            }
-
-            if (_readingPoints + _writingPoints + _listeningPoints + _talkingPoints < MinPassingPoints)
+            if (_readingPoints < ReadingPointsMax / 2 ||
+                _writingPoints < WritingPointsMax / 2 ||
+                _listeningPoints < ListeningPointsMax / 2 ||
+                _talkingPoints < TalkingPointsMax / 2||
+                _readingPoints + _writingPoints + _listeningPoints + _talkingPoints < MinPassingPoints)
             {
                 _passed = false;
                 return;
