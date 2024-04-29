@@ -1,4 +1,4 @@
-﻿using LangLang.Model;
+﻿using LangLang.Models;
 
 namespace LangLang.Services;
 
