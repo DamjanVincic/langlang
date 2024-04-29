@@ -33,12 +33,12 @@ public class TeacherService : ITeacherService
      */
     public void AddLanguageToStudent(Student student, Course course)
     {
-        if(student.LanguagesPassFail.ContainsKey(course.Language))
+        if(student.CoursePassFail.ContainsKey(course.Id))
         {
             return;
         }
         // finished but not passed
-        student.LanguagesPassFail.Add(course.Language,false);
+        student.CoursePassFail.Add(course.Id,false);
         _userRepository.Update(student);
     }
 }

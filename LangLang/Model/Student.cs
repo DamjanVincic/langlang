@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json;
 
 namespace LangLang.Model;
 
@@ -12,7 +13,7 @@ public class Student : User
         Education = education ?? throw new ArgumentNullException(nameof(education));
         PenaltyPoints = 0;
         ActiveCourse = null;
-        LanguagesPassFail = new Dictionary<Language, bool>();
+        CoursePassFail = new Dictionary<int, bool>();
         AppliedCourses = new List<int>();
         AppliedExams = new List<int>(); 
     }
@@ -21,7 +22,8 @@ public class Student : User
     public Course ActiveCourse { get; set; }
     // obradjeniJezici / zavrseniJezici
     // dict jezik-bool, kada se zavrsi dodaj sa false, kada polozi ispit promeni na true
-    public Dictionary<Language,bool> LanguagesPassFail { get; set; }
+    public Dictionary<int,bool> CoursePassFail { get; set; }
     public List<int> AppliedCourses {  get; set; }
     public List<int> AppliedExams { get; set; }
+
 }

@@ -11,11 +11,14 @@ public class StudentService : IStudentService
     private readonly IUserRepository _userRepository = new UserFileRepository();
     private readonly ICourseRepository _courseRepository = new CourseFileRepository();
     private readonly IExamRepository _examRepository = new ExamFileRepository();
+    private Student student = UserService.LoggedInUser as Student ??
+                                  throw new InvalidOperationException("No one is logged in.");
 
     public List<Student> GetAll()
     {
         return _userRepository.GetAll().OfType<Student>().ToList();
     }
+
 
     public List<Course> GetAvailableCourses()
     {
@@ -25,6 +28,10 @@ public class StudentService : IStudentService
             (course.StartDate.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days >= 7).ToList();
     }
 
+    public List<Exam> GetAppliedExams()
+    {
+        return _examRepository.GetAll().Where(exam => student.AppliedExams.Contains(exam.Id)).ToList();
+    }
     /*
      1. student must have finished course for the language he wants to take exam in
      2. exam must have at least one available spot for student
@@ -35,12 +42,13 @@ public class StudentService : IStudentService
         // Nakon što je učenik završio kurs, prikazuju mu se svi dostupni termini ispita koji se
         // odnose na jezik i nivo jezika koji je učenik obradio na kursu
         
-        return _examRepository.GetAll().Where(exam => IsExamFull(exam) && IsNeededCourseFinished(exam) && IsAtLeast30DaysBeforeExam(exam)).ToList();
+       return _examRepository.GetAll().Where(exam => !IsExamFull(exam) && IsNeededCourseFinished(exam) && IsAtLeast30DaysBeforeExam(exam)).ToList();
     }
 
     public bool IsExamFull(Exam exam)
     {
-        return exam.StudentIds.Count < exam.MaxStudents;
+        bool value =  exam.StudentIds.Count >= exam.MaxStudents;
+        return value;
     }
 
     /*
@@ -49,8 +57,14 @@ public class StudentService : IStudentService
     */
     public bool IsNeededCourseFinished(Exam exam)
     {
-        Student student = UserService.LoggedInUser as Student ?? throw new InvalidCastException("No one logged in or the logged-in user is not a student.");
-        return student.LanguagesPassFail.ContainsKey(exam.Language) && student.LanguagesPassFail[exam.Language] == false;
+        return student.CoursePassFail.Any(coursePassFaild =>
+        {
+            Course? course = _courseRepository.GetById(coursePassFaild.Key);
+            return course != null &&
+                   course.Language.Name == exam.Language.Name &&
+                   course.Language.Level == exam.Language.Level &&
+                   !coursePassFaild.Value;
+        });
     }
     public bool IsAtLeast30DaysBeforeExam(Exam exam)
     {
@@ -64,9 +78,18 @@ public class StudentService : IStudentService
             throw new Exception("You already applied");
         }
 
-        // Apply the student for the exam
         student.AppliedExams.Add(examId);
         _userRepository.Update(student);
     }
 
+    public void DropExam(int examId)
+    {
+        if (!student.AppliedExams.Contains(examId))
+        {
+            throw new Exception("Exam does not exist");
+        }
+
+        student.AppliedExams.Remove(examId);
+        _userRepository.Update(student);
+    }
 }
