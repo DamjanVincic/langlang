@@ -21,9 +21,12 @@ namespace LangLang.ViewModel
         private int _minutes;
         private readonly int _id;
         private readonly bool _areApplicationsClosed;
-        private readonly List<string> hoursValues = CreateHourValues();
-        private readonly List<string> minutesValues = CreateMinuteValues();
-        
+        private readonly List<string> _hoursValues = Enumerable.Range(0, 24).Select(hour => hour.ToString("00")).ToList();
+        private readonly List<string> _minutesValues = Enumerable.Range(0, 60)
+                                         .Where(minute => minute % 15 == 0)
+                                         .Select(minute => minute.ToString("00"))
+                                         .ToList();
+
         public EditCourseViewModel(Course? course)
         {
             _id = course.Id;
@@ -60,8 +63,8 @@ namespace LangLang.ViewModel
         public ICommand EditCourseCommand { get; }
         public static IEnumerable<string?> FormatValues => new List<string?> { "online", "in-person" };
         public static IEnumerable<Weekday> WeekdayValues => Enum.GetValues(typeof(Weekday)).Cast<Weekday>();
-        public IEnumerable<string?> HourValues => hoursValues;
-        public IEnumerable<string?> MinuteValues => minutesValues;
+        public IEnumerable<string?> HourValues => _hoursValues;
+        public IEnumerable<string?> MinuteValues => _minutesValues;
 
         private static List<string> CreateHourValues()
         {

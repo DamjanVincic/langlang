@@ -17,13 +17,16 @@ namespace LangLang.ViewModel
 
         private readonly Teacher _teacher = UserService.LoggedInUser as Teacher ??
                                             throw new InvalidOperationException("No one is logged in.");
-        private readonly List<string> hours = CreateHourValues();
-        private readonly List<string> minutes = CreateMinuteValues();
-        
+        private readonly List<string> _hours = Enumerable.Range(0, 24).Select(hour => hour.ToString("00")).ToList();
+        private readonly List<string> _minutes = Enumerable.Range(0, 60)
+                                         .Where(minute => minute % 15 == 0)
+                                         .Select(minute => minute.ToString("00"))
+                                         .ToList();
+
         public AddCourseViewModel()
         {
             SelectedWeekdays = new bool[7];
-            EnterCourseCommand = new RelayCommand(AddCourse);
+            AddCourseCommand = new RelayCommand(AddCourse);
         }
 
         public bool? MaxStudentsEnabled => Format != null && Format.Equals("in-person");
@@ -39,34 +42,14 @@ namespace LangLang.ViewModel
         public int Hours { get; set; }
         public int Minutes { get; set; }
         public bool[] SelectedWeekdays {  get; set; }
-        public ICommand? EnterCourseCommand { get; }
+        public ICommand? AddCourseCommand { get; }
 
         public static IEnumerable<LanguageLevel> LanguageLevelValues =>
             Enum.GetValues(typeof(LanguageLevel)).Cast<LanguageLevel>();
         public IEnumerable<string?> LanguageNameValues => _languageService.GetAllNames();
         public static IEnumerable<string?> FormatValues => new List<string> { "online", "in-person" };
-        public IEnumerable<string?> HourValues => hours;
-        public IEnumerable<string?> MinuteValues => minutes;
-
-        private static List<string> CreateHourValues()
-        {
-            List<string> hours = new();
-            for (int hour = 0; hour < 24; hour++)
-            {
-                hours.Add(hour.ToString("00"));
-            }
-            return hours;
-        }
-
-        private static List<string> CreateMinuteValues()
-        {
-            List<string> minutes = new();
-            for (int minute = 0; minute < 60; minute += 15)
-            {
-                minutes.Add(minute.ToString("00"));
-            }
-            return minutes;
-        }
+        public IEnumerable<string?> HourValues => _hours;
+        public IEnumerable<string?> MinuteValues => _minutes;
 
         private void AddCourse()
         {
