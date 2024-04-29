@@ -10,38 +10,37 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
 using LangLang.Services;
-using LangLang.ViewModels.ExamViewModels;
+using LangLang.Views;
 
-namespace LangLang.ViewModels.StudentViewModels;
+namespace LangLang.ViewModels;
 
-public class StudentExamViewModel : ViewModelBase
+public class AppliedExamListingViewModel : ViewModelBase
 {
     private readonly ILanguageService _languageService = new LanguageService();
     private readonly IStudentService _studentService = new StudentService();
     private readonly IExamService _examService = new ExamService();
-    private Student _student = UserService.LoggedInUser as Student ??
-                              throw new InvalidOperationException("No one is logged in.");
     private string _languageNameSelected;
     private string _languageLevelSelected;
     private DateTime _dateSelected;
-    
-    public StudentExamViewModel()
+    private readonly Student _student = UserService.LoggedInUser as Student ?? throw new InvalidInputException("No one is logged in.");
+
+    public AppliedExamListingViewModel()
     {
-        AvailableExams = new ObservableCollection<ExamViewModel>(_studentService.GetAvailableExams(_student).Select(exam => new ExamViewModel(exam)));
-        ExamCollectionView = CollectionViewSource.GetDefaultView(AvailableExams);
+        AppliedExams = new ObservableCollection<ExamViewModel>(_studentService.GetAppliedExams(_student).Select(exam => new ExamViewModel(exam)));
+        ExamCollectionView = CollectionViewSource.GetDefaultView(AppliedExams);
         ExamCollectionView.Filter = FilterExams;
         ResetFiltersCommand = new RelayCommand(ResetFilters);
 
-        ApplyForExamCommand = new RelayCommand(Apply);
+        DropExamCommand = new RelayCommand(Drop);
     }
-    
-    public ObservableCollection<ExamViewModel> AvailableExams { get; }
+
+    public ObservableCollection<ExamViewModel> AppliedExams { get; }
     public ExamViewModel SelectedItem { get; set; }
     public ICollectionView ExamCollectionView { get; set; }
     public IEnumerable<LanguageLevel> LanguageLevelValues => Enum.GetValues(typeof(LanguageLevel)).Cast<LanguageLevel>();
     public IEnumerable<string> LanguageNames => _languageService.GetAllNames();
     public ICommand ResetFiltersCommand { get; }
-    public ICommand ApplyForExamCommand { get; }
+    public ICommand DropExamCommand { get; }
 
 
     public string LanguageNameSelected
@@ -53,7 +52,7 @@ public class StudentExamViewModel : ViewModelBase
             ExamCollectionView.Refresh();
         }
     }
-    
+
     public string LanguageLevelSelected
     {
         get => _languageLevelSelected;
@@ -63,7 +62,7 @@ public class StudentExamViewModel : ViewModelBase
             ExamCollectionView.Refresh();
         }
     }
-    
+
     public DateTime DateSelected
     {
         get => _dateSelected;
@@ -73,7 +72,7 @@ public class StudentExamViewModel : ViewModelBase
             ExamCollectionView.Refresh();
         }
     }
-    
+
     private bool FilterExams(object obj)
     {
         if (obj is ExamViewModel examViewModel)
@@ -84,7 +83,7 @@ public class StudentExamViewModel : ViewModelBase
         }
         return false;
     }
-    
+
     private void ResetFilters()
     {
         LanguageNameSelected = null!;
@@ -92,24 +91,28 @@ public class StudentExamViewModel : ViewModelBase
         DateSelected = DateTime.MinValue;
     }
 
-    private void Apply()
+    private void Drop()
     {
         if (SelectedItem == null)
         {
             MessageBox.Show("No exam selected.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
-
         try
         {
             Exam exam = _examService.GetById(SelectedItem.Id);
-            _studentService.ApplyStudentExam(_student, exam.Id);
-            MessageBox.Show("You have applied for the exam.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-        catch (Exception err)
+            _studentService.DropExam(exam, _student);
+            UpdateExamList();
+            MessageBox.Show("Exam droped successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+        } catch(Exception ex)
         {
-            MessageBox.Show(err.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
-
+    private void UpdateExamList()
+    {
+        AppliedExams.Clear();
+        _studentService.GetAppliedExams(_student).ForEach(exam => AppliedExams.Add(new ExamViewModel(exam)));
+        ExamCollectionView.Refresh();
+    }
 }
