@@ -31,20 +31,15 @@ public class StudentService : IStudentService
 
     public List<Exam> GetAppliedExams()
     {
-        List<Exam> appliedExams = new List<Exam>();
-        var allExams = _examRepository.GetAll();
         var appliedExamIds = student.AppliedExams;
 
-        for (int i = 0; i < allExams.Count; i++)
-        {
-            if (appliedExamIds.Contains(allExams[i].Id))
-            {
-                appliedExams.Add(allExams[i]);
-            }
-        }
+        var appliedExams = _examRepository.GetAll()
+            .Where(exam => appliedExamIds.Contains(exam.Id))
+            .ToList();
 
         return appliedExams;
     }
+
 
     /*
      1. student must have finished course for the language he wants to take exam in
