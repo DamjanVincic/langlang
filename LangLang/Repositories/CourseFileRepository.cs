@@ -73,6 +73,9 @@ public class CourseFileRepository : ICourseRepository
     {
         string filePath = Path.Combine(Directory.GetCurrentDirectory(), CourseDirectoryName, CourseFileName);
 
+        if (!File.Exists(filePath))
+            return;
+
         string json = File.ReadAllText(filePath);
         _courses = JsonConvert.DeserializeObject<Dictionary<int, Course>>(json, new JsonSerializerSettings
         {

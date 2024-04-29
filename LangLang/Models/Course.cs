@@ -66,7 +66,7 @@ namespace LangLang.Models
             }
         }
 
-        public bool IsOnline { get; set; }
+        public new bool IsOnline { get; set; }
 
         public int CreatorId { get; set; }
 

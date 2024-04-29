@@ -13,8 +13,8 @@ public interface ICourseService
         bool isOnline, int maxStudents, int creatorId, TimeOnly scheduledTime, DateOnly startDate,
         bool areApplicationsClosed, int teacherId);
 
-    public void Update(int id, string languageName, LanguageLevel languageLevel, int duration, List<Weekday> held,
-        bool isOnline, int maxStudents, int creatorId, TimeOnly scheduledTime, DateOnly startDate,
+    public void Update(int id, int duration, List<Weekday> held,
+        bool isOnline, int maxStudents, TimeOnly scheduledTime, DateOnly startDate,
         bool areApplicationsClosed, int teacherId);
 
     public void Delete(int id);

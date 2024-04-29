@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using LangLang.Models;
 using LangLang.ViewModels.CourseViewModels;
 
 namespace LangLang.Views.CourseViews
@@ -7,12 +6,12 @@ namespace LangLang.Views.CourseViews
     /// <summary>
     /// Interaction logic for AddCourseView.xaml
     /// </summary>
-    public partial class ModifyCourseView : Window
+    public partial class AddCourseView : Window
     {
-        public ModifyCourseView(Course? course = null)
+        public AddCourseView()
         {
             InitializeComponent();
-            DataContext = new ModifyCourseViewModel(course, this);
+            DataContext = new AddCourseViewModel();
         }
     }
 }
