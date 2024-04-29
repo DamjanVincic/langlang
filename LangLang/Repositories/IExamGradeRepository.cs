@@ -14,5 +14,6 @@ namespace LangLang.Repositories
         public void Update(ExamGrade examGrade);
         public void Delete(int id);
         public int GenerateId();
+        public ExamGrade GetById(int id);
     }
 }

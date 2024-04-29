@@ -22,8 +22,9 @@ namespace LangLang.Model
         private int _talkingPoints;
         private bool _passed;
 
-        public ExamGrade(int examId, int studentId, int readingPoints, int writingPoints, int listeningPoints, int talkingPoints)
+        public ExamGrade(int id, int examId, int studentId, int readingPoints, int writingPoints, int listeningPoints, int talkingPoints)
         {
+            Id = id;
             ExamId=examId;
             StudentId=studentId;
             ReadingPoints=readingPoints;
