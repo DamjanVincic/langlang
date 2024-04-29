@@ -14,7 +14,6 @@ public class ScheduleService : IScheduleService
     {
         if (!ValidateScheduleItem(scheduleItem))
             throw new InvalidInputException("Schedule overlaps with existing items.");
-        
         switch (scheduleItem)
         {
             case Course course:
@@ -25,7 +24,6 @@ public class ScheduleService : IScheduleService
                 {
                     foreach (int day in dayDifferences)
                     {
-                        course.StartDate = startDate;
                         _scheduleRepository.Add(scheduleItem);
                         startDate = startDate.AddDays(day);
                     }
@@ -79,8 +77,7 @@ public class ScheduleService : IScheduleService
         List<int> dayDifferences = new();
         foreach(Weekday day in held)
         {
-            if (day == held[0])
-                continue;
+            if (day == held[0]) continue;
             
             dayDifferences.Add((int)day - (int)held[0]);
         }
@@ -90,7 +87,6 @@ public class ScheduleService : IScheduleService
 
     private bool IsAvailable(ScheduleItem scheduleItem, DateOnly date, bool toEdit)
     {
-        // TODO: Refactor this method
         List<ScheduleItem> scheduleItems = _scheduleRepository.GetByDate(date);
 
         if (!scheduleItems.Any())
@@ -98,37 +94,18 @@ public class ScheduleService : IScheduleService
 
         TimeOnly startTime = scheduleItem.ScheduledTime;
         TimeOnly endTime = scheduleItem is Course ? startTime.AddMinutes(Course.ClassDuration) : startTime.AddMinutes(Exam.ExamDuration);
-        // The amount of overlapping in person classes
         int amountOverlapping = 0;
+
         foreach (ScheduleItem item in scheduleItems)
         {
-            // If it's the same item, skip it
             if (item.Id == scheduleItem.Id && toEdit) continue;
+            if (item.TeacherId != scheduleItem.TeacherId) continue;
 
             TimeOnly startTimeCheck, endTimeCheck;
-            if (scheduleItem.IsOnline)
-            {
-                if (item.TeacherId != scheduleItem.TeacherId) continue;
-                
-                startTimeCheck = item.ScheduledTime;
-                endTimeCheck = scheduleItem is Course ? startTimeCheck.AddMinutes(Course.ClassDuration) : startTimeCheck.AddMinutes(Exam.ExamDuration);
-
-                if (!DoPeriodsOverlap(startTime, endTime, startTimeCheck, endTimeCheck)) continue;
-
-                return false;
-            }
-            
-            // If it's offline, it also can't overlap with two offline items, doesn't matter if it's the same teacher
-            
             startTimeCheck = item.ScheduledTime;
             endTimeCheck = scheduleItem is Course ? startTimeCheck.AddMinutes(Course.ClassDuration) : startTimeCheck.AddMinutes(Exam.ExamDuration);
-            
             if (!DoPeriodsOverlap(startTime, endTime, startTimeCheck, endTimeCheck)) continue;
-
-            if (scheduleItem.TeacherId == item.TeacherId)
-                return false;
-
-            if (!item.IsOnline && ++amountOverlapping >= 2)
+            if (item.IsOnline || (!item.IsOnline && ++amountOverlapping >= 2))
                 return false;
         }
         return true;
