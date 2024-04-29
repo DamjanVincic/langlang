@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LangLang.Model;
+﻿using System.Collections.Generic;
+using LangLang.Models;
 using LangLang.Repositories;
 
 namespace LangLang.Services
