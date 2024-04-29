@@ -18,7 +18,7 @@ public class StudentExamViewModel : ViewModelBase
     private readonly ILanguageService _languageService = new LanguageService();
     private readonly IStudentService _studentService = new StudentService();
     private readonly IExamService _examService = new ExamService();
-    private Student student = UserService.LoggedInUser as Student ??
+    private Student _student = UserService.LoggedInUser as Student ??
                               throw new InvalidOperationException("No one is logged in.");
     private string _languageNameSelected;
     private string _languageLevelSelected;
@@ -26,7 +26,7 @@ public class StudentExamViewModel : ViewModelBase
     
     public StudentExamViewModel()
     {
-        AvailableExams = new ObservableCollection<ExamViewModel>(_studentService.GetAvailableExams().Select(exam => new ExamViewModel(exam)));
+        AvailableExams = new ObservableCollection<ExamViewModel>(_studentService.GetAvailableExams(_student).Select(exam => new ExamViewModel(exam)));
         ExamCollectionView = CollectionViewSource.GetDefaultView(AvailableExams);
         ExamCollectionView.Filter = FilterExams;
         ResetFiltersCommand = new RelayCommand(ResetFilters);
@@ -101,8 +101,8 @@ public class StudentExamViewModel : ViewModelBase
 
         try
         {
-            Exam exam = _examService.GetById(SelectedItem.Id) ?? throw new InvalidOperationException("Exam not found.");
-            _studentService.ApplyStudentExam(student, exam.Id);
+            Exam exam = _examService.GetById(SelectedItem.Id);
+            _studentService.ApplyStudentExam(_student, exam.Id);
             MessageBox.Show("You have applied for the exam.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
         }
         catch (Exception err)

@@ -39,8 +39,6 @@ public class MainViewModel : ViewModelBase
 
     private void Login()
     {
-        _teacherService.AddLanguageToStudent((Student)_userRep.GetById(4), courseRepository.GetById(1));
-
         User? user = _userService.Login(Email!, Password!);
 
         switch (user)

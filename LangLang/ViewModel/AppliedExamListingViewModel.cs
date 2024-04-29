@@ -19,15 +19,14 @@ public class AppliedExamListingViewModel : ViewModelBase
     private readonly ILanguageService _languageService = new LanguageService();
     private readonly IStudentService _studentService = new StudentService();
     private readonly IExamService _examService = new ExamService();
-    private Student student = UserService.LoggedInUser as Student ??
-                              throw new InvalidOperationException("No one is logged in.");
     private string _languageNameSelected;
     private string _languageLevelSelected;
     private DateTime _dateSelected;
+    private readonly Student _student = UserService.LoggedInUser as Student ?? throw new InvalidInputException("No one is logged in.");
 
     public AppliedExamListingViewModel()
     {
-        AppliedExams = new ObservableCollection<ExamViewModel>(_studentService.GetAppliedExams().Select(exam => new ExamViewModel(exam)));
+        AppliedExams = new ObservableCollection<ExamViewModel>(_studentService.GetAppliedExams(_student).Select(exam => new ExamViewModel(exam)));
         ExamCollectionView = CollectionViewSource.GetDefaultView(AppliedExams);
         ExamCollectionView.Filter = FilterExams;
         ResetFiltersCommand = new RelayCommand(ResetFilters);
@@ -101,8 +100,8 @@ public class AppliedExamListingViewModel : ViewModelBase
         }
         try
         {
-            Exam exam = _examService.GetById(SelectedItem.Id) ?? throw new InvalidOperationException("Exam not found.");
-            _studentService.DropExam(exam);
+            Exam exam = _examService.GetById(SelectedItem.Id);
+            _studentService.DropExam(exam, _student);
             UpdateExamList();
             MessageBox.Show("Exam droped successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
         } catch(Exception ex)
@@ -113,7 +112,7 @@ public class AppliedExamListingViewModel : ViewModelBase
     private void UpdateExamList()
     {
         AppliedExams.Clear();
-        _studentService.GetAppliedExams().ForEach(exam => AppliedExams.Add(new ExamViewModel(exam)));
+        _studentService.GetAppliedExams(_student).ForEach(exam => AppliedExams.Add(new ExamViewModel(exam)));
         ExamCollectionView.Refresh();
     }
 }

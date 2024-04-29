@@ -98,7 +98,7 @@ public class UserService : IUserService
         DateOnly currentDate = DateOnly.FromDateTime(DateTime.Now);
         int dayOfMonth = currentDate.Day;
 
-        if (dayOfMonth != 29 || LoggedInUser is not Student student || student.PenaltyPoints <= 0)
+        if (dayOfMonth != 1 || LoggedInUser is not Student student || student.PenaltyPoints <= 0)
         {
             return;
         }
@@ -127,15 +127,9 @@ public class UserService : IUserService
         ++student.PenaltyPoints;
         _userRepository.Update(student);
         _penaltyPointService.Add(penaltyPointReason, deleted, student.Id, courseId, teacherId, datePenaltyPointGiven);
-        CheckThreePenaltyPoints(student);
-    }
-
-    // call this after adding the point
-    public void CheckThreePenaltyPoints(Student student)
-    {
-        if(student.PenaltyPoints == 3)
+        if (student.PenaltyPoints == 3)
         {
             Delete(student.Id);
         }
-    }                 
+    }              
 }

@@ -4,7 +4,7 @@ using LangLang.Model;
 
 namespace LangLang.Repositories;
 
-public interface IPenaltyPointRepository
+public interface IPenaltyPointFileRepository
 {
     public List<PenaltyPoint> GetAll();
     public PenaltyPoint? GetById(int id);

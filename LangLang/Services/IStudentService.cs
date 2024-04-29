@@ -10,13 +10,9 @@ public interface IStudentService
     // TODO: Implement course and exam enrollment etc.
     public List<Student> GetAll();
     public List<Course> GetAvailableCourses();
-    public List<Exam> GetAvailableExams();
-    public List<Exam> GetAppliedExams();
-
-    public bool IsExamFull(Exam exam);
-    public bool IsNeededCourseFinished(Exam exam);
-    public bool IsAtLeast30DaysBeforeExam(Exam exam);
+    public List<Exam> GetAvailableExams(Student student);
+    public List<Exam> GetAppliedExams(Student student);
 
     public void ApplyStudentExam(Student student, int examId);
-    public void DropExam(Exam exam);
+    public void DropExam(Exam exam, Student student);
 }
