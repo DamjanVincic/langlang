@@ -21,9 +21,9 @@ namespace LangLang.View
     /// </summary>
     public partial class PickSubstituteTeacherView : Window
     {
-        public PickSubstituteTeacherView(List<Teacher> availableTeachers, Dictionary<Course, Teacher> substituteTeachers, Course course)
+        public PickSubstituteTeacherView(List<Teacher> availableTeachers, ref int substituteTeacherId, Course course)
         {
-            DataContext = new PickSubstituteTeacherViewModel(availableTeachers, substituteTeachers, course);
+            DataContext = new PickSubstituteTeacherViewModel(availableTeachers, ref substituteTeacherId, course);
             InitializeComponent();
         }
     }

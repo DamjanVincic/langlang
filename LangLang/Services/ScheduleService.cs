@@ -49,7 +49,7 @@ public class ScheduleService : IScheduleService
         _scheduleRepository.Delete(id);
     }
 
-    private bool ValidateScheduleItem(ScheduleItem scheduleItem, bool toEdit = false)
+    public bool ValidateScheduleItem(ScheduleItem scheduleItem, bool toEdit = false)
     {
         switch (scheduleItem)
         {

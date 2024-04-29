@@ -21,7 +21,6 @@ public class TeacherService : ITeacherService
 
     public List<Course> GetCourses(int teacherId)
     {
-        //TODO use service instead of repository
         return _courseRepository.GetAll().Where(course => course.TeacherId == teacherId).ToList();
     }
 
@@ -46,5 +45,13 @@ public class TeacherService : ITeacherService
         }
 
         return availableTeachers;
+    }
+
+    public void DeleteTeachersExams(Teacher teacher)
+    {
+        foreach (int examId in teacher.ExamIds)
+        {
+            _examService.Delete(examId);
+        }
     }
 }

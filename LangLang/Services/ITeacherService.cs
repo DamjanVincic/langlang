@@ -9,4 +9,5 @@ public interface ITeacherService
     public List<Course> GetCourses(int teacherId);
     public List<Exam> GetExams(int teacherId);
     public List<Teacher> GetAvailableTeachers(Course course);
+    public void DeleteTeachersExams(Teacher teacher);
 }

@@ -12,6 +12,7 @@ using System.Windows.Input;
 using LangLang.View;
 using System.Windows;
 using GalaSoft.MvvmLight.Command;
+using LangLang.Repositories;
 using LangLang.Services;
 using Teacher = LangLang.Model.Teacher;
 
@@ -25,6 +26,7 @@ namespace LangLang.ViewModel
         private readonly ICourseService _courseService = new CourseService();
         private readonly IExamService _examService = new ExamService();
         private readonly IScheduleService _scheduleService = new ScheduleService();
+        private readonly ICourseRepository _courseRepository = new CourseFileRepository();
 
         private string _selectedLanguageName;
         private string _selectedLanguageLevel;
@@ -130,61 +132,76 @@ namespace LangLang.ViewModel
 
         private void DeleteTeacher()
         {
-            if (SelectedItem == null)
+            try
             {
-                MessageBox.Show("No teacher selected", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
+                if (SelectedItem == null)
+                    throw new Exception("No teacher selected");
+
+                Teacher teacher = (Teacher)_userService.GetById(SelectedItem.Id);
+
+                List<Course> activeTrachersCourses = _courseService.GetTeachersCourses(teacher, true, true);
+                activeTrachersCourses.AddRange(_courseService.GetTeachersCourses(teacher, true, false));
+                PutSubstituteTeachers(activeTrachersCourses);
+
+                _teacherService.DeleteTeachersExams(teacher);
+
+                RemoveTeacherFromCourses(_courseService.GetTeachersCourses(teacher, false, false));
+
+                DeleteTeachersCourses(_courseService.GetTeachersCourses(teacher, false, true));
+
+                _teachers.Remove(SelectedItem);
+                _userService.Delete(teacher.Id);
+                TeachersCollectionView.Refresh();
             }
-
-            Teacher teacher = (Teacher)_userService.GetById(SelectedItem.Id);
-            List<Course> inactiveCoursesCreatedByDirector =
-                _teacherService.GetInactiveTeachersCoursesCreatedByDirector(SelectedItem.Id);
-            List<Course> inactiveCoursesCreatedByTeacher = _teacherService.GetInactiveCoursesCreatedByTeacher(SelectedItem.Id);
-
-            Dictionary<Course, Teacher> substituteTeachers =
-                GetSubstituteTeachers(_teacherService.GetActiveTeachersCourses(SelectedItem.Id));
-            //TODO: catch exception when there are no substitute teachers available
-            foreach (Course course in substituteTeachers.Keys)
+            catch (Exception ex)
             {
-                course.TeacherId = substituteTeachers[course].Id;
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
 
-            foreach (int examId in teacher.ExamIds)
+        private void DeleteTeachersCourses(List<Course> inactiveCoursesCreatedByTeacher)
+        {
+            foreach (Course course in inactiveCoursesCreatedByTeacher)
             {
-                //shouldn't have id parameter
-                _examService.Delete(examId);
+                _courseService.Delete(course.Id);
             }
+        }
 
+        private void RemoveTeacherFromCourses(List<Course> inactiveCoursesCreatedByDirector)
+        {
             foreach (Course course in inactiveCoursesCreatedByDirector)
             {
                 course.CreatorId = -1;
+                _courseRepository.Update(course);
             }
-
-            foreach (Course course in inactiveCoursesCreatedByDirector)
-            {
-                //delete course TBD
-            }
-
-            _teachers.Remove(SelectedItem);
-            _userService.Delete(teacher.Id);
-            TeachersCollectionView.Refresh();
         }
 
-        private Dictionary<Course, Teacher> GetSubstituteTeachers(List<Course> activeTeachersCourses)
+        private void PutSubstituteTeachers(List<Course> activeTeachersCourses)
         {
-            Dictionary<Course, Teacher> substituteTeachers = new Dictionary<Course, Teacher>();
+            Dictionary<Course, int> substituteTeacherIds = new Dictionary<Course, int>();
 
             foreach (Course course in activeTeachersCourses)
             {
-                List<Teacher> availableTeachers = _teacherService.GetAvailableTeachers(course);
-                //TODO: change exception type
-                if (!availableTeachers.Any())
-                    throw new Exception("There are no available substitute teachers");
-                var newWindow = new PickSubstituteTeacherView(availableTeachers, substituteTeachers, course);
-                newWindow.ShowDialog();
+                int substituteTeacherId = PickSubstituteTeacher(course);
+                substituteTeacherIds[course]= substituteTeacherId;
             }
 
-            return substituteTeachers;
+            foreach (Course course in substituteTeacherIds.Keys)
+            {
+                course.TeacherId=substituteTeacherIds[course];
+                _courseRepository.Update(course);
+            }
+        }
+
+        private int PickSubstituteTeacher(Course course)
+        {
+            List<Teacher> availableTeachers = _teacherService.GetAvailableTeachers(course);
+            if (!availableTeachers.Any())
+                throw new Exception("There are no available substitute teachers");
+            int substituteTeacherId = -1;
+            var newWindow = new PickSubstituteTeacherView(availableTeachers, ref substituteTeacherId, course);
+            newWindow.ShowDialog();
+            return substituteTeacherId;
         }
 
         private void LogOut()
