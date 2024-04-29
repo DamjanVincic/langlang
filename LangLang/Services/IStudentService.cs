@@ -18,4 +18,5 @@ public interface IStudentService
     public bool IsAtLeast30DaysBeforeExam(Exam exam);
 
     public void ApplyStudentExam(Student student, int examId);
+    public void DropExam(Exam exam);
 }

@@ -10,6 +10,7 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Model;
 using LangLang.Services;
+using LangLang.View;
 
 namespace LangLang.ViewModel;
 
@@ -98,9 +99,21 @@ public class AppliedExamListingViewModel : ViewModelBase
             MessageBox.Show("No exam selected.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
-        Exam exam = _examService.GetById(SelectedItem.Id) ?? throw new InvalidOperationException("Exam not found.");
-        _studentService.ApplyStudentExam(student, exam.Id);
-        MessageBox.Show("Exam droped successfully.", "Success", MessageBoxButton.OK,
-                        MessageBoxImage.Information);
+        try
+        {
+            Exam exam = _examService.GetById(SelectedItem.Id) ?? throw new InvalidOperationException("Exam not found.");
+            _studentService.DropExam(exam);
+            UpdateExamList();
+            MessageBox.Show("Exam droped successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+        } catch(Exception ex)
+        {
+            MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+    private void UpdateExamList()
+    {
+        AppliedExams.Clear();
+        _studentService.GetAppliedExams().ForEach(exam => AppliedExams.Add(new ExamViewModel(exam)));
+        ExamCollectionView.Refresh();
     }
 }

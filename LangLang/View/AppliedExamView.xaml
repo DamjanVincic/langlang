@@ -91,7 +91,7 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Button Command="{Binding DropApplication}" Content="Drop application" Grid.Column="0" Background="Red" Foreground="White" Width="150" Height="40" Grid.ColumnSpan="2"/>
+            <Button Command="{Binding DropExamCommand}" Content="Drop application" Grid.Column="0" Background="Red" Foreground="White" Width="150" Height="40" Grid.ColumnSpan="2"/>
         </Grid>
     </Grid>
 </Window>

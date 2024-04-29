@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Input;
 using LangLang.Model;
 using LangLang.Repositories;
 
@@ -95,14 +96,16 @@ public class StudentService : IStudentService
         _userRepository.Update(student);
     }
 
-    public void DropExam(int examId)
+    public void DropExam(Exam exam)
     {
-        if (!student.AppliedExams.Contains(examId))
+        if (!student.AppliedExams.Contains(exam.Id))
         {
             throw new Exception("Exam does not exist");
         }
+        if ((exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days < 10)
+            throw new InvalidInputException("The exam can't be dropped if it's less than 10 days from now.");
 
-        student.AppliedExams.Remove(examId);
+        student.AppliedExams.Remove(exam.Id);
         _userRepository.Update(student);
     }
 }
