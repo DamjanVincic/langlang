@@ -9,10 +9,10 @@ namespace LangLang.View
     /// </summary>
     public partial class AddCourseView : Window
     {
-        public AddCourseView(/*Course? course = null*/)
+        public AddCourseView()
         {
             InitializeComponent();
-            DataContext = new AddCourseViewModel(/*course, this*/);
+            DataContext = new AddCourseViewModel();
         }
     }
 }
