@@ -97,29 +97,35 @@ public class UserService : IUserService
     {
         DateOnly currentDate = DateOnly.FromDateTime(DateTime.Now);
         int dayOfMonth = currentDate.Day;
-        if (dayOfMonth == 27 && LoggedInUser is Student) {
-            Student student = (Student)LoggedInUser;
-            if (student.PenaltyPoints <= 0)
+
+        if (dayOfMonth != 29 || LoggedInUser is not Student student || student.PenaltyPoints <= 0)
+        {
+            return;
+        }
+        --student.PenaltyPoints;
+        _userRepository.Update(student);
+        RemoveStudentPenaltyPoint(student.Id);
+    }
+
+    private void RemoveStudentPenaltyPoint(int studentId)
+    {
+        List<PenaltyPoint> penaltyPoints = _penaltyPointService.GetAll();
+
+        foreach (PenaltyPoint point in penaltyPoints)
+        {
+            if (point.StudentId == studentId && !point.Deleted)
             {
-                return;
-            }
-            Update(student.Id,student.FirstName,student.LastName,student.Password,student.Gender,student.Phone,student.Education,null, --student.PenaltyPoints);
-            List<PenaltyPoint> penaltyPoints = _penaltyPointService.GetAll();
-            foreach (PenaltyPoint point in penaltyPoints)
-            {
-                if (point.StudentId == student.Id && point.Deleted == false)
-                {
-                    _penaltyPointService.Delete(point.Id);
-                    break;
-                }
+                _penaltyPointService.Delete(point.Id);
+                break;
             }
         }
     }
 
+
     public void AddPenaltyPoint(Student student, PenaltyPointReason penaltyPointReason, bool deleted, int courseId, int teacherId, DateOnly datePenaltyPointGiven)
     {
-        Update(student.Id, student.FirstName, student.LastName, student.Password, student.Gender, student.Phone, student.Education, null, ++student.PenaltyPoints);
-        // test later while working on teacher
+        ++student.PenaltyPoints;
+        _userRepository.Update(student);
         _penaltyPointService.Add(penaltyPointReason, deleted, student.Id, courseId, teacherId, datePenaltyPointGiven);
         CheckThreePenaltyPoints(student);
     }
