@@ -66,28 +66,6 @@ namespace LangLang.ViewModel
         public IEnumerable<string?> HourValues => _hoursValues;
         public IEnumerable<string?> MinuteValues => _minutesValues;
 
-        private static List<string> CreateHourValues()
-        {
-            List<string> hours = new();
-            for (int hour = 0; hour < 24; hour++)
-            {
-                hours.Add(hour.ToString("00"));
-            }
-
-            return hours;
-        }
-    
-        private static List<string> CreateMinuteValues()
-        {
-            List<string> minutes = new();
-            for (int minute = 0; minute < 60; minute += 15)
-            {
-                minutes.Add(minute.ToString("00"));
-            }
-
-            return minutes;
-        }
-
         private void EditCourse()
         {
             if ((!Format.Equals("online") && MaxStudents <= 0)|| Duration <= 0 || StartDate == default 
