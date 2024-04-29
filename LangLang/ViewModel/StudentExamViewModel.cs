@@ -98,7 +98,17 @@ public class StudentExamViewModel : ViewModelBase
             MessageBox.Show("No exam selected.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
-        Exam exam = _examService.GetById(SelectedItem.Id) ?? throw new InvalidOperationException("Exam not found.");
-        _studentService.ApplyStudentExam(student, exam.Id);
+
+        try
+        {
+            Exam exam = _examService.GetById(SelectedItem.Id) ?? throw new InvalidOperationException("Exam not found.");
+            _studentService.ApplyStudentExam(student, exam.Id);
+            MessageBox.Show("You have applied for the exam.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        catch (Exception err)
+        {
+            MessageBox.Show(err.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
+
 }
