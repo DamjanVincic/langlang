@@ -30,8 +30,21 @@ public class StudentService : IStudentService
 
     public List<Exam> GetAppliedExams()
     {
-        return _examRepository.GetAll().Where(exam => student.AppliedExams.Contains(exam.Id)).ToList();
+        List<Exam> appliedExams = new List<Exam>();
+        var allExams = _examRepository.GetAll();
+        var appliedExamIds = student.AppliedExams;
+
+        for (int i = 0; i < allExams.Count; i++)
+        {
+            if (appliedExamIds.Contains(allExams[i].Id))
+            {
+                appliedExams.Add(allExams[i]);
+            }
+        }
+
+        return appliedExams;
     }
+
     /*
      1. student must have finished course for the language he wants to take exam in
      2. exam must have at least one available spot for student

@@ -23,6 +23,7 @@ public class StudentViewModel : ViewModelBase
 
         ViewCoursesCommand = new RelayCommand(ViewCourses);
         ViewExamsCommand = new RelayCommand(ViewExams);
+        ViewAppliedExamsCommand = new RelayCommand(ViewAppliedExams);
         EditAccountCommand = new RelayCommand(EditAccount);
         DeleteAccountCommand = new RelayCommand(DeleteAccount);
         LogOutCommand = new RelayCommand(LogOut);
@@ -46,6 +47,8 @@ public class StudentViewModel : ViewModelBase
 
     public ICommand ViewCoursesCommand { get; }
     public ICommand ViewExamsCommand { get; }
+    public ICommand ViewAppliedExamsCommand { get; }
+
     public ICommand EditAccountCommand { get; }
     public ICommand DeleteAccountCommand { get; }
     public ICommand LogOutCommand { get; }
@@ -60,6 +63,10 @@ public class StudentViewModel : ViewModelBase
     private static void ViewExams()
     {
         new StudentExamView().Show();
+    }
+    private static void ViewAppliedExams()
+    {
+        new AppliedExamView().Show();
     }
 
     private void EditAccount()
