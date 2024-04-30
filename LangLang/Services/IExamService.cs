@@ -11,4 +11,5 @@ public interface IExamService
     public void Add(string languageName, LanguageLevel languageLevel, int maxStudents, DateOnly examDate, int teacherId, TimeOnly examTime);
     public void Update(int id, string languageName, LanguageLevel languageLevel, int maxStudents, DateOnly date, int teacherId, TimeOnly time);
     public void Delete(int id);
+    public List<Student> GetStudents(int examId);
 }

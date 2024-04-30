@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using LangLang.Models;
 using LangLang.Repositories;
 
@@ -93,5 +94,14 @@ public class ExamService : IExamService
         _scheduleService.Delete(id);
 
         _examRepository.Delete(id);
+    }
+
+    public List<Student> GetStudents(int examId)
+    {
+        Exam exam = _examRepository.GetById(examId);
+
+        List<Student> students = exam.StudentIds.Select(studentId => _userRepository.GetById(studentId) as Student).ToList();
+
+        return students;
     }
 }
