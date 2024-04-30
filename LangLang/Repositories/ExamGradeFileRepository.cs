@@ -1,4 +1,4 @@
-﻿using LangLang.Model;
+﻿using LangLang.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

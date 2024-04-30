@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace LangLang.Model
+namespace LangLang.Models
 {
     public class ExamGrade
     {
@@ -25,13 +25,13 @@ namespace LangLang.Model
         public ExamGrade(int id, int examId, int studentId, int readingPoints, int writingPoints, int listeningPoints, int talkingPoints)
         {
             Id = id;
-            ExamId=examId;
-            StudentId=studentId;
-            ReadingPoints=readingPoints;
-            WritingPoints=writingPoints;
-            ListeningPoints=listeningPoints;
-            TalkingPoints=talkingPoints;
-            
+            ExamId = examId;
+            StudentId = studentId;
+            ReadingPoints = readingPoints;
+            WritingPoints = writingPoints;
+            ListeningPoints = listeningPoints;
+            TalkingPoints = talkingPoints;
+
             CalculatePassed();
         }
 
@@ -123,7 +123,7 @@ namespace LangLang.Model
             if (_readingPoints < ReadingPointsMax / 2 ||
                 _writingPoints < WritingPointsMax / 2 ||
                 _listeningPoints < ListeningPointsMax / 2 ||
-                _talkingPoints < TalkingPointsMax / 2||
+                _talkingPoints < TalkingPointsMax / 2 ||
                 _readingPoints + _writingPoints + _listeningPoints + _talkingPoints < MinPassingPoints)
             {
                 _passed = false;

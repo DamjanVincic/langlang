@@ -1,4 +1,4 @@
-﻿using LangLang.Model;
+﻿using LangLang.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
