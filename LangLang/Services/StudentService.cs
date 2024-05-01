@@ -38,30 +38,33 @@ public class StudentService : IStudentService
             exam.StudentIds.Count < exam.MaxStudents &&
             (exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days >= 30).ToList();
     }
-    
+
     public void ApplyForCourse(int studentId, int courseId)
     {
         Student student = _userRepository.GetById(studentId) as Student ??
-                         throw new InvalidInputException("Student doesn't exist.");
-        
+                          throw new InvalidInputException("Student doesn't exist.");
+
         Course course = _courseRepository.GetById(courseId) ??
-                       throw new InvalidInputException("Course doesn't exist.");
-        
+                        throw new InvalidInputException("Course doesn't exist.");
+
         student.AddCourse(course.Id);
         course.AddStudent(student.Id);
 
         _userRepository.Update(student);
         _courseRepository.Update(course);
     }
-    
+
     public void WithdrawFromCourse(int studentId, int courseId)
     {
         Student student = _userRepository.GetById(studentId) as Student ??
-                         throw new InvalidInputException("Student doesn't exist.");
-        
+                          throw new InvalidInputException("Student doesn't exist.");
+
         Course course = _courseRepository.GetById(courseId) ??
-                       throw new InvalidInputException("Course doesn't exist.");
-        
+                        throw new InvalidInputException("Course doesn't exist.");
+
+        if ((course.StartDate.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days < 7)
+            throw new InvalidInputException("The course can't be withdrawn from if it's less than 1 week from now.");
+
         student.RemoveCourse(course.Id);
         course.RemoveStudent(student.Id);
 
