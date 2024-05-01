@@ -28,8 +28,12 @@ public class StudentCourseViewModel : ViewModelBase
     private string _selectedDuration;
     private string _selectedFormat;
 
+    private bool _applied;
+
     public StudentCourseViewModel(bool applied = false)
     {
+        _applied = applied;
+        
         AvailableCourses = new ObservableCollection<CourseViewModel>(
             (applied
                 ? _studentService.GetAppliedCourses(_student.Id)
@@ -137,6 +141,7 @@ public class StudentCourseViewModel : ViewModelBase
             _studentService.ApplyForCourse(_student.Id, SelectedCourse!.Id);
             MessageBox.Show("You have successfully applied for the course.", "Success", MessageBoxButton.OK,
                 MessageBoxImage.Information);
+            RefreshCourses(_applied);
         }
         catch (InvalidInputException ex)
         {
@@ -153,10 +158,19 @@ public class StudentCourseViewModel : ViewModelBase
             _studentService.WithdrawFromCourse(_student.Id, SelectedCourse!.Id);
             MessageBox.Show("You have successfully withdrawn from the course.", "Success", MessageBoxButton.OK,
                 MessageBoxImage.Information);
+            RefreshCourses(_applied);
         }
         catch (InvalidInputException ex)
         {
             MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
+    }
+
+    private void RefreshCourses(bool applied)
+    {
+        AvailableCourses.Clear();
+        (applied ? _studentService.GetAppliedCourses(_student.Id) : _studentService.GetAvailableCourses(_student.Id))
+            .ForEach(course => AvailableCourses.Add(new CourseViewModel(course)));
+        CoursesCollectionView.Refresh();
     }
 }
