@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
@@ -15,6 +16,8 @@ namespace LangLang.ViewModels.StudentViewModels;
 
 public class StudentCourseViewModel : ViewModelBase
 {
+    private readonly Student _student = UserService.LoggedInUser as Student ?? throw new InvalidOperationException("No one is logged in.");
+    
     private readonly ILanguageService _languageService = new LanguageService();
     private readonly IStudentService _studentService = new StudentService();
 
@@ -26,16 +29,19 @@ public class StudentCourseViewModel : ViewModelBase
 
     public StudentCourseViewModel()
     {
-        AvailableCourses = new ObservableCollection<CourseViewModel>(_studentService.GetAvailableCourses()
+        AvailableCourses = new ObservableCollection<CourseViewModel>(_studentService.GetAvailableCourses(_student)
             .Select(course => new CourseViewModel(course)));
         CoursesCollectionView = CollectionViewSource.GetDefaultView(AvailableCourses);
         CoursesCollectionView.Filter = FilterCourses;
 
         ResetFiltersCommand = new RelayCommand(ResetFilters);
+        ApplyForCourseCommand = new RelayCommand(ApplyForCourse);
     }
 
     public ICommand ResetFiltersCommand { get; }
+    public ICommand ApplyForCourseCommand { get; }
 
+    public CourseViewModel? SelectedCourse { get; set; }
     public ObservableCollection<CourseViewModel> AvailableCourses { get; }
     public ICollectionView CoursesCollectionView { get; }
     public IEnumerable<string> LanguageNameValues => _languageService.GetAllNames();
@@ -113,5 +119,14 @@ public class StudentCourseViewModel : ViewModelBase
         SelectedDate = DateTime.MinValue;
         SelectedDuration = null!;
         SelectedFormat = null!;
+    }
+
+    private void ApplyForCourse()
+    {
+        if (SelectedCourse == null)
+            MessageBox.Show("Please select a course.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        
+        _studentService.ApplyForCourse(_student, SelectedCourse!.Id);
+        MessageBox.Show("You have successfully applied for the course.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 }

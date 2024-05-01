@@ -26,7 +26,7 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Grid.ColumnSpan="2" FontWeight="Bold">COURSES AVAILABLE FOR ENROLLMENT</TextBlock>
-        <ListView Grid.Row="3" Grid.RowSpan="9" Padding="5" Margin="5" ItemsSource="{Binding AvailableCourses}" >
+        <ListView Grid.Row="3" Grid.RowSpan="9" Padding="5" Margin="5" ItemsSource="{Binding AvailableCourses}" SelectedItem="{Binding SelectedCourse}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Language">

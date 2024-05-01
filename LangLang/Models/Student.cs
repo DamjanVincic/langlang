@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using LangLang.Views.CourseViews;
 
 namespace LangLang.Models;
 
@@ -17,5 +18,21 @@ public class Student : User
     // obradjeniJezici / zavrseniJezici
     // dict jezik-bool, kada se zavrsi dodaj sa false, kada polozi ispit promeni na true
     public Dictionary<int, bool> CoursePassFail { get; set; } = new();
-    public List<int> AppliedCourses { get; set; } = new();
+    public List<int> AppliedCourses { get; } = new();
+    
+    public void AddCourse(int courseId)
+    {
+        if (AppliedCourses.Contains(courseId))
+            throw new InvalidInputException("You have already applied to this course.");
+        
+        AppliedCourses.Add(courseId);
+    }
+    
+    public void RemoveCourse(int courseId)
+    {
+        if (!AppliedCourses.Contains(courseId))
+            throw new InvalidInputException("You haven't applied to this course.");
+        
+        AppliedCourses.Remove(courseId);
+    }
 }

@@ -39,8 +39,6 @@ public class StudentViewModel : ViewModelBase
     public ICommand EditAccountCommand { get; }
     public ICommand DeleteAccountCommand { get; }
     public ICommand LogOutCommand { get; }
-    public ICommand ApplyForCourseCommand { get; }
-    public ICommand ApplyForExamCommand { get; }
 
     private static void ViewCourses()
     {
