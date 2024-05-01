@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using LangLang.Models;
 using LangLang.Repositories;
@@ -10,6 +11,7 @@ public class UserService : IUserService
     public static User? LoggedInUser { get; private set; }
 
     private readonly IUserRepository _userRepository = new UserFileRepository();
+    private readonly ICourseRepository _courseRepository = new CourseFileRepository();
 
     public List<User> GetAll()
     {
@@ -69,6 +71,19 @@ public class UserService : IUserService
 
     public void Delete(int id)
     {
+        User user = _userRepository.GetById(id) ?? throw new InvalidInputException("User doesn't exist");
+
+        if (user is Student student)
+        {
+            foreach (var course in student.AppliedCourses.Select(courseId =>
+                         _courseRepository.GetById(courseId) ??
+                         throw new InvalidOperationException("Course doesn't exist")))
+            {
+                course.RemoveStudent(id);
+                _courseRepository.Update(course);
+            }
+        }
+
         _userRepository.Delete(id);
 
         if (LoggedInUser?.Id == id)
