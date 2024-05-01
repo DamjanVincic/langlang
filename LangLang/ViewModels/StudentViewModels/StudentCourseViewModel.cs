@@ -29,7 +29,7 @@ public class StudentCourseViewModel : ViewModelBase
 
     public StudentCourseViewModel()
     {
-        AvailableCourses = new ObservableCollection<CourseViewModel>(_studentService.GetAvailableCourses(_student)
+        AvailableCourses = new ObservableCollection<CourseViewModel>(_studentService.GetAvailableCourses(_student.Id)
             .Select(course => new CourseViewModel(course)));
         CoursesCollectionView = CollectionViewSource.GetDefaultView(AvailableCourses);
         CoursesCollectionView.Filter = FilterCourses;
@@ -126,7 +126,7 @@ public class StudentCourseViewModel : ViewModelBase
         if (SelectedCourse == null)
             MessageBox.Show("Please select a course.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         
-        _studentService.ApplyForCourse(_student, SelectedCourse!.Id);
+        _studentService.ApplyForCourse(_student.Id, SelectedCourse!.Id);
         MessageBox.Show("You have successfully applied for the course.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 }

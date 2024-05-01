@@ -17,13 +17,13 @@ public class StudentService : IStudentService
         return _userRepository.GetAll().OfType<Student>().ToList();
     }
 
-    public List<Course> GetAvailableCourses(Student student)
+    public List<Course> GetAvailableCourses(int studentId)
     {
         // TODO: Validate to not show the courses that the student has already applied to and
         return _courseRepository.GetAll().Where(course =>
             course.StudentIds.Count < course.MaxStudents &&
             (course.StartDate.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days >= 7 &&
-            !student.AppliedCourses.Contains(course.Id)).ToList();
+            !course.StudentIds.Contains(studentId)).ToList();
     }
 
     public List<Exam> GetAvailableExams()
@@ -34,8 +34,11 @@ public class StudentService : IStudentService
             (exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days >= 30).ToList();
     }
     
-    public void ApplyForCourse(Student student, int courseId)
+    public void ApplyForCourse(int studentId, int courseId)
     {
+        Student student = _userRepository.GetById(studentId) as Student ??
+                         throw new InvalidInputException("Student doesn't exist.");
+        
         Course course = _courseRepository.GetById(courseId) ??
                        throw new InvalidInputException("Course doesn't exist.");
         
