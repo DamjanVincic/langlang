@@ -26,6 +26,11 @@ public class StudentService : IStudentService
             !course.StudentIds.Contains(studentId)).ToList();
     }
 
+    public List<Course> GetAppliedCourses(int studentId)
+    {
+        return _courseRepository.GetAll().Where(course => course.StudentIds.Contains(studentId)).ToList();
+    }
+
     public List<Exam> GetAvailableExams()
     {
         // TODO: Add checking if the student has finished the course and don't show the ones they have applied to
@@ -44,6 +49,21 @@ public class StudentService : IStudentService
         
         student.AddCourse(course.Id);
         course.AddStudent(student.Id);
+
+        _userRepository.Update(student);
+        _courseRepository.Update(course);
+    }
+    
+    public void WithdrawFromCourse(int studentId, int courseId)
+    {
+        Student student = _userRepository.GetById(studentId) as Student ??
+                         throw new InvalidInputException("Student doesn't exist.");
+        
+        Course course = _courseRepository.GetById(courseId) ??
+                       throw new InvalidInputException("Course doesn't exist.");
+        
+        student.RemoveCourse(course.Id);
+        course.RemoveStudent(student.Id);
 
         _userRepository.Update(student);
         _courseRepository.Update(course);

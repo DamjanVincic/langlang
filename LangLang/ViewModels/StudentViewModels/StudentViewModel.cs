@@ -23,6 +23,7 @@ public class StudentViewModel : ViewModelBase
         _studentViewWindow = studentViewWindow;
 
         ViewCoursesCommand = new RelayCommand(ViewCourses);
+        ViewAppliedCoursesCommand = new RelayCommand(ViewAppliedCourses);
         ViewExamsCommand = new RelayCommand(ViewExams);
         EditAccountCommand = new RelayCommand(EditAccount);
         DeleteAccountCommand = new RelayCommand(DeleteAccount);
@@ -35,6 +36,7 @@ public class StudentViewModel : ViewModelBase
     public string FullName => $"{_student.FirstName} {_student.LastName}";
 
     public ICommand ViewCoursesCommand { get; }
+    public ICommand ViewAppliedCoursesCommand { get; }
     public ICommand ViewExamsCommand { get; }
     public ICommand EditAccountCommand { get; }
     public ICommand DeleteAccountCommand { get; }
@@ -43,6 +45,11 @@ public class StudentViewModel : ViewModelBase
     private static void ViewCourses()
     {
         new StudentCourseView().Show();
+    }
+
+    private static void ViewAppliedCourses()
+    {
+        new StudentCourseView(true).Show();
     }
 
     private static void ViewExams()

@@ -16,8 +16,9 @@ namespace LangLang.ViewModels.StudentViewModels;
 
 public class StudentCourseViewModel : ViewModelBase
 {
-    private readonly Student _student = UserService.LoggedInUser as Student ?? throw new InvalidOperationException("No one is logged in.");
-    
+    private readonly Student _student = UserService.LoggedInUser as Student ??
+                                        throw new InvalidOperationException("No one is logged in.");
+
     private readonly ILanguageService _languageService = new LanguageService();
     private readonly IStudentService _studentService = new StudentService();
 
@@ -27,19 +28,24 @@ public class StudentCourseViewModel : ViewModelBase
     private string _selectedDuration;
     private string _selectedFormat;
 
-    public StudentCourseViewModel()
+    public StudentCourseViewModel(bool applied = false)
     {
-        AvailableCourses = new ObservableCollection<CourseViewModel>(_studentService.GetAvailableCourses(_student.Id)
+        AvailableCourses = new ObservableCollection<CourseViewModel>(
+            (applied
+                ? _studentService.GetAppliedCourses(_student.Id)
+                : _studentService.GetAvailableCourses(_student.Id))
             .Select(course => new CourseViewModel(course)));
         CoursesCollectionView = CollectionViewSource.GetDefaultView(AvailableCourses);
         CoursesCollectionView.Filter = FilterCourses;
 
         ResetFiltersCommand = new RelayCommand(ResetFilters);
         ApplyForCourseCommand = new RelayCommand(ApplyForCourse);
+        WithdrawFromCourseCommand = new RelayCommand(WithdrawFromCourse);
     }
 
     public ICommand ResetFiltersCommand { get; }
     public ICommand ApplyForCourseCommand { get; }
+    public ICommand WithdrawFromCourseCommand { get; }
 
     public CourseViewModel? SelectedCourse { get; set; }
     public ObservableCollection<CourseViewModel> AvailableCourses { get; }
@@ -125,8 +131,32 @@ public class StudentCourseViewModel : ViewModelBase
     {
         if (SelectedCourse == null)
             MessageBox.Show("Please select a course.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-        
-        _studentService.ApplyForCourse(_student.Id, SelectedCourse!.Id);
-        MessageBox.Show("You have successfully applied for the course.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
+        try
+        {
+            _studentService.ApplyForCourse(_student.Id, SelectedCourse!.Id);
+            MessageBox.Show("You have successfully applied for the course.", "Success", MessageBoxButton.OK,
+                MessageBoxImage.Information);
+        }
+        catch (InvalidInputException ex)
+        {
+            MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void WithdrawFromCourse()
+    {
+        if (SelectedCourse == null)
+            MessageBox.Show("Please select a course.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        try
+        {
+            _studentService.WithdrawFromCourse(_student.Id, SelectedCourse!.Id);
+            MessageBox.Show("You have successfully withdrawn from the course.", "Success", MessageBoxButton.OK,
+                MessageBoxImage.Information);
+        }
+        catch (InvalidInputException ex)
+        {
+            MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 }
