@@ -43,8 +43,8 @@ public class UserService : IUserService
         //TODO: Validate if user(student) hasn't applied to any courses or exams
         User user = _userRepository.GetById(id) ?? throw new InvalidInputException("User doesn't exist");
 
-        if (user is Student { AppliedCourses.Count: > 0 })
-            throw new InvalidInputException("You cannot change your information if you have applied to any courses");
+        if (user is Student studentCheck && (studentCheck.AppliedCourses.Count > 0 || studentCheck.ActiveCourseId != null))
+            throw new InvalidInputException("You cannot change your information if you have applied to, or enrolled in any courses");
 
         user.FirstName = firstName;
         user.LastName = lastName;
