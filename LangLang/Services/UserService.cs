@@ -8,7 +8,7 @@ namespace LangLang.Services;
 public class UserService : IUserService
 {
     public static User? LoggedInUser { get; private set; }
-    
+
     private readonly IUserRepository _userRepository = new UserFileRepository();
 
     public List<User> GetAll()
@@ -41,6 +41,9 @@ public class UserService : IUserService
         //TODO: Validate if user(student) hasn't applied to any courses or exams
         User user = _userRepository.GetById(id) ?? throw new InvalidInputException("User doesn't exist");
 
+        if (user is Student { AppliedCourses.Count: > 0 })
+            throw new InvalidInputException("You cannot change your information if you have applied to any courses");
+
         user.FirstName = firstName;
         user.LastName = lastName;
         user.Password = password;
@@ -59,7 +62,7 @@ public class UserService : IUserService
         }
 
         _userRepository.Update(user);
-        
+
         if (LoggedInUser?.Id == id)
             LoggedInUser = user;
     }
@@ -67,23 +70,24 @@ public class UserService : IUserService
     public void Delete(int id)
     {
         _userRepository.Delete(id);
-        
+
         if (LoggedInUser?.Id == id)
             LoggedInUser = null;
     }
 
     public User? Login(string email, string password)
     {
-        User? user = _userRepository.GetAll().FirstOrDefault(user => user.Email.Equals(email) && user.Password.Equals(password));
+        User? user = _userRepository.GetAll()
+            .FirstOrDefault(user => user.Email.Equals(email) && user.Password.Equals(password));
         LoggedInUser = user;
         return user;
     }
-    
+
     public void Logout()
     {
         if (LoggedInUser == null)
             throw new InvalidInputException("Already logged out.");
-        
+
         LoggedInUser = null;
     }
 }
