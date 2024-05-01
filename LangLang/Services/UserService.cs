@@ -82,6 +82,14 @@ public class UserService : IUserService
                 course.RemoveStudent(id);
                 _courseRepository.Update(course);
             }
+
+            if (student.ActiveCourseId != null)
+            {
+                Course enrolledCourse = _courseRepository.GetById(student.ActiveCourseId!.Value) ??
+                                        throw new InvalidOperationException("Course doesn't exist");
+                enrolledCourse.RemoveStudent(id);
+                _courseRepository.Update(enrolledCourse);
+            }
         }
 
         _userRepository.Delete(id);
