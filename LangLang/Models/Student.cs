@@ -13,7 +13,7 @@ public class Student : User
         Education = education ?? throw new ArgumentNullException(nameof(education));
     }
     public Education? Education { get; set; }
-    public Course? ActiveCourse { get; set; }
+    public int? ActiveCourseId { get; }
     
     // obradjeniJezici / zavrseniJezici
     // dict jezik-bool, kada se zavrsi dodaj sa false, kada polozi ispit promeni na true
