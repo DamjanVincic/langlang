@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using LangLang.Model;
+using LangLang.Models;
 using Newtonsoft.Json;
 
 namespace LangLang.Repositories;
@@ -72,6 +72,9 @@ public class CourseFileRepository : ICourseRepository
     private void LoadData()
     {
         string filePath = Path.Combine(Directory.GetCurrentDirectory(), CourseDirectoryName, CourseFileName);
+
+        if (!File.Exists(filePath))
+            return;
 
         string json = File.ReadAllText(filePath);
         _courses = JsonConvert.DeserializeObject<Dictionary<int, Course>>(json, new JsonSerializerSettings

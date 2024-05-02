@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using LangLang.Model;
 using LangLang.Repositories;
+using LangLang.Models;
 
 namespace LangLang.Services;
 

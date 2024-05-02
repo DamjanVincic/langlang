@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
-using LangLang.Model;
+using LangLang.Models;
 using LangLang.Repositories;
 
 namespace LangLang.Services;
