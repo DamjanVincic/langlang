@@ -1,7 +1,7 @@
-﻿using LangLang.Model;
-using LangLang.Repositories;
+﻿using LangLang.Repositories;
 using System;
 using System.Collections.Generic;
+using LangLang.Models;
 
 namespace LangLang.Services;
 public class PenaltyPointService : IPenaltyPointService

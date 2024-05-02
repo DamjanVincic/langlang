@@ -1,7 +1,6 @@
 ﻿using System;
-using Newtonsoft.Json;
 
-namespace LangLang.Model
+namespace LangLang.Models
 {
     public class PenaltyPoint
     {
