@@ -100,8 +100,17 @@ public class ExamService : IExamService
     {
         Exam exam = _examRepository.GetById(examId);
 
-        List<Student> students = exam.StudentIds.Select(studentId => _userRepository.GetById(studentId) as Student).ToList();
+        List<Student> students = exam.StudentIds.Select(studentId => _userRepository.GetById(studentId) as Student)
+            .ToList();
 
         return students;
     }
+
+    public List<Exam> GetStartableExams()
+    {
+        //TODO don't return exams that have already started
+        return _examRepository.GetAll().Where(exam =>
+            (exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days <= 7).ToList();
+    }
+
 }
