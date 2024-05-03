@@ -30,7 +30,7 @@
             
             <TextBlock Grid.Row="2" VerticalAlignment="Bottom">
                 <Run Text="penalty points "/>
-                <Run FontStyle="Italic" Text="3"/>
+                <Run FontStyle="Italic" Text="{Binding NumberOfPenaltyPoints}"/>
                 <Run Text=" 🚩"/>
             </TextBlock>
 
@@ -76,8 +76,8 @@
             <Button Content="Courses" Command="{Binding ViewCoursesCommand}" Margin="0 10 70 0" Width="80" Height="40" Background="#4daaa9" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Top"/>
             <Button Content="Exams" Command="{Binding ViewExamsCommand}" Margin="0 10 160 0" Width= "80" Height="40" Background="#4daaa9" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Top"/>
             <Button Content="Applied Courses" Command="{Binding ViewAppliedCoursesCommand}" Margin="0 10 250 0" Width= "140" Height="40" Background="#4daaa9" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-            <Button Content="Applied Exams" Command="{Binding ViewExamsCommand}" Margin="0 10 400 0" Width= "120" Height="40" Background="#4daaa9" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-
+            <Button Content="Applied Exams" Command="{Binding ViewAppliedExamsCommand}" Margin="0 10 400 0" Width= "120" Height="40" Background="#4daaa9" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+            
         </Grid>
     </Grid>
 </Window>

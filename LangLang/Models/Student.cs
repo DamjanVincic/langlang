@@ -11,14 +11,18 @@ public class Student : User
         : base(firstName, lastName, email, password, gender, phone)
     {
         Education = education ?? throw new ArgumentNullException(nameof(education));
+        PenaltyPoints = 0;
+        AppliedExams = new List<int>(); 
     }
     public Education? Education { get; set; }
-    public int? ActiveCourseId { get; }
+    public int PenaltyPoints { get; set; }
+    public int? ActiveCourseId { get; } = null;
     
     // obradjeniJezici / zavrseniJezici
     // dict jezik-bool, kada se zavrsi dodaj sa false, kada polozi ispit promeni na true
     public Dictionary<int, bool> CoursePassFail { get; set; } = new();
     public List<int> AppliedCourses { get; } = new();
+    public List<int> AppliedExams { get; set; }
     
     public void AddCourse(int courseId)
     {

@@ -8,4 +8,6 @@ public interface ITeacherService
     public List<Teacher> GetAll();
     public List<Course> GetCourses(int teacherId);
     public List<Exam> GetExams(int teacherId);
+    public void FinishCourse();
+    public void AddLanguageToStudent(Student student, Course course);
 }

@@ -21,9 +21,11 @@ namespace LangLang.Models
             Password = password;
             Gender = gender;
             Phone = phone;
+            Deleted = false;
         }
 
         public int Id { get; set; }
+        public bool Deleted { get; set; }
 
         public string FirstName
         {
