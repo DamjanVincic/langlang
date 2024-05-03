@@ -20,6 +20,6 @@ namespace LangLang.ViewModels.TeacherViewModels
                 .Select(student => new SingleStudentViewModel(student)));
         }
 
-        public ObservableCollection<SingleStudentViewModel> Students;
+        public ObservableCollection<SingleStudentViewModel> Students { get; set; }
     }
 }
