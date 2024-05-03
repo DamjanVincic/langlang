@@ -9,6 +9,7 @@ public interface IStudentService
 {
     // TODO: Implement course and exam enrollment etc.
     public List<Student> GetAll();
+    public void Delete(int id);
     public List<Course> GetAvailableCourses(int studentId);
     public List<Course> GetAppliedCourses(int studentId);
     public List<Exam> GetAvailableExams(Student student);

@@ -12,10 +12,37 @@ public class StudentService : IStudentService
     private readonly IUserRepository _userRepository = new UserFileRepository();
     private readonly ICourseRepository _courseRepository = new CourseFileRepository();
     private readonly IExamRepository _examRepository = new ExamFileRepository();
+    
+    private readonly IUserService _userService = new UserService();
 
     public List<Student> GetAll()
     {
         return _userRepository.GetAll().OfType<Student>().ToList();
+    }
+
+    public void Delete(int id)
+    {
+        User user = _userRepository.GetById(id) ?? throw new InvalidOperationException("User doesn't exist");
+
+        if (user is not Student student) return;
+        
+        foreach (var course in student.AppliedCourses.Select(courseId =>
+                     _courseRepository.GetById(courseId) ??
+                     throw new InvalidOperationException("Course doesn't exist")))
+        {
+            course.RemoveStudent(id);
+            _courseRepository.Update(course);
+        }
+
+        
+        if (student.ActiveCourseId is null) return;
+        
+        Course enrolledCourse = _courseRepository.GetById(student.ActiveCourseId!.Value) ??
+                                throw new InvalidOperationException("Course doesn't exist");
+        enrolledCourse.RemoveStudent(id);
+        _courseRepository.Update(enrolledCourse);
+        
+        _userService.Delete(id);
     }
 
     public List<Course> GetAvailableCourses(int studentId)

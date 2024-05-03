@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Windows;
 using LangLang.Models;
 using LangLang.Repositories;
 
@@ -77,27 +75,6 @@ public class UserService : IUserService
 
     public void Delete(int id)
     {
-        User user = _userRepository.GetById(id) ?? throw new InvalidInputException("User doesn't exist");
-
-        if (user is Student student)
-        {
-            foreach (var course in student.AppliedCourses.Select(courseId =>
-                         _courseRepository.GetById(courseId) ??
-                         throw new InvalidOperationException("Course doesn't exist")))
-            {
-                course.RemoveStudent(id);
-                _courseRepository.Update(course);
-            }
-
-            if (student.ActiveCourseId != null)
-            {
-                Course enrolledCourse = _courseRepository.GetById(student.ActiveCourseId!.Value) ??
-                                        throw new InvalidOperationException("Course doesn't exist");
-                enrolledCourse.RemoveStudent(id);
-                _courseRepository.Update(enrolledCourse);
-            }
-        }
-
         _userRepository.Delete(id);
 
         if (LoggedInUser?.Id == id)
