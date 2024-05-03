@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using LangLang.ViewModels.TeacherViewModels;
 
 namespace LangLang.Views.TeacherViews
 {
@@ -19,9 +20,10 @@ namespace LangLang.Views.TeacherViews
     /// </summary>
     public partial class StartExamView : Window
     {
-        public StartExamView()
+        public StartExamView(int examId)
         {
             InitializeComponent();
+            DataContext = new StartExamViewModel(examId);
         }
     }
 }

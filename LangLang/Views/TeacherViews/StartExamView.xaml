@@ -16,7 +16,7 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" FontWeight="Bold">STUDENTS SIGNED UP FOR EXAM</TextBlock>
-        <ListView Grid.Row="1" Padding="5" Margin="5" ItemsSource="{Binding AvailableExams}" >
+        <ListView Grid.Row="1" Padding="5" Margin="5" ItemsSource="{Binding Students}" >
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="First name">
@@ -70,7 +70,7 @@
 
 
         <Grid Grid.Row="2">
-            <Button Command="{Binding ApplyForExamCommand}" Content="Confirm Student List" Grid.Column="0" Background="#55bcbb" Foreground="White" Width="200" Height="40" />
+            <Button Command="{Binding ConfirmCommand}" Content="Confirm Student List" Grid.Column="0" Background="#55bcbb" Foreground="White" Width="200" Height="40" />
         </Grid>
     </Grid>
 </Window>
