@@ -96,6 +96,13 @@ public class ExamService : IExamService
         _examRepository.Delete(id);
     }
 
+    public void ConfirmExam(int examId)
+    {
+        Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
+        exam.Confirmed=true;
+        _examRepository.Update(exam);
+    }
+
     public List<Student> GetStudents(int examId)
     {
         Exam exam = _examRepository.GetById(examId);

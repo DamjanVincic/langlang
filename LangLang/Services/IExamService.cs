@@ -13,4 +13,5 @@ public interface IExamService
     public void Delete(int id);
     public List<Student> GetStudents(int examId);
     public List<Exam> GetStartableExams();
+    public void ConfirmExam(int examId);
 }
