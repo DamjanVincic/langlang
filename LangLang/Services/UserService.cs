@@ -75,6 +75,15 @@ public class UserService : IUserService
 
     public void Delete(int id)
     {
+        User user = _userRepository.GetById(id) ?? throw new InvalidOperationException("User doesn't exist");
+
+        switch (user)
+        {
+            case Student student:
+                DeleteStudent(student);
+                break;
+        }
+
         _userRepository.Delete(id);
 
         if (LoggedInUser?.Id == id)
@@ -95,6 +104,25 @@ public class UserService : IUserService
             throw new InvalidInputException("Already logged out.");
 
         LoggedInUser = null;
+    }
+    
+    private void DeleteStudent(Student student)
+    {
+        foreach (var course in student.AppliedCourses.Select(courseId =>
+                     _courseRepository.GetById(courseId) ??
+                     throw new InvalidOperationException("Course doesn't exist")))
+        {
+            course.RemoveStudent(student.Id);
+            _courseRepository.Update(course);
+        }
+
+        
+        if (student.ActiveCourseId is null) return;
+        
+        Course enrolledCourse = _courseRepository.GetById(student.ActiveCourseId!.Value) ??
+                                throw new InvalidOperationException("Course doesn't exist");
+        enrolledCourse.RemoveStudent(student.Id);
+        _courseRepository.Update(enrolledCourse);
     }
 
     public void CheckIfFirstInMonth()

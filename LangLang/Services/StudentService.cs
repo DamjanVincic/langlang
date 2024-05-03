@@ -20,31 +20,6 @@ public class StudentService : IStudentService
         return _userRepository.GetAll().OfType<Student>().ToList();
     }
 
-    public void Delete(int id)
-    {
-        User user = _userRepository.GetById(id) ?? throw new InvalidOperationException("User doesn't exist");
-
-        if (user is not Student student) return;
-        
-        foreach (var course in student.AppliedCourses.Select(courseId =>
-                     _courseRepository.GetById(courseId) ??
-                     throw new InvalidOperationException("Course doesn't exist")))
-        {
-            course.RemoveStudent(id);
-            _courseRepository.Update(course);
-        }
-
-        
-        if (student.ActiveCourseId is null) return;
-        
-        Course enrolledCourse = _courseRepository.GetById(student.ActiveCourseId!.Value) ??
-                                throw new InvalidOperationException("Course doesn't exist");
-        enrolledCourse.RemoveStudent(id);
-        _courseRepository.Update(enrolledCourse);
-        
-        _userService.Delete(id);
-    }
-
     public List<Course> GetAvailableCourses(int studentId)
     {
         // TODO: Validate to not show the courses that the student has already applied to and
