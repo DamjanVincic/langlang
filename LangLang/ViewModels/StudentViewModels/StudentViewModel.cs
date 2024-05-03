@@ -12,6 +12,7 @@ namespace LangLang.ViewModels.StudentViewModels;
 public class StudentViewModel : ViewModelBase
 {
     private readonly IUserService _userService = new UserService();
+    private readonly IStudentService _studentService = new StudentService();
 
     private readonly Student _student = UserService.LoggedInUser as Student ?? throw new InvalidInputException("No one is logged in.");
 
@@ -89,8 +90,10 @@ public class StudentViewModel : ViewModelBase
     {
         if (MessageBox.Show("Are you sure?", "Confirmation", MessageBoxButton.YesNo) != MessageBoxResult.Yes) return;
 
-        _userService.Delete(_student.Id);
+        _studentService.Delete(_student.Id);
         MessageBox.Show("Account deleted successfully");
+        
+        _userService.Logout();
         new MainWindow().Show();
         _studentViewWindow.Close();
     }
