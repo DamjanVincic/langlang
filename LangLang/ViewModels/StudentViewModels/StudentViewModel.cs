@@ -13,8 +13,7 @@ public class StudentViewModel : ViewModelBase
 {
     private readonly IUserService _userService = new UserService();
 
-    private readonly Student _student =
-                                                                                                               UserService.LoggedInUser as Student ?? throw new InvalidInputException("No one is logged in.");
+    private readonly Student _student = UserService.LoggedInUser as Student ?? throw new InvalidInputException("No one is logged in.");
 
     private readonly Window _studentViewWindow;
 
@@ -24,10 +23,22 @@ public class StudentViewModel : ViewModelBase
 
         ViewCoursesCommand = new RelayCommand(ViewCourses);
         ViewExamsCommand = new RelayCommand(ViewExams);
+        ViewAppliedExamsCommand = new RelayCommand(ViewAppliedExams);
         EditAccountCommand = new RelayCommand(EditAccount);
         DeleteAccountCommand = new RelayCommand(DeleteAccount);
         LogOutCommand = new RelayCommand(LogOut);
     }
+
+    public int NumberOfPenaltyPoints
+    {
+        get => _student.PenaltyPoints;
+        set
+        {
+            _student.PenaltyPoints = value;
+            RaisePropertyChanged();
+        }
+    }
+
 
     public ObservableCollection<Course> AvailableCourses { get; set; }
     public ObservableCollection<Exam> AvailableExams { get; set; }
@@ -36,6 +47,8 @@ public class StudentViewModel : ViewModelBase
 
     public ICommand ViewCoursesCommand { get; }
     public ICommand ViewExamsCommand { get; }
+    public ICommand ViewAppliedExamsCommand { get; }
+
     public ICommand EditAccountCommand { get; }
     public ICommand DeleteAccountCommand { get; }
     public ICommand LogOutCommand { get; }
@@ -51,9 +64,19 @@ public class StudentViewModel : ViewModelBase
     {
         new StudentExamView().Show();
     }
+    private static void ViewAppliedExams()
+    {
+        new AppliedExamView().Show();
+    }
 
     private void EditAccount()
     {
+        // TO DO: in teacher, after exam is over remove it from appliedExams, ensure that only future exams are in the list or none at all
+        if(_student.AppliedExams.Count != 0)
+        {
+            MessageBox.Show("You cannot change your data while you have registered exams.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
         new StudentEditView().ShowDialog();
     }
 

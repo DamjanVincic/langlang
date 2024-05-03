@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Windows;
 using LangLang.Models;
 using LangLang.Repositories;
 
@@ -8,7 +11,9 @@ namespace LangLang.Services;
 public class UserService : IUserService
 {
     public static User? LoggedInUser { get; private set; }
-    
+
+    private readonly IPenaltyPointService _penaltyPointService = new PenaltyPointService();
+
     private readonly IUserRepository _userRepository = new UserFileRepository();
 
     public List<User> GetAll()
@@ -36,7 +41,7 @@ public class UserService : IUserService
     }
 
     public void Update(int id, string firstName, string lastName, string password, Gender gender, string phone,
-        Education? education = null, List<Language>? languages = null)
+            Education? education = null, List<Language>? languages = null, int penaltyPoints = -1)
     {
         //TODO: Validate if user(student) hasn't applied to any courses or exams
         User user = _userRepository.GetById(id) ?? throw new InvalidInputException("User doesn't exist");
@@ -50,6 +55,7 @@ public class UserService : IUserService
         switch (user)
         {
             case Student student:
+                student.PenaltyPoints = penaltyPoints != -1 ? penaltyPoints : student.PenaltyPoints;
                 student.Education = education;
                 break;
             case Teacher teacher:
@@ -74,7 +80,7 @@ public class UserService : IUserService
 
     public User? Login(string email, string password)
     {
-        User? user = _userRepository.GetAll().FirstOrDefault(user => user.Email.Equals(email) && user.Password.Equals(password));
+        User? user = _userRepository.GetAll().FirstOrDefault(user => user.Email.Equals(email) && user.Password.Equals(password) && user.Deleted == false);
         LoggedInUser = user;
         return user;
     }
@@ -86,4 +92,44 @@ public class UserService : IUserService
         
         LoggedInUser = null;
     }
+
+    public void CheckIfFirstInMonth()
+    {
+        DateOnly currentDate = DateOnly.FromDateTime(DateTime.Now);
+        int dayOfMonth = currentDate.Day;
+
+        if (dayOfMonth != 1 || LoggedInUser is not Student student || student.PenaltyPoints <= 0)
+        {
+            return;
+        }
+        --student.PenaltyPoints;
+        _userRepository.Update(student);
+        RemoveStudentPenaltyPoint(student.Id);
+    }
+
+    private void RemoveStudentPenaltyPoint(int studentId)
+    {
+        List<PenaltyPoint> penaltyPoints = _penaltyPointService.GetAll();
+
+        foreach (PenaltyPoint point in penaltyPoints)
+        {
+            if (point.StudentId == studentId && !point.Deleted)
+            {
+                _penaltyPointService.Delete(point.Id);
+                break;
+            }
+        }
+    }
+
+
+    public void AddPenaltyPoint(Student student, PenaltyPointReason penaltyPointReason, bool deleted, int courseId, int teacherId, DateOnly datePenaltyPointGiven)
+    {
+        ++student.PenaltyPoints;
+        _userRepository.Update(student);
+        _penaltyPointService.Add(penaltyPointReason, deleted, student.Id, courseId, teacherId, datePenaltyPointGiven);
+        if (student.PenaltyPoints == 3)
+        {
+            Delete(student.Id);
+        }
+    }              
 }
