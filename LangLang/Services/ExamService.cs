@@ -99,7 +99,7 @@ public class ExamService : IExamService
     public void ConfirmExam(int examId)
     {
         Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
-        exam.Confirmed=true;
+        exam.Confirmed = true;
         _examRepository.Update(exam);
     }
 
@@ -121,7 +121,7 @@ public class ExamService : IExamService
         foreach (int examId in teacher.ExamIds)
         {
             Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
-            if((exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days <= 7 &&
+            if ((exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days <= 7 &&
                 !exam.Confirmed)
             {
                 startableExams.Add(exam);
@@ -131,4 +131,22 @@ public class ExamService : IExamService
         return startableExams;
     }
 
+    public Exam GetCurrentExam(int teacherId)
+    {
+        Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
+                          throw new InvalidInputException("User doesn't exist.");
+        foreach (int examId in teacher.ExamIds)
+        {
+            Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
+
+            int timeDifference = (exam.Date.ToDateTime(exam.ScheduledTime) - DateTime.Now).Minutes;
+
+            if (timeDifference > 0 && timeDifference < Exam.ExamDuration)
+            {
+                return exam;
+            }
+        }
+
+        throw new InvalidInputException("There are currently no exams");
+    }
 }
