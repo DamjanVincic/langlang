@@ -26,7 +26,7 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Grid.ColumnSpan="2" FontWeight="Bold">COURSES AVAILABLE FOR ENROLLMENT</TextBlock>
-        <ListView Grid.Row="3" Grid.RowSpan="9" Padding="5" Margin="5" ItemsSource="{Binding AvailableCourses}" >
+        <ListView Grid.Row="3" Grid.RowSpan="9" Padding="5" Margin="5" ItemsSource="{Binding AvailableCourses}" SelectedItem="{Binding SelectedCourse}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Language">
@@ -132,6 +132,6 @@
 
         <Button Command="{Binding ApplyForCourseCommand}" Content="Apply" Grid.Column="1" Grid.Row="12" Grid.RowSpan="2"  Margin="0 0 120 0" Width="80" Height="40" Background="#55bcbb" Foreground="White"/>
         <!--this button should be in other window-->
-        <Button Command="{Binding ApplyForCourseCommand}" Content="Drop" Grid.Column="1" Grid.Row="12" Grid.RowSpan="2"  Margin="120 0 0 0" Width="80" Height="40" Background="#ec3629" Foreground="White"/>
+        <Button Command="{Binding WithdrawFromCourseCommand}" Content="Withdraw" Grid.Column="1" Grid.Row="12" Grid.RowSpan="2"  Margin="120 0 0 0" Width="80" Height="40" Background="#ec3629" Foreground="White"/>
     </Grid>
 </Window>
