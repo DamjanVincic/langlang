@@ -113,11 +113,22 @@ public class ExamService : IExamService
         return students;
     }
 
-    public List<Exam> GetStartableExams()
+    public List<Exam> GetStartableExams(int teacherId)
     {
-        //TODO don't return exams that have already started
-        return _examRepository.GetAll().Where(exam =>
-            (exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days <= 7).ToList();
+        Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
+                          throw new InvalidInputException("User doesn't exist.");
+        List<Exam> startableExams = new List<Exam>();
+        foreach (int examId in teacher.ExamIds)
+        {
+            Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
+            if((exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days <= 7 &&
+                !exam.Confirmed)
+            {
+                startableExams.Append(exam);
+            }
+        }
+
+        return startableExams;
     }
 
 }

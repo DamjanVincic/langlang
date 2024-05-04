@@ -19,14 +19,13 @@ namespace LangLang.ViewModels.TeacherViewModels
     internal class StartableExamsViewModel:ViewModelBase
     {
         private readonly IExamService _examService = new ExamService();
+        private readonly Teacher _teacher = UserService.LoggedInUser as Teacher ??
+                                            throw new InvalidOperationException("No one is logged in.");
 
         public StartableExamsViewModel()
         {
-            //TODO: get startable exams only for current teacher
-            StartableExams = new ObservableCollection<ExamViewModel>(_examService.GetStartableExams()
-                .Select(exam => new ExamViewModel(exam)));
+            RefreshStartableExams();
             StartExamCommand = new RelayCommand(StartExam);
-
         }
 
         public ObservableCollection<ExamViewModel> StartableExams { get; set; }
@@ -44,7 +43,13 @@ namespace LangLang.ViewModels.TeacherViewModels
             var newWindow = new StartExamView(SelectedItem.Id);
 
             newWindow.ShowDialog();
-            //TODO: update exam list 
+            RefreshStartableExams(); 
+        }
+
+        private void RefreshStartableExams()
+        {
+            StartableExams = new ObservableCollection<ExamViewModel>(_examService.GetStartableExams(_teacher.Id)
+                .Select(exam => new ExamViewModel(exam)));
         }
     }
 }
