@@ -13,6 +13,7 @@ public interface IStudentService
     public List<Course> GetAppliedCourses(int studentId);
     public List<Exam> GetAvailableExams(Student student);
     public List<Exam> GetAppliedExams(Student student);
+    public void DropActiveCourse(int studentId);
     public void ApplyForCourse(int studentId, int courseId);
     public void WithdrawFromCourse(int studentId, int courseId);
     public void ApplyStudentExam(Student student, int examId);

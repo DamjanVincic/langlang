@@ -16,7 +16,7 @@ public class Student : User
     }
     public Education? Education { get; set; }
     public int PenaltyPoints { get; set; }
-    public int? ActiveCourseId { get; } = null;
+    public int? ActiveCourseId { get; private set; } = null;
     
     // obradjeniJezici / zavrseniJezici
     // dict jezik-bool, kada se zavrsi dodaj sa false, kada polozi ispit promeni na true
@@ -38,5 +38,13 @@ public class Student : User
             throw new InvalidInputException("You haven't applied to this course.");
         
         AppliedCourses.Remove(courseId);
+    }
+
+    public void DropActiveCourse()
+    {
+        if (ActiveCourseId is null)
+            throw new InvalidInputException("You are not enrolled in any courses.");
+
+        ActiveCourseId = null;
     }
 }

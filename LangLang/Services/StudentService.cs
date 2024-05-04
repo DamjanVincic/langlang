@@ -138,4 +138,19 @@ public class StudentService : IStudentService
         _userRepository.Update(student);
         _courseRepository.Update(course);
     }
+
+    public void DropActiveCourse(int studentId)
+    {
+        Student student = _userRepository.GetById(studentId) as Student ??
+                          throw new InvalidInputException("Student doesn't exist.");
+        
+        Course course = _courseRepository.GetById(student.ActiveCourseId!.Value) ??
+                        throw new InvalidInputException("Course doesn't exist.");
+        
+        student.DropActiveCourse();
+        course.RemoveStudent(student.Id);
+        
+        _userRepository.Update(student);
+        _courseRepository.Update(course);
+    }
 }
