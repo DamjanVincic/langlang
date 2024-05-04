@@ -111,6 +111,9 @@ public class StudentService : IStudentService
         Student student = _userRepository.GetById(studentId) as Student ??
                           throw new InvalidInputException("Student doesn't exist.");
 
+        if (student.ActiveCourseId is not null)
+            throw new InvalidInputException("You are already enrolled in a course.");
+        
         Course course = _courseRepository.GetById(courseId) ??
                         throw new InvalidInputException("Course doesn't exist.");
 
@@ -141,11 +144,16 @@ public class StudentService : IStudentService
 
     public void DropActiveCourse(int studentId)
     {
+        // TODO: Change the logic to send a reason to the teacher why the student wants to drop the course
+        
         Student student = _userRepository.GetById(studentId) as Student ??
                           throw new InvalidInputException("Student doesn't exist.");
         
         Course course = _courseRepository.GetById(student.ActiveCourseId!.Value) ??
                         throw new InvalidInputException("Course doesn't exist.");
+        
+        if ((DateTime.Now - course.StartDate.ToDateTime(TimeOnly.MinValue)).Days < 7)
+            throw new InvalidInputException("The course can't be dropped if it started less than a week ago.");
         
         student.DropActiveCourse();
         course.RemoveStudent(student.Id);
