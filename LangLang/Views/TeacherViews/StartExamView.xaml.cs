@@ -23,7 +23,7 @@ namespace LangLang.Views.TeacherViews
         public StartExamView(int examId)
         {
             InitializeComponent();
-            DataContext = new StartExamViewModel(examId);
+            DataContext = new StartExamViewModel(examId,this);
         }
     }
 }

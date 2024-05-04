@@ -18,8 +18,10 @@ namespace LangLang.ViewModels.TeacherViewModels
     {
         private readonly int _examId;
         private readonly IExamService _examService = new ExamService();
-        public StartExamViewModel(int examId)
+        private readonly Window _startExamWindow;
+        public StartExamViewModel(int examId, Window startExamWindow)
         {
+            _startExamWindow = startExamWindow;
             _examId = examId;
             Students = new ObservableCollection<SingleStudentViewModel>(_examService.GetStudents(_examId)
                 .Select(student => new SingleStudentViewModel(student)));
@@ -32,6 +34,9 @@ namespace LangLang.ViewModels.TeacherViewModels
         public void Confirm()
         {
             _examService.ConfirmExam(_examId);
+            MessageBox.Show("Exam started successfully.", "Success", MessageBoxButton.OK,
+                MessageBoxImage.Information);
+            _startExamWindow.Close();
         }
     }
 }

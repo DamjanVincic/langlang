@@ -24,6 +24,7 @@ namespace LangLang.ViewModels.TeacherViewModels
 
         public StartableExamsViewModel()
         {
+            StartableExams = new ObservableCollection<ExamViewModel>();
             RefreshStartableExams();
             StartExamCommand = new RelayCommand(StartExam);
         }
@@ -48,8 +49,11 @@ namespace LangLang.ViewModels.TeacherViewModels
 
         private void RefreshStartableExams()
         {
-            StartableExams = new ObservableCollection<ExamViewModel>(_examService.GetStartableExams(_teacher.Id)
-                .Select(exam => new ExamViewModel(exam)));
+            StartableExams.Clear();
+            _examService.GetStartableExams(_teacher.Id)
+                .Select(exam => new ExamViewModel(exam))
+                .ToList()
+                .ForEach(exam => StartableExams.Add(exam));
         }
     }
 }

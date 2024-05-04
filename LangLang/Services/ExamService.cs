@@ -124,7 +124,7 @@ public class ExamService : IExamService
             if((exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days <= 7 &&
                 !exam.Confirmed)
             {
-                startableExams.Append(exam);
+                startableExams.Add(exam);
             }
         }
 
