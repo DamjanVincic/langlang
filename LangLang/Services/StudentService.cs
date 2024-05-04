@@ -138,4 +138,15 @@ public class StudentService : IStudentService
         _userRepository.Update(student);
         _courseRepository.Update(course);
     }
+
+    public void ReportCheating(int studentId, int examId)
+    {
+        Student student = _userRepository.GetById(studentId) as Student ??
+                          throw new InvalidInputException("Student doesn't exist.");
+
+        Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
+
+        exam.RemoveStudent(studentId);
+        _userService.Delete(studentId);
+    }
 }
