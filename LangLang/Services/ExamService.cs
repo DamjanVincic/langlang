@@ -139,7 +139,7 @@ public class ExamService : IExamService
         {
             Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
 
-            int timeDifference = (exam.Date.ToDateTime(exam.ScheduledTime) - DateTime.Now).Minutes;
+            int timeDifference = (DateTime.Now - exam.Date.ToDateTime(exam.ScheduledTime)).Minutes;
 
             if (timeDifference > 0 && timeDifference < Exam.ExamDuration)
             {
