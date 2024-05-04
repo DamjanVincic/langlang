@@ -1,8 +1,9 @@
-﻿<Window x:Class="LangLang.Views.StudentViews.StudentExamView"
+﻿<Window x:Class="LangLang.Views.StudentViews.AppliedExamView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:model="clr-namespace:LangLang.Models"
         mc:Ignorable="d"
         Title="StudentExamView" Height="450" Width="800"
         WindowStartupLocation="CenterScreen"
@@ -24,8 +25,8 @@
             <RowDefinition Height="2*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" FontWeight="Bold">EXAMS AVAILABLE FOR APPLICATION</TextBlock>
-        <ListView Grid.Row="3" Grid.RowSpan="9" Padding="5" Margin="5" SelectedItem="{Binding SelectedItem}" ItemsSource="{Binding AvailableExams}" >
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" FontWeight="Bold">APPLIED EXAMS</TextBlock>
+        <ListView Grid.Row="3" Grid.RowSpan="9" Padding="5" Margin="5" SelectedItem="{Binding SelectedItem}" ItemsSource="{Binding AppliedExams}" >
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Language">
@@ -55,16 +56,16 @@
 
 
         <Grid Grid.Row="1">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-        <TextBlock Text="Date exam is held:" Grid.Column="0"/>
-        <TextBlock Text="Language:" Grid.Column="1"/>
-        <TextBlock Text="Level:" Grid.Column="2"/>
+            <TextBlock Text="Date exam is held:" Grid.Column="0"/>
+            <TextBlock Text="Language:" Grid.Column="1"/>
+            <TextBlock Text="Level:" Grid.Column="2"/>
 
         </Grid>
         <Button Command="{Binding ResetFiltersCommand}" Content="Clear" Grid.Row="1" Grid.RowSpan="2" HorizontalAlignment="Right" Margin="0 0 30 0" Width="80" Height="40" Background="White" Foreground="#55bcbb"/>
@@ -89,7 +90,7 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Button Command="{Binding ApplyForExamCommand}" Content="Apply For Exam" Grid.Column="0" Background="#55bcbb" Foreground="White" Width="150" Height="40" Grid.ColumnSpan="2"/>
+            <Button Command="{Binding DropExamCommand}" Content="Drop application" Grid.Column="0" Background="Red" Foreground="White" Width="150" Height="40" Grid.ColumnSpan="2"/>
         </Grid>
     </Grid>
 </Window>
