@@ -14,6 +14,7 @@ public class StudentService : IStudentService
     private readonly IExamRepository _examRepository = new ExamFileRepository();
     
     private readonly IUserService _userService = new UserService();
+    private readonly IExamGradeService _examGradeService = new ExamGradeService();
 
     public List<Student> GetAll()
     {
@@ -148,5 +149,21 @@ public class StudentService : IStudentService
 
         exam.RemoveStudent(studentId);
         _userService.Delete(studentId);
+    }
+
+    public void AddExamGrade(int studentId, int examId, int writing, int reading, int listening, int talking)
+    {
+        int examGradeId = _examGradeService.Add(examId, studentId, reading, writing, listening, talking);
+
+        Student student = _userRepository.GetById(studentId) as Student ??
+                          throw new InvalidInputException("Student doesn't exist.");
+
+        Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
+
+        student.ExamGradeIds[examId] = examGradeId;
+
+        //TODO : add passed to CoursePassFail, language doesn't have id?
+
+        _userRepository.Update(student);
     }
 }

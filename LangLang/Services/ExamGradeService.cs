@@ -24,7 +24,7 @@ namespace LangLang.Services
             return _examGradeRepository.GetById(id);
         }
 
-        public void Add(int examId, int studentId, int readingPoints, int writingPoints, int listeningPoints,
+        public int Add(int examId, int studentId, int readingPoints, int writingPoints, int listeningPoints,
             int talkingPoints)
         {
             Student student = _userRepository.GetById(studentId) as Student ??
@@ -35,6 +35,8 @@ namespace LangLang.Services
                 writingPoints, listeningPoints, talkingPoints);
             
             _examGradeRepository.Add(examGrade);
+            
+            return examGrade.Id;
         }
 
         public void Delete(int id)
