@@ -28,6 +28,7 @@ namespace LangLang.ViewModels.TeacherViewModels
             ExamCommand = new RelayCommand(Exam);
             LogOutCommand = new RelayCommand(LogOut);
             StartableExamsCommand = new RelayCommand(StartableExams);
+            CurrentExamCommand = new RelayCommand(CurrentExam);
         }
 
         public ICommand CourseCommand { get; }
@@ -59,6 +60,13 @@ namespace LangLang.ViewModels.TeacherViewModels
         private void StartableExams()
         {
             var newWindow = new StartableExamsView();
+            newWindow.Show();
+        }
+
+        public ICommand CurrentExamCommand { get; }
+        private void CurrentExam()
+        {
+            var newWindow = new CurrentExamView();
             newWindow.Show();
         }
     }
