@@ -7,6 +7,7 @@ using LangLang.Models;
 using LangLang.Services;
 using LangLang.Views.CourseViews;
 using LangLang.Views.ExamViews;
+using LangLang.Views.TeacherViews;
 
 namespace LangLang.ViewModels.TeacherViewModels
 {
@@ -26,6 +27,7 @@ namespace LangLang.ViewModels.TeacherViewModels
             CourseCommand = new RelayCommand(Course);
             ExamCommand = new RelayCommand(Exam);
             LogOutCommand = new RelayCommand(LogOut);
+            StartableExamsCommand = new RelayCommand(StartableExams);
         }
 
         public ICommand CourseCommand { get; }
@@ -51,6 +53,13 @@ namespace LangLang.ViewModels.TeacherViewModels
             _userService.Logout();
             new MainWindow().Show();
             _teacherMenuWindow.Close();
+        }
+
+        public ICommand StartableExamsCommand { get; }
+        private void StartableExams()
+        {
+            var newWindow = new StartableExamsView();
+            newWindow.Show();
         }
     }
 }
