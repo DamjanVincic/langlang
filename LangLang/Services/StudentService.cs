@@ -22,7 +22,6 @@ public class StudentService : IStudentService
 
     public List<Course> GetAvailableCourses(int studentId)
     {
-        // TODO: Validate to not show the courses that the student has already applied to and
         return _courseRepository.GetAll().Where(course =>
             course.StudentIds.Count < course.MaxStudents &&
             (course.StartDate.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days >= 7 &&
