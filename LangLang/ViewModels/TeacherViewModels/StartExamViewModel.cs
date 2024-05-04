@@ -21,8 +21,8 @@ namespace LangLang.ViewModels.TeacherViewModels
         private readonly Window _startExamWindow;
         public StartExamViewModel(int examId, Window startExamWindow)
         {
-            _startExamWindow = startExamWindow;
             _examId = examId;
+            _startExamWindow = startExamWindow;
             Students = new ObservableCollection<SingleStudentViewModel>(_examService.GetStudents(_examId)
                 .Select(student => new SingleStudentViewModel(student)));
             ConfirmCommand = new RelayCommand(Confirm);
@@ -31,7 +31,7 @@ namespace LangLang.ViewModels.TeacherViewModels
         public ObservableCollection<SingleStudentViewModel> Students { get; set; }
         public ICommand ConfirmCommand { get; set; }
 
-        public void Confirm()
+        private void Confirm()
         {
             _examService.ConfirmExam(_examId);
             MessageBox.Show("Exam started successfully.", "Success", MessageBoxButton.OK,

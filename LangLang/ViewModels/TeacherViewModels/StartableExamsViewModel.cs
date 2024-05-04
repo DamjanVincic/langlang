@@ -50,10 +50,7 @@ namespace LangLang.ViewModels.TeacherViewModels
         private void RefreshStartableExams()
         {
             StartableExams.Clear();
-            _examService.GetStartableExams(_teacher.Id)
-                .Select(exam => new ExamViewModel(exam))
-                .ToList()
-                .ForEach(exam => StartableExams.Add(exam));
+            _examService.GetStartableExams(_teacher.Id).ForEach(exam => StartableExams.Add(new ExamViewModel(exam)));
         }
     }
 }
