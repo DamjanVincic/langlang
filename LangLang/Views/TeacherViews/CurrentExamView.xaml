@@ -81,7 +81,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Button Command="{Binding ReportCheatingCommand}"  Content="Report cheating" Grid.Column="0" Grid.Row="10" Margin="10" VerticalAlignment="Bottom" Width="150" Height="40" Background="#ec3629" Foreground="White" />
-            <Button Command="{Binding EnterGradeCommand}" Content="Enter grade" Grid.Column="1" Grid.Row="12" Margin="10" Width="150" Height="40" Background="#55bcbb" Foreground="White" />
+            <Button Command="{Binding AddExamGradeCommand}" Content="Enter grade" Grid.Column="1" Grid.Row="12" Margin="10" Width="150" Height="40" Background="#55bcbb" Foreground="White" />
             <Button Command="{Binding FinishExamCommand}" Content="Finish exam" Grid.Column="2" Grid.Row="13" Margin="10" Width="150" Height="40" Background="#55bcbb" Foreground="White" />
 
         </Grid>
