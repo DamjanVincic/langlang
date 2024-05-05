@@ -148,6 +148,7 @@ public class StudentService : IStudentService
         Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
 
         exam.RemoveStudent(studentId);
+        _examRepository.Update(exam);
         _userService.Delete(studentId);
     }
 

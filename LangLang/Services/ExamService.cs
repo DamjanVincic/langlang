@@ -131,7 +131,7 @@ public class ExamService : IExamService
         return startableExams;
     }
 
-    public Exam GetCurrentExam(int teacherId)
+    public int GetCurrentExam(int teacherId)
     {
         Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
                           throw new InvalidInputException("User doesn't exist.");
@@ -145,7 +145,7 @@ public class ExamService : IExamService
 
             if (timeDifference >= 0 && timeDifference < Exam.ExamDuration)
             {
-                return exam;
+                return exam.Id;
             }
         }
 
