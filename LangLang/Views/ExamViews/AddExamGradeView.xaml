@@ -38,7 +38,7 @@
         <TextBlock Grid.Row="2" Grid.Column="2" HorizontalAlignment="Right" Margin="10">Talking</TextBlock>
         <TextBox PreviewTextInput="NumberValidationTextBox" Grid.Row="2" Grid.Column="3" Margin="10" Width="200" Height="40" Text="{Binding TalkingPoints}"/>
 
-        <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="5" Content="Add Exam Grade" Command="{Binding AddExamGradeCommand}" Background="#55bcbb" Foreground="White" CommandParameter="{Binding ElementName=QualificationsListBox, Path=SelectedItems}" Width="140" Height="40"/>
+        <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="5" Content="Add Exam Grade" Command="{Binding AddExamGradeCommand}" Background="#55bcbb" Foreground="White" Width="140" Height="40"/>
 
     </Grid>
 </Window>
