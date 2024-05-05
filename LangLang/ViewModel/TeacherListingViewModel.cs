@@ -24,8 +24,6 @@ namespace LangLang.ViewModel
         private readonly ITeacherService _teacherService = new TeacherService();
         private readonly ILanguageService _languageService = new LanguageService();
         private readonly ICourseService _courseService = new CourseService();
-        private readonly IExamService _examService = new ExamService();
-        private readonly IScheduleService _scheduleService = new ScheduleService();
         private readonly ICourseRepository _courseRepository = new CourseFileRepository();
 
         private string _selectedLanguageName;
@@ -137,20 +135,10 @@ namespace LangLang.ViewModel
                 if (SelectedItem == null)
                     throw new Exception("No teacher selected");
 
-                Teacher teacher = (Teacher)_userService.GetById(SelectedItem.Id);
-
-                List<Course> activeTrachersCourses = _courseService.GetTeachersCourses(teacher, true, true);
-                activeTrachersCourses.AddRange(_courseService.GetTeachersCourses(teacher, true, false));
-                PutSubstituteTeachers(activeTrachersCourses);
-
-                _teacherService.DeleteTeachersExams(teacher);
-
-                RemoveTeacherFromCourses(_courseService.GetTeachersCourses(teacher, false, false));
-
-                DeleteTeachersCourses(_courseService.GetTeachersCourses(teacher, false, true));
+                PutSubstituteTeachers();
+                _userService.Delete(SelectedItem.Id);
 
                 _teachers.Remove(SelectedItem);
-                _userService.Delete(teacher.Id);
                 TeachersCollectionView.Refresh();
             }
             catch (Exception ex)
@@ -159,31 +147,16 @@ namespace LangLang.ViewModel
             }
         }
 
-        private void DeleteTeachersCourses(List<Course> inactiveCoursesCreatedByTeacher)
+        private void PutSubstituteTeachers()
         {
-            foreach (Course course in inactiveCoursesCreatedByTeacher)
-            {
-                _courseService.Delete(course.Id);
-            }
-        }
+            List<Course> activeTeachersCourses = _courseService.GetTeachersCourses(SelectedItem.Id, true, true);
+            activeTeachersCourses.AddRange(_courseService.GetTeachersCourses(SelectedItem.Id, true, false));
 
-        private void RemoveTeacherFromCourses(List<Course> inactiveCoursesCreatedByDirector)
-        {
-            foreach (Course course in inactiveCoursesCreatedByDirector)
-            {
-                course.CreatorId = -1;
-                _courseRepository.Update(course);
-            }
-        }
-
-        private void PutSubstituteTeachers(List<Course> activeTeachersCourses)
-        {
             Dictionary<Course, int> substituteTeacherIds = new Dictionary<Course, int>();
 
             foreach (Course course in activeTeachersCourses)
             {
-                int substituteTeacherId = PickSubstituteTeacher(course);
-                substituteTeacherIds[course]= substituteTeacherId;
+                substituteTeacherIds[course]= PickSubstituteTeacher(course);
             }
 
             foreach (Course course in substituteTeacherIds.Keys)
@@ -196,8 +169,10 @@ namespace LangLang.ViewModel
         private int PickSubstituteTeacher(Course course)
         {
             List<Teacher> availableTeachers = _teacherService.GetAvailableTeachers(course);
+
             if (!availableTeachers.Any())
                 throw new Exception("There are no available substitute teachers");
+
             int substituteTeacherId = -1;
             var newWindow = new PickSubstituteTeacherView(availableTeachers, ref substituteTeacherId, course);
             newWindow.ShowDialog();

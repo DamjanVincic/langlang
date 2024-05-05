@@ -47,11 +47,35 @@ public class TeacherService : ITeacherService
         return availableTeachers;
     }
 
-    public void DeleteTeachersExams(Teacher teacher)
+    public void DeleteExams(int teacherId)
     {
+        Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
+                          throw new InvalidInputException("User doesn't exist.");
+
         foreach (int examId in teacher.ExamIds)
         {
             _examService.Delete(examId);
+        }
+    }
+
+    public void RemoveFromInactiveCourses(int teacherId)
+    {
+        List<Course> courses = _courseService.GetTeachersCourses(teacherId, false, false);
+
+        foreach (Course course in courses)
+        {
+            course.CreatorId = -1;
+            _courseRepository.Update(course);
+        }
+    }
+
+    public void DeleteInactiveCourses(int teacherId)
+    {
+        List<Course> courses = _courseService.GetTeachersCourses(teacherId, false, true);
+
+        foreach (Course course in courses)
+        {
+            _courseService.Delete(course.Id);
         }
     }
 }

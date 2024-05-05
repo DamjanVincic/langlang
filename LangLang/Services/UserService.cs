@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using LangLang.Model;
 using LangLang.Repositories;
@@ -10,6 +12,7 @@ public class UserService : IUserService
     public static User? LoggedInUser { get; private set; }
     
     private readonly IUserRepository _userRepository = new UserFileRepository();
+    private readonly ITeacherService _teacherService = new TeacherService();
 
     public List<User> GetAll()
     {
@@ -67,7 +70,16 @@ public class UserService : IUserService
     public void Delete(int id)
     {
         _userRepository.Delete(id);
-        
+
+        User user = _userRepository.GetById(id) ?? throw new InvalidInputException("User doesn't exist");
+
+        switch (user)
+        {
+            case Teacher teacher:
+                DeleteTeacher(id);
+                break;
+        }
+
         if (LoggedInUser?.Id == id)
             LoggedInUser = null;
     }
@@ -85,5 +97,12 @@ public class UserService : IUserService
             throw new InvalidInputException("Already logged out.");
         
         LoggedInUser = null;
+    }
+
+    private void DeleteTeacher(int teacherId)
+    {
+        _teacherService.DeleteExams(teacherId);
+        _teacherService.RemoveFromInactiveCourses(teacherId);
+        _teacherService.DeleteInactiveCourses(teacherId);
     }
 }
