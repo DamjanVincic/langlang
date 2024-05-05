@@ -66,8 +66,15 @@ namespace LangLang.ViewModels.TeacherViewModels
         public ICommand CurrentExamCommand { get; }
         private void CurrentExam()
         {
-            var newWindow = new CurrentExamView();
-            newWindow.Show();
+            try
+            {
+                var newWindow = new CurrentExamView();
+                newWindow.Show();
+            }
+            catch (InvalidInputException exception)
+            {
+                MessageBox.Show(exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }
