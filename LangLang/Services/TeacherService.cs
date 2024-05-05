@@ -64,7 +64,7 @@ public class TeacherService : ITeacherService
 
         foreach (Course course in courses)
         {
-            course.CreatorId = -1;
+            course.CreatorId = null;
             _courseRepository.Update(course);
         }
     }
