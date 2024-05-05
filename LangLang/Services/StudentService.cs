@@ -160,6 +160,9 @@ public class StudentService : IStudentService
 
         Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
 
+        if (student.ExamGradeIds.ContainsKey(examId))
+            _examGradeService.Delete(student.ExamGradeIds[examId]);
+
         student.ExamGradeIds[examId] = examGradeId;
 
         //TODO : add passed to CoursePassFail, language doesn't have id?
