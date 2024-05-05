@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -24,25 +25,48 @@ namespace LangLang.ViewModels.ExamViewModels
         private readonly IExamGradeRepository _examGradeRepository = new ExamGradeFileRepository();
         private readonly IExamService _examService = new ExamService();
         private readonly Exam _exam;
+        private readonly Window _currentWindow;
 
-        public CurrentExamViewModel()
+        public CurrentExamViewModel(Window currentWindow)
         {
-            //TODO: try catch
             _exam = _examService.GetCurrentExam(_teacher.Id);
             RefreshStudents();
             AddExamGradeCommand = new RelayCommand(AddExamGrade);
+            FinishExamCommand = new RelayCommand(FinishExam);
+            _currentWindow=currentWindow;
         }
 
         public ObservableCollection<StudentExamGradeViewModel> Students { get; set; } = new();
         public StudentExamGradeViewModel SelectedItem { get; set; }
 
         public ICommand AddExamGradeCommand { get; set; }
+        public ICommand FinishExamCommand { get; set; }
 
         private void AddExamGrade()
         {
+            if (SelectedItem == null)
+            {
+                MessageBox.Show("No student selected.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
             var newWindow = new AddExamGradeView(SelectedItem.StudentId, _exam.Id);
             newWindow.ShowDialog();
             RefreshStudents();
+        }
+
+        private void FinishExam()
+        {
+            try
+            {
+                _examService.CheckGrades(_exam.Id);
+                MessageBox.Show("Successfully finished exam.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                _currentWindow.Close();
+            }
+            catch (InvalidInputException exception)
+            {
+                MessageBox.Show(exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void RefreshStudents()

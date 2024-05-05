@@ -23,7 +23,7 @@ namespace LangLang.Views.TeacherViews
         public CurrentExamView()
         {
             InitializeComponent();
-            DataContext = new CurrentExamViewModel();
+            DataContext = new CurrentExamViewModel(this);
         }
     }
 }
