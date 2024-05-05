@@ -18,6 +18,7 @@ namespace LangLang.ViewModels.StudentViewModels
             _examGrade = examGrade;
         }
 
+        public int StudentId => _student.Id;
         public String FirstName => _student.FirstName;
         public String LastName => _student.LastName;
         public String ReadingPoints => _examGrade == null ? "/" : _examGrade.ReadingPoints.ToString();
