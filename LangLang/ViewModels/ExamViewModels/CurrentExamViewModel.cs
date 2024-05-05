@@ -4,11 +4,14 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
 using LangLang.Repositories;
 using LangLang.Services;
 using LangLang.ViewModels.StudentViewModels;
+using LangLang.Views.ExamViews;
 
 namespace LangLang.ViewModels.ExamViewModels
 {
@@ -27,9 +30,20 @@ namespace LangLang.ViewModels.ExamViewModels
             //TODO: try catch
             _exam = _examService.GetCurrentExam(_teacher.Id);
             RefreshStudents();
+            AddExamGradeCommand = new RelayCommand(AddExamGrade);
         }
 
         public ObservableCollection<StudentExamGradeViewModel> Students { get; set; } = new();
+        public StudentExamGradeViewModel SelectedItem { get; set; }
+
+        public ICommand AddExamGradeCommand { get; set; }
+
+        private void AddExamGrade()
+        {
+            var newWindow = new AddExamGradeView(SelectedItem.StudentId, _exam.Id);
+            newWindow.ShowDialog();
+            RefreshStudents();
+        }
 
         private void RefreshStudents()
         {
