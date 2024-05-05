@@ -59,7 +59,8 @@ public class TeacherService : ITeacherService
 
     public void RemoveFromInactiveCourses(int teacherId)
     {
-        List<Course> courses = _courseService.GetTeachersCourses(teacherId, false, false);
+        List<Course> courses = GetCourses(teacherId).Where(course => !course.AreApplicationsClosed 
+                                                                     && course.CreatorId != teacherId).ToList();
 
         foreach (Course course in courses)
         {
@@ -70,7 +71,8 @@ public class TeacherService : ITeacherService
 
     public void DeleteInactiveCourses(int teacherId)
     {
-        List<Course> courses = _courseService.GetTeachersCourses(teacherId, false, true);
+        List<Course> courses = GetCourses(teacherId).Where(course => !course.AreApplicationsClosed
+                                                                     && course.CreatorId == teacherId).ToList();
 
         foreach (Course course in courses)
         {

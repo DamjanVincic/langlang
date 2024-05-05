@@ -149,20 +149,21 @@ namespace LangLang.ViewModel
 
         private void PutSubstituteTeachers()
         {
-            List<Course> activeTeachersCourses = _courseService.GetTeachersCourses(SelectedItem.Id, true, true);
-            activeTeachersCourses.AddRange(_courseService.GetTeachersCourses(SelectedItem.Id, true, false));
+            Dictionary<int, Course> activeTeachersCourses = _teacherService.GetCourses(SelectedItem.Id)
+                .Where(course => course.AreApplicationsClosed)
+                .ToDictionary(course => course.Id);
 
-            Dictionary<Course, int> substituteTeacherIds = new Dictionary<Course, int>();
+            Dictionary<int, int> substituteTeacherIds = new Dictionary<int, int>();
 
-            foreach (Course course in activeTeachersCourses)
+            foreach (int courseId in activeTeachersCourses.Keys)
             {
-                substituteTeacherIds[course]= PickSubstituteTeacher(course);
+                substituteTeacherIds[courseId]= PickSubstituteTeacher(activeTeachersCourses[courseId]);
             }
 
-            foreach (Course course in substituteTeacherIds.Keys)
+            foreach (int courseId in substituteTeacherIds.Keys)
             {
-                course.TeacherId=substituteTeacherIds[course];
-                _courseRepository.Update(course);
+                activeTeachersCourses[courseId].TeacherId=substituteTeacherIds[courseId];
+                _courseRepository.Update(activeTeachersCourses[courseId]);
             }
         }
 
