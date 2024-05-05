@@ -24,7 +24,7 @@ namespace LangLang.Views.ExamViews
         public AddExamGradeView(int studentId, int examId)
         {
             InitializeComponent();
-            DataContext = new AddExamGradeViewModel(studentId, examId);
+            DataContext = new AddExamGradeViewModel(studentId, examId, this);
         }
 
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
