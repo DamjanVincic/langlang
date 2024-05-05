@@ -12,7 +12,7 @@ namespace LangLang.Models
         private List<Weekday> _held = null!;
         
         public Course(Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents,
-            int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed,
+            int? creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed,
             int teacherId) : base(language, maxStudents, startDate, teacherId, scheduledTime)
         {
             Duration = duration;
