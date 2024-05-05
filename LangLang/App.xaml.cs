@@ -1,12 +1,12 @@
-﻿using LangLang.ViewModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using LangLang.Model;
+using LangLang.Models;
+using LangLang.Repositories;
 
 namespace LangLang
 {
@@ -17,25 +17,19 @@ namespace LangLang
     {
         public App()
         {
-            //TODO: Load data
-            Language.LoadLanguagesFromJson();
-            Course.LoadCourseFromJson();
-            Exam.LoadExamFromJson();
-            User.LoadUsersFromJson();
-            new Director("Nadja", "Zoric", "nadjazoric@gmail.com", "PatrikZvezdasti011", Gender.Female, "1234567890123");
-
+            Director director = new Director("Nadja", "Zoric", "nadjazoric@gmail.com", "PatrikZvezdasti011", Gender.Female, "1234567890123");
+            
+            IUserRepository userRepository = new UserFileRepository();
+            if (userRepository.GetAll().All(user => user.Email != director.Email))
+                userRepository.Add(director);
+            
             new MainWindow().Show();
             Exit += App_Exit;
         }
         
         private void App_Exit(object sender, ExitEventArgs e)
         {
-            //TODO: Save data
-            User.Users.Remove(0);
-            Course.WriteCourseToJson();
-            Exam.WriteExamToJson();
-            Language.WriteLanguageToJson();
-            User.WriteUsersToJson();
+            
         }
     }
 }
