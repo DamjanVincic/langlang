@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using LangLang.Model;
+using LangLang.Models;
 using LangLang.Repositories;
 
 namespace LangLang.Services;
@@ -10,9 +10,11 @@ namespace LangLang.Services;
 public class UserService : IUserService
 {
     public static User? LoggedInUser { get; private set; }
-    
+
     private readonly IUserRepository _userRepository = new UserFileRepository();
     private readonly ITeacherService _teacherService = new TeacherService();
+    private readonly ICourseRepository _courseRepository = new CourseFileRepository();
+    private readonly IPenaltyPointService _penaltyPointService = new PenaltyPointService();
 
     public List<User> GetAll()
     {
@@ -39,10 +41,15 @@ public class UserService : IUserService
     }
 
     public void Update(int id, string firstName, string lastName, string password, Gender gender, string phone,
-        Education? education = null, List<Language>? languages = null)
+        Education? education = null, List<Language>? languages = null, int penaltyPoints = -1)
     {
         //TODO: Validate if user(student) hasn't applied to any courses or exams
         User user = _userRepository.GetById(id) ?? throw new InvalidInputException("User doesn't exist");
+
+        if (user is Student studentCheck &&
+            (studentCheck.AppliedCourses.Count > 0 || studentCheck.ActiveCourseId != null))
+            throw new InvalidInputException(
+                "You cannot change your information if you have applied to, or enrolled in any courses");
 
         user.FirstName = firstName;
         user.LastName = lastName;
@@ -53,6 +60,7 @@ public class UserService : IUserService
         switch (user)
         {
             case Student student:
+                student.PenaltyPoints = penaltyPoints != -1 ? penaltyPoints : student.PenaltyPoints;
                 student.Education = education;
                 break;
             case Teacher teacher:
@@ -62,21 +70,26 @@ public class UserService : IUserService
         }
 
         _userRepository.Update(user);
-        
+
         if (LoggedInUser?.Id == id)
             LoggedInUser = user;
     }
 
     public void Delete(int id)
     {
-        User user = _userRepository.GetById(id) ?? throw new InvalidInputException("User doesn't exist");
+        User user = _userRepository.GetById(id) ?? throw new InvalidOperationException("User doesn't exist");
 
         switch (user)
         {
+            case Student student:
+                DeleteStudent(student);
+                break;
             case Teacher teacher:
                 DeleteTeacher(id);
                 break;
         }
+
+        _userRepository.Delete(id);
 
         if (LoggedInUser?.Id == id)
             LoggedInUser = null;
@@ -84,17 +97,79 @@ public class UserService : IUserService
 
     public User? Login(string email, string password)
     {
-        User? user = _userRepository.GetAll().FirstOrDefault(user => user.Email.Equals(email) && user.Password.Equals(password));
+        User? user = _userRepository.GetAll()
+            .FirstOrDefault(user => !user.Deleted && user.Email.Equals(email) && user.Password.Equals(password));
         LoggedInUser = user;
         return user;
     }
-    
+
     public void Logout()
     {
         if (LoggedInUser == null)
             throw new InvalidInputException("Already logged out.");
-        
+
         LoggedInUser = null;
+    }
+    
+    private void DeleteStudent(Student student)
+    {
+        foreach (var course in student.AppliedCourses.Select(courseId =>
+                     _courseRepository.GetById(courseId) ??
+                     throw new InvalidOperationException("Course doesn't exist")))
+        {
+            course.RemoveStudent(student.Id);
+            _courseRepository.Update(course);
+        }
+
+        
+        if (student.ActiveCourseId is null) return;
+        
+        Course enrolledCourse = _courseRepository.GetById(student.ActiveCourseId!.Value) ??
+                                throw new InvalidOperationException("Course doesn't exist");
+        enrolledCourse.RemoveStudent(student.Id);
+        _courseRepository.Update(enrolledCourse);
+    }
+
+    public void CheckIfFirstInMonth()
+    {
+        DateOnly currentDate = DateOnly.FromDateTime(DateTime.Now);
+        int dayOfMonth = currentDate.Day;
+
+        if (dayOfMonth != 1 || LoggedInUser is not Student student || student.PenaltyPoints <= 0)
+        {
+            return;
+        }
+
+        --student.PenaltyPoints;
+        _userRepository.Update(student);
+        RemoveStudentPenaltyPoint(student.Id);
+    }
+
+    private void RemoveStudentPenaltyPoint(int studentId)
+    {
+        List<PenaltyPoint> penaltyPoints = _penaltyPointService.GetAll();
+
+        foreach (PenaltyPoint point in penaltyPoints)
+        {
+            if (point.StudentId == studentId && !point.Deleted)
+            {
+                _penaltyPointService.Delete(point.Id);
+                break;
+            }
+        }
+    }
+
+
+    public void AddPenaltyPoint(Student student, PenaltyPointReason penaltyPointReason, bool deleted, int courseId,
+        int teacherId, DateOnly datePenaltyPointGiven)
+    {
+        ++student.PenaltyPoints;
+        _userRepository.Update(student);
+        _penaltyPointService.Add(penaltyPointReason, deleted, student.Id, courseId, teacherId, datePenaltyPointGiven);
+        if (student.PenaltyPoints == 3)
+        {
+            Delete(student.Id);
+        }
     }
 
     private void DeleteTeacher(int teacherId)

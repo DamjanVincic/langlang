@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using LangLang.Model;
+using LangLang.Models;
 using Newtonsoft.Json;
 
 namespace LangLang.Repositories;
@@ -45,8 +45,12 @@ public class UserFileRepository : IUserRepository
     public void Delete(int id)
     {
         LoadData();
-        _users.Remove(id);
-        SaveData();
+        User? user = GetById(id);
+        if (user != null)
+        {
+            user.Deleted = true;
+            SaveData();
+        }
     }
 
     private void SaveData()

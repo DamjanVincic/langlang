@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using LangLang.Model;
+using System.Linq;
+using LangLang.Models;
 using LangLang.Repositories;
 
 namespace LangLang.Services;
@@ -94,4 +95,40 @@ public class ExamService : IExamService
 
         _examRepository.Delete(id);
     }
+
+    public void ConfirmExam(int examId)
+    {
+        Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
+        exam.Confirmed=true;
+        _examRepository.Update(exam);
+    }
+
+    public List<Student> GetStudents(int examId)
+    {
+        Exam exam = _examRepository.GetById(examId);
+
+        List<Student> students = exam.StudentIds.Select(studentId => _userRepository.GetById(studentId) as Student)
+            .ToList();
+
+        return students;
+    }
+
+    public List<Exam> GetStartableExams(int teacherId)
+    {
+        Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
+                          throw new InvalidInputException("User doesn't exist.");
+        List<Exam> startableExams = new List<Exam>();
+        foreach (int examId in teacher.ExamIds)
+        {
+            Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
+            if((exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days <= 7 &&
+                !exam.Confirmed)
+            {
+                startableExams.Add(exam);
+            }
+        }
+
+        return startableExams;
+    }
+
 }

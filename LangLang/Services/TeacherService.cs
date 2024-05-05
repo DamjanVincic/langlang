@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using LangLang.Model;
+using LangLang.Models;
 using LangLang.Repositories;
 
 namespace LangLang.Services;
@@ -78,5 +78,21 @@ public class TeacherService : ITeacherService
         {
             _courseService.Delete(course.Id);
         }
+    }
+
+    public void FinishCourse() { }
+
+    /*
+     *  student and course - selected Items
+     */
+    public void AddLanguageToStudent(Student student, Course course)
+    {
+        if(student.CoursePassFail.ContainsKey(course.Id))
+        {
+            return;
+        }
+        // finished but not passed
+        student.CoursePassFail.Add(course.Id,false);
+        _userRepository.Update(student);
     }
 }

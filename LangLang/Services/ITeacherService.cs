@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using LangLang.Model;
+using LangLang.Models;
 
 namespace LangLang.Services;
 
@@ -12,4 +12,6 @@ public interface ITeacherService
     public void DeleteExams(int teacherId);
     public void RemoveFromInactiveCourses(int teacherId);
     public void DeleteInactiveCourses(int teacherId);
+    public void FinishCourse();
+    public void AddLanguageToStudent(Student student, Course course);
 }
