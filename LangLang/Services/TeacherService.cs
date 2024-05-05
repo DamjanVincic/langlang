@@ -10,7 +10,6 @@ public class TeacherService : ITeacherService
     private readonly IUserRepository _userRepository = new UserFileRepository();
     private readonly ICourseRepository _courseRepository = new CourseFileRepository();
     private readonly IExamService _examService = new ExamService();
-    private readonly IUserService _userService = new UserService();
     private readonly ICourseService _courseService = new CourseService();
     private readonly IScheduleService _scheduleService = new ScheduleService();
 

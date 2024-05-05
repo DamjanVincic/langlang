@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -15,7 +16,7 @@ namespace LangLang.ViewModel
     {
         private readonly IUserService _userService = new UserService();
 
-        private readonly ObservableCollection<TeacherViewModel> _displayedTeachers = new();
+        private readonly ObservableCollection<TeacherViewModel> _displayedTeachers;
         private int _substituteTeacherId;
         private readonly Course _course;
 
@@ -27,8 +28,8 @@ namespace LangLang.ViewModel
             _substituteTeacherId = substituteTeacherId;
             _course = course;
 
-            foreach (Teacher teacher in availableTeachers)
-                _displayedTeachers.Add(new TeacherViewModel(teacher));
+            _displayedTeachers = new ObservableCollection<TeacherViewModel>(
+                availableTeachers.Select(teacher => new TeacherViewModel(teacher)));
 
             TeachersCollectionView = CollectionViewSource.GetDefaultView(_displayedTeachers);
             SaveCommand = new RelayCommand(SaveSubstitute);

@@ -69,8 +69,6 @@ public class UserService : IUserService
 
     public void Delete(int id)
     {
-        _userRepository.Delete(id);
-
         User user = _userRepository.GetById(id) ?? throw new InvalidInputException("User doesn't exist");
 
         switch (user)
