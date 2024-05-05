@@ -102,8 +102,11 @@ public class CourseService : ICourseService
         _courseRepository.Delete(id);
     }
 
-    public List<Course> GetTeachersCourses(Teacher teacher, bool active, bool createdByTeacher)
+    public List<Course> GetTeachersCourses(int teacherId, bool active, bool createdByTeacher)
     {
+        Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
+                          throw new InvalidInputException("User doesn't exist.");
+
         List<Course> courses = new List<Course>();
         foreach (int courseId in teacher.CourseIds)
         {
