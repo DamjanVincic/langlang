@@ -15,4 +15,5 @@ public interface IExamService
     public List<Exam> GetStartableExams(int teacherId);
     public void ConfirmExam(int examId);
     public Exam GetCurrentExam(int teacherId);
+    public void CheckGrades(int examId);
 }

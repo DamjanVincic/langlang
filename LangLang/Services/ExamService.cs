@@ -151,4 +151,20 @@ public class ExamService : IExamService
 
         throw new InvalidInputException("There are currently no exams");
     }
+
+    public void CheckGrades(int examId)
+    {
+        Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
+
+        foreach (int studentId in exam.StudentIds)
+        {
+            Student student = _userRepository.GetById(studentId) as Student ??
+                              throw new InvalidInputException("Student doesn't exist.");
+
+            if (!student.ExamGradeIds.ContainsKey(examId))
+            {
+                throw new InvalidInputException("Not all students have been graded.");
+            }
+        }
+    }
 }
