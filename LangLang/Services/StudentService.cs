@@ -24,14 +24,14 @@ public class StudentService : IStudentService
     public List<Course> GetAvailableCourses(int studentId)
     {
         return _courseRepository.GetAll().Where(course =>
-            course.StudentIds.Count < course.MaxStudents &&
+            course.Students.Count < course.MaxStudents &&
             (course.StartDate.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days >= 7 &&
-            !course.StudentIds.Contains(studentId)).ToList();
+            !course.Students.ContainsKey(studentId)).ToList();
     }
 
     public List<Course> GetAppliedCourses(int studentId)
     {
-        return _courseRepository.GetAll().Where(course => course.StudentIds.Contains(studentId)).ToList();
+        return _courseRepository.GetAll().Where(course => course.Students.ContainsKey(studentId)).ToList();
     }
 
     public List<Exam> GetAppliedExams(Student student)

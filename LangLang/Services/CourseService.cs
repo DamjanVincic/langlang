@@ -26,7 +26,7 @@ public class CourseService : ICourseService
     public List<Student> GetStudents(int courseId)
     {
         Course? course = GetById(courseId);
-        List<Student> students = course.StudentIds.Select(studentId => _userRepository.GetById(studentId) as Student).ToList();
+        List<Student> students = course.Students.Keys.Select(studentId => _userRepository.GetById(studentId) as Student).ToList();
         return students;
     }
     public void Add(string languageName, LanguageLevel languageLevel, int duration, List<Weekday> held, bool isOnline,

@@ -31,7 +31,7 @@ namespace LangLang.ViewModels.CourseViewModels
         public DateOnly StartDate => _course.StartDate;
         public string TeachersName => $"{_teacher?.FirstName} {_teacher?.LastName}";
 
-        public string Students => string.Join(", ", _course.StudentIds.Select(studentId =>
+        public string Students => string.Join(", ", _course.Students.Keys.Select(studentId =>
         {
             User? user = _userService.GetById(studentId);
             return user != null ? $"{user.FirstName} {user.LastName}" : "error";

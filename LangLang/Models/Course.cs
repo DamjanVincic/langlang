@@ -26,14 +26,14 @@ namespace LangLang.Models
         [JsonConstructor]
         public Course(int id, Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents,
             int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed, int teacherId,
-            List<int> studentIds) : base(id, language, maxStudents, startDate, teacherId, scheduledTime)
+            Dictionary<int, ApplicationStatus> students) : base(id, language, maxStudents, startDate, teacherId, scheduledTime)
         {
             Duration = duration;
             Held = held;
             CreatorId = creatorId;
             AreApplicationsClosed = areApplicationsClosed;
             IsOnline = isOnline;
-            StudentIds = studentIds;
+            Students = students;
         }
 
         public new int MaxStudents
@@ -82,7 +82,9 @@ namespace LangLang.Models
 
         public bool AreApplicationsClosed { get; set; }
 
-        public List<int> StudentIds { get; } = new();
+        // TODO: Return different student IDs based on the status, only pending when accepting (ignore paused), remove all paused after starting a course etc.
+        // Dictionary of student IDs and their application status
+        public Dictionary<int, ApplicationStatus> Students { get; } = new();
 
         private static void ValidateDate(DateOnly startDate)
         {
@@ -110,21 +112,19 @@ namespace LangLang.Models
         
         public void AddStudent(int studentId)
         {
-            if (StudentIds.Count >= MaxStudents)
+            if (Students.Count >= MaxStudents)
                 throw new InvalidInputException("The course is full.");
             
-            if (StudentIds.Contains(studentId))
+            if (!Students.TryAdd(studentId, ApplicationStatus.Pending))
                 throw new InvalidInputException("Student has already applied to this course.");
-            
-            StudentIds.Add(studentId);
         }
         
         public void RemoveStudent(int studentId)
         {
-            if (!StudentIds.Contains(studentId))
+            if (!Students.ContainsKey(studentId))
                 throw new InvalidInputException("Student hasn't applied to this course.");
             
-            StudentIds.Remove(studentId);
+            Students.Remove(studentId);
         }
     }
 }
