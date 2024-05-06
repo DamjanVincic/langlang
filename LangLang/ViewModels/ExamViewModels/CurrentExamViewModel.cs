@@ -64,7 +64,7 @@ namespace LangLang.ViewModels.ExamViewModels
             try
             {
                 _examService.CheckGrades(_examId);
-                Exam? exam = _examRepository.GetById(_examId);
+                Exam exam = _examRepository.GetById(_examId)!;
                 if (exam != null)
                 {
                     exam.TeacherGraded = true;

@@ -93,8 +93,8 @@ public class StudentService : IStudentService
         }
         foreach (int id in student.AppliedExams)
         {
-            Exam? exam = _examRepository.GetById(id);
-            if (exam != null && exam.TeacherGraded == true && exam.DirectorGraded == false)
+            Exam exam = _examRepository.GetById(id)!;
+            if (exam.TeacherGraded == true && exam.DirectorGraded == false)
             {
                 throw new InvalidInputException("Cant apply for exam while waiting for results.");
             }

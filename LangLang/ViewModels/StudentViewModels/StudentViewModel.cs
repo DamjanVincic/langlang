@@ -52,7 +52,6 @@ public class StudentViewModel : ViewModelBase
         set
         {
             _student.PenaltyPoints = value;
-            RaisePropertyChanged();
         }
     }
     public string LanguageName
@@ -63,7 +62,6 @@ public class StudentViewModel : ViewModelBase
             if (_course != null && _course.Language != null)
             {
                 _course.Language.Name = value;
-                RaisePropertyChanged();
             }
         }
     }
@@ -76,7 +74,6 @@ public class StudentViewModel : ViewModelBase
             if (_course != null && Enum.TryParse<LanguageLevel>(value, out LanguageLevel level))
             {
                 _course.Language.Level = level;
-                RaisePropertyChanged();
             }
         }
     }

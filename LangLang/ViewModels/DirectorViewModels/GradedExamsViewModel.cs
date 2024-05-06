@@ -41,10 +41,10 @@ public class GradedExamsViewModel
         }
         try
         {
-            Exam? exam = _examService.GetById(SelectedItem.Id);
+            Exam exam = _examService.GetById(SelectedItem.Id)!;
             if(exam != null)
             {
-                _examService.SendGrades(exam);
+                _examService.SendGrades(exam.Id);
             }
             UpdateExamList();
             MessageBox.Show("Grades sent successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);

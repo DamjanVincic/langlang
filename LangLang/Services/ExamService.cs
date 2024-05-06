@@ -105,7 +105,7 @@ public class ExamService : IExamService
 
     public List<Student> GetStudents(int examId)
     {
-        Exam? exam = _examRepository.GetById(examId);
+        Exam exam = _examRepository.GetById(examId)!;
 
         List<Student> students = exam.StudentIds
             .Select(studentId => _userRepository.GetById(studentId) as Student)
@@ -174,16 +174,17 @@ public class ExamService : IExamService
     {
         return _examRepository.GetAll().Where(exam => exam.TeacherGraded == true && exam.DirectorGraded == false).ToList();
     }
-    public void SendGrades(Exam exam)
+    public void SendGrades(int examId)
     {
+        Exam exam = _examRepository.GetById(examId)!;
         exam.DirectorGraded = true;
         _examRepository.Update(exam);
 
         foreach (User user in _userRepository.GetAll())
         {
-            if (user is Student student && student.AppliedExams.Contains(exam.Id))
+            if (user is Student student && student.AppliedExams.Contains(examId))
             {
-                student.AppliedExams.Remove(exam.Id);
+                student.AppliedExams.Remove(examId);
                 _userRepository.Update(student);
             }
         }
