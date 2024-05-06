@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -15,20 +16,20 @@ namespace LangLang.ViewModels.TeacherViewModels
     {
         private readonly IUserService _userService = new UserService();
 
-        private readonly ObservableCollection<TeacherViewModel> _displayedTeachers = new();
-        private readonly Dictionary<Course, Teacher> _substituteTeachers;
+        private readonly ObservableCollection<TeacherViewModel> _displayedTeachers;
+        private int _substituteTeacherId;
         private readonly Course _course;
 
         public PickSubstituteTeacherViewModel(List<Teacher> availableTeachers,
-            Dictionary<Course, Teacher> substituteTeachers, Course course)
+            ref int  substituteTeacherId, Course course)
         {
             Title = $"Select substitute teacher for course {course.Language}";
 
-            _substituteTeachers = substituteTeachers;
+            _substituteTeacherId = substituteTeacherId;
             _course = course;
 
-            foreach (Teacher teacher in availableTeachers)
-                _displayedTeachers.Add(new TeacherViewModel(teacher));
+            _displayedTeachers = new ObservableCollection<TeacherViewModel>(
+                availableTeachers.Select(teacher => new TeacherViewModel(teacher)));
 
             TeachersCollectionView = CollectionViewSource.GetDefaultView(_displayedTeachers);
             SaveCommand = new RelayCommand(SaveSubstitute);
@@ -47,14 +48,7 @@ namespace LangLang.ViewModels.TeacherViewModels
                 return;
             }
 
-            Teacher? teacher = _userService.GetById(SelectedItem.Id) as Teacher;
-            if (teacher == null)
-            {
-                MessageBox.Show("User doesn't exist.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            _substituteTeachers[_course] = teacher!;
+            _substituteTeacherId = SelectedItem.Id;
             MessageBox.Show("Substitute teacher picked successfully.", "Success", MessageBoxButton.OK,
                 MessageBoxImage.Information);
         }

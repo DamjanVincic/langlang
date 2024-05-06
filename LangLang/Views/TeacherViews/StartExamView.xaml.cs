@@ -1,5 +1,4 @@
-﻿using LangLang.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,18 +11,19 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using LangLang.ViewModels.TeacherViewModels;
 
-namespace LangLang.Views
+namespace LangLang.Views.TeacherViews
 {
     /// <summary>
-    /// Interaction logic for AppliedExamView.xaml
+    /// Interaction logic for StartExamView.xaml
     /// </summary>
-    public partial class AppliedExamView : Window
+    public partial class StartExamView : Window
     {
-        public AppliedExamView()
+        public StartExamView(int examId)
         {
             InitializeComponent();
-            DataContext = new AppliedExamListingViewModel();
+            DataContext = new StartExamViewModel(examId,this);
         }
     }
 }

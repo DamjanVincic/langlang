@@ -10,10 +10,12 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
         <Button Command="{Binding CourseCommand}" Content="Courses" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
         <Button Command="{Binding ExamCommand}" Content="Exams" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
         <Button Command="{Binding LogOutCommand}" Content="Log Out" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+        <Button Command="{Binding StartableExamsCommand}" Content="Startable exams" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
     </Grid>
 </Window>

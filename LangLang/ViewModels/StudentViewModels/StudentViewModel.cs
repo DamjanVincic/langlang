@@ -22,6 +22,7 @@ public class StudentViewModel : ViewModelBase
         _studentViewWindow = studentViewWindow;
 
         ViewCoursesCommand = new RelayCommand(ViewCourses);
+        ViewAppliedCoursesCommand = new RelayCommand(ViewAppliedCourses);
         ViewExamsCommand = new RelayCommand(ViewExams);
         ViewAppliedExamsCommand = new RelayCommand(ViewAppliedExams);
         EditAccountCommand = new RelayCommand(EditAccount);
@@ -46,18 +47,22 @@ public class StudentViewModel : ViewModelBase
     public string FullName => $"{_student.FirstName} {_student.LastName}";
 
     public ICommand ViewCoursesCommand { get; }
+    public ICommand ViewAppliedCoursesCommand { get; }
     public ICommand ViewExamsCommand { get; }
     public ICommand ViewAppliedExamsCommand { get; }
 
     public ICommand EditAccountCommand { get; }
     public ICommand DeleteAccountCommand { get; }
     public ICommand LogOutCommand { get; }
-    public ICommand ApplyForCourseCommand { get; }
-    public ICommand ApplyForExamCommand { get; }
 
     private static void ViewCourses()
     {
         new StudentCourseView().Show();
+    }
+
+    private static void ViewAppliedCourses()
+    {
+        new StudentCourseView(true).Show();
     }
 
     private static void ViewExams()
@@ -86,6 +91,7 @@ public class StudentViewModel : ViewModelBase
 
         _userService.Delete(_student.Id);
         MessageBox.Show("Account deleted successfully");
+        
         new MainWindow().Show();
         _studentViewWindow.Close();
     }

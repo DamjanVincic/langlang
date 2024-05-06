@@ -4,8 +4,10 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
 using LangLang.Services;
-using LangLang.View;
 using LangLang.Repositories;
+using LangLang.Views.StudentViews;
+using LangLang.Views.TeacherViews;
+using LangLang.Views.UserViews;
 
 namespace LangLang.ViewModels.UserViewModels;
 

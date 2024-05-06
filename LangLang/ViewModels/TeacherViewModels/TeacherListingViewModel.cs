@@ -1,14 +1,17 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using System.Net;
 using System.Windows.Data;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
+using LangLang.Repositories;
 using LangLang.Services;
 using LangLang.Views.TeacherViews;
 using Teacher = LangLang.Models.Teacher;
@@ -21,7 +24,7 @@ namespace LangLang.ViewModels.TeacherViewModels
         private readonly ITeacherService _teacherService = new TeacherService();
         private readonly ILanguageService _languageService = new LanguageService();
         private readonly ICourseService _courseService = new CourseService();
-        private readonly IExamService _examService = new ExamService();
+        private readonly ICourseRepository _courseRepository = new CourseFileRepository();
 
         private string _selectedLanguageName;
         private string _selectedLanguageLevel;
@@ -127,83 +130,54 @@ namespace LangLang.ViewModels.TeacherViewModels
 
         private void DeleteTeacher()
         {
-            // TODO: Move logic before and after foreach with new window to service
-            if (SelectedItem == null)
+            try
             {
-                MessageBox.Show("No teacher selected", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
+                if (SelectedItem == null)
+                    throw new Exception("No teacher selected");
+
+                PutSubstituteTeachers();
+                _userService.Delete(SelectedItem.Id);
+
+                _teachers.Remove(SelectedItem);
+                TeachersCollectionView.Refresh();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void PutSubstituteTeachers()
+        {
+            Dictionary<int, Course> activeTeachersCourses = _teacherService.GetCourses(SelectedItem.Id)
+                .Where(course => course.AreApplicationsClosed)
+                .ToDictionary(course => course.Id);
+
+            Dictionary<int, int> substituteTeacherIds = new Dictionary<int, int>();
+
+            foreach (int courseId in activeTeachersCourses.Keys)
+            {
+                substituteTeacherIds[courseId]= PickSubstituteTeacher(activeTeachersCourses[courseId]);
             }
 
-            Teacher teacher = (Teacher)_userService.GetById(SelectedItem.Id);
-            List<Course> ActiveCourses = new List<Course>();
-            List<Course> CoursesCreatedByDirector = new List<Course>();
-            List<Course> CoursesToBeDeleted = new List<Course>();
-
-            foreach (int courseId in teacher.CourseIds)
+            foreach (int courseId in substituteTeacherIds.Keys)
             {
-                Course course = _courseService.GetById(courseId);
-                if (course.AreApplicationsClosed)
-                {
-                    ActiveCourses.Add(course);
-                }
-                else
-                {
-                    if (course.CreatorId != teacher.Id)
-                    {
-                        CoursesCreatedByDirector.Add(course);
-                    }
-                    else
-                    {
-                        CoursesToBeDeleted.Add(course);
-                    }
-                }
+                activeTeachersCourses[courseId].TeacherId=substituteTeacherIds[courseId];
+                _courseRepository.Update(activeTeachersCourses[courseId]);
             }
+        }
 
-            Dictionary<Course, Teacher> substituteTeachers = new Dictionary<Course, Teacher>();
+        private int PickSubstituteTeacher(Course course)
+        {
+            List<Teacher> availableTeachers = _teacherService.GetAvailableTeachers(course);
 
-            //ask for substitute teachers
-            foreach (Course course in ActiveCourses)
-            {
-                List<Teacher> availableTeachers = new List<Teacher>();
-                // TODO: uncomment below code
-                // foreach(Teacher teacher_ in User.GetTeachers())
-                // {
-                //     if (Schedule.CanAddScheduleItem(course.StartDate, course.Duration, course.Held, teacher_.Id,
-                //             course.ScheduledTime, true, true))
-                //     {
-                //         availableTeachers.Add(teacher_);
-                //     }
-                // }
-                //TODO: If there are no available teachers, return
-                var newWindow = new PickSubstituteTeacherView(availableTeachers, substituteTeachers, course);
+            if (!availableTeachers.Any())
+                throw new Exception("There are no available substitute teachers");
 
-                newWindow.ShowDialog();
-            }
-
-            foreach (Course course in substituteTeachers.Keys)
-            {
-                course.TeacherId = substituteTeachers[course].Id;
-            }
-
-            foreach (int examId in teacher.ExamIds)
-            {
-                //shouldn't have id parameter
-                _examService.Delete(examId);
-            }
-
-            foreach (Course course in CoursesCreatedByDirector)
-            {
-                course.CreatorId = -1;
-            }
-
-            foreach (Course course in CoursesToBeDeleted)
-            {
-                //delete course TBD
-            }
-
-            _teachers.Remove(SelectedItem);
-            _userService.Delete(teacher.Id);
-            TeachersCollectionView.Refresh();
+            int substituteTeacherId = -1;
+            var newWindow = new PickSubstituteTeacherView(availableTeachers, ref substituteTeacherId, course);
+            newWindow.ShowDialog();
+            return substituteTeacherId;
         }
 
         private void LogOut()

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json;
+using LangLang.Views.CourseViews;
 
 namespace LangLang.Models;
 
@@ -12,18 +12,31 @@ public class Student : User
     {
         Education = education ?? throw new ArgumentNullException(nameof(education));
         PenaltyPoints = 0;
-        ActiveCourse = null;
-        CoursePassFail = new Dictionary<int, bool>();
-        AppliedCourses = new List<int>();
         AppliedExams = new List<int>(); 
     }
     public Education? Education { get; set; }
     public int PenaltyPoints { get; set; }
-    public Course ActiveCourse { get; set; }
+    public int? ActiveCourseId { get; } = null;
+    
     // obradjeniJezici / zavrseniJezici
     // dict jezik-bool, kada se zavrsi dodaj sa false, kada polozi ispit promeni na true
-    public Dictionary<int,bool> CoursePassFail { get; set; }
-    public List<int> AppliedCourses {  get; set; }
+    public Dictionary<int, bool> CoursePassFail { get; set; } = new();
+    public List<int> AppliedCourses { get; } = new();
     public List<int> AppliedExams { get; set; }
-
+    
+    public void AddCourse(int courseId)
+    {
+        if (AppliedCourses.Contains(courseId))
+            throw new InvalidInputException("You have already applied to this course.");
+        
+        AppliedCourses.Add(courseId);
+    }
+    
+    public void RemoveCourse(int courseId)
+    {
+        if (!AppliedCourses.Contains(courseId))
+            throw new InvalidInputException("You haven't applied to this course.");
+        
+        AppliedCourses.Remove(courseId);
+    }
 }

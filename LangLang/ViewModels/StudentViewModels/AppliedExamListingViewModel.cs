@@ -10,9 +10,15 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
 using LangLang.Services;
+<<<<<<<< HEAD:LangLang/ViewModels/TeacherViewModels/AppliedExamListingViewModel.cs
 using LangLang.Views;
 
 namespace LangLang.ViewModels;
+========
+using LangLang.ViewModels.ExamViewModels;
+
+namespace LangLang.ViewModels.StudentViewModels;
+>>>>>>>> develop:LangLang/ViewModels/StudentViewModels/AppliedExamListingViewModel.cs
 
 public class AppliedExamListingViewModel : ViewModelBase
 {

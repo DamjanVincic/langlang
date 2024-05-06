@@ -12,7 +12,7 @@ namespace LangLang.Models
         private List<Weekday> _held = null!;
         
         public Course(Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents,
-            int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed,
+            int? creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed,
             int teacherId) : base(language, maxStudents, startDate, teacherId, scheduledTime)
         {
             Duration = duration;
@@ -68,7 +68,7 @@ namespace LangLang.Models
 
         public new bool IsOnline { get; set; }
 
-        public int CreatorId { get; set; }
+        public int? CreatorId { get; set; } = null;
 
         public DateOnly StartDate
         {
@@ -82,7 +82,7 @@ namespace LangLang.Models
 
         public bool AreApplicationsClosed { get; set; }
 
-        public List<int> StudentIds { get; set; } = new();
+        public List<int> StudentIds { get; } = new();
 
         private static void ValidateDate(DateOnly startDate)
         {
@@ -106,6 +106,25 @@ namespace LangLang.Models
         {
             if (duration <= 0)
                 throw new InvalidInputException("Invalid input: Duration must be greater than 0.");
+        }
+        
+        public void AddStudent(int studentId)
+        {
+            if (StudentIds.Count >= MaxStudents)
+                throw new InvalidInputException("The course is full.");
+            
+            if (StudentIds.Contains(studentId))
+                throw new InvalidInputException("Student has already applied to this course.");
+            
+            StudentIds.Add(studentId);
+        }
+        
+        public void RemoveStudent(int studentId)
+        {
+            if (!StudentIds.Contains(studentId))
+                throw new InvalidInputException("Student hasn't applied to this course.");
+            
+            StudentIds.Remove(studentId);
         }
     }
 }

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using LangLang.Model;
+using LangLang.Models;
 
 namespace LangLang.Repositories;
 
-public interface IPenaltyPointFileRepository
+public interface IPenaltyPointRepository
 {
     public List<PenaltyPoint> GetAll();
     public PenaltyPoint? GetById(int id);
