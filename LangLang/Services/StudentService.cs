@@ -142,23 +142,29 @@ public class StudentService : IStudentService
         _courseRepository.Update(course);
     }
 
-    public void DropActiveCourse(int studentId)
+    public void DropActiveCourse(int studentId, string reason)
     {
         // TODO: Change the logic to send a reason to the teacher why the student wants to drop the course
-
+        
         Student student = _userRepository.GetById(studentId) as Student ??
                           throw new InvalidInputException("Student doesn't exist.");
 
+        if (student.ActiveCourseId is null)
+            throw new InvalidInputException("You are not enrolled in a course.");
+        
         Course course = _courseRepository.GetById(student.ActiveCourseId!.Value) ??
                         throw new InvalidInputException("Course doesn't exist.");
 
         if ((DateTime.Now - course.StartDate.ToDateTime(TimeOnly.MinValue)).Days < 7)
             throw new InvalidInputException("The course can't be dropped if it started less than a week ago.");
 
-        student.DropActiveCourse();
-        course.RemoveStudent(student.Id);
+        course.AddDropOutRequest(studentId, reason);
 
-        _userRepository.Update(student);
+        // TODO: Move this to when the teacher reviews the drop out request
+        // student.DropActiveCourse();
+        // course.RemoveStudent(student.Id);
+
+        // _userRepository.Update(student);
         _courseRepository.Update(course);
     }
 

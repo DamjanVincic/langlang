@@ -83,8 +83,12 @@ namespace LangLang.Models
         public bool AreApplicationsClosed { get; set; }
 
         // TODO: Return different student IDs based on the status, only pending when accepting (ignore paused), remove all paused after starting a course etc.
+        // TODO: Add logic to respective methods when a student drops out from, or others to resume their applications etc.
         // Dictionary of student IDs and their application status
         public Dictionary<int, ApplicationStatus> Students { get; } = new();
+        
+        // Dictionary of student IDs and their reasons for requesting to drop out
+        public Dictionary<int, string> DropOutRequests { get; } = new();
 
         private static void ValidateDate(DateOnly startDate)
         {
@@ -125,6 +129,15 @@ namespace LangLang.Models
                 throw new InvalidInputException("Student hasn't applied to this course.");
             
             Students.Remove(studentId);
+        }
+        
+        public void AddDropOutRequest(int studentId, string reason)
+        {
+            if (!Students.ContainsKey(studentId))
+                throw new InvalidInputException("Student hasn't applied to this course.");
+            
+            if (!DropOutRequests.TryAdd(studentId, reason))
+                throw new InvalidInputException("Student has already requested to drop out.");
         }
     }
 }
