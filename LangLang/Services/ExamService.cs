@@ -33,7 +33,7 @@ public class ExamService : IExamService
                             throw new InvalidInputException("Language with the given level doesn't exist.");
 
         Exam exam = new Exam(language, maxStudents, examDate, teacherId, examTime)
-            { Id = _examRepository.GenerateId() };
+        { Id = _examRepository.GenerateId() };
 
         _scheduleService.Add(exam);
         _examRepository.Add(exam);
@@ -110,7 +110,7 @@ public class ExamService : IExamService
         List<Student> students = exam.StudentIds
             .Select(studentId => _userRepository.GetById(studentId) as Student)
             .Where(student => student != null)
-            .Select(student => student!) 
+            .Select(student => student!)
             .ToList();
 
         return students;
@@ -170,4 +170,23 @@ public class ExamService : IExamService
             }
         }
     }
+    public List<Exam> GetUngradedExams()
+    {
+        return _examRepository.GetAll().Where(exam => exam.TeacherGraded == true && exam.DirectorGraded == false).ToList();
+    }
+    public void SendGrades(Exam exam)
+    {
+        exam.DirectorGraded = true;
+        _examRepository.Update(exam);
+
+        foreach (User user in _userRepository.GetAll())
+        {
+            if (user is Student student && student.AppliedExams.Contains(exam.Id))
+            {
+                student.AppliedExams.Remove(exam.Id);
+                _userRepository.Update(student);
+            }
+        }
+    }
+
 }

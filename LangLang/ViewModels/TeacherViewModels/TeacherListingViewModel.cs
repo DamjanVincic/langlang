@@ -14,8 +14,8 @@ using LangLang.Models;
 using LangLang.Repositories;
 using LangLang.Services;
 using LangLang.Views.TeacherViews;
+using LangLang.Views.DirectorViews;
 using Teacher = LangLang.Models.Teacher;
-
 namespace LangLang.ViewModels.TeacherViewModels
 {
     public class TeacherListingViewModel : ViewModelBase
