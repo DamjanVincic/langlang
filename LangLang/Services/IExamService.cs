@@ -14,4 +14,6 @@ public interface IExamService
     public List<Student> GetStudents(int examId);
     public List<Exam> GetStartableExams(int teacherId);
     public void ConfirmExam(int examId);
+    public int GetCurrentExam(int teacherId);
+    public void CheckGrades(int examId);
 }

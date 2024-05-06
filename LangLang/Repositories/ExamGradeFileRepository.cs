@@ -77,7 +77,9 @@ namespace LangLang.Repositories
     {
         string filePath = Path.Combine(Directory.GetCurrentDirectory(), ExamGradeDirectoryName, ExamGradeFileName);
 
-        string json = File.ReadAllText(filePath);
+        if (!File.Exists(filePath)) return;
+
+            string json = File.ReadAllText(filePath);
         _examGrades = JsonConvert.DeserializeObject<Dictionary<int, ExamGrade>>(json, new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.Auto
