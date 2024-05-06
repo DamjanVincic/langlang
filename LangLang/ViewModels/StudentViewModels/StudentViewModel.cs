@@ -72,7 +72,10 @@ public class StudentViewModel : ViewModelBase
     {
         try
         {
-            _studentService.DropActiveCourse(_student.Id);
+            var dialog = new DropOutModal();
+            if (!dialog.ShowDialog()!.Value) return;
+            
+            _studentService.DropActiveCourse(_student.Id, dialog.ResponseText);
             MessageBox.Show("Course dropped successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             // TODO: Refresh the active course here (after binding it to a view)
         }
