@@ -20,7 +20,7 @@ public class StudentViewModel : ViewModelBase
 
     private readonly Student _student = UserService.LoggedInUser as Student ?? throw new InvalidInputException("No one is logged in.");
     private readonly CourseService _courseService = new CourseService();
-    private readonly Course _course;
+    private readonly Course? _course;
 
     private readonly Window _studentViewWindow;
 
@@ -97,7 +97,7 @@ public class StudentViewModel : ViewModelBase
 
     public string Time
     {
-        get => _course != null && _course.ScheduledTime != null ? _course.ScheduledTime.ToString("HH:mm:ss") : "No scheduled time";
+        get => _course?.ScheduledTime.ToString("HH:mm:ss") ?? "No scheduled time";
         set
         {
             if (_course != null && TimeOnly.TryParseExact(value, "HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out TimeOnly time))

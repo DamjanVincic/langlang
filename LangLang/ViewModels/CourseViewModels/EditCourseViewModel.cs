@@ -29,7 +29,7 @@ namespace LangLang.ViewModels.CourseViewModels
 
         public EditCourseViewModel(Course? course)
         {
-            _id = course.Id;
+            _id = course!.Id;
             _areApplicationsClosed = course.AreApplicationsClosed;
             MaxStudents = course.MaxStudents;
             StartDate = new DateTime(course.StartDate.Year, course.StartDate.Month, course.StartDate.Day);
