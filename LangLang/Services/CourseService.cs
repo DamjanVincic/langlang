@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using LangLang.Models;
 using LangLang.Repositories;
 
@@ -22,6 +23,12 @@ public class CourseService : ICourseService
         return _courseRepository.GetById(id);
     }
 
+    public List<Student> GetStudents(int courseId)
+    {
+        Course? course = GetById(courseId);
+        List<Student> students = course.StudentIds.Select(studentId => _userRepository.GetById(studentId) as Student).ToList();
+        return students;
+    }
     public void Add(string languageName, LanguageLevel languageLevel, int duration, List<Weekday> held, bool isOnline,
         int maxStudents, int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed,
         int teacherId)
@@ -84,6 +91,12 @@ public class CourseService : ICourseService
         _userRepository.Update(teacher);
         _scheduleService.Delete(id);
         _courseRepository.Delete(id);
+    }
+    public void ConfirmCourse(int courseId)
+    {
+        Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
+        course.AreApplicationsClosed = true;
+        _courseRepository.Update(course);
     }
 
     private static DateOnly SetValidStartDate(DateOnly startDate, List<Weekday> held)
