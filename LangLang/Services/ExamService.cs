@@ -107,7 +107,7 @@ public class ExamService : IExamService
     {
         Exam exam = _examRepository.GetById(examId)!;
 
-List<Student> students = exam.StudentIds.Select(studentId => (_userRepository.GetById(studentId) as Student)!).ToList();
+        List<Student> students = exam.StudentIds.Select(studentId => (_userRepository.GetById(studentId) as Student)!).ToList();
 
         return students;
     }
@@ -165,6 +165,9 @@ List<Student> students = exam.StudentIds.Select(studentId => (_userRepository.Ge
                 throw new InvalidInputException("Not all students have been graded.");
             }
         }
+        
+        exam.TeacherGraded = true;
+        _examRepository.Update(exam);
     }
     public List<Exam> GetUngradedExams()
     {
