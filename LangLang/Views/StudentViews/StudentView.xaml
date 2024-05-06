@@ -30,7 +30,7 @@
             
             <TextBlock Grid.Row="2" VerticalAlignment="Bottom">
                 <Run Text="penalty points "/>
-                <Run FontStyle="Italic" Text="{Binding NumberOfPenaltyPoints}"/>
+                <Run FontStyle="Italic" Text="{Binding NumberOfPenaltyPoints, Mode=OneWay}"/>
                 <Run Text=" 🚩"/>
             </TextBlock>
 
