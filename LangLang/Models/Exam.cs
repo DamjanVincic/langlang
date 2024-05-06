@@ -12,6 +12,8 @@ namespace LangLang.Models
             : base(language, maxStudents, date, teacherId, time)
         {
             Confirmed=false;
+            TeacherGraded=false;
+            DirectorGraded=false;
         }
 
         // Constructor without date validation for deserializing
@@ -22,6 +24,8 @@ namespace LangLang.Models
         }
 
         public bool Confirmed { get; set; }
+        public bool TeacherGraded {  get; set; }
+        public bool DirectorGraded {  get; set; }
 
         public new int MaxStudents
         {

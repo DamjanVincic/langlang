@@ -20,7 +20,7 @@ namespace LangLang.Views.CourseViews
         {
             public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
             {
-                string format = value as string;
+                string? format = value as string;
                 if (format.Equals("in-person"))
                 {
                     return Visibility.Visible;

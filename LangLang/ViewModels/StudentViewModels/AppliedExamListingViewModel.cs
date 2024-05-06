@@ -19,8 +19,8 @@ public class AppliedExamListingViewModel : ViewModelBase
     private readonly ILanguageService _languageService = new LanguageService();
     private readonly IStudentService _studentService = new StudentService();
     private readonly IExamService _examService = new ExamService();
-    private string _languageNameSelected;
-    private string _languageLevelSelected;
+    private string? _languageNameSelected;
+    private string? _languageLevelSelected;
     private DateTime _dateSelected;
     private readonly Student _student = UserService.LoggedInUser as Student ?? throw new InvalidInputException("No one is logged in.");
 
@@ -35,7 +35,7 @@ public class AppliedExamListingViewModel : ViewModelBase
     }
 
     public ObservableCollection<ExamViewModel> AppliedExams { get; }
-    public ExamViewModel SelectedItem { get; set; }
+    public ExamViewModel? SelectedItem { get; set; }
     public ICollectionView ExamCollectionView { get; set; }
     public IEnumerable<LanguageLevel> LanguageLevelValues => Enum.GetValues(typeof(LanguageLevel)).Cast<LanguageLevel>();
     public IEnumerable<string> LanguageNames => _languageService.GetAllNames();
@@ -43,7 +43,7 @@ public class AppliedExamListingViewModel : ViewModelBase
     public ICommand DropExamCommand { get; }
 
 
-    public string LanguageNameSelected
+    public string? LanguageNameSelected
     {
         get => _languageNameSelected;
         set
@@ -53,7 +53,7 @@ public class AppliedExamListingViewModel : ViewModelBase
         }
     }
 
-    public string LanguageLevelSelected
+    public string? LanguageLevelSelected
     {
         get => _languageLevelSelected;
         set
@@ -100,7 +100,7 @@ public class AppliedExamListingViewModel : ViewModelBase
         }
         try
         {
-            Exam exam = _examService.GetById(SelectedItem.Id);
+            Exam? exam = _examService.GetById(SelectedItem.Id);
             _studentService.DropExam(exam, _student);
             UpdateExamList();
             MessageBox.Show("Exam droped successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);

@@ -7,6 +7,7 @@ using LangLang.Services;
 using LangLang.Repositories;
 using LangLang.Views.StudentViews;
 using LangLang.Views.TeacherViews;
+using LangLang.Views.DirectorViews;
 using LangLang.Views.UserViews;
 
 namespace LangLang.ViewModels.UserViewModels;
@@ -52,7 +53,7 @@ public class MainViewModel : ViewModelBase
                 new StudentView().Show();
                 break;
             case Director:
-                new TeachersView().Show();
+                new DirectorMainMenu().Show();
                 break;
             case Teacher:
                 new TeacherMenu().Show();
