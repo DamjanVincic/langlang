@@ -187,8 +187,7 @@ public class StudentService : IStudentService
 
         Student student = _userRepository.GetById(studentId) as Student ??
                           throw new InvalidInputException("Student doesn't exist.");
-
-        Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
+        _ = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
 
         if (student.CourseGradeIds.ContainsKey(courseId))
             _courseGradeService.Delete(student.CourseGradeIds[courseId]);

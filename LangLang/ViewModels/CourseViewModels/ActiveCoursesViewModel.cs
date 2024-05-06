@@ -7,6 +7,9 @@ using System.Windows.Input;
 using System.Windows;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using System.Windows.Data;
+using System.Linq;
+using System.ComponentModel;
 
 namespace LangLang.ViewModels.CourseViewModels
 {
@@ -15,14 +18,17 @@ namespace LangLang.ViewModels.CourseViewModels
         private readonly ICourseService _courseService = new CourseService();
         private readonly Teacher _teacher = UserService.LoggedInUser as Teacher ??
                                             throw new InvalidOperationException("No one is logged in.");
+        private readonly ObservableCollection<CourseViewModel> _activeCourses;
+
         public ActiveCoursesViewModel()
         {
-            ActiveCourses = new ObservableCollection<CourseViewModel>();
-            RefreshActiveCourses();
+            _activeCourses = new ObservableCollection<CourseViewModel>(_courseService.GetActiveCourses(_teacher.Id).Select(course => new CourseViewModel(course)));
+            ActiveCoursesCollectionView = CollectionViewSource.GetDefaultView(_activeCourses);
             SeeStudentsListCommand = new RelayCommand(SeeStudentsList);
         }
+        public ICollectionView ActiveCoursesCollectionView { get; }
 
-        public ObservableCollection<CourseViewModel> ActiveCourses { get; set; }
+        public ObservableCollection<CourseViewModel> ActiveCourses => _activeCourses;
         public CourseViewModel? SelectedItem { get; set; }
         public ICommand SeeStudentsListCommand { get; set; }
 
@@ -44,6 +50,7 @@ namespace LangLang.ViewModels.CourseViewModels
         {
             ActiveCourses.Clear();
             _courseService.GetActiveCourses(_teacher.Id).ForEach(course => ActiveCourses.Add(new CourseViewModel(course)));
+            ActiveCoursesCollectionView.Refresh();
         }
     }
 }

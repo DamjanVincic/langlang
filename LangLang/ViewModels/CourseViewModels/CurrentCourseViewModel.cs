@@ -9,6 +9,8 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 using System.Windows;
 using GalaSoft.MvvmLight.Command;
+using System;
+using System.Linq;
 
 namespace LangLang.ViewModels.CourseViewModels
 {
@@ -40,8 +42,17 @@ namespace LangLang.ViewModels.CourseViewModels
         public ICommand FinishCourseCommand { get; set; }
         public ICommand EnterGradeCommand { get; set; }
 
-        public static IEnumerable<string?> PenaltyPointReasonValues => new List<string> { "didn't show up", "disturbs the others", "doesn't do the homework"};
+        public static IEnumerable<string?> PenaltyPointReasonValues => Enum.GetValues(typeof(PenaltyPointReason))
+            .Cast<PenaltyPointReason?>()
+            .Where(reason => reason != PenaltyPointReason.DroppingOutDenied) 
+            .Select(reason => FormatPenaltyPointReasonValue((PenaltyPointReason)reason!));
 
+        private static string FormatPenaltyPointReasonValue(PenaltyPointReason reason)
+        {
+            string reasonString = reason.ToString();
+            reasonString = string.Concat(reasonString.Select((x, i) => i > 0 && char.IsUpper(x) ? " " + x.ToString().ToLower() : x.ToString()));
+            return reasonString;
+        }
         private void EnterGrade()
         {
             if (SelectedItem == null)
@@ -57,18 +68,9 @@ namespace LangLang.ViewModels.CourseViewModels
 
         private void FinishCourse()
         {
-            try
-            {
-                _courseService.CheckGrades(_courseId);
-                MessageBox.Show("Successfully finished course.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                _courseService.FinishCourse(_courseId);
-
-                _currentWindow.Close();
-            }
-            catch (InvalidInputException exception)
-            {
-                MessageBox.Show(exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            _courseService.FinishCourse(_courseId);
+            MessageBox.Show("Successfully finished course.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            _currentWindow.Close();
         }
 
         private void Penalize()

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 using LangLang.Models;
 using LangLang.Repositories;
 
@@ -34,7 +35,7 @@ public class CourseService : ICourseService
     {
         Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
                           throw new InvalidInputException("User doesn't exist.");
-        List<Course> startableCourses = new List<Course>();
+        List<Course> startableCourses = new();
         foreach (int courseId in teacher.CourseIds)
         {
             Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
@@ -52,7 +53,7 @@ public class CourseService : ICourseService
     {
         Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
                           throw new InvalidInputException("User doesn't exist.");
-        List<Course> activeCourses = new List<Course>();
+        List<Course> activeCourses = new();
 
         foreach (int courseId in teacher.CourseIds)
         {
@@ -63,9 +64,6 @@ public class CourseService : ICourseService
                 activeCourses.Add(course);
             }
         }
-        if (activeCourses==null)
-            throw new InvalidInputException("There are currently no active courses");
-
         return activeCourses;
     }
 
@@ -148,7 +146,7 @@ public class CourseService : ICourseService
         return startDate.AddDays((difference < 0 ? difference + 7 : difference) % 7);
     }
 
-    public void CheckGrades(int courseId)
+    private void CheckGrades(int courseId)
     {
         Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
 
@@ -165,9 +163,17 @@ public class CourseService : ICourseService
     }
     public void FinishCourse(int courseId)
     {
-        Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
-        course.IsFinished = true;
-        _courseRepository.Update(course);
+        try
+        {
+            Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
+            CheckGrades(courseId);
+            course.IsFinished = true;
+            _courseRepository.Update(course);
+        }
+        catch (InvalidInputException exception)
+        {
+            MessageBox.Show(exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 
 }

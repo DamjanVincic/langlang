@@ -22,9 +22,9 @@ namespace LangLang.Services
 
         public int Add(int courseId, int studentId, int knowledgeGrade, int activityGrade)
         {
-            Student student = _userRepository.GetById(studentId) as Student ??
+            _ = _userRepository.GetById(studentId) as Student ??
                               throw new InvalidInputException("User doesn't exist.");
-            Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
+            _ = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
 
             CourseGrade courseGrade = new(courseId, studentId, knowledgeGrade, activityGrade);
 

@@ -32,7 +32,7 @@ public class ExamService : IExamService
         Language language = _languageService.GetLanguage(languageName, languageLevel) ??
                             throw new InvalidInputException("Language with the given level doesn't exist.");
 
-        Exam exam = new Exam(language, maxStudents, examDate, teacherId, examTime)
+        Exam exam = new(language, maxStudents, examDate, teacherId, examTime)
             { Id = _examRepository.GenerateId() };
 
         _scheduleService.Add(exam);
@@ -117,7 +117,7 @@ public class ExamService : IExamService
     {
         Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
                           throw new InvalidInputException("User doesn't exist.");
-        List<Exam> startableExams = new List<Exam>();
+        List<Exam> startableExams = new();
         foreach (int examId in teacher.ExamIds)
         {
             Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");

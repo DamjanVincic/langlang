@@ -19,5 +19,5 @@ public interface IStudentService
 
     public void AddExamGrade(int studentId, int examId, int writing, int reading, int listening, int talking);
     public void AddCourseGrade(int studentId, int courseId, int knowledgeGrade, int activityGrade);
-    void Penalize(int studentId, int courseId);
+    public void Penalize(int studentId, int courseId);
 }
