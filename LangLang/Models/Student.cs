@@ -12,11 +12,12 @@ public class Student : User
     {
         Education = education ?? throw new ArgumentNullException(nameof(education));
         PenaltyPoints = 0;
-        AppliedExams = new List<int>(); 
+        AppliedExams = new List<int>();
+        ActiveCourseId = null;
     }
     public Education? Education { get; set; }
     public int PenaltyPoints { get; set; }
-    public int? ActiveCourseId { get; } = null;
+    public int? ActiveCourseId { get; set; }
     
     // obradjeniJezici / zavrseniJezici
     // dict jezik-bool, kada se zavrsi dodaj sa false, kada polozi ispit promeni na true
