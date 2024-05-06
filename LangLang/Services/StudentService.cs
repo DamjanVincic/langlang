@@ -14,6 +14,7 @@ public class StudentService : IStudentService
     private readonly IExamRepository _examRepository = new ExamFileRepository();
     
     private readonly IUserService _userService = new UserService();
+    private readonly IExamGradeService _examGradeService = new ExamGradeService();
 
     public List<Student> GetAll()
     {
@@ -144,20 +145,51 @@ public class StudentService : IStudentService
     public void DropActiveCourse(int studentId)
     {
         // TODO: Change the logic to send a reason to the teacher why the student wants to drop the course
-        
+
         Student student = _userRepository.GetById(studentId) as Student ??
                           throw new InvalidInputException("Student doesn't exist.");
-        
+
         Course course = _courseRepository.GetById(student.ActiveCourseId!.Value) ??
                         throw new InvalidInputException("Course doesn't exist.");
-        
+
         if ((DateTime.Now - course.StartDate.ToDateTime(TimeOnly.MinValue)).Days < 7)
             throw new InvalidInputException("The course can't be dropped if it started less than a week ago.");
-        
+
         student.DropActiveCourse();
         course.RemoveStudent(student.Id);
-        
+
         _userRepository.Update(student);
         _courseRepository.Update(course);
+    }
+
+    public void ReportCheating(int studentId, int examId)
+    {
+        Student student = _userRepository.GetById(studentId) as Student ??
+                          throw new InvalidInputException("Student doesn't exist.");
+
+        Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
+
+        exam.RemoveStudent(studentId);
+        _examRepository.Update(exam);
+        _userService.Delete(studentId);
+    }
+
+    public void AddExamGrade(int studentId, int examId, int writing, int reading, int listening, int talking)
+    {
+        int examGradeId = _examGradeService.Add(examId, studentId, reading, writing, listening, talking);
+
+        Student student = _userRepository.GetById(studentId) as Student ??
+                          throw new InvalidInputException("Student doesn't exist.");
+
+        Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
+
+        if (student.ExamGradeIds.ContainsKey(examId))
+            _examGradeService.Delete(student.ExamGradeIds[examId]);
+
+        student.ExamGradeIds[examId] = examGradeId;
+
+        //TODO : add passed to CoursePassFail, language doesn't have id?
+
+        _userRepository.Update(student);
     }
 }

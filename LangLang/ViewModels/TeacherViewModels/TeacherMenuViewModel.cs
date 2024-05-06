@@ -7,6 +7,7 @@ using LangLang.Models;
 using LangLang.Services;
 using LangLang.Views.CourseViews;
 using LangLang.Views.ExamViews;
+using LangLang.Views.TeacherViews;
 
 namespace LangLang.ViewModels.TeacherViewModels
 {
@@ -26,13 +27,15 @@ namespace LangLang.ViewModels.TeacherViewModels
             CourseCommand = new RelayCommand(Course);
             ExamCommand = new RelayCommand(Exam);
             LogOutCommand = new RelayCommand(LogOut);
+            StartableExamsCommand = new RelayCommand(StartableExams);
+            CurrentExamCommand = new RelayCommand(CurrentExam);
         }
 
         public ICommand CourseCommand { get; }
 
         private void Course()
         {
-            var newWindow = new CourseView();
+            var newWindow = new ExistingCoursesView();
             newWindow.Show();
         }
 
@@ -51,6 +54,27 @@ namespace LangLang.ViewModels.TeacherViewModels
             _userService.Logout();
             new MainWindow().Show();
             _teacherMenuWindow.Close();
+        }
+
+        public ICommand StartableExamsCommand { get; }
+        private void StartableExams()
+        {
+            var newWindow = new StartableExamsView();
+            newWindow.Show();
+        }
+
+        public ICommand CurrentExamCommand { get; }
+        private void CurrentExam()
+        {
+            try
+            {
+                var newWindow = new CurrentExamView();
+                newWindow.Show();
+            }
+            catch (InvalidInputException exception)
+            {
+                MessageBox.Show(exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

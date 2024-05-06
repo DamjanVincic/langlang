@@ -11,6 +11,7 @@ namespace LangLang.Models
         public Exam(Language language, int maxStudents, DateOnly date, int teacherId, TimeOnly time)
             : base(language, maxStudents, date, teacherId, time)
         {
+            Confirmed=false;
         }
 
         // Constructor without date validation for deserializing
@@ -19,6 +20,8 @@ namespace LangLang.Models
             : base(id, language, maxStudents, date, teacherId, time)
         {
         }
+
+        public bool Confirmed { get; set; }
 
         public new int MaxStudents
         {
@@ -42,6 +45,14 @@ namespace LangLang.Models
         {
             if ((date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days < 14)
                 throw new InvalidInputException("The exam has to be at least 2 weeks from now.");
+        }
+
+        public void RemoveStudent(int studentId)
+        {
+            if (!StudentIds.Contains(studentId))
+                throw new InvalidInputException("Student hasn't applied to this exam.");
+
+            StudentIds.Remove(studentId);
         }
     }
 }

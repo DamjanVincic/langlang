@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using LangLang.Models;
 using LangLang.Repositories;
@@ -11,6 +12,7 @@ public class UserService : IUserService
     public static User? LoggedInUser { get; private set; }
 
     private readonly IUserRepository _userRepository = new UserFileRepository();
+    private readonly ITeacherService _teacherService = new TeacherService();
     private readonly ICourseRepository _courseRepository = new CourseFileRepository();
     private readonly IPenaltyPointService _penaltyPointService = new PenaltyPointService();
 
@@ -78,6 +80,9 @@ public class UserService : IUserService
         {
             case Student student:
                 DeleteStudent(student);
+                break;
+            case Teacher teacher:
+                DeleteTeacher(id);
                 break;
         }
 
@@ -162,5 +167,12 @@ public class UserService : IUserService
         {
             Delete(student.Id);
         }
+    }
+
+    private void DeleteTeacher(int teacherId)
+    {
+        _teacherService.DeleteExams(teacherId);
+        _teacherService.RemoveFromInactiveCourses(teacherId);
+        _teacherService.DeleteInactiveCourses(teacherId);
     }
 }

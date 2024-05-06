@@ -11,7 +11,7 @@ namespace LangLang.Services
     {
         public List<ExamGrade> GetAll();
         public ExamGrade? GetById(int id);
-        public void Add(int examId, int studentId, int readingPoints, int writingPoints, int listeningPoints, int talkingPoints);
+        public int Add(int examId, int studentId, int readingPoints, int writingPoints, int listeningPoints, int talkingPoints);
         public void Delete(int id);
     }
 }

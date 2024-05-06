@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using LangLang.Models;
 using LangLang.Repositories;
 
@@ -93,5 +94,77 @@ public class ExamService : IExamService
         _scheduleService.Delete(id);
 
         _examRepository.Delete(id);
+    }
+
+    public void ConfirmExam(int examId)
+    {
+        Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
+        exam.Confirmed = true;
+        _examRepository.Update(exam);
+    }
+
+    public List<Student> GetStudents(int examId)
+    {
+        Exam exam = _examRepository.GetById(examId);
+
+        List<Student> students = exam.StudentIds.Select(studentId => _userRepository.GetById(studentId) as Student)
+            .ToList();
+
+        return students;
+    }
+
+    public List<Exam> GetStartableExams(int teacherId)
+    {
+        Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
+                          throw new InvalidInputException("User doesn't exist.");
+        List<Exam> startableExams = new List<Exam>();
+        foreach (int examId in teacher.ExamIds)
+        {
+            Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
+            if ((exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days <= 7 &&
+                !exam.Confirmed)
+            {
+                startableExams.Add(exam);
+            }
+        }
+
+        return startableExams;
+    }
+
+    public int GetCurrentExam(int teacherId)
+    {
+        Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
+                          throw new InvalidInputException("User doesn't exist.");
+        foreach (int examId in teacher.ExamIds)
+        {
+            Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
+
+            TimeSpan time = DateTime.Now - exam.Date.ToDateTime(exam.ScheduledTime);
+
+            double timeDifference = (DateTime.Now - exam.Date.ToDateTime(exam.ScheduledTime)).TotalMinutes;
+
+            if (timeDifference >= 0 && timeDifference < Exam.ExamDuration)
+            {
+                return exam.Id;
+            }
+        }
+
+        throw new InvalidInputException("There are currently no exams");
+    }
+
+    public void CheckGrades(int examId)
+    {
+        Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
+
+        foreach (int studentId in exam.StudentIds)
+        {
+            Student student = _userRepository.GetById(studentId) as Student ??
+                              throw new InvalidInputException("Student doesn't exist.");
+
+            if (!student.ExamGradeIds.ContainsKey(examId))
+            {
+                throw new InvalidInputException("Not all students have been graded.");
+            }
+        }
     }
 }

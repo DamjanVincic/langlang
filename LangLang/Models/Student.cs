@@ -23,6 +23,8 @@ public class Student : User
     public Dictionary<int, bool> CoursePassFail { get; set; } = new();
     public List<int> AppliedCourses { get; } = new();
     public List<int> AppliedExams { get; set; }
+
+    public Dictionary<int, int> ExamGradeIds { get; set; } = new();
     
     public void AddCourse(int courseId)
     {

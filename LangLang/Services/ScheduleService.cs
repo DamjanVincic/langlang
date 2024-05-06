@@ -24,13 +24,13 @@ public class ScheduleService : IScheduleService
                 {
                     foreach (int day in dayDifferences)
                     {
-                        _scheduleRepository.Add(scheduleItem);
+                        _scheduleRepository.Add(scheduleItem, startDate);
                         startDate = startDate.AddDays(day);
                     }
                 }
                 break;
             case Exam:
-                _scheduleRepository.Add(scheduleItem);
+                _scheduleRepository.Add(scheduleItem, scheduleItem.Date);
                 break;
         }
     }
@@ -47,7 +47,7 @@ public class ScheduleService : IScheduleService
         _scheduleRepository.Delete(id);
     }
 
-    private bool ValidateScheduleItem(ScheduleItem scheduleItem, bool toEdit = false)
+    public bool ValidateScheduleItem(ScheduleItem scheduleItem, bool toEdit = false)
     {
         switch (scheduleItem)
         {
@@ -99,7 +99,7 @@ public class ScheduleService : IScheduleService
         foreach (ScheduleItem item in scheduleItems)
         {
             if (item.Id == scheduleItem.Id && toEdit) continue;
-            if (item.TeacherId != scheduleItem.TeacherId) continue;
+            if (item.IsOnline && item.TeacherId != scheduleItem.TeacherId) continue;
 
             TimeOnly startTimeCheck, endTimeCheck;
             startTimeCheck = item.ScheduledTime;
