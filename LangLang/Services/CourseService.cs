@@ -163,17 +163,9 @@ public class CourseService : ICourseService
     }
     public void FinishCourse(int courseId)
     {
-        try
-        {
-            Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
-            CheckGrades(courseId);
-            course.IsFinished = true;
-            _courseRepository.Update(course);
-        }
-        catch (InvalidInputException exception)
-        {
-            MessageBox.Show(exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-        }
+        Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
+        CheckGrades(courseId);
+        course.IsFinished = true;
+        _courseRepository.Update(course);
     }
-
 }

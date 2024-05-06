@@ -68,9 +68,15 @@ namespace LangLang.ViewModels.CourseViewModels
 
         private void FinishCourse()
         {
-            _courseService.FinishCourse(_courseId);
-            MessageBox.Show("Successfully finished course.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-            _currentWindow.Close();
+            try {
+                _courseService.FinishCourse(_courseId);
+                MessageBox.Show("Successfully finished course.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                _currentWindow.Close();
+            }
+            catch (InvalidInputException exception)
+            {
+                MessageBox.Show(exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void Penalize()
