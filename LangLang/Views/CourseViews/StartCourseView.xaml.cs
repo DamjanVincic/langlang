@@ -11,7 +11,7 @@ namespace LangLang.Views.CourseViews
         public StartCourseView()
         {
             InitializeComponent();
-            DataContext = new StartCourseViewModel();
+            //DataContext = new StartCourseViewModel();
         }
     }
 }
