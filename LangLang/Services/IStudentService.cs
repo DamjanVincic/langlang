@@ -17,4 +17,7 @@ public interface IStudentService
     public void WithdrawFromCourse(int studentId, int courseId);
     public void ApplyStudentExam(Student student, int examId);
     public void DropExam(Exam exam, Student student);
+    public void ReportCheating(int studentId, int examId);
+
+    public void AddExamGrade(int studentId, int examId, int writing, int reading, int listening, int talking);
 }

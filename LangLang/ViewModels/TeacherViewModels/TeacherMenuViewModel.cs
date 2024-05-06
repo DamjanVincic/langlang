@@ -28,6 +28,7 @@ namespace LangLang.ViewModels.TeacherViewModels
             ExamCommand = new RelayCommand(Exam);
             LogOutCommand = new RelayCommand(LogOut);
             StartableExamsCommand = new RelayCommand(StartableExams);
+            CurrentExamCommand = new RelayCommand(CurrentExam);
         }
 
         public ICommand CourseCommand { get; }
@@ -60,6 +61,20 @@ namespace LangLang.ViewModels.TeacherViewModels
         {
             var newWindow = new StartableExamsView();
             newWindow.Show();
+        }
+
+        public ICommand CurrentExamCommand { get; }
+        private void CurrentExam()
+        {
+            try
+            {
+                var newWindow = new CurrentExamView();
+                newWindow.Show();
+            }
+            catch (InvalidInputException exception)
+            {
+                MessageBox.Show(exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }
