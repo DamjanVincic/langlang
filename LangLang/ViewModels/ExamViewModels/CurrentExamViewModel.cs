@@ -64,12 +64,6 @@ namespace LangLang.ViewModels.ExamViewModels
             try
             {
                 _examService.CheckGrades(_examId);
-                Exam exam = _examRepository.GetById(_examId)!;
-                if (exam != null)
-                {
-                    exam.TeacherGraded = true;
-                    _examRepository.Update(exam);
-                }
                 MessageBox.Show("Successfully finished exam.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 _currentWindow.Close();
             }

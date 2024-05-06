@@ -107,11 +107,7 @@ public class ExamService : IExamService
     {
         Exam exam = _examRepository.GetById(examId)!;
 
-        List<Student> students = exam.StudentIds
-            .Select(studentId => _userRepository.GetById(studentId) as Student)
-            .Where(student => student != null)
-            .Select(student => student!)
-            .ToList();
+List<Student> students = exam.StudentIds.Select(studentId => (_userRepository.GetById(studentId) as Student)!).ToList();
 
         return students;
     }
