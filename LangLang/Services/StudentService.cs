@@ -198,4 +198,22 @@ public class StudentService : IStudentService
 
         _userRepository.Update(student);
     }
+    
+    /// <summary>
+    /// Reviews the teacher after the student has finished the course and removes the active course from the student
+    /// </summary>
+    public void ReviewTeacher(int studentId, int rating)
+    {
+        Student? student = _userRepository.GetById(studentId) as Student;
+
+        Course? course = _courseRepository.GetById(student!.ActiveCourseId!.Value);
+
+        Teacher? teacher = _userRepository.GetById(course!.TeacherId) as Teacher;
+        
+        teacher!.AddReview(rating);
+        _userRepository.Update(teacher);
+        
+        student.DropActiveCourse();
+        _userRepository.Update(student);
+    }
 }

@@ -19,4 +19,5 @@ public interface IStudentService
     public void DropExam(Exam exam, Student student);
     public void ReportCheating(int studentId, int examId);
     public void AddExamGrade(int studentId, int examId, int writing, int reading, int listening, int talking);
+    public void ReviewTeacher(int studentId, int rating);
 }

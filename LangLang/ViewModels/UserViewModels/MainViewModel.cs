@@ -15,6 +15,8 @@ public class MainViewModel : ViewModelBase
 {
     private readonly IUserService _userService = new UserService();
     private readonly ITeacherService _teacherService = new TeacherService();
+    private readonly IStudentService _studentService = new StudentService();
+    private readonly ICourseService _courseService = new CourseService();
     private readonly IUserRepository _userRep = new UserFileRepository();
     private readonly ICourseRepository courseRepository = new CourseFileRepository();
 
@@ -40,6 +42,7 @@ public class MainViewModel : ViewModelBase
 
     private void Login()
     {
+        new TeacherReviewModal().ShowDialog();
         User? user = _userService.Login(Email!, Password!);
 
         switch (user)
@@ -47,9 +50,10 @@ public class MainViewModel : ViewModelBase
             case null:
                 MessageBox.Show("Invalid email or password.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
-            case Student:
+            case Student student:
                 // TODO: When a student logs in, check if the current course is finished and show a dialog to rate the teacher.
                 _userService.CheckIfFirstInMonth();
+                ReviewTeacher(student);
                 new StudentView().Show();
                 break;
             case Director:
@@ -62,5 +66,15 @@ public class MainViewModel : ViewModelBase
 
         _loginWindow.Close();
         Application.Current.MainWindow?.Close();
+    }
+
+    // If current course is finished, show a dialog to rate the teacher
+    private void ReviewTeacher(Student student)
+    {
+        if (student.ActiveCourseId is null || !_courseService.GetById(student.ActiveCourseId!.Value)?.IsFinished) return;
+        
+        var dialog = new TeacherReviewModal();
+        if (dialog.ShowDialog()!.Value)
+            _studentService.ReviewTeacher(student.Id, dialog.Response);
     }
 }
