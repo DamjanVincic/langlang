@@ -26,7 +26,7 @@ namespace LangLang.Services
                               throw new InvalidInputException("User doesn't exist.");
             Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
 
-            CourseGrade courseGrade = new CourseGrade(_courseGradeRepository.GenerateId(), courseId, studentId, knowledgeGrade, activityGrade);
+            CourseGrade courseGrade = new(courseId, studentId, knowledgeGrade, activityGrade);
 
             _courseGradeRepository.Add(courseGrade);
 

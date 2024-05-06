@@ -14,9 +14,8 @@ namespace LangLang.Models
         private int _knowledgeGrade;
         private int _activityGrade;
 
-        public CourseGrade(int id, int courseId, int studentId, int knowledgeGrade, int activityGrade)
+        public CourseGrade(int courseId, int studentId, int knowledgeGrade, int activityGrade)
         {
-            Id = id;
             CourseId = courseId;
             StudentId = studentId;
             KnowledgeGrade = knowledgeGrade;
