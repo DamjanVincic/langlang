@@ -25,6 +25,7 @@ public class Student : User
     public List<int> AppliedExams { get; set; }
 
     public Dictionary<int, int> ExamGradeIds { get; set; } = new();
+    public Dictionary<int, int> CourseGradeIds { get; set; } = new();
     
     public void AddCourse(int courseId)
     {

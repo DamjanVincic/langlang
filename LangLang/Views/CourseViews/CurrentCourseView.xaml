@@ -67,7 +67,7 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <ComboBox  ItemsSource="{Binding LanguageNameValues}" SelectedItem="{Binding SelectedLanguageName, Mode=TwoWay}" Grid.Column="0" Margin="5"/>
+            <ComboBox  ItemsSource="{Binding PenaltyPointReasonValues}" SelectedItem="{Binding SelectedPenaltyPointReason, Mode=TwoWay}" Grid.Column="0" Margin="5"/>
             <Button Command="{Binding PenalizeCommand}"  Content="Penalize" Grid.Column="1"  Margin="10" VerticalAlignment="Bottom" Width="150" Height="40" Background="#ec3629" Foreground="White" />
             <Button Command="{Binding EnterGradeCommand}" Content="Enter grade" Grid.Column="2" Margin="10" Width="150" Height="40" Background="#55bcbb" Foreground="White" />
             <Button Command="{Binding FinishCourseCommand}" Content="Finish course" Grid.Column="3" Margin="10" Width="150" Height="40" Background="#55bcbb" Foreground="White" />
