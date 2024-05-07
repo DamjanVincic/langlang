@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Globalization;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -16,6 +20,8 @@ public class StudentViewModel : ViewModelBase
     private readonly IStudentService _studentService = new StudentService();
 
     private readonly Student _student = UserService.LoggedInUser as Student ?? throw new InvalidInputException("No one is logged in.");
+    private readonly CourseService _courseService = new CourseService();
+    private readonly Course? _course;
 
     private readonly Window _studentViewWindow;
 
@@ -31,9 +37,69 @@ public class StudentViewModel : ViewModelBase
         EditAccountCommand = new RelayCommand(EditAccount);
         DeleteAccountCommand = new RelayCommand(DeleteAccount);
         LogOutCommand = new RelayCommand(LogOut);
+
+        if (_student.ActiveCourseId.HasValue)
+        {
+            _course = _courseService.GetById(_student.ActiveCourseId.Value);
+        }
+        else
+        {
+            _course = null;
+        }
+    }
+    
+    public int NumberOfPenaltyPoints => _student.PenaltyPoints;
+
+    public string LanguageName
+    {
+        get => _course?.Language?.Name ?? "No language";
+        set
+        {
+            if (_course != null && _course.Language != null)
+            {
+                _course.Language.Name = value;
+            }
+        }
     }
 
-    public int NumberOfPenaltyPoints => _student.PenaltyPoints;
+    public string LanguageLevel
+    {
+        get => _course?.Language?.Level.ToString() ?? "No level";
+        set
+        {
+            if (_course != null && Enum.TryParse<LanguageLevel>(value, out LanguageLevel level))
+            {
+                _course.Language.Level = level;
+            }
+        }
+    }
+
+    public string DaysHeld
+    {
+        get => _course != null ? string.Join(",", _course.Held.Select(d => d.ToString())) : "Unavailable";
+        set
+        {
+            if (_course != null)
+            {
+                _course.Held = value.Split(',')
+                                     .Select(s => (Weekday)Enum.Parse(typeof(Weekday), s))
+                                     .ToList();
+            }
+        }
+    }
+
+    public string Time
+    {
+        get => _course?.ScheduledTime.ToString("HH:mm:ss") ?? "No scheduled time";
+        set
+        {
+            if (_course != null && TimeOnly.TryParseExact(value, "HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out TimeOnly time))
+            {
+                _course.ScheduledTime = time;
+                RaisePropertyChanged();
+            }
+        }
+    }
 
     public ObservableCollection<Course> AvailableCourses { get; set; }
     public ObservableCollection<Exam> AvailableExams { get; set; }

@@ -11,7 +11,10 @@ namespace LangLang.Models
         public Exam(Language language, int maxStudents, DateOnly date, int teacherId, TimeOnly time)
             : base(language, maxStudents, date, teacherId, time)
         {
-            Confirmed=false;
+
+            TeacherGraded=false;
+            DirectorGraded=false;
+
         }
 
         // Constructor without date validation for deserializing
@@ -21,7 +24,10 @@ namespace LangLang.Models
         {
         }
 
-        public bool Confirmed { get; set; }
+
+        public bool TeacherGraded {  get; set; }
+        public bool DirectorGraded {  get; set; }
+
 
         public new int MaxStudents
         {

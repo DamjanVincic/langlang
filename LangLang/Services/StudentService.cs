@@ -12,9 +12,10 @@ public class StudentService : IStudentService
     private readonly IUserRepository _userRepository = new UserFileRepository();
     private readonly ICourseRepository _courseRepository = new CourseFileRepository();
     private readonly IExamRepository _examRepository = new ExamFileRepository();
-    
+
     private readonly IUserService _userService = new UserService();
     private readonly IExamGradeService _examGradeService = new ExamGradeService();
+    private readonly ICourseGradeService _courseGradeService = new CourseGradeService();
 
     public List<Student> GetAll()
     {
@@ -55,8 +56,8 @@ public class StudentService : IStudentService
     {
         // Nakon što je učenik završio kurs, prikazuju mu se svi dostupni termini ispita koji se
         // odnose na jezik i nivo jezika koji je učenik obradio na kursu
-        
-       return _examRepository.GetAll().Where(exam => exam.StudentIds.Count < exam.MaxStudents && IsNeededCourseFinished(exam, student) && (exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days >= 30).ToList();
+
+        return _examRepository.GetAll().Where(exam => exam.StudentIds.Count < exam.MaxStudents && IsNeededCourseFinished(exam, student) && (exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days >= 30).ToList();
     }
 
     /*
@@ -75,15 +76,28 @@ public class StudentService : IStudentService
         });
     }
 
+
+    /*
+     *  if teacher has graded the exam but director has not sent the email,
+     *  then student can not apply for new exams
+     */
     public void ApplyStudentExam(Student student, int examId)
     {
         if (student.AppliedExams.Contains(examId))
         {
             throw new InvalidInputException("You already applied");
         }
-        if(_examRepository.GetById(examId) == null)
+        if (_examRepository.GetById(examId) == null)
         {
             throw new InvalidInputException("Exam not found.");
+        }
+        foreach (int id in student.AppliedExams)
+        {
+            Exam exam = _examRepository.GetById(id)!;
+            if (exam.TeacherGraded == true && exam.DirectorGraded == false)
+            {
+                throw new InvalidInputException("Cant apply for exam while waiting for results.");
+            }
         }
         student.AppliedExams.Add(examId);
         _userRepository.Update(student);
@@ -179,6 +193,16 @@ public class StudentService : IStudentService
         _examRepository.Update(exam);
         _userService.Delete(studentId);
     }
+    
+    public void Penalize(int studentId, int courseId)
+    {
+        Student student = _userRepository.GetById(studentId) as Student ??
+                          throw new InvalidInputException("Student doesn't exist.");
+
+        Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
+
+        // TODO : inform the student about the penalty point and assign it to him
+    }
 
     public void AddExamGrade(int studentId, int examId, int writing, int reading, int listening, int talking)
     {
@@ -214,6 +238,22 @@ public class StudentService : IStudentService
         _userRepository.Update(teacher);
         
         student.DropActiveCourse();
+        _userRepository.Update(student);
+    }
+
+    public void AddCourseGrade(int studentId, int courseId, int knowledgeGrade, int activityGrade)
+    {
+        int courseGradeId = _courseGradeService.Add(courseId, studentId, knowledgeGrade, activityGrade);
+
+        Student student = _userRepository.GetById(studentId) as Student ??
+                          throw new InvalidInputException("Student doesn't exist.");
+        _ = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
+
+        if (student.CourseGradeIds.ContainsKey(courseId))
+            _courseGradeService.Delete(student.CourseGradeIds[courseId]);
+
+        student.CourseGradeIds[courseId] = courseGradeId;
+
         _userRepository.Update(student);
     }
 }

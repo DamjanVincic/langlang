@@ -7,6 +7,7 @@ using LangLang.Services;
 using LangLang.Repositories;
 using LangLang.Views.StudentViews;
 using LangLang.Views.TeacherViews;
+using LangLang.Views.DirectorViews;
 using LangLang.Views.UserViews;
 
 namespace LangLang.ViewModels.UserViewModels;
@@ -57,7 +58,7 @@ public class MainViewModel : ViewModelBase
                 new StudentView().Show();
                 break;
             case Director:
-                new TeachersView().Show();
+                new DirectorMainMenu().Show();
                 break;
             case Teacher:
                 new TeacherMenu().Show();
@@ -71,7 +72,7 @@ public class MainViewModel : ViewModelBase
     // If current course is finished, show a dialog to rate the teacher
     private void ReviewTeacher(Student student)
     {
-        if (student.ActiveCourseId is null || !_courseService.GetById(student.ActiveCourseId!.Value)?.IsFinished) return;
+        if (student.ActiveCourseId is null || _courseService.GetById(student.ActiveCourseId!.Value)!.IsFinished) return;
         
         var dialog = new TeacherReviewModal();
         if (dialog.ShowDialog()!.Value)

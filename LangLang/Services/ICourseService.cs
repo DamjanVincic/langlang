@@ -9,6 +9,8 @@ public interface ICourseService
     public List<Course> GetAll();
     public Course? GetById(int id);
     public List<Student> GetStudents(int courseId);
+    public List<Course> GetStartableCourses(int teacherId);
+    public List<Course> GetActiveCourses(int teacherId);
     public void Add(string languageName, LanguageLevel languageLevel, int duration, List<Weekday> held,
         bool isOnline, int maxStudents, int creatorId, TimeOnly scheduledTime, DateOnly startDate,
         bool areApplicationsClosed, int teacherId);
@@ -19,4 +21,6 @@ public interface ICourseService
 
     public void Delete(int id);
     public void ConfirmCourse(int courseId);
+    public void FinishCourse(int courseId);
+
 }

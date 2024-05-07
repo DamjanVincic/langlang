@@ -22,8 +22,8 @@ public class StudentCourseViewModel : ViewModelBase
     private readonly ILanguageService _languageService = new LanguageService();
     private readonly IStudentService _studentService = new StudentService();
 
-    private string _selectedLanguageName;
-    private string _selectedLanguageLevel;
+    private string? _selectedLanguageName;
+    private string? _selectedLanguageLevel;
     private DateTime _selectedDate;
     private string _selectedDuration;
     private string _selectedFormat;
@@ -58,7 +58,7 @@ public class StudentCourseViewModel : ViewModelBase
     public IEnumerable<string> LanguageLevelValues => Enum.GetNames(typeof(LanguageLevel));
     public IEnumerable<string> FormatValues => new List<string> { "online", "in-person" };
 
-    public string SelectedLanguageName
+    public string? SelectedLanguageName
     {
         get => _selectedLanguageName;
         set
@@ -68,7 +68,7 @@ public class StudentCourseViewModel : ViewModelBase
         }
     }
 
-    public string SelectedLanguageLevel
+    public string? SelectedLanguageLevel
     {
         get => _selectedLanguageLevel;
         set

@@ -25,8 +25,8 @@ namespace LangLang.ViewModels.ExamViewModels
         private readonly Teacher _teacher = UserService.LoggedInUser as Teacher ??
                                             throw new InvalidOperationException("No one is logged in.");
 
-        private string _languageNameSelected;
-        private string _languageLevelSelected;
+        private string? _languageNameSelected;
+        private string? _languageLevelSelected;
         private DateTime _dateSelected;
 
         public ExamListingViewModel()
@@ -54,7 +54,7 @@ namespace LangLang.ViewModels.ExamViewModels
         public ICommand EditCommand { get; }
         public ICommand DeleteCommand { get; }
 
-        public string LanguageNameSelected
+        public string? LanguageNameSelected
         {
             get => _languageNameSelected;
             set
@@ -64,7 +64,7 @@ namespace LangLang.ViewModels.ExamViewModels
             }
         }
 
-        public string LanguageLevelSelected
+        public string? LanguageLevelSelected
         {
             get => _languageLevelSelected;
             set

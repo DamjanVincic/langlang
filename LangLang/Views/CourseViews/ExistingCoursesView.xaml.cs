@@ -14,13 +14,13 @@ namespace LangLang.Views.CourseViews
         public ExistingCoursesView()
         {
             InitializeComponent();
-            DataContext = new CourseListingViewModel();
+            DataContext = new ExistingCoursesViewModel();
         }
         public class MaxStudentsVisibilityConverter : IValueConverter
         {
             public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
             {
-                string format = value as string;
+                string? format = value as string;
                 if (format.Equals("in-person"))
                 {
                     return Visibility.Visible;

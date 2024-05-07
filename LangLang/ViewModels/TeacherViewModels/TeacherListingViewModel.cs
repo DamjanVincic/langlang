@@ -14,8 +14,8 @@ using LangLang.Models;
 using LangLang.Repositories;
 using LangLang.Services;
 using LangLang.Views.TeacherViews;
+using LangLang.Views.DirectorViews;
 using Teacher = LangLang.Models.Teacher;
-
 namespace LangLang.ViewModels.TeacherViewModels
 {
     public class TeacherListingViewModel : ViewModelBase
@@ -26,8 +26,8 @@ namespace LangLang.ViewModels.TeacherViewModels
         private readonly ICourseService _courseService = new CourseService();
         private readonly ICourseRepository _courseRepository = new CourseFileRepository();
 
-        private string _selectedLanguageName;
-        private string _selectedLanguageLevel;
+        private string? _selectedLanguageName;
+        private string? _selectedLanguageLevel;
         private DateTime _selectedDateCreated;
 
         private readonly ObservableCollection<TeacherViewModel> _teachers;
@@ -59,7 +59,7 @@ namespace LangLang.ViewModels.TeacherViewModels
         public ICommand LogOutCommand { get; }
         public TeacherViewModel? SelectedItem { get; set; }
 
-        public string SelectedLanguageName
+        public string? SelectedLanguageName
         {
             get => _selectedLanguageName;
             set
@@ -69,7 +69,7 @@ namespace LangLang.ViewModels.TeacherViewModels
             }
         }
 
-        public string SelectedLanguageLevel
+        public string? SelectedLanguageLevel
         {
             get => _selectedLanguageLevel;
             set
@@ -194,4 +194,5 @@ namespace LangLang.ViewModels.TeacherViewModels
             TeachersCollectionView.Refresh();
         }
     }
+
 }

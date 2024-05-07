@@ -15,6 +15,7 @@ namespace LangLang.Models
             ScheduledTime = time;
             MaxStudents = maxStudents;
             Date = date;
+            Confirmed = false;
         }
 
         // Constructor without date validation for deserializing
@@ -29,6 +30,8 @@ namespace LangLang.Models
         }
 
         public int Id { get; set; }
+
+        public bool Confirmed { get; set; }
 
         public Language Language
         {

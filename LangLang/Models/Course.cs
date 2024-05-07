@@ -20,6 +20,7 @@ namespace LangLang.Models
             CreatorId = creatorId;
             AreApplicationsClosed = areApplicationsClosed;
             IsOnline = isOnline;
+            IsFinished = false;
         }
 
         // Constructor without date validation for deserializing
@@ -34,6 +35,7 @@ namespace LangLang.Models
             AreApplicationsClosed = areApplicationsClosed;
             IsOnline = isOnline;
             Students = students;
+            IsFinished = false;
         }
 
         public new int MaxStudents
@@ -67,6 +69,7 @@ namespace LangLang.Models
         }
 
         public new bool IsOnline { get; set; }
+        public bool IsFinished {  get; set; }
 
         public int? CreatorId { get; set; } = null;
 
