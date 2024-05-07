@@ -95,4 +95,15 @@ public class TeacherService : ITeacherService
         student.CoursePassFail.Add(course.Id,false);
         _userRepository.Update(student);
     }
+
+    public void RejectStudentApplication(int studentId, int courseId)
+    {
+        Course course = _courseRepository.GetById(courseId)!;
+
+        if (!course.Students.ContainsKey(studentId))
+            throw new InvalidInputException("Student hasn't applied to this course.");
+        
+        course.Students[studentId] = ApplicationStatus.Denied;
+        _courseRepository.Update(course);
+    }
 }

@@ -31,7 +31,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <TextBlock Grid.Row="0" Grid.ColumnSpan="5" FontWeight="Bold">LIST OF STUDENTS WHO APPLIED FOR THE COURSE</TextBlock>
-        <ListView Grid.Row="2"  Grid.RowSpan="10" Grid.Column="1" Grid.ColumnSpan="3" Padding="5" Margin="5" SelectedItem="{Binding SelectedItem}" ItemsSource="{Binding AvailableExams}" >
+        <ListView Grid.Row="2"  Grid.RowSpan="10" Grid.Column="1" Grid.ColumnSpan="3" Padding="5" Margin="5" SelectedItem="{Binding SelectedItem}" ItemsSource="{Binding Students}" >
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="First Name">

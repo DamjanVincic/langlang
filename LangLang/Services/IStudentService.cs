@@ -20,4 +20,6 @@ public interface IStudentService
     public void ReviewTeacher(int studentId, int rating);
     public void AddCourseGrade(int studentId, int courseId, int knowledgeGrade, int activityGrade);
     public void Penalize(int studentId, int courseId);
+    public void PauseOtherApplications(int studentId, int courseId);
+    public void ResumeApplications(int studentId);
 }

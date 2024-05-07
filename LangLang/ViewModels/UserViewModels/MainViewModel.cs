@@ -52,7 +52,6 @@ public class MainViewModel : ViewModelBase
                 MessageBox.Show("Invalid email or password.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             case Student student:
-                // TODO: When a student logs in, check if the current course is finished and show a dialog to rate the teacher.
                 _userService.CheckIfFirstInMonth();
                 ReviewTeacher(student);
                 new StudentView().Show();

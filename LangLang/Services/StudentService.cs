@@ -158,8 +158,6 @@ public class StudentService : IStudentService
 
     public void DropActiveCourse(int studentId, string reason)
     {
-        // TODO: Change the logic to send a reason to the teacher why the student wants to drop the course
-        
         Student student = _userRepository.GetById(studentId) as Student ??
                           throw new InvalidInputException("Student doesn't exist.");
 
@@ -255,5 +253,42 @@ public class StudentService : IStudentService
         student.CourseGradeIds[courseId] = courseGradeId;
 
         _userRepository.Update(student);
+    }
+
+    /// <summary>
+    /// Pause all student applications except the one with the passed ID
+    /// </summary>
+    /// <param name="studentId">Student ID</param>
+    /// <param name="courseId">Course ID which not to pause</param>
+    public void PauseOtherApplications(int studentId, int courseId)
+    {
+        Student student = (_userRepository.GetById(studentId) as Student)!;
+        
+        foreach (Course course in student.AppliedCourses.Select(id => _courseRepository.GetById(id)!))
+        {
+            if (course.Id == courseId)
+                continue;
+
+            if (!course.Students.ContainsKey(studentId))
+                throw new InvalidInputException($"Student hasn't applied to the course with ID {course.Id}.");
+            
+            course.Students[studentId] = ApplicationStatus.Paused;
+            _courseRepository.Update(course);
+        }
+    }
+
+    // TODO: Call this method when the teacher reviews the drop out request
+    public void ResumeApplications(int studentId)
+    {
+        Student student = (_userRepository.GetById(studentId) as Student)!;
+
+        foreach (Course course in student.AppliedCourses.Select(courseId => _courseRepository.GetById(courseId)!))
+        {
+            if (!course.Students.ContainsKey(studentId))
+                throw new InvalidInputException($"Student hasn't applied to the course with ID {course.Id}.");
+            
+            course.Students[studentId] = ApplicationStatus.Pending;
+            _courseRepository.Update(course);
+        }
     }
 }
