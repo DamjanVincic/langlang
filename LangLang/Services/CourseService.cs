@@ -136,6 +136,13 @@ public class CourseService : ICourseService
 
         teacher!.CourseIds.Remove(id);
         _userRepository.Update(teacher);
+
+        foreach (Student student in course.Students.Keys.Select(studentId => (_userRepository.GetById(studentId) as Student)!))
+        {
+            student.RemoveCourse(course.Id);
+            _userRepository.Update(student);
+        }
+        
         _scheduleService.Delete(id);
         _courseRepository.Delete(id);
     }

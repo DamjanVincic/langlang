@@ -13,6 +13,7 @@ public class UserService : IUserService
 
     private readonly IUserRepository _userRepository = new UserFileRepository();
     private readonly ICourseRepository _courseRepository = new CourseFileRepository();
+    private readonly IExamRepository _examRepository = new ExamFileRepository();
     private readonly ICourseService _courseService = new CourseService();
     private readonly IExamService _examService = new ExamService();
     private readonly IPenaltyPointService _penaltyPointService = new PenaltyPointService();
@@ -118,7 +119,12 @@ public class UserService : IUserService
             course.RemoveStudent(student.Id);
             _courseRepository.Update(course);
         }
-
+        
+        foreach (Exam exam in student.AppliedExams.Select(examId => _examService.GetById(examId)!))
+        {
+            exam.RemoveStudent(student.Id);
+            _examRepository.Update(exam);
+        }
         
         if (student.ActiveCourseId is null) return;
         
