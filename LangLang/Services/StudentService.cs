@@ -158,8 +158,6 @@ public class StudentService : IStudentService
 
     public void DropActiveCourse(int studentId, string reason)
     {
-        // TODO: Change the logic to send a reason to the teacher why the student wants to drop the course
-        
         Student student = _userRepository.GetById(studentId) as Student ??
                           throw new InvalidInputException("Student doesn't exist.");
 
