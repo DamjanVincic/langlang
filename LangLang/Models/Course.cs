@@ -120,7 +120,7 @@ namespace LangLang.Models
         
         public void AddStudent(int studentId)
         {
-            if (StudentIds.Count >= MaxStudents && !IsOnline)
+            if (Students.Count >= MaxStudents && !IsOnline)
 
                 throw new InvalidInputException("The course is full.");
             

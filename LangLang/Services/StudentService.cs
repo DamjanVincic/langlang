@@ -27,7 +27,7 @@ public class StudentService : IStudentService
     {
         return _courseRepository.GetAll().Where(course =>
 
-            (course.StudentIds.Count < course.MaxStudents || course.IsOnline) &&
+            (course.Students.Count < course.MaxStudents || course.IsOnline) &&
 
             (course.StartDate.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days >= 7 &&
             !course.Students.ContainsKey(studentId)).ToList();

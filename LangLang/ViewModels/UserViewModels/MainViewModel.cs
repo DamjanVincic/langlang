@@ -56,7 +56,7 @@ public class MainViewModel : ViewModelBase
 
             case Student student:
                 // TODO: When a student logs in, check if the current course is finished and show a dialog to rate the teacher.
-                _userService.CheckIfFirstInMonth();
+                _studentService.CheckIfFirstInMonth();
                 ReviewTeacher(student);
 
                 new StudentView().Show();
