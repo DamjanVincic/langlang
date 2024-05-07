@@ -8,7 +8,7 @@ using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
 using LangLang.Services;
 
-namespace LangLang.ViewModels.TeacherViewModels
+namespace LangLang.ViewModels.DirectorViewModels
 {
     internal class EditTeacherViewModel : ViewModelBase
     {

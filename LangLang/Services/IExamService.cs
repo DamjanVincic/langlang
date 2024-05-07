@@ -16,4 +16,6 @@ public interface IExamService
     public void ConfirmExam(int examId);
     public int GetCurrentExam(int teacherId);
     public void CheckGrades(int examId);
+    public List<Exam> GetUngradedExams();
+    public void SendGrades(int examId);
 }

@@ -77,6 +77,11 @@ public class StudentService : IStudentService
         });
     }
 
+
+    /*
+     *  if teacher has graded the exam but director has not sent the email,
+     *  then student can not apply for new exams
+     */
     public void ApplyStudentExam(Student student, int examId)
     {
         if (student.AppliedExams.Contains(examId))
@@ -86,6 +91,14 @@ public class StudentService : IStudentService
         if (_examRepository.GetById(examId) == null)
         {
             throw new InvalidInputException("Exam not found.");
+        }
+        foreach (int id in student.AppliedExams)
+        {
+            Exam exam = _examRepository.GetById(id)!;
+            if (exam.TeacherGraded == true && exam.DirectorGraded == false)
+            {
+                throw new InvalidInputException("Cant apply for exam while waiting for results.");
+            }
         }
         student.AppliedExams.Add(examId);
         _userRepository.Update(student);
