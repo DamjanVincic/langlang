@@ -14,7 +14,7 @@ using LangLang.Views.CourseViews;
 
 namespace LangLang.ViewModels.CourseViewModels
 {
-    public class ExistingCoursesViewModel : ViewModelBase
+    public class CourseListingViewModel : ViewModelBase
     {
         private readonly ITeacherService _teacherService = new TeacherService();
         private readonly ILanguageService _languageService = new LanguageService();
@@ -31,7 +31,7 @@ namespace LangLang.ViewModels.CourseViewModels
         private string? _selectedDuration;
         private string? _selectedFormat;
 
-        public ExistingCoursesViewModel()
+        public CourseListingViewModel()
         {
             _courses = new ObservableCollection<CourseViewModel>(_teacherService.GetCourses(_teacher.Id)
                 .Select(course => new CourseViewModel(course)));

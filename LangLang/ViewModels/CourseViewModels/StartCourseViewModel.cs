@@ -23,18 +23,18 @@ namespace LangLang.ViewModels.CourseViewModels
         {
             _courseId = courseId;
             _startCourseWindow = startCourseWindow;
-            Students = new ObservableCollection<SingleStudentViewModel>(_courseService.GetStudents(_courseId)
-                .Select(student => new SingleStudentViewModel(student)));
+            Students = new ObservableCollection<StudentViewModel>(_courseService.GetStudents(_courseId)
+                .Select(student => new StudentViewModel(student)));
             ConfirmCommand = new RelayCommand(Confirm);
             RejectApplicationCommand = new RelayCommand(RejectApplication);
 
         }
 
-        public ObservableCollection<SingleStudentViewModel> Students { get; set; }
-        public SingleStudentViewModel? SelectedStudent { get; set; }
+        public ObservableCollection<StudentViewModel> Students { get; set; }
+        public StudentViewModel? SelectedStudent { get; set; }
         public ICommand ConfirmCommand { get; set; }
         public ICommand? RejectApplicationCommand { get; }
-        public SingleStudentViewModel? SelectedItem { get; set; }
+        public StudentViewModel? SelectedItem { get; set; }
         public string? RejectionReason { get; set; }
 
         private void Confirm()

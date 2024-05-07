@@ -8,6 +8,6 @@ public partial class StudentView : Window
     public StudentView()
     {
         InitializeComponent();
-        DataContext = new StudentViewModel(this);
+        DataContext = new StudentMenuViewModel(this);
     }
 }

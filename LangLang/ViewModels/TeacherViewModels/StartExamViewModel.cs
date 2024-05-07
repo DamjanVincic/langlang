@@ -23,12 +23,12 @@ namespace LangLang.ViewModels.TeacherViewModels
         {
             _examId = examId;
             _startExamWindow = startExamWindow;
-            Students = new ObservableCollection<SingleStudentViewModel>(_examService.GetStudents(_examId)
-                .Select(student => new SingleStudentViewModel(student)));
+            Students = new ObservableCollection<StudentViewModel>(_examService.GetStudents(_examId)
+                .Select(student => new StudentViewModel(student)));
             ConfirmCommand = new RelayCommand(Confirm);
         }
 
-        public ObservableCollection<SingleStudentViewModel> Students { get; set; }
+        public ObservableCollection<StudentViewModel> Students { get; set; }
         public ICommand ConfirmCommand { get; set; }
 
         private void Confirm()

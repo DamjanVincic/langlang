@@ -10,13 +10,13 @@ using LangLang.Views.TeacherViews;
 
 namespace LangLang.ViewModels.DirectorViewModels
 {
-    public class DirectorViewModel : ViewModelBase
+    public class DirectorMenuViewModel : ViewModelBase
     {
         private readonly Director _director = UserService.LoggedInUser as Director ?? throw new InvalidInputException("No one is logged in.");
         private readonly Window _directorViewWindow;
         private readonly IUserService _userService = new UserService();
 
-        public DirectorViewModel(Window directorViewWindow)
+        public DirectorMenuViewModel(Window directorViewWindow)
         {
             _directorViewWindow = directorViewWindow;
             ViewTeachersCommand = new RelayCommand(ViewTeachers);
@@ -37,7 +37,7 @@ namespace LangLang.ViewModels.DirectorViewModels
 
         private void ViewTeachers()
         {
-            var teachersView = new TeachersView();
+            var teachersView = new TeacherListingView();
             teachersView.Show();
         }
         private void SendOutGrades()
