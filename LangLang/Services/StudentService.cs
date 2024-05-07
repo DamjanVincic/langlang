@@ -25,16 +25,17 @@ public class StudentService : IStudentService
 
     public List<Course> GetAvailableCourses(int studentId)
     {
-        // TODO: Validate to not show the courses that the student has already applied to and
         return _courseRepository.GetAll().Where(course =>
+
             (course.StudentIds.Count < course.MaxStudents || course.IsOnline) &&
+
             (course.StartDate.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days >= 7 &&
-            !course.StudentIds.Contains(studentId)).ToList();
+            !course.Students.ContainsKey(studentId)).ToList();
     }
 
     public List<Course> GetAppliedCourses(int studentId)
     {
-        return _courseRepository.GetAll().Where(course => course.StudentIds.Contains(studentId)).ToList();
+        return _courseRepository.GetAll().Where(course => course.Students.ContainsKey(studentId)).ToList();
     }
 
     public List<Exam> GetAppliedExams(Student student)
@@ -127,6 +128,9 @@ public class StudentService : IStudentService
         Student student = _userRepository.GetById(studentId) as Student ??
                           throw new InvalidInputException("Student doesn't exist.");
 
+        if (student.ActiveCourseId is not null)
+            throw new InvalidInputException("You are already enrolled in a course.");
+        
         Course course = _courseRepository.GetById(courseId) ??
                         throw new InvalidInputException("Course doesn't exist.");
 
@@ -152,6 +156,32 @@ public class StudentService : IStudentService
         course.RemoveStudent(student.Id);
 
         _userRepository.Update(student);
+        _courseRepository.Update(course);
+    }
+
+    public void DropActiveCourse(int studentId, string reason)
+    {
+        // TODO: Change the logic to send a reason to the teacher why the student wants to drop the course
+        
+        Student student = _userRepository.GetById(studentId) as Student ??
+                          throw new InvalidInputException("Student doesn't exist.");
+
+        if (student.ActiveCourseId is null)
+            throw new InvalidInputException("You are not enrolled in a course.");
+        
+        Course course = _courseRepository.GetById(student.ActiveCourseId!.Value) ??
+                        throw new InvalidInputException("Course doesn't exist.");
+
+        if ((DateTime.Now - course.StartDate.ToDateTime(TimeOnly.MinValue)).Days < 7)
+            throw new InvalidInputException("The course can't be dropped if it started less than a week ago.");
+
+        course.AddDropOutRequest(studentId, reason);
+
+        // TODO: Move this to when the teacher reviews the drop out request
+        // student.DropActiveCourse();
+        // course.RemoveStudent(student.Id);
+
+        // _userRepository.Update(student);
         _courseRepository.Update(course);
     }
 
@@ -228,6 +258,25 @@ public class StudentService : IStudentService
 
         _userRepository.Update(student);
     }
+    
+    /// <summary>
+    /// Reviews the teacher after the student has finished the course and removes the active course from the student
+    /// </summary>
+    public void ReviewTeacher(int studentId, int rating)
+    {
+        Student? student = _userRepository.GetById(studentId) as Student;
+
+        Course? course = _courseRepository.GetById(student!.ActiveCourseId!.Value);
+
+        Teacher? teacher = _userRepository.GetById(course!.TeacherId) as Teacher;
+        
+        teacher!.AddReview(rating);
+        _userRepository.Update(teacher);
+        
+        student.DropActiveCourse();
+        _userRepository.Update(student);
+    }
+
     public void AddCourseGrade(int studentId, int courseId, int knowledgeGrade, int activityGrade)
     {
         int courseGradeId = _courseGradeService.Add(courseId, studentId, knowledgeGrade, activityGrade);
@@ -243,5 +292,4 @@ public class StudentService : IStudentService
 
         _userRepository.Update(student);
     }
-
 }
