@@ -13,10 +13,10 @@ public class LanguageFileRepository : ILanguageRepository
 
     private Dictionary<int,Language> _languages = new();
     private int _idCounter = 1;
-    public Dictionary<int, Language> GetAll()
+    public List<Language> GetAll()
     {
         LoadData();
-        return _languages;
+        return _languages.Values.ToList();
     }
 
     public Language? GetById(int id)

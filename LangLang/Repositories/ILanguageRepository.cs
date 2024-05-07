@@ -5,7 +5,7 @@ namespace LangLang.Repositories;
 
 public interface ILanguageRepository
 {
-    public Dictionary<int, Language> GetAll();
+    public List<Language> GetAll();
     public Language? GetById(int id);
     public void Add(Language language);
 }

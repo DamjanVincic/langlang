@@ -41,14 +41,13 @@ namespace LangLang.Models
 
         private void ValidateQualifications(List<Language> qualifications)
         {
-            var languageService = new LanguageService();
-            if (qualifications.Any(q => !languageService.GetAll().ContainsValue(q)))
+            if (qualifications.Except(new LanguageService().GetAll()).Any())
             {
                 throw new InvalidInputException("Given language doesn't exist");
             }
         }
 
-        public void AddReview(int rating)
+       public void AddReview(int rating)
         {
             if (rating is < 1 or > 10)
                 throw new InvalidInputException("Rating must be between 1 and 10.");
