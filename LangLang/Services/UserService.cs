@@ -12,8 +12,9 @@ public class UserService : IUserService
     public static User? LoggedInUser { get; private set; }
 
     private readonly IUserRepository _userRepository = new UserFileRepository();
-    private readonly ITeacherService _teacherService = new TeacherService();
     private readonly ICourseRepository _courseRepository = new CourseFileRepository();
+    private readonly ICourseService _courseService = new CourseService();
+    private readonly IExamService _examService = new ExamService();
     private readonly IPenaltyPointService _penaltyPointService = new PenaltyPointService();
 
     public List<User> GetAll()
@@ -82,7 +83,7 @@ public class UserService : IUserService
                 DeleteStudent(student);
                 break;
             case Teacher teacher:
-                DeleteTeacher(id);
+                DeleteTeacher(teacher);
                 break;
         }
 
@@ -127,10 +128,27 @@ public class UserService : IUserService
         _courseRepository.Update(enrolledCourse);
     }
 
-    private void DeleteTeacher(int teacherId)
+    private void DeleteTeacher(Teacher teacher)
     {
-        _teacherService.DeleteExams(teacherId);
-        _teacherService.RemoveFromInactiveCourses(teacherId);
-        _teacherService.DeleteInactiveCourses(teacherId);
+        // Delete exams
+        foreach (int examId in teacher.ExamIds)
+        {
+            _examService.Delete(examId);
+        }
+        
+        List<Course> courses = _courseRepository.GetAll().Where(course => course.TeacherId == teacher.Id && !course.AreApplicationsClosed).ToList();
+
+        foreach (Course course in courses)
+        {
+            // Delete inactive courses
+            if (course.CreatorId == teacher.Id)
+                _courseService.Delete(course.Id);
+            else
+            {
+                // Remove from inactive courses
+                course.CreatorId = null;
+                _courseRepository.Update(course);
+            }
+        }
     }
 }

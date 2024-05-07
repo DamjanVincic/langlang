@@ -24,10 +24,16 @@ public class CourseService : ICourseService
         return _courseRepository.GetById(id);
     }
 
+    /// <summary>
+    /// Get students with pending applications
+    /// </summary>
+    /// <param name="courseId">Course ID</param>
+    /// <returns>List of students with pending applications</returns>
     public List<Student> GetStudents(int courseId)
     {
-        Course? course = GetById(courseId);
-        List<Student> students = course.Students.Keys.Select(studentId => _userRepository.GetById(studentId) as Student).ToList();
+        Course course = GetById(courseId)!;
+        List<Student> students = course.Students.Where(student => student.Value == ApplicationStatus.Pending)
+            .Select(student => (_userRepository.GetById(student.Key) as Student)!).ToList();
         return students;
     }
 
@@ -64,6 +70,7 @@ public class CourseService : ICourseService
                 activeCourses.Add(course);
             }
         }
+
         return activeCourses;
     }
 
@@ -118,6 +125,7 @@ public class CourseService : ICourseService
             teacher.CourseIds.Add(course.Id);
             _userRepository.Update(teacher);
         }
+
         _courseRepository.Update(course);
     }
 
@@ -131,48 +139,12 @@ public class CourseService : ICourseService
         _scheduleService.Delete(id);
         _courseRepository.Delete(id);
     }
-    public void ConfirmCourse(int courseId)
-    {
-        Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
-        course.Confirmed = true;
-        _courseRepository.Update(course);
-    }
 
     private static DateOnly SetValidStartDate(DateOnly startDate, List<Weekday> held)
     {
         int a = (int)held[0] + 1;
         int b = (int)startDate.DayOfWeek;
-        int difference =  a- b;
+        int difference = a - b;
         return startDate.AddDays((difference < 0 ? difference + 7 : difference) % 7);
-    }
-
-    private void CheckGrades(int courseId)
-    {
-        Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
-
-        foreach (int studentId in course.Students.Keys)
-        {
-            Student student = _userRepository.GetById(studentId) as Student ??
-                              throw new InvalidInputException("Student doesn't exist.");
-
-            if (!student.CourseGradeIds.ContainsKey(courseId))
-            {
-                throw new InvalidInputException("Not all students have been graded.");
-            }
-        }
-    }
-    public void FinishCourse(int courseId)
-    {
-        Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
-        CheckGrades(courseId);
-        course.IsFinished = true;
-        _courseRepository.Update(course);
-    }
-
-    public void RejectStudentsApplication(int courseId, int studentId)
-    {
-        Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
-        course.RemoveStudent(studentId);
-        _courseRepository.Update(course);
     }
 }

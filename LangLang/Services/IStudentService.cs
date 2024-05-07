@@ -23,6 +23,8 @@ public interface IStudentService
     public void CheckIfFirstInMonth();
     public void AddPenaltyPoint(int studentId, PenaltyPointReason penaltyPointReason, int courseId,
                                 int teacherId, DateOnly datePenaltyPointGiven);
-    void ReviewTeacher(int id, int response);
-    void DropActiveCourse(int id, string responseText);
+    public void ReviewTeacher(int id, int response);
+    public void DropActiveCourse(int id, string responseText);
+    public void PauseOtherApplications(int studentId, int courseId);
+    public void ResumeApplications(int studentId);
 }

@@ -20,7 +20,4 @@ public interface ICourseService
         bool areApplicationsClosed, int teacherId);
 
     public void Delete(int id);
-    public void ConfirmCourse(int courseId);
-    public void FinishCourse(int courseId);
-    void RejectStudentsApplication(int courseId, int studentId);
 }

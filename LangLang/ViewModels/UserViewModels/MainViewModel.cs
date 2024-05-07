@@ -15,13 +15,13 @@ namespace LangLang.ViewModels.UserViewModels;
 public class MainViewModel : ViewModelBase
 {
     private readonly IUserService _userService = new UserService();
-    private readonly ITeacherService _teacherService = new TeacherService();
+    // private readonly ITeacherService _teacherService = new TeacherService();
     private readonly IStudentService _studentService = new StudentService();
 
     private readonly ICourseService _courseService = new CourseService();
 
-    private readonly IUserRepository _userRep = new UserFileRepository();
-    private readonly ICourseRepository courseRepository = new CourseFileRepository();
+    // private readonly IUserRepository _userRep = new UserFileRepository();
+    // private readonly ICourseRepository courseRepository = new CourseFileRepository();
 
     private readonly Window _loginWindow;
 
@@ -55,7 +55,6 @@ public class MainViewModel : ViewModelBase
                 return;
 
             case Student student:
-                // TODO: When a student logs in, check if the current course is finished and show a dialog to rate the teacher.
                 _studentService.CheckIfFirstInMonth();
                 ReviewTeacher(student);
 

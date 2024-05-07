@@ -4,5 +4,5 @@ public enum ApplicationStatus
 {
     Pending,
     Paused,
-    Accepted
+    Denied
 }

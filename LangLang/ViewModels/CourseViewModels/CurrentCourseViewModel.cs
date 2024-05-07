@@ -21,6 +21,7 @@ namespace LangLang.ViewModels.CourseViewModels
         private readonly ICourseGradeRepository _courseGradeRepository = new CourseGradeFileRepository();
         private readonly ICourseService _courseService = new CourseService();
         private readonly IStudentService _studentService = new StudentService();
+        private readonly ITeacherService _teacherService = new TeacherService();
         private readonly int _courseId;
         private readonly Window _currentWindow;
 
@@ -61,7 +62,7 @@ namespace LangLang.ViewModels.CourseViewModels
         private void FinishCourse()
         {
             try {
-                _courseService.FinishCourse(_courseId);
+                _teacherService.FinishCourse(_courseId);
                 MessageBox.Show("Successfully finished course.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 _currentWindow.Close();
             }

@@ -12,6 +12,8 @@ public class TeacherService : ITeacherService
     private readonly IExamService _examService = new ExamService();
     private readonly ICourseService _courseService = new CourseService();
     private readonly IScheduleService _scheduleService = new ScheduleService();
+    private readonly IStudentService _studentService = new StudentService();
+    private readonly IMessageService _messageService = new MessageService();
 
     public List<Teacher> GetAll()
     {
@@ -46,40 +48,6 @@ public class TeacherService : ITeacherService
         return availableTeachers;
     }
 
-    public void DeleteExams(int teacherId)
-    {
-        Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
-                          throw new InvalidInputException("User doesn't exist.");
-
-        foreach (int examId in teacher.ExamIds)
-        {
-            _examService.Delete(examId);
-        }
-    }
-
-    public void RemoveFromInactiveCourses(int teacherId)
-    {
-        List<Course> courses = GetCourses(teacherId).Where(course => !course.AreApplicationsClosed 
-                                                                     && course.CreatorId != teacherId).ToList();
-
-        foreach (Course course in courses)
-        {
-            course.CreatorId = null;
-            _courseRepository.Update(course);
-        }
-    }
-
-    public void DeleteInactiveCourses(int teacherId)
-    {
-        List<Course> courses = GetCourses(teacherId).Where(course => !course.AreApplicationsClosed
-                                                                     && course.CreatorId == teacherId).ToList();
-
-        foreach (Course course in courses)
-        {
-            _courseService.Delete(course.Id);
-        }
-    }
-
     public void FinishCourse() { }
 
     /*
@@ -94,5 +62,82 @@ public class TeacherService : ITeacherService
         // finished but not passed
         student.CoursePassFail.Add(course.Id,false);
         _userRepository.Update(student);
+    }
+
+    public void RejectStudentApplication(int studentId, int courseId)
+    {
+        Course course = _courseRepository.GetById(courseId)!;
+
+        if (!course.Students.ContainsKey(studentId))
+            throw new InvalidInputException("Student hasn't applied to this course.");
+        
+        // course.RemoveStudent(studentId);
+        course.Students[studentId] = ApplicationStatus.Denied;
+        _courseRepository.Update(course);
+    }
+    
+    public void ConfirmCourse(int courseId)
+    {
+        Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
+        course.Confirmed = true;
+        
+        foreach ((int studentId, ApplicationStatus applicationStatus) in course.Students)
+        {
+            Student student = _userRepository.GetById(studentId) as Student ??
+                              throw new InvalidInputException("Student doesn't exist.");
+
+            switch (applicationStatus)
+            {
+                // All paused and denied applications are removed
+                case ApplicationStatus.Paused:
+                case ApplicationStatus.Denied:
+                    course.RemoveStudent(studentId);
+                    student.RemoveCourse(courseId);
+                    _userRepository.Update(student);
+                    if (applicationStatus == ApplicationStatus.Denied)
+                        _messageService.Add(studentId, $"Your application for the course {course.Language.Name} has been denied.");
+                    break;
+                default:
+                    student.SetActiveCourse(courseId);
+                    _studentService.PauseOtherApplications(studentId, courseId);
+                    _messageService.Add(studentId, $"Your application for the course {course.Language.Name} has been accepted.");
+                    break;
+            }
+        }
+        
+        _courseRepository.Update(course);
+    }
+    
+    private void CheckGrades(int courseId)
+    {
+        Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
+
+        foreach (int studentId in course.Students.Keys)
+        {
+            Student student = _userRepository.GetById(studentId) as Student ??
+                              throw new InvalidInputException("Student doesn't exist.");
+
+            if (!student.CourseGradeIds.ContainsKey(courseId))
+            {
+                throw new InvalidInputException("Not all students have been graded.");
+            }
+        }
+    }
+    
+    public void FinishCourse(int courseId)
+    {
+        Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
+        CheckGrades(courseId);
+        course.IsFinished = true;
+        _courseRepository.Update(course);
+        
+        foreach (int studentId in course.Students.Keys)
+        {
+            Student student = (_userRepository.GetById(studentId) as Student)!;
+            student.CoursePassFail[courseId] = false;
+            student.DropActiveCourse();
+            _studentService.ResumeApplications(studentId);
+            _userRepository.Update(student);
+        }
     }
 }
