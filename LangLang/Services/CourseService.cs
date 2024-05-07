@@ -27,7 +27,7 @@ public class CourseService : ICourseService
     public List<Student> GetStudents(int courseId)
     {
         Course? course = GetById(courseId);
-        List<Student> students = course.StudentIds.Select(studentId => _userRepository.GetById(studentId) as Student).ToList();
+        List<Student> students = course.Students.Keys.Select(studentId => _userRepository.GetById(studentId) as Student).ToList();
         return students;
     }
 
@@ -150,7 +150,7 @@ public class CourseService : ICourseService
     {
         Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
 
-        foreach (int studentId in course.StudentIds)
+        foreach (int studentId in course.Students.Keys)
         {
             Student student = _userRepository.GetById(studentId) as Student ??
                               throw new InvalidInputException("Student doesn't exist.");
