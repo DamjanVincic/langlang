@@ -14,4 +14,5 @@ public interface ITeacherService
     public void DeleteInactiveCourses(int teacherId);
     public void FinishCourse();
     public void AddLanguageToStudent(Student student, Course course);
+    public void RejectStudentApplication(int studentId, int courseId);
 }

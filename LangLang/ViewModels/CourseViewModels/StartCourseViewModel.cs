@@ -5,12 +5,15 @@ using System.Windows.Input;
 using System.Windows;
 using GalaSoft.MvvmLight.Command;
 using System.Collections.ObjectModel;
+using LangLang.Models;
 using LangLang.ViewModels.StudentViewModels;
 
 namespace LangLang.ViewModels.CourseViewModels
 {
     class StartCourseViewModel : ViewModelBase
     {
+        private readonly ITeacherService _teacherService = new TeacherService();
+        
         private readonly int _courseId;
         private readonly ICourseService _courseService = new CourseService();
         private readonly Window _startCourseWindow;
@@ -26,6 +29,7 @@ namespace LangLang.ViewModels.CourseViewModels
         }
 
         public ObservableCollection<SingleStudentViewModel> Students { get; set; }
+        public SingleStudentViewModel? SelectedStudent { get; set; }
         public ICommand ConfirmCommand { get; set; }
         public ICommand? RejectApplicationCommand { get; }
 
@@ -37,9 +41,19 @@ namespace LangLang.ViewModels.CourseViewModels
             _startCourseWindow.Close();
 
         }
+        
         private void RejectApplication()
         {
-            
+            try
+            {
+                _teacherService.RejectStudentApplication(_courseId, SelectedStudent!.Id);
+                MessageBox.Show("Student application rejected.", "Success", MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            }
+            catch (InvalidInputException ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

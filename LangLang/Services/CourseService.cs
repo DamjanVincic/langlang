@@ -151,14 +151,21 @@ public class CourseService : ICourseService
             Student student = _userRepository.GetById(studentId) as Student ??
                               throw new InvalidInputException("Student doesn't exist.");
 
-            // All paused applications are removed
-            if (applicationStatus == ApplicationStatus.Paused)
+            switch (applicationStatus)
             {
-                course.RemoveStudent(studentId);
-                student.RemoveCourse(courseId);
-                _userRepository.Update(student);
-            } else
-                _messageService.Add(studentId, $"Your application for the course {course.Language.Name} has been accepted.");
+                // All paused and denied applications are removed
+                case ApplicationStatus.Paused:
+                case ApplicationStatus.Denied:
+                    course.RemoveStudent(studentId);
+                    student.RemoveCourse(courseId);
+                    _userRepository.Update(student);
+                    if (applicationStatus == ApplicationStatus.Denied)
+                        _messageService.Add(studentId, $"Your application for the course {course.Language.Name} has been denied.");
+                    break;
+                default:
+                    _messageService.Add(studentId, $"Your application for the course {course.Language.Name} has been accepted.");
+                    break;
+            }
         }
         
         _courseRepository.Update(course);
