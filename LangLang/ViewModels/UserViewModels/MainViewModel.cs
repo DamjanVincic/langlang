@@ -72,7 +72,7 @@ public class MainViewModel : ViewModelBase
     // If current course is finished, show a dialog to rate the teacher
     private void ReviewTeacher(Student student)
     {
-        if (student.ActiveCourseId is null || _courseService.GetById(student.ActiveCourseId!.Value)!.IsFinished) return;
+        if (student.ActiveCourseId is null || !_courseService.GetById(student.ActiveCourseId!.Value)!.IsFinished) return;
         
         var dialog = new TeacherReviewModal();
         if (dialog.ShowDialog()!.Value)
