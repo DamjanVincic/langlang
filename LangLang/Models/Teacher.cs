@@ -35,7 +35,7 @@ namespace LangLang.Models
             var languageService = new LanguageService();
             if (qualifications.Any(q => !languageService.GetAll().ContainsValue(q)))
             {
-                //throw new InvalidInputException("Given language doesn't exist");
+                throw new InvalidInputException("Given language doesn't exist");
             }
         }
     }
