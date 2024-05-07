@@ -179,7 +179,6 @@ public class StudentService : IStudentService
 
         student.ExamGradeIds[examId] = examGradeId;
 
-        //TODO : add passed to CoursePassFail, language doesn't have id?
         foreach(KeyValuePair<int,bool> courseID in student.CoursePassFail)
         {
             if(_courseRepository.GetById(courseID.Key)!.Language == exam.Language)
