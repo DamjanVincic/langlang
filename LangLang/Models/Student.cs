@@ -26,6 +26,7 @@ public class Student : User
     public List<int> AppliedExams { get; set; }
 
     public Dictionary<int, int> ExamGradeIds { get; set; } = new();
+    public Dictionary<int, int> CourseGradeIds { get; set; } = new();
     
     public void AddCourse(int courseId)
     {
@@ -41,5 +42,13 @@ public class Student : User
             throw new InvalidInputException("You haven't applied to this course.");
         
         AppliedCourses.Remove(courseId);
+    }
+
+    public void DropActiveCourse()
+    {
+        if (ActiveCourseId is null)
+            throw new InvalidInputException("You are not enrolled in any courses.");
+
+        ActiveCourseId = null;
     }
 }

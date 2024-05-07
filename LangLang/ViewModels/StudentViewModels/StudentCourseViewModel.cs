@@ -28,7 +28,7 @@ public class StudentCourseViewModel : ViewModelBase
     private string _selectedDuration;
     private string _selectedFormat;
 
-    private bool _applied;
+    private readonly bool _applied;
 
     public StudentCourseViewModel(bool applied = false)
     {
