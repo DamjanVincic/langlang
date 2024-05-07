@@ -82,17 +82,4 @@ public class TeacherService : ITeacherService
 
     public void FinishCourse() { }
 
-    /*
-     *  student and course - selected Items
-     */
-    public void AddLanguageToStudent(Student student, Course course)
-    {
-        if(student.CoursePassFail.ContainsKey(course.Id))
-        {
-            return;
-        }
-        // finished but not passed
-        student.CoursePassFail.Add(course.Id,false);
-        _userRepository.Update(student);
-    }
 }

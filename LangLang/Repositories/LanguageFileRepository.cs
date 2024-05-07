@@ -61,5 +61,7 @@ public class LanguageFileRepository : ILanguageRepository
         {
             TypeNameHandling = TypeNameHandling.Auto
         }) ?? new Dictionary<int, Language>();
+        if (_languages.Any())
+            _idCounter = _languages.Keys.Max() + 1;
     }
 }

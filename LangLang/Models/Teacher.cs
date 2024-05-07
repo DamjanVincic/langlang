@@ -32,9 +32,10 @@ namespace LangLang.Models
 
         private void ValidateQualifications(List<Language> qualifications)
         {
-            if (qualifications.Except(new LanguageService().GetAll()).Any())
+            var languageService = new LanguageService();
+            if (qualifications.Any(q => !languageService.GetAll().ContainsValue(q)))
             {
-                throw new InvalidInputException("Given language doesn't exist");
+                //throw new InvalidInputException("Given language doesn't exist");
             }
         }
     }
