@@ -69,14 +69,8 @@ public class StudentService : IStudentService
     */
     private bool IsNeededCourseFinished(Exam exam, Student student)
     {
-        return student.CoursePassFail.Any(coursePassFaild =>
-        {
-            Course? course = _courseRepository.GetById(coursePassFaild.Key);
-            return course != null &&
-                   course.Language.Name == exam.Language.Name &&
-                   course.Language.Level == exam.Language.Level &&
-                   !coursePassFaild.Value;
-        });
+
+        return student.LanguagePassFail.ContainsKey(exam.Language.Id) && student.LanguagePassFail[exam.Language.Id] == false;
     }
 
 
@@ -251,8 +245,7 @@ public class StudentService : IStudentService
             _examGradeService.Delete(student.ExamGradeIds[examId]);
 
         student.ExamGradeIds[examId] = examGradeId;
-
-        //TODO : add passed to CoursePassFail, language doesn't have id?
+        student.LanguagePassFail[exam.Language.Id] = true;
 
         _userRepository.Update(student);
     }

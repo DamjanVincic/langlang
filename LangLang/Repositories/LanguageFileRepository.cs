@@ -11,22 +11,28 @@ public class LanguageFileRepository : ILanguageRepository
     private const string LanguageFileName = "languages.json";
     private const string LanguageDirectoryName = "data";
 
-    private List<Language> _languages = new();
-
+    private Dictionary<int,Language> _languages = new();
+    private int _idCounter = 1;
     public List<Language> GetAll()
     {
         LoadData();
-        return _languages;
+        return _languages.Values.ToList();
     }
 
+    public Language? GetById(int id)
+    {
+        LoadData();
+        _languages.TryGetValue(id, out var language);
+        return language;
+    }
     public void Add(Language language)
     {
         LoadData();
-
-        if (_languages.Any(lang => lang.Name == language.Name && lang.Level == language.Level))
+        language.Id = _idCounter++;
+        if (_languages.Values.Any(lang => lang.Name == language.Name && lang.Level == language.Level))
             throw new InvalidInputException("Language already exists.");
 
-        _languages.Add(language);
+        _languages.Add(language.Id, language);
 
         SaveData();
     }
@@ -51,9 +57,11 @@ public class LanguageFileRepository : ILanguageRepository
         if (!File.Exists(filePath)) return;
 
         string json = File.ReadAllText(filePath);
-        _languages = JsonConvert.DeserializeObject<List<Language>>(json, new JsonSerializerSettings
+        _languages = JsonConvert.DeserializeObject<Dictionary<int,Language>>(json, new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.Auto
-        }) ?? new List<Language>();
+        }) ?? new Dictionary<int, Language>();
+        if (_languages.Any())
+            _idCounter = _languages.Keys.Max() + 1;
     }
 }

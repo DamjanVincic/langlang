@@ -99,5 +99,10 @@ namespace LangLang.ViewModels.CourseViewModels
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+        public Language? IsValidLanguage(string languageName, LanguageLevel level)
+        {
+            return _languageService.GetLanguage(languageName, level) 
+                ?? throw new InvalidInputException("Language doesn't exist.");
+        }
     }
 }

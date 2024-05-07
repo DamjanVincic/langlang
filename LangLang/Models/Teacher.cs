@@ -28,7 +28,6 @@ namespace LangLang.Models
             get => _qualifications;
             set
             {
-                ValidateQualifications(value);
                 _qualifications = value;
             }
         }
@@ -38,14 +37,6 @@ namespace LangLang.Models
         public List<int> ExamIds { get; } = new();
         
         public double Rating => (double)TotalRating / NumberOfReviews;
-
-        private void ValidateQualifications(List<Language> qualifications)
-        {
-            if (qualifications.Except(new LanguageService().GetAll()).Any())
-            {
-                throw new InvalidInputException("Given language doesn't exist");
-            }
-        }
 
         public void AddReview(int rating)
         {

@@ -21,7 +21,7 @@ public class Student : User
 
     // obradjeniJezici / zavrseniJezici
     // dict jezik-bool, kada se zavrsi dodaj sa false, kada polozi ispit promeni na true
-    public Dictionary<int, bool> CoursePassFail { get; set; } = new();
+    public Dictionary<int, bool> LanguagePassFail { get; set; } = new();
     public List<int> AppliedCourses { get; } = new();
     public List<int> AppliedExams { get; set; }
 

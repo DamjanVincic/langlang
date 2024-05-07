@@ -48,22 +48,6 @@ public class TeacherService : ITeacherService
         return availableTeachers;
     }
 
-    public void FinishCourse() { }
-
-    /*
-     *  student and course - selected Items
-     */
-    public void AddLanguageToStudent(Student student, Course course)
-    {
-        if(student.CoursePassFail.ContainsKey(course.Id))
-        {
-            return;
-        }
-        // finished but not passed
-        student.CoursePassFail.Add(course.Id,false);
-        _userRepository.Update(student);
-    }
-
     public void RejectStudentApplication(int studentId, int courseId)
     {
         Course course = _courseRepository.GetById(courseId)!;
@@ -134,7 +118,7 @@ public class TeacherService : ITeacherService
         foreach (int studentId in course.Students.Keys)
         {
             Student student = (_userRepository.GetById(studentId) as Student)!;
-            student.CoursePassFail[courseId] = false;
+            student.LanguagePassFail[course.Language.Id] = false;
             student.DropActiveCourse();
             _studentService.ResumeApplications(studentId);
             _userRepository.Update(student);
