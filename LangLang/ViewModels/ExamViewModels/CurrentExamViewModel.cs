@@ -63,7 +63,7 @@ namespace LangLang.ViewModels.ExamViewModels
         {
             try
             {
-                _examService.CheckGrades(_examId);
+                _examService.FinishExam(_examId);
                 MessageBox.Show("Successfully finished exam.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 _currentWindow.Close();
             }
