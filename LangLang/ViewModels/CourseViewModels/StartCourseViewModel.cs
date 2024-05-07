@@ -31,10 +31,9 @@ namespace LangLang.ViewModels.CourseViewModels
         }
 
         public ObservableCollection<SingleStudentViewModel> Students { get; set; }
-        public SingleStudentViewModel? SelectedStudent { get; set; }
+        public SingleStudentViewModel? SelectedItem { get; set; }
         public ICommand ConfirmCommand { get; set; }
         public ICommand? RejectApplicationCommand { get; }
-        public SingleStudentViewModel? SelectedItem { get; set; }
         public string? RejectionReason { get; set; }
 
         private void Confirm()
@@ -61,7 +60,7 @@ namespace LangLang.ViewModels.CourseViewModels
             
             try
             {
-                _teacherService.RejectStudentApplication(_courseId, SelectedStudent!.Id);
+                _teacherService.RejectStudentApplication(SelectedItem!.Id, _courseId);
                 MessageBox.Show("Student application rejected.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 Students.Remove(SelectedItem);
             }
