@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
 using LangLang.Models;
 using LangLang.Repositories;
 
@@ -21,6 +23,50 @@ public class CourseService : ICourseService
     {
         return _courseRepository.GetById(id);
     }
+
+    public List<Student> GetStudents(int courseId)
+    {
+        Course? course = GetById(courseId);
+        List<Student> students = course.Students.Keys.Select(studentId => _userRepository.GetById(studentId) as Student).ToList();
+        return students;
+    }
+
+    public List<Course> GetStartableCourses(int teacherId)
+    {
+        Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
+                          throw new InvalidInputException("User doesn't exist.");
+        List<Course> startableCourses = new();
+        foreach (int courseId in teacher.CourseIds)
+        {
+            Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
+            if ((course.StartDate.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days <= 7 &&
+                !course.Confirmed)
+            {
+                startableCourses.Add(course);
+            }
+        }
+
+        return startableCourses;
+    }
+
+    public List<Course> GetActiveCourses(int teacherId)
+    {
+        Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
+                          throw new InvalidInputException("User doesn't exist.");
+        List<Course> activeCourses = new();
+
+        foreach (int courseId in teacher.CourseIds)
+        {
+            Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
+
+            if ((DateTime.Now - course.StartDate.ToDateTime(TimeOnly.MinValue)).Days <= 0 && course.Confirmed)
+            {
+                activeCourses.Add(course);
+            }
+        }
+        return activeCourses;
+    }
+
 
     public void Add(string languageName, LanguageLevel languageLevel, int duration, List<Weekday> held, bool isOnline,
         int maxStudents, int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed,
@@ -85,6 +131,12 @@ public class CourseService : ICourseService
         _scheduleService.Delete(id);
         _courseRepository.Delete(id);
     }
+    public void ConfirmCourse(int courseId)
+    {
+        Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
+        course.Confirmed = true;
+        _courseRepository.Update(course);
+    }
 
     private static DateOnly SetValidStartDate(DateOnly startDate, List<Weekday> held)
     {
@@ -92,5 +144,28 @@ public class CourseService : ICourseService
         int b = (int)startDate.DayOfWeek;
         int difference =  a- b;
         return startDate.AddDays((difference < 0 ? difference + 7 : difference) % 7);
+    }
+
+    private void CheckGrades(int courseId)
+    {
+        Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
+
+        foreach (int studentId in course.Students.Keys)
+        {
+            Student student = _userRepository.GetById(studentId) as Student ??
+                              throw new InvalidInputException("Student doesn't exist.");
+
+            if (!student.CourseGradeIds.ContainsKey(courseId))
+            {
+                throw new InvalidInputException("Not all students have been graded.");
+            }
+        }
+    }
+    public void FinishCourse(int courseId)
+    {
+        Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
+        CheckGrades(courseId);
+        course.IsFinished = true;
+        _courseRepository.Update(course);
     }
 }

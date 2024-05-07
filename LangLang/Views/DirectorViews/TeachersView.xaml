@@ -6,7 +6,9 @@
              xmlns:teacherViewModels="clr-namespace:LangLang.ViewModels.TeacherViewModels"
              d:DataContext="{d:DesignInstance Type=teacherViewModels:TeacherListingViewModel}"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             Height="450" Width="800"
+             WindowStartupLocation="CenterScreen"
+             Background="#bbe5e4">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
@@ -20,12 +22,13 @@
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*"/>
-            <ColumnDefinition Width="1*"/>
-        </Grid.ColumnDefinitions>
-        <ListView Grid.Row="0" Grid.RowSpan="10" Padding="5" Margin="5" ItemsSource="{Binding TeachersCollectionView}" SelectedItem="{Binding SelectedItem}" SelectionMode="Single">
+
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" FontWeight="Bold" >TEACHERS</TextBlock>
+        <ListView Grid.Row="3" Grid.RowSpan="9" Padding="5" Margin="5" ItemsSource="{Binding TeachersCollectionView}" SelectedItem="{Binding SelectedItem}" SelectionMode="Single">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="First Name">
@@ -88,16 +91,45 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <TextBlock Text="Filter teachers:" Grid.Column="1" Grid.Row="0"/>
-        <TextBlock Text="Date added:" Grid.Column="1" Grid.Row="1"/>
-        <DatePicker Grid.Column="1" Grid.Row="2" SelectedDate="{Binding SelectedDateCreated}" />
-        <TextBlock Text="Language:" Grid.Column="1" Grid.Row="3"/>
-        <ComboBox Grid.Column="1" Grid.Row="4" Margin="10" ItemsSource="{Binding LanguageNameValues}" SelectedItem="{Binding SelectedLanguageName}"/>
-        <TextBlock Text="Level:" Grid.Column="1" Grid.Row="5"/>
-        <ComboBox Grid.Column="1" Grid.Row="6" Margin="10" ItemsSource="{Binding LanguageLevelValues}" SelectedItem="{Binding SelectedLanguageLevel}"/>
-        <Button Content="Add" Grid.Column="1" Grid.Row="7" Command="{Binding AddCommand}"/>
-        <Button Content="Edit" Grid.Column="1" Grid.Row="8" Command="{Binding EditCommand}"/>
-        <Button Content="Delete" Grid.Column="1" Grid.Row="9" Command="{Binding DeleteCommand}"/>
-        <Button Content="Log Out" Grid.Column="1" Grid.Row="10" Command="{Binding LogOutCommand}"/>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="Language:" Grid.Column="0"/>
+            <TextBlock Text="Level:" Grid.Column="1"/>
+            <TextBlock Text="Date added:" Grid.Column="2"/>
+
+        </Grid>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <ComboBox  ItemsSource="{Binding LanguageNameValues}" SelectedItem="{Binding SelectedLanguageName, Mode=TwoWay}" Grid.Column="0" Margin="5"/>
+
+            <ComboBox ItemsSource="{Binding LanguageLevelValues}" SelectedItem="{Binding SelectedLanguageLevel, Mode=TwoWay}" Grid.Column="1" Margin="5"/>
+
+            <DatePicker SelectedDate="{Binding SelectedDateCreated}" Grid.Column="2" Margin="5"/>
+        </Grid>
+
+        <Grid Grid.Row="13">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button Command="{Binding AddCommand}"  Content="Add" Grid.Column="0" Grid.Row="10" Margin="10" VerticalAlignment="Bottom" Width="80" Height="40" Background="#55bcbb" Foreground="White" />
+            <Button Command="{Binding EditCommand}" Content="Edit" Grid.Column="1" Grid.Row="12" Margin="10" Width="80" Height="40" Background="#f46231" Foreground="White" />
+            <Button Command="{Binding DeleteCommand}" Content="Delete" Grid.Column="2" Grid.Row="13" Margin="10" Width="80" Height="40" Background="#ec3629" Foreground="White" />
+        </Grid>
+
     </Grid>
+
 </Window>

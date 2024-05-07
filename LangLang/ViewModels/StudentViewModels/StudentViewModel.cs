@@ -17,6 +17,7 @@ namespace LangLang.ViewModels.StudentViewModels;
 public class StudentViewModel : ViewModelBase
 {
     private readonly IUserService _userService = new UserService();
+    private readonly IStudentService _studentService = new StudentService();
 
     private readonly Student _student = UserService.LoggedInUser as Student ?? throw new InvalidInputException("No one is logged in.");
     private readonly CourseService _courseService = new CourseService();
@@ -32,6 +33,7 @@ public class StudentViewModel : ViewModelBase
         ViewAppliedCoursesCommand = new RelayCommand(ViewAppliedCourses);
         ViewExamsCommand = new RelayCommand(ViewExams);
         ViewAppliedExamsCommand = new RelayCommand(ViewAppliedExams);
+        DropActiveCourseCommand = new RelayCommand(DropActiveCourse);
         EditAccountCommand = new RelayCommand(EditAccount);
         DeleteAccountCommand = new RelayCommand(DeleteAccount);
         LogOutCommand = new RelayCommand(LogOut);
@@ -45,15 +47,9 @@ public class StudentViewModel : ViewModelBase
             _course = null;
         }
     }
+    
+    public int NumberOfPenaltyPoints => _student.PenaltyPoints;
 
-    public int NumberOfPenaltyPoints
-    {
-        get => _student.PenaltyPoints;
-        set
-        {
-            _student.PenaltyPoints = value;
-        }
-    }
     public string LanguageName
     {
         get => _course?.Language?.Name ?? "No language";
@@ -105,7 +101,6 @@ public class StudentViewModel : ViewModelBase
         }
     }
 
-
     public ObservableCollection<Course> AvailableCourses { get; set; }
     public ObservableCollection<Exam> AvailableExams { get; set; }
 
@@ -115,7 +110,7 @@ public class StudentViewModel : ViewModelBase
     public ICommand ViewAppliedCoursesCommand { get; }
     public ICommand ViewExamsCommand { get; }
     public ICommand ViewAppliedExamsCommand { get; }
-
+    public ICommand DropActiveCourseCommand { get; }
     public ICommand EditAccountCommand { get; }
     public ICommand DeleteAccountCommand { get; }
     public ICommand LogOutCommand { get; }
@@ -138,10 +133,27 @@ public class StudentViewModel : ViewModelBase
     {
         new AppliedExamView().Show();
     }
+    
+    private void DropActiveCourse()
+    {
+        try
+        {
+            var dialog = new DropOutModal();
+            if (!dialog.ShowDialog()!.Value) return;
+            
+            _studentService.DropActiveCourse(_student.Id, dialog.ResponseText);
+            MessageBox.Show("Course dropped successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            // TODO: Refresh the active course here (after binding it to a view)
+        }
+        catch (InvalidInputException ex)
+        {
+            MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
 
     private void EditAccount()
     {
-        // TO DO: in teacher, after exam is over remove it from appliedExams, ensure that only future exams are in the list or none at all
+        // TODO: in teacher, after exam is over remove it from appliedExams, ensure that only future exams are in the list or none at all
         if(_student.AppliedExams.Count != 0)
         {
             MessageBox.Show("You cannot change your data while you have registered exams.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);

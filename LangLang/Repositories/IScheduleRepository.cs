@@ -7,7 +7,7 @@ namespace LangLang.Repositories;
 public interface IScheduleRepository
 {
     public List<ScheduleItem> GetByDate(DateOnly date);
-    public void Add(ScheduleItem item);
+    public void Add(ScheduleItem item, DateOnly date);
     public void Update(ScheduleItem item);
     public void Delete(int id);
 }

@@ -32,8 +32,10 @@ public class ExamService : IExamService
         Language language = _languageService.GetLanguage(languageName, languageLevel) ??
                             throw new InvalidInputException("Language with the given level doesn't exist.");
 
-        Exam exam = new Exam(language, maxStudents, examDate, teacherId, examTime)
-        { Id = _examRepository.GenerateId() };
+
+        Exam exam = new(language, maxStudents, examDate, teacherId, examTime)
+            { Id = _examRepository.GenerateId() };
+
 
         _scheduleService.Add(exam);
         _examRepository.Add(exam);
@@ -107,7 +109,7 @@ public class ExamService : IExamService
     {
         Exam exam = _examRepository.GetById(examId)!;
 
-List<Student> students = exam.StudentIds.Select(studentId => (_userRepository.GetById(studentId) as Student)!).ToList();
+        List<Student> students = exam.StudentIds.Select(studentId => (_userRepository.GetById(studentId) as Student)!).ToList();
 
         return students;
     }
@@ -116,7 +118,7 @@ List<Student> students = exam.StudentIds.Select(studentId => (_userRepository.Ge
     {
         Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
                           throw new InvalidInputException("User doesn't exist.");
-        List<Exam> startableExams = new List<Exam>();
+        List<Exam> startableExams = new();
         foreach (int examId in teacher.ExamIds)
         {
             Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
@@ -165,6 +167,9 @@ List<Student> students = exam.StudentIds.Select(studentId => (_userRepository.Ge
                 throw new InvalidInputException("Not all students have been graded.");
             }
         }
+        
+        exam.TeacherGraded = true;
+        _examRepository.Update(exam);
     }
     public List<Exam> GetUngradedExams()
     {
