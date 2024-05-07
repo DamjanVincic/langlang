@@ -122,8 +122,12 @@ public class UserService : IUserService
 
         foreach(Exam exam in _examService.GetAll())
         {
-            if(exam.StudentIds.Contains(student.Id)) exam.StudentIds.Remove(student.Id);
-            _examRepository.Update(exam);
+            // remove student from exams only ih exam was not held
+            if (exam.StudentIds.Contains(student.Id) && exam.TeacherGraded != true)
+            {
+                exam.StudentIds.Remove(student.Id);
+                _examRepository.Update(exam);
+            }
         }
         
         if (student.ActiveCourseId is null) return;
