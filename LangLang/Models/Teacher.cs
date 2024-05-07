@@ -28,7 +28,6 @@ namespace LangLang.Models
             get => _qualifications;
             set
             {
-                ValidateQualifications(value);
                 _qualifications = value;
             }
         }
@@ -39,15 +38,7 @@ namespace LangLang.Models
         
         public double Rating => (double)TotalRating / NumberOfReviews;
 
-        private void ValidateQualifications(List<Language> qualifications)
-        {
-            if (qualifications.Except(new LanguageService().GetAll()).Any())
-            {
-                throw new InvalidInputException("Given language doesn't exist");
-            }
-        }
-
-       public void AddReview(int rating)
+        public void AddReview(int rating)
         {
             if (rating is < 1 or > 10)
                 throw new InvalidInputException("Rating must be between 1 and 10.");
