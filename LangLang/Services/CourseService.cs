@@ -194,5 +194,13 @@ public class CourseService : ICourseService
         CheckGrades(courseId);
         course.IsFinished = true;
         _courseRepository.Update(course);
+        
+        foreach (int studentId in course.Students.Keys)
+        {
+            Student student = (_userRepository.GetById(studentId) as Student)!;
+            student.CoursePassFail[courseId] = false;
+            student.DropActiveCourse();
+            _userRepository.Update(student);
+        }
     }
 }
