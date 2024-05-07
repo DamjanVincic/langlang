@@ -25,7 +25,7 @@ public class ScheduleService : IScheduleService
                     foreach (int day in dayDifferences)
                     {
                         _scheduleRepository.Add(scheduleItem);
-                        course.StartDate = startDate.AddDays(day);
+                        course.StartDate.AddDays(day);
                     }
                 }
                 course.StartDate = startDate;

@@ -42,7 +42,7 @@ namespace LangLang.ViewModels.CourseViewModels
         public ICommand FinishCourseCommand { get; set; }
         public ICommand EnterGradeCommand { get; set; }
 
-        public static IEnumerable<PenaltyPointReason?> PenaltyPointReasonValues => Enum.GetValues(typeof(PenaltyPointReason))
+        public IEnumerable<PenaltyPointReason?> PenaltyPointReasonValues => Enum.GetValues(typeof(PenaltyPointReason))
             .Cast<PenaltyPointReason?>();
 
         private void EnterGrade()
