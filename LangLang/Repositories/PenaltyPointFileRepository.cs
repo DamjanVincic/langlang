@@ -77,6 +77,8 @@ namespace LangLang.Repositories;
     {
         string filePath = Path.Combine(Directory.GetCurrentDirectory(), PenaltyPointDirectoryName, PenaltyPointFileName);
 
+        if (!File.Exists(filePath)) return;
+
         string json = File.ReadAllText(filePath);
         _penaltyPoints = JsonConvert.DeserializeObject<Dictionary<int, PenaltyPoint>>(json, new JsonSerializerSettings
         {

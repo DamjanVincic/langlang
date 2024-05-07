@@ -21,6 +21,7 @@ namespace LangLang.ViewModels.CourseViewModels
         private readonly ICourseGradeRepository _courseGradeRepository = new CourseGradeFileRepository();
         private readonly ICourseService _courseService = new CourseService();
         private readonly IStudentService _studentService = new StudentService();
+        private readonly ITeacherService _teacherService = new TeacherService();
         private readonly int _courseId;
         private readonly Window _currentWindow;
 
@@ -36,23 +37,15 @@ namespace LangLang.ViewModels.CourseViewModels
 
         public ObservableCollection<StudentCourseGradeViewModel> Students { get; set; } = new();
         public StudentCourseGradeViewModel? SelectedItem { get; set; }
-        public string? SelectedPenaltyPointReason {  get; set; }
+        public PenaltyPointReason? SelectedPenaltyPointReason {  get; set; }
 
         public ICommand PenalizeCommand { get; set; }
         public ICommand FinishCourseCommand { get; set; }
         public ICommand EnterGradeCommand { get; set; }
 
-        public static IEnumerable<string?> PenaltyPointReasonValues => Enum.GetValues(typeof(PenaltyPointReason))
-            .Cast<PenaltyPointReason?>()
-            .Where(reason => reason != PenaltyPointReason.DroppingOutDenied) 
-            .Select(reason => FormatPenaltyPointReasonValue((PenaltyPointReason)reason!));
+        public IEnumerable<PenaltyPointReason?> PenaltyPointReasonValues => Enum.GetValues(typeof(PenaltyPointReason))
+            .Cast<PenaltyPointReason?>();
 
-        private static string FormatPenaltyPointReasonValue(PenaltyPointReason reason)
-        {
-            string reasonString = reason.ToString();
-            reasonString = string.Concat(reasonString.Select((x, i) => i > 0 && char.IsUpper(x) ? " " + x.ToString().ToLower() : x.ToString()));
-            return reasonString;
-        }
         private void EnterGrade()
         {
             if (SelectedItem == null)
@@ -69,7 +62,7 @@ namespace LangLang.ViewModels.CourseViewModels
         private void FinishCourse()
         {
             try {
-                _courseService.FinishCourse(_courseId);
+                _teacherService.FinishCourse(_courseId);
                 MessageBox.Show("Successfully finished course.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 _currentWindow.Close();
             }
@@ -86,7 +79,7 @@ namespace LangLang.ViewModels.CourseViewModels
                 MessageBox.Show("No student selected.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            if (string.IsNullOrEmpty(SelectedPenaltyPointReason))
+            if (SelectedPenaltyPointReason == null)
             {
                 MessageBox.Show("Must input penalty reason.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
@@ -99,7 +92,7 @@ namespace LangLang.ViewModels.CourseViewModels
             {
                 try
                 {
-                    _studentService.Penalize(SelectedItem.StudentId, _courseId);
+                    _studentService.AddPenaltyPoint(SelectedItem.StudentId, (PenaltyPointReason)SelectedPenaltyPointReason, _courseId, UserService.LoggedInUser.Id, DateOnly.FromDateTime(DateTime.Now));
                     MessageBox.Show("Successfully given penalty point.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     RefreshStudents();
                 }

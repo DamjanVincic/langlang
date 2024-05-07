@@ -17,15 +17,14 @@ public class PenaltyPointService : IPenaltyPointService
     {
         return _penaltyPointRepository.GetById(id);
     }
-    public void Add(PenaltyPointReason penaltyPointReason, bool deleted, int studentId, int courseId, int teacherId, DateOnly datePenaltyPointGiven)
+    public void Add(PenaltyPointReason penaltyPointReason, int studentId, int courseId, int teacherId, DateOnly datePenaltyPointGiven)
     {
-        PenaltyPoint point = new PenaltyPoint(penaltyPointReason, deleted, studentId, courseId, teacherId, datePenaltyPointGiven);
+        PenaltyPoint point = new(penaltyPointReason, false, studentId, courseId, teacherId, datePenaltyPointGiven);
         _penaltyPointRepository.Add(point);
     }
     public void Delete(int id)
     {
-        PenaltyPoint point = _penaltyPointRepository.GetById(id) ?? throw new InvalidInputException("PenaltyPoint doesnt exist.");
+        _ = _penaltyPointRepository.GetById(id) ?? throw new InvalidInputException("PenaltyPoint doesnt exist.");
         _penaltyPointRepository.Delete(id);
     }
-
 }

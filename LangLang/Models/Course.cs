@@ -16,6 +16,7 @@ namespace LangLang.Models
             int teacherId) : base(language, maxStudents, startDate, teacherId, scheduledTime)
         {
             Duration = duration;
+            StartDate = startDate;
             Held = held;
             CreatorId = creatorId;
             AreApplicationsClosed = areApplicationsClosed;
@@ -119,7 +120,8 @@ namespace LangLang.Models
         
         public void AddStudent(int studentId)
         {
-            if (Students.Count >= MaxStudents)
+            if (Students.Count >= MaxStudents && !IsOnline)
+
                 throw new InvalidInputException("The course is full.");
             
             if (!Students.TryAdd(studentId, ApplicationStatus.Pending))

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Input;
 using LangLang.Models;
 using LangLang.Repositories;
 
@@ -16,6 +15,8 @@ public class StudentService : IStudentService
     private readonly IUserService _userService = new UserService();
     private readonly IExamGradeService _examGradeService = new ExamGradeService();
     private readonly ICourseGradeService _courseGradeService = new CourseGradeService();
+    private readonly IPenaltyPointService _penaltyPointService = new PenaltyPointService();
+
 
     public List<Student> GetAll()
     {
@@ -25,7 +26,9 @@ public class StudentService : IStudentService
     public List<Course> GetAvailableCourses(int studentId)
     {
         return _courseRepository.GetAll().Where(course =>
-            course.Students.Count < course.MaxStudents &&
+
+            (course.Students.Count < course.MaxStudents || course.IsOnline) &&
+
             (course.StartDate.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days >= 7 &&
             !course.Students.ContainsKey(studentId)).ToList();
     }
@@ -152,8 +155,6 @@ public class StudentService : IStudentService
 
     public void DropActiveCourse(int studentId, string reason)
     {
-        // TODO: Change the logic to send a reason to the teacher why the student wants to drop the course
-        
         Student student = _userRepository.GetById(studentId) as Student ??
                           throw new InvalidInputException("Student doesn't exist.");
 
@@ -187,15 +188,48 @@ public class StudentService : IStudentService
         _examRepository.Update(exam);
         _userService.Delete(studentId);
     }
-    
-    public void Penalize(int studentId, int courseId)
+    public void CheckIfFirstInMonth()
+    {
+        DateOnly currentDate = DateOnly.FromDateTime(DateTime.Now);
+        int dayOfMonth = currentDate.Day;
+
+        if (dayOfMonth != 1 || UserService.LoggedInUser is not Student student || student.PenaltyPoints <= 0)
+        {
+            return;
+        }
+
+        --student.PenaltyPoints;
+        _userRepository.Update(student);
+        RemoveStudentPenaltyPoint(student.Id);
+    }
+
+    private void RemoveStudentPenaltyPoint(int studentId)
+    {
+        List<PenaltyPoint> penaltyPoints = _penaltyPointService.GetAll();
+
+        foreach (PenaltyPoint point in penaltyPoints)
+        {
+            if (point.StudentId == studentId && !point.Deleted)
+            {
+                _penaltyPointService.Delete(point.Id);
+                break;
+            }
+        }
+    }
+
+    public void AddPenaltyPoint(int studentId, PenaltyPointReason penaltyPointReason, int courseId,
+        int teacherId, DateOnly datePenaltyPointGiven)
     {
         Student student = _userRepository.GetById(studentId) as Student ??
                           throw new InvalidInputException("Student doesn't exist.");
-
-        Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
-
-        // TODO : inform the student about the penalty point and assign it to him
+        _ = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
+        ++student.PenaltyPoints;
+        _userRepository.Update(student);
+        _penaltyPointService.Add(penaltyPointReason, student.Id, courseId, teacherId, datePenaltyPointGiven);
+        if (student.PenaltyPoints == 3)
+        {
+            _userService.Delete(student.Id);
+        }
     }
 
     public void AddExamGrade(int studentId, int examId, int writing, int reading, int listening, int talking)
@@ -248,5 +282,42 @@ public class StudentService : IStudentService
         student.CourseGradeIds[courseId] = courseGradeId;
 
         _userRepository.Update(student);
+    }
+
+    /// <summary>
+    /// Pause all student applications except the one with the passed ID
+    /// </summary>
+    /// <param name="studentId">Student ID</param>
+    /// <param name="courseId">Course ID which not to pause</param>
+    public void PauseOtherApplications(int studentId, int courseId)
+    {
+        Student student = (_userRepository.GetById(studentId) as Student)!;
+        
+        foreach (Course course in student.AppliedCourses.Select(id => _courseRepository.GetById(id)!))
+        {
+            if (course.Id == courseId)
+                continue;
+
+            if (!course.Students.ContainsKey(studentId))
+                throw new InvalidInputException($"Student hasn't applied to the course with ID {course.Id}.");
+            
+            course.Students[studentId] = ApplicationStatus.Paused;
+            _courseRepository.Update(course);
+        }
+    }
+
+    // TODO: Call this method when the teacher reviews the drop out request
+    public void ResumeApplications(int studentId)
+    {
+        Student student = (_userRepository.GetById(studentId) as Student)!;
+
+        foreach (Course course in student.AppliedCourses.Select(courseId => _courseRepository.GetById(courseId)!))
+        {
+            if (!course.Students.ContainsKey(studentId))
+                throw new InvalidInputException($"Student hasn't applied to the course with ID {course.Id}.");
+            
+            course.Students[studentId] = ApplicationStatus.Pending;
+            _courseRepository.Update(course);
+        }
     }
 }

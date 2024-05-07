@@ -44,6 +44,14 @@ public class Student : User
         AppliedCourses.Remove(courseId);
     }
 
+    public void SetActiveCourse(int courseId)
+    {
+        if (ActiveCourseId is not null)
+            throw new InvalidInputException("You are already enrolled in a course.");
+
+        ActiveCourseId = courseId;
+    }
+
     public void DropActiveCourse()
     {
         if (ActiveCourseId is null)
