@@ -5,6 +5,6 @@
         StudentDidntShow,
         StudentDisturbedOthers,
         StudentDidntDoHomework,
-        DroppingOutDeniedde
+        DroppingOutDenied
     }
 }
