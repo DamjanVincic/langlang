@@ -11,7 +11,7 @@ public interface IPenaltyPointService
     public List<PenaltyPoint> GetAll();
     public PenaltyPoint? GetById(int id);
 
-    public void Add(PenaltyPointReason penaltyPointReason, bool deleted, int studentId, int courseId, int teacherId, DateOnly datePenaltyPointGiven);
+    public void Add(PenaltyPointReason penaltyPointReason, int studentId, int courseId, int teacherId, DateOnly datePenaltyPointGiven);
 
     // cant change ids only if point was removed/deleted
     public void Delete(int id);

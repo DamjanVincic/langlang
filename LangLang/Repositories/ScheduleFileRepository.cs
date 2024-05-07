@@ -21,14 +21,14 @@ public class ScheduleFileRepository : IScheduleRepository
         return items ?? new List<ScheduleItem>();
     }
 
-    public void Add(ScheduleItem item, DateOnly date)
+    public void Add(ScheduleItem item)
     {
         LoadData();
         
-        if (!_table.ContainsKey(date))
-            _table.Add(date, new List<ScheduleItem>());
+        if (!_table.ContainsKey(item.Date))
+            _table.Add(item.Date, new List<ScheduleItem>());
         
-        _table[date].Add(item);
+        _table[item.Date].Add(item);
         
         SaveData();
     }

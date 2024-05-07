@@ -11,10 +11,8 @@ public class CourseService : ICourseService
 {
     private readonly ICourseRepository _courseRepository = new CourseFileRepository();
     private readonly IUserRepository _userRepository = new UserFileRepository();
-    private readonly IStudentService _studentService = new StudentService();
     private readonly ILanguageService _languageService = new LanguageService();
     private readonly IScheduleService _scheduleService = new ScheduleService();
-    private readonly IMessageService _messageService = new MessageService();
 
     public List<Course> GetAll()
     {
@@ -142,76 +140,11 @@ public class CourseService : ICourseService
         _courseRepository.Delete(id);
     }
 
-    public void ConfirmCourse(int courseId)
-    {
-        Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
-        course.Confirmed = true;
-        
-        foreach ((int studentId, ApplicationStatus applicationStatus) in course.Students)
-        {
-            Student student = _userRepository.GetById(studentId) as Student ??
-                              throw new InvalidInputException("Student doesn't exist.");
-
-            switch (applicationStatus)
-            {
-                // All paused and denied applications are removed
-                case ApplicationStatus.Paused:
-                case ApplicationStatus.Denied:
-                    course.RemoveStudent(studentId);
-                    student.RemoveCourse(courseId);
-                    _userRepository.Update(student);
-                    if (applicationStatus == ApplicationStatus.Denied)
-                        _messageService.Add(studentId, $"Your application for the course {course.Language.Name} has been denied.");
-                    break;
-                default:
-                    student.SetActiveCourse(courseId);
-                    _studentService.PauseOtherApplications(studentId, courseId);
-                    _messageService.Add(studentId, $"Your application for the course {course.Language.Name} has been accepted.");
-                    break;
-            }
-        }
-        
-        _courseRepository.Update(course);
-    }
-
     private static DateOnly SetValidStartDate(DateOnly startDate, List<Weekday> held)
     {
         int a = (int)held[0] + 1;
         int b = (int)startDate.DayOfWeek;
         int difference = a - b;
         return startDate.AddDays((difference < 0 ? difference + 7 : difference) % 7);
-    }
-
-    private void CheckGrades(int courseId)
-    {
-        Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
-
-        foreach (int studentId in course.Students.Keys)
-        {
-            Student student = _userRepository.GetById(studentId) as Student ??
-                              throw new InvalidInputException("Student doesn't exist.");
-
-            if (!student.CourseGradeIds.ContainsKey(courseId))
-            {
-                throw new InvalidInputException("Not all students have been graded.");
-            }
-        }
-    }
-
-    public void FinishCourse(int courseId)
-    {
-        Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
-        CheckGrades(courseId);
-        course.IsFinished = true;
-        _courseRepository.Update(course);
-        
-        foreach (int studentId in course.Students.Keys)
-        {
-            Student student = (_userRepository.GetById(studentId) as Student)!;
-            student.CoursePassFail[courseId] = false;
-            student.DropActiveCourse();
-            _studentService.ResumeApplications(studentId);
-            _userRepository.Update(student);
-        }
     }
 }
