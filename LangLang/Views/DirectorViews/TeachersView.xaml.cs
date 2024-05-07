@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using LangLang.ViewModels.TeacherViewModels;
 
-namespace LangLang.Views.TeacherViews
+namespace LangLang.Views.DirectorViews
 {
     /// <summary>
     /// Interaction logic for TeachersView.xaml

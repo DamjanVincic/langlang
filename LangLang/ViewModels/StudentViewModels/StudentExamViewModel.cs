@@ -21,8 +21,8 @@ public class StudentExamViewModel : ViewModelBase
     private readonly IExamService _examService = new ExamService();
     private Student _student = UserService.LoggedInUser as Student ??
                               throw new InvalidOperationException("No one is logged in.");
-    private string _languageNameSelected;
-    private string _languageLevelSelected;
+    private string? _languageNameSelected;
+    private string? _languageLevelSelected;
     private DateTime _dateSelected;
     
     public StudentExamViewModel()
@@ -36,7 +36,7 @@ public class StudentExamViewModel : ViewModelBase
     }
     
     public ObservableCollection<ExamViewModel> AvailableExams { get; }
-    public ExamViewModel SelectedItem { get; set; }
+    public ExamViewModel? SelectedItem { get; set; }
     public ICollectionView ExamCollectionView { get; set; }
     public IEnumerable<LanguageLevel> LanguageLevelValues => Enum.GetValues(typeof(LanguageLevel)).Cast<LanguageLevel>();
     public IEnumerable<string> LanguageNames => _languageService.GetAllNames();
@@ -44,7 +44,7 @@ public class StudentExamViewModel : ViewModelBase
     public ICommand ApplyForExamCommand { get; }
 
 
-    public string LanguageNameSelected
+    public string? LanguageNameSelected
     {
         get => _languageNameSelected;
         set
@@ -54,7 +54,7 @@ public class StudentExamViewModel : ViewModelBase
         }
     }
     
-    public string LanguageLevelSelected
+    public string? LanguageLevelSelected
     {
         get => _languageLevelSelected;
         set
@@ -102,7 +102,7 @@ public class StudentExamViewModel : ViewModelBase
 
         try
         {
-            Exam exam = _examService.GetById(SelectedItem.Id);
+            Exam? exam = _examService.GetById(SelectedItem.Id);
             _studentService.ApplyStudentExam(_student, exam.Id);
             MessageBox.Show("You have applied for the exam.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
         }
