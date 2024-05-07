@@ -156,6 +156,7 @@ public class ExamService : IExamService
     public void FinishExam(int examId)
     {
         Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
+        CheckGrades(exam);
 
         exam.TeacherGraded = true;
         _examRepository.Update(exam);
