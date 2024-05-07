@@ -11,6 +11,7 @@ public class CourseService : ICourseService
 {
     private readonly ICourseRepository _courseRepository = new CourseFileRepository();
     private readonly IUserRepository _userRepository = new UserFileRepository();
+    private readonly IStudentService _studentService = new StudentService();
     private readonly ILanguageService _languageService = new LanguageService();
     private readonly IScheduleService _scheduleService = new ScheduleService();
     private readonly IMessageService _messageService = new MessageService();
@@ -163,6 +164,8 @@ public class CourseService : ICourseService
                         _messageService.Add(studentId, $"Your application for the course {course.Language.Name} has been denied.");
                     break;
                 default:
+                    student.SetActiveCourse(courseId);
+                    _studentService.PauseOtherApplications(studentId, courseId);
                     _messageService.Add(studentId, $"Your application for the course {course.Language.Name} has been accepted.");
                     break;
             }
@@ -207,6 +210,7 @@ public class CourseService : ICourseService
             Student student = (_userRepository.GetById(studentId) as Student)!;
             student.CoursePassFail[courseId] = false;
             student.DropActiveCourse();
+            _studentService.ResumeApplications(studentId);
             _userRepository.Update(student);
         }
     }
