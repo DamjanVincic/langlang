@@ -43,4 +43,12 @@ public class Student : User
         
         AppliedCourses.Remove(courseId);
     }
+
+    public void DropActiveCourse()
+    {
+        if (ActiveCourseId is null)
+            throw new InvalidInputException("You are not enrolled in any courses.");
+
+        ActiveCourseId = null;
+    }
 }

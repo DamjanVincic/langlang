@@ -107,7 +107,7 @@ namespace LangLang.ViewModels.CourseViewModels
             Students.Clear();
             Course? course = _courseRepository.GetById(_courseId);
 
-            foreach (int studentId in course!.StudentIds)
+            foreach (int studentId in course!.Students.Keys)
             {
                 Student student = _userRepository.GetById(studentId) as Student ??
                                   throw new InvalidInputException("Student doesn't exist.");

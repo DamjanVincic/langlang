@@ -43,13 +43,10 @@ public class UserService : IUserService
     public void Update(int id, string firstName, string lastName, string password, Gender gender, string phone,
         Education? education = null, List<Language>? languages = null, int penaltyPoints = -1)
     {
-        //TODO: Validate if user(student) hasn't applied to any courses or exams
         User user = _userRepository.GetById(id) ?? throw new InvalidInputException("User doesn't exist");
 
-        if (user is Student studentCheck &&
-            (studentCheck.AppliedCourses.Count > 0 || studentCheck.ActiveCourseId != null))
-            throw new InvalidInputException(
-                "You cannot change your information if you have applied to, or enrolled in any courses");
+        if (user is Student studentCheck && (studentCheck.AppliedCourses.Any() || studentCheck.ActiveCourseId != null || studentCheck.AppliedExams.Any()))
+            throw new InvalidInputException("You cannot change your information if you have applied to, or enrolled in any courses");
 
         user.FirstName = firstName;
         user.LastName = lastName;
