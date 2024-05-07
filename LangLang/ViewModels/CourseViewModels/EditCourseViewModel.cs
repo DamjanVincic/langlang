@@ -102,9 +102,15 @@ namespace LangLang.ViewModels.CourseViewModels
 
         public Language? IsValidLanguage(string languageName, LanguageLevel level)
         {
-            return _languageService.GetAll()
-                .FirstOrDefault(language => language.Name.Equals(languageName) && language.Level.Equals(level))
-                ?? throw new InvalidInputException("Language doesn't exist.");
+            var language = _languageService.GetAll()
+                .FirstOrDefault(pair => pair.Value.Name == languageName && pair.Value.Level == level);
+
+            if (language.Equals(default(KeyValuePair<int, Language>)))
+            {
+                throw new InvalidInputException("Language doesn't exist.");
+            }
+
+            return language.Value;
         }
     }
 }

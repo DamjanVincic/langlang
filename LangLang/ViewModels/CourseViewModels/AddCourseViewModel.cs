@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using System.Xml.Linq;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
@@ -88,9 +89,16 @@ namespace LangLang.ViewModels.CourseViewModels
 
         public Language? IsValidLanguage(string languageName, LanguageLevel level)
         {
-            return _languageService.GetAll()
-                .FirstOrDefault(language => language.Name.Equals(languageName) && language.Level.Equals(level))
-                ?? throw new InvalidInputException("Language doesn't exist.");
+            var language = _languageService.GetAll()
+                .FirstOrDefault(pair => pair.Value.Name == languageName && pair.Value.Level == level);
+
+            if (language.Equals(default(KeyValuePair<int, Language>)))
+            {
+                throw new InvalidInputException("Language doesn't exist.");
+            }
+
+            return language.Value;
         }
+
     }
 }
