@@ -8,10 +8,10 @@ namespace LangLang.Views.CourseViews
     /// </summary>
     public partial class StartCourseView : Window
     {
-        public StartCourseView()
+        public StartCourseView(int courseId)
         {
             InitializeComponent();
-            //DataContext = new StartCourseViewModel();
+            DataContext = new StartCourseViewModel(courseId, this);
         }
     }
 }

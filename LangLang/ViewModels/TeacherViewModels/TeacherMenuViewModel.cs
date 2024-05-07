@@ -29,6 +29,8 @@ namespace LangLang.ViewModels.TeacherViewModels
             LogOutCommand = new RelayCommand(LogOut);
             StartableExamsCommand = new RelayCommand(StartableExams);
             CurrentExamCommand = new RelayCommand(CurrentExam);
+            StartableCoursesCommand = new RelayCommand(StartableCourses);
+            ActiveCoursesCommand = new RelayCommand(ActiveCourses);
         }
 
         public ICommand CourseCommand { get; }
@@ -75,6 +77,19 @@ namespace LangLang.ViewModels.TeacherViewModels
             {
                 MessageBox.Show(exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+        public ICommand StartableCoursesCommand { get; }
+        private void StartableCourses()
+        {
+            var newWindow = new StartableCoursesView();
+            newWindow.Show();
+        }
+
+        public ICommand ActiveCoursesCommand { get; }
+        private void ActiveCourses()
+        {
+                var newWindow = new ActiveCoursesView();
+                newWindow.Show();
         }
     }
 }

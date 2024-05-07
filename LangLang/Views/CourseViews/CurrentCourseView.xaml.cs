@@ -1,16 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LangLang.ViewModels.CourseViewModels;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace LangLang.Views.CourseViews
 {
@@ -19,9 +8,10 @@ namespace LangLang.Views.CourseViews
     /// </summary>
     public partial class CurrentCourseView : Window
     {
-        public CurrentCourseView()
+        public CurrentCourseView(int courseId)
         {
             InitializeComponent();
+            DataContext = new CurrentCourseViewModel(courseId, this);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace LangLang.Views.CourseViews
         public ExistingCoursesView()
         {
             InitializeComponent();
-            DataContext = new CourseListingViewModel();
+            DataContext = new ExistingCoursesViewModel();
         }
         public class MaxStudentsVisibilityConverter : IValueConverter
         {

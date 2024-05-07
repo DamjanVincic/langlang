@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using LangLang.Repositories;
+﻿using System.Collections.Generic;
 using LangLang.Models;
 
 namespace LangLang.Services;
@@ -20,4 +18,6 @@ public interface IStudentService
     public void ReportCheating(int studentId, int examId);
 
     public void AddExamGrade(int studentId, int examId, int writing, int reading, int listening, int talking);
+    public void AddCourseGrade(int studentId, int courseId, int knowledgeGrade, int activityGrade);
+    public void Penalize(int studentId, int courseId);
 }
