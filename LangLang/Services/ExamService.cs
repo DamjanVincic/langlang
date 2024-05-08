@@ -12,6 +12,8 @@ public class ExamService : IExamService
     private readonly IUserRepository _userRepository = new UserFileRepository();
     private readonly IScheduleService _scheduleService = new ScheduleService();
     private readonly ILanguageService _languageService = new LanguageService();
+    private readonly IExamGradeRepository _examGradeRepository = new ExamGradeFileRepository();
+    private readonly IMessageRepository _messageRepository = new MessageFileRepository();   
 
     public List<Exam> GetAll()
     {
@@ -194,5 +196,15 @@ public class ExamService : IExamService
             }
         }
     }
-
+    public void SendEmail(int examId)
+    {
+        foreach(ExamGrade examGrade in _examGradeRepository.GetAll())
+        {
+            string messageText = "YOUR GRADES: 1. Reading: " + examGrade.ReadingPoints.ToString()
+                + " points 2. Listening: " + examGrade.ListeningPoints.ToString() +
+                " points 3. Talking " + examGrade.TalkingPoints.ToString() + " points 4. Writing " + examGrade.WritingPoints.ToString() + " points.";
+            Message message = new Message(examGrade.StudentId, messageText);
+            _messageRepository.Add(message);
+        }    
+    }
 }

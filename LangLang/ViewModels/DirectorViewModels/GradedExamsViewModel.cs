@@ -45,6 +45,7 @@ public class GradedExamsViewModel
             if(exam != null)
             {
                 _examService.SendGrades(exam.Id);
+                _examService.SendEmail(exam.Id);
             }
             UpdateExamList();
             MessageBox.Show("Grades sent successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
