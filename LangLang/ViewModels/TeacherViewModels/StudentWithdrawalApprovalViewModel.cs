@@ -49,6 +49,8 @@ namespace LangLang.ViewModels.TeacherViewModels
                 {
                     Student student = _userRepository.GetById(SelectedItem.Id) as Student ??
                               throw new InvalidInputException("User doesn't exist.");
+                    
+                    _studentService.ResumeApplications(student.Id);
                     student.DropActiveCourse();
                     Course course = _courseRepository.GetById(_courseId) as Course ??
                         throw new InvalidInputException("Course doesn't exist.");
@@ -85,6 +87,7 @@ namespace LangLang.ViewModels.TeacherViewModels
                     Student student = _userRepository.GetById(SelectedItem.Id) as Student ??
                           throw new InvalidInputException("Student doesn't exist.");
 
+                    _studentService.ResumeApplications(student.Id);
                     student.DropActiveCourse();
                     Course course = _courseRepository.GetById(_courseId) as Course ??
                         throw new InvalidInputException("Course doesn't exist.");
