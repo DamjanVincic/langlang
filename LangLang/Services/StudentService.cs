@@ -248,7 +248,9 @@ public class StudentService : IStudentService
             _examGradeService.Delete(student.ExamGradeIds[examId]);
 
         student.ExamGradeIds[examId] = examGradeId;
-        student.LanguagePassFail[exam.Language.Id] = true;
+
+        ExamGrade examGrade = _examGradeService.GetById(examGradeId);
+        student.LanguagePassFail[exam.Language.Id] = examGrade.Passed;
 
         _userRepository.Update(student);
     }
