@@ -1,8 +1,8 @@
 ﻿using System.Windows;
 using LangLang.Models;
-using LangLang.ViewModels.TeacherViewModels;
+using LangLang.ViewModels.DirectorViewModels;
 
-namespace LangLang.Views.TeacherViews
+namespace LangLang.Views.DirectorViews
 {
     /// <summary>
     /// Interaction logic for EditTeacherView.xaml

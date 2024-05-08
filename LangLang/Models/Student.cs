@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using LangLang.Views.CourseViews;
+using Newtonsoft.Json;
 
 namespace LangLang.Models;
 
@@ -12,17 +13,36 @@ public class Student : User
     {
         Education = education ?? throw new ArgumentNullException(nameof(education));
         PenaltyPoints = 0;
-        AppliedExams = new List<int>(); 
+        AppliedExams = new List<int>();
+        ActiveCourseId = null;
     }
+    
+    [JsonConstructor]
+    public Student(string firstName, string lastName, string email, string password, Gender gender, string phone, Education education, int penaltyPoints, int? activeCourseId, Dictionary<int, bool> languagePassFail, List<int> appliedCourses, List<int> appliedExams, Dictionary<int, int> examGradeIds, Dictionary<int, int> courseGradeIds)
+        : base(firstName, lastName, email, password, gender, phone)
+    {
+        Education = education;
+        PenaltyPoints = penaltyPoints;
+        ActiveCourseId = activeCourseId;
+        LanguagePassFail = languagePassFail;
+        AppliedCourses = appliedCourses;
+        AppliedExams = appliedExams;
+        ExamGradeIds = examGradeIds;
+        CourseGradeIds = courseGradeIds;
+    }
+    
     public Education? Education { get; set; }
     public int PenaltyPoints { get; set; }
-    public int? ActiveCourseId { get; } = null;
-    
+    public int? ActiveCourseId { get; private set; } = null;
+
     // obradjeniJezici / zavrseniJezici
     // dict jezik-bool, kada se zavrsi dodaj sa false, kada polozi ispit promeni na true
-    public Dictionary<int, bool> CoursePassFail { get; set; } = new();
+    public Dictionary<int, bool> LanguagePassFail { get; set; } = new();
     public List<int> AppliedCourses { get; } = new();
     public List<int> AppliedExams { get; set; }
+
+    public Dictionary<int, int> ExamGradeIds { get; set; } = new();
+    public Dictionary<int, int> CourseGradeIds { get; set; } = new();
     
     public void AddCourse(int courseId)
     {
@@ -38,5 +58,21 @@ public class Student : User
             throw new InvalidInputException("You haven't applied to this course.");
         
         AppliedCourses.Remove(courseId);
+    }
+
+    public void SetActiveCourse(int courseId)
+    {
+        if (ActiveCourseId is not null)
+            throw new InvalidInputException("You are already enrolled in a course.");
+
+        ActiveCourseId = courseId;
+    }
+
+    public void DropActiveCourse()
+    {
+        if (ActiveCourseId is null)
+            throw new InvalidInputException("You are not enrolled in any courses.");
+
+        ActiveCourseId = null;
     }
 }

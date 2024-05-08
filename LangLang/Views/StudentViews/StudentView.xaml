@@ -30,7 +30,7 @@
             
             <TextBlock Grid.Row="2" VerticalAlignment="Bottom">
                 <Run Text="penalty points "/>
-                <Run FontStyle="Italic" Text="{Binding NumberOfPenaltyPoints}"/>
+                <Run FontStyle="Italic" Text="{Binding NumberOfPenaltyPoints, Mode=OneWay}"/>
                 <Run Text=" 🚩"/>
             </TextBlock>
 
@@ -67,12 +67,30 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <TextBlock FontWeight="Bold" Margin="0 50 0 0" Grid.Row="0">CURRENT ENROLLED COURSE</TextBlock>
-            <TextBlock FontStyle="Italic" Grid.Row="1" Margin="0 0 0 12">COURSE WILL BE HERE</TextBlock>
-            <Button Content="Drop the course" Command="{Binding LogOutCommand}" Width="140" Height="40" Margin="0 0 0 10" Background="#f46231" Foreground="White" Grid.Row="3" Grid.Column="1"/>
 
-            <Button Content="📩" Command="{Binding LogOutCommand}" Width="50" Height="40" Margin="10 10 10 10" Background="#4daaa9" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+            <TextBlock Grid.Row="1">
+                <Run Text="Language: "/>
+                <Run FontStyle="Italic" Text="{Binding LanguageName}"/>
+                <Run FontStyle="Italic" Text="{Binding LanguageLevel}"/>
+            </TextBlock>
+
+            <TextBlock Grid.Row="2">
+                <Run Text="Days held: "/>
+                <Run FontStyle="Italic" Text="{Binding DaysHeld}"/>
+            </TextBlock>
+
+
+            <TextBlock Grid.Row="3">
+                <Run Text="Time: "/>
+                <Run FontStyle="Italic" Text="{Binding Time}"/>
+            </TextBlock>
+
+            <Button Content="Drop the course" Command="{Binding DropActiveCourseCommand}" Width="140" Height="40" Margin="0 0 0 10" Background="#f46231" Foreground="White" Grid.Row="4" Grid.Column="1"/>
+
+            <Button Content="📩" Command="{Binding InboxCommand}" Width="50" Height="40" Margin="10 10 10 10" Background="#4daaa9" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Top"/>
             <Button Content="Courses" Command="{Binding ViewCoursesCommand}" Margin="0 10 70 0" Width="80" Height="40" Background="#4daaa9" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Top"/>
             <Button Content="Exams" Command="{Binding ViewExamsCommand}" Margin="0 10 160 0" Width= "80" Height="40" Background="#4daaa9" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Top"/>
             <Button Content="Applied Courses" Command="{Binding ViewAppliedCoursesCommand}" Margin="0 10 250 0" Width= "140" Height="40" Background="#4daaa9" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Top"/>

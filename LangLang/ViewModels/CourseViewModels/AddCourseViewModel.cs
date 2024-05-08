@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using System.Xml.Linq;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
@@ -54,8 +55,7 @@ namespace LangLang.ViewModels.CourseViewModels
         private void AddCourse()
         {
             if (string.IsNullOrEmpty(LanguageName) ||
-                (!Format.Equals("online") && MaxStudents <= 0) || Duration <= 0 || StartDate == default || Hours < 0 ||
-                Minutes < 0)
+                (Format != null && (!Format.Equals("online") && MaxStudents <= 0) || Duration <= 0 || StartDate == default || Hours < 0 || Minutes < 0))
             {
                 MessageBox.Show("Please fill in all fields.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
@@ -68,7 +68,7 @@ namespace LangLang.ViewModels.CourseViewModels
                     .ToList();
                 Language? language = IsValidLanguage(LanguageName, LanguageLevel);
                 ScheduledTime = new TimeOnly().AddHours(Hours).AddMinutes(Minutes);
-                bool isOnline = Format.Equals("online");
+                bool isOnline = Format != null && Format.Equals("online");
                 DateOnly startDate = new(StartDate.Year, StartDate.Month, StartDate.Day);
               
                 _courseService.Add(LanguageName, LanguageLevel, Duration, Held, isOnline, MaxStudents,
@@ -89,9 +89,9 @@ namespace LangLang.ViewModels.CourseViewModels
 
         public Language? IsValidLanguage(string languageName, LanguageLevel level)
         {
-            return _languageService.GetAll()
-                .FirstOrDefault(language => language.Name.Equals(languageName) && language.Level.Equals(level))
+            return _languageService.GetLanguage(languageName, level) 
                 ?? throw new InvalidInputException("Language doesn't exist.");
         }
+
     }
 }

@@ -12,6 +12,8 @@ public class ExamService : IExamService
     private readonly IUserRepository _userRepository = new UserFileRepository();
     private readonly IScheduleService _scheduleService = new ScheduleService();
     private readonly ILanguageService _languageService = new LanguageService();
+    private readonly IExamGradeRepository _examGradeRepository = new ExamGradeFileRepository();
+    private readonly IMessageService _messageService = new MessageService();   
 
     public List<Exam> GetAll()
     {
@@ -32,8 +34,10 @@ public class ExamService : IExamService
         Language language = _languageService.GetLanguage(languageName, languageLevel) ??
                             throw new InvalidInputException("Language with the given level doesn't exist.");
 
-        Exam exam = new Exam(language, maxStudents, examDate, teacherId, examTime)
+
+        Exam exam = new(language, maxStudents, examDate, teacherId, examTime)
             { Id = _examRepository.GenerateId() };
+
 
         _scheduleService.Add(exam);
         _examRepository.Add(exam);
@@ -92,6 +96,12 @@ public class ExamService : IExamService
         _userRepository.Update(teacher);
 
         _scheduleService.Delete(id);
+        
+        foreach (Student? student in exam.StudentIds.Select(studentId => _userRepository.GetById(studentId) as Student))
+        {
+            student!.AppliedExams.Remove(exam.Id);
+            _userRepository.Update(student);
+        }
 
         _examRepository.Delete(id);
     }
@@ -99,16 +109,15 @@ public class ExamService : IExamService
     public void ConfirmExam(int examId)
     {
         Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
-        exam.Confirmed=true;
+        exam.Confirmed = true;
         _examRepository.Update(exam);
     }
 
     public List<Student> GetStudents(int examId)
     {
-        Exam exam = _examRepository.GetById(examId);
+        Exam exam = _examRepository.GetById(examId)!;
 
-        List<Student> students = exam.StudentIds.Select(studentId => _userRepository.GetById(studentId) as Student)
-            .ToList();
+        List<Student> students = exam.StudentIds.Select(studentId => (_userRepository.GetById(studentId) as Student)!).ToList();
 
         return students;
     }
@@ -117,11 +126,11 @@ public class ExamService : IExamService
     {
         Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
                           throw new InvalidInputException("User doesn't exist.");
-        List<Exam> startableExams = new List<Exam>();
+        List<Exam> startableExams = new();
         foreach (int examId in teacher.ExamIds)
         {
             Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
-            if((exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days <= 7 &&
+            if ((exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days <= 7 &&
                 !exam.Confirmed)
             {
                 startableExams.Add(exam);
@@ -131,4 +140,76 @@ public class ExamService : IExamService
         return startableExams;
     }
 
+    public int GetCurrentExam(int teacherId)
+    {
+        Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
+                          throw new InvalidInputException("User doesn't exist.");
+        foreach (int examId in teacher.ExamIds)
+        {
+            Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
+
+            TimeSpan time = DateTime.Now - exam.Date.ToDateTime(exam.ScheduledTime);
+
+            double timeDifference = (DateTime.Now - exam.Date.ToDateTime(exam.ScheduledTime)).TotalMinutes;
+
+            if (timeDifference >= 0 && timeDifference < Exam.ExamDuration)
+            {
+                return exam.Id;
+            }
+        }
+
+        throw new InvalidInputException("There are currently no exams");
+    }
+
+    public void FinishExam(int examId)
+    {
+        Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
+        CheckGrades(exam);
+
+        exam.TeacherGraded = true;
+        _examRepository.Update(exam);
+    }
+
+    private void CheckGrades(Exam exam)
+    {
+        foreach (int studentId in exam.StudentIds)
+        {
+            Student student = _userRepository.GetById(studentId) as Student ??
+                              throw new InvalidInputException("Student doesn't exist.");
+
+            if (!student.ExamGradeIds.ContainsKey(exam.Id))
+            {
+                throw new InvalidInputException("Not all students have been graded.");
+            }
+        }
+    }
+    public List<Exam> GetUngradedExams()
+    {
+        return _examRepository.GetAll().Where(exam => exam.TeacherGraded == true && exam.DirectorGraded == false).ToList();
+    }
+    public void SendGrades(int examId)
+    {
+        Exam exam = _examRepository.GetById(examId)!;
+        exam.DirectorGraded = true;
+        _examRepository.Update(exam);
+
+        foreach (User user in _userRepository.GetAll())
+        {
+            if (user is Student student && student.AppliedExams.Contains(examId))
+            {
+                student.AppliedExams.Remove(examId);
+                _userRepository.Update(student);
+            }
+        }
+    }
+    public void SendEmail(int examId)
+    {
+        foreach (ExamGrade examGrade in _examGradeRepository.GetAll().Where(eg => eg.ExamId == examId))
+        {
+            string messageText = "YOUR GRADES: 1. Reading: " + examGrade.ReadingPoints.ToString()
+                + " points 2. Listening: " + examGrade.ListeningPoints.ToString() +
+                " points 3. Talking " + examGrade.TalkingPoints.ToString() + " points 4. Writing " + examGrade.WritingPoints.ToString() + " points.";
+            _messageService.Add(examGrade.StudentId, messageText);
+        }
+    }
 }

@@ -29,7 +29,7 @@ namespace LangLang.ViewModels.CourseViewModels
 
         public EditCourseViewModel(Course? course)
         {
-            _id = course.Id;
+            _id = course!.Id;
             _areApplicationsClosed = course.AreApplicationsClosed;
             MaxStudents = course.MaxStudents;
             StartDate = new DateTime(course.StartDate.Year, course.StartDate.Month, course.StartDate.Day);
@@ -99,11 +99,9 @@ namespace LangLang.ViewModels.CourseViewModels
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
         public Language? IsValidLanguage(string languageName, LanguageLevel level)
         {
-            return _languageService.GetAll()
-                .FirstOrDefault(language => language.Name.Equals(languageName) && language.Level.Equals(level))
+            return _languageService.GetLanguage(languageName, level) 
                 ?? throw new InvalidInputException("Language doesn't exist.");
         }
     }

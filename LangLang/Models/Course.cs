@@ -16,24 +16,27 @@ namespace LangLang.Models
             int teacherId) : base(language, maxStudents, startDate, teacherId, scheduledTime)
         {
             Duration = duration;
+            StartDate = startDate;
             Held = held;
             CreatorId = creatorId;
             AreApplicationsClosed = areApplicationsClosed;
             IsOnline = isOnline;
+            IsFinished = false;
         }
 
         // Constructor without date validation for deserializing
         [JsonConstructor]
         public Course(int id, Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents,
             int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed, int teacherId,
-            List<int> studentIds) : base(id, language, maxStudents, startDate, teacherId, scheduledTime)
+            Dictionary<int, ApplicationStatus> students) : base(id, language, maxStudents, startDate, teacherId, scheduledTime)
         {
             Duration = duration;
             Held = held;
             CreatorId = creatorId;
             AreApplicationsClosed = areApplicationsClosed;
             IsOnline = isOnline;
-            StudentIds = studentIds;
+            Students = students;
+            IsFinished = false;
         }
 
         public new int MaxStudents
@@ -67,6 +70,7 @@ namespace LangLang.Models
         }
 
         public new bool IsOnline { get; set; }
+        public bool IsFinished {  get; set; }
 
         public int? CreatorId { get; set; } = null;
 
@@ -82,7 +86,13 @@ namespace LangLang.Models
 
         public bool AreApplicationsClosed { get; set; }
 
-        public List<int> StudentIds { get; } = new();
+        // TODO: Return different student IDs based on the status, only pending when accepting (ignore paused), remove all paused after starting a course etc.
+        // TODO: Add logic to respective methods when a student drops out from, or others to resume their applications etc.
+        // Dictionary of student IDs and their application status
+        public Dictionary<int, ApplicationStatus> Students { get; } = new();
+        
+        // Dictionary of student IDs and their reasons for requesting to drop out
+        public Dictionary<int, string> DropOutRequests { get; } = new();
 
         private static void ValidateDate(DateOnly startDate)
         {
@@ -110,21 +120,29 @@ namespace LangLang.Models
         
         public void AddStudent(int studentId)
         {
-            if (StudentIds.Count >= MaxStudents)
+            if (Students.Count >= MaxStudents && !IsOnline)
+
                 throw new InvalidInputException("The course is full.");
             
-            if (StudentIds.Contains(studentId))
+            if (!Students.TryAdd(studentId, ApplicationStatus.Pending))
                 throw new InvalidInputException("Student has already applied to this course.");
-            
-            StudentIds.Add(studentId);
         }
         
         public void RemoveStudent(int studentId)
         {
-            if (!StudentIds.Contains(studentId))
+            if (!Students.ContainsKey(studentId))
                 throw new InvalidInputException("Student hasn't applied to this course.");
             
-            StudentIds.Remove(studentId);
+            Students.Remove(studentId);
+        }
+        
+        public void AddDropOutRequest(int studentId, string reason)
+        {
+            if (!Students.ContainsKey(studentId))
+                throw new InvalidInputException("Student hasn't applied to this course.");
+            reason = $"the student wants to withdraw from the course {Language} that started on {StartDate}. Reason : {reason}";
+            if (!DropOutRequests.TryAdd(studentId, reason))
+                throw new InvalidInputException("Student has already requested to drop out.");
         }
     }
 }

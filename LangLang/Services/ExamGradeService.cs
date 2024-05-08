@@ -24,17 +24,19 @@ namespace LangLang.Services
             return _examGradeRepository.GetById(id);
         }
 
-        public void Add(int examId, int studentId, int readingPoints, int writingPoints, int listeningPoints,
+        public int Add(int examId, int studentId, int readingPoints, int writingPoints, int listeningPoints,
             int talkingPoints)
         {
-            Student student = _userRepository.GetById(studentId) as Student ??
+            _ = _userRepository.GetById(studentId) as Student ??
                               throw new InvalidInputException("User doesn't exist.");
-            Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
+            _ = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
 
-            ExamGrade examGrade = new ExamGrade(_examGradeRepository.GenerateId(), examId, studentId, readingPoints,
+            ExamGrade examGrade = new(_examGradeRepository.GenerateId(), examId, studentId, readingPoints,
                 writingPoints, listeningPoints, talkingPoints);
             
             _examGradeRepository.Add(examGrade);
+            
+            return examGrade.Id;
         }
 
         public void Delete(int id)

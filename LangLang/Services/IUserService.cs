@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using LangLang.Models;
 
 namespace LangLang.Services;
@@ -17,5 +18,5 @@ public interface IUserService
     public void Delete(int id);
     public User? Login(string email, string password);
     public void Logout();
-    public void CheckIfFirstInMonth();
+
 }

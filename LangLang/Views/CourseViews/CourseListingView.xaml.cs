@@ -7,11 +7,11 @@ using LangLang.ViewModels.CourseViewModels;
 namespace LangLang.Views.CourseViews
 {
     /// <summary>
-    /// Interaction logic for CourseView.xaml
+    /// Interaction logic for CourseListingView.xaml
     /// </summary>
-    public partial class CourseView : Window
+    public partial class CourseListingView : Window
     {
-        public CourseView()
+        public CourseListingView()
         {
             InitializeComponent();
             DataContext = new CourseListingViewModel();
@@ -20,7 +20,7 @@ namespace LangLang.Views.CourseViews
         {
             public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
             {
-                string format = value as string;
+                string? format = value as string;
                 if (format.Equals("in-person"))
                 {
                     return Visibility.Visible;

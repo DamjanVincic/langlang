@@ -20,7 +20,8 @@ namespace LangLang.Models
                 ValidateName(value);
                 _name = value;
             }
-        }
+        }    
+        public int Id {  get; set; }
 
         public LanguageLevel Level { get; set; }
 
