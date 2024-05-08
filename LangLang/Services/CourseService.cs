@@ -73,6 +73,20 @@ public class CourseService : ICourseService
 
         return activeCourses;
     }
+    public List<Course> GetCoursesWithWithdrawals(int teacherId)
+    {
+        Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
+                          throw new InvalidInputException("User doesn't exist.");
+        List<Course> coursesWithWithdrawals = new();
+
+        foreach (int courseId in teacher.CourseIds)
+        {
+            Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
+            if (course.DropOutRequests.Any())
+                coursesWithWithdrawals.Add(course);
+        }
+        return coursesWithWithdrawals;
+    }
 
 
     public void Add(string languageName, LanguageLevel languageLevel, int duration, List<Weekday> held, bool isOnline,
