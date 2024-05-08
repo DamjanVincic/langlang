@@ -23,14 +23,14 @@ namespace LangLang.ViewModels.TeacherViewModels
         public StudentWithdrawalApprovalViewModel(int courseId)
         {
             _courseId = courseId;
-            StudentWithdrawals = new ObservableCollection<StudentViewModel>();
+            StudentWithdrawals = new ObservableCollection<StudentDropOutRequestViewModel>();
             RefreshStudentWIthdrawalList();
             AcceptWithdrawalExplanationCommand= new RelayCommand(AcceptWithdrawalExplanation);
             RejectWithdrawalExplanationCommand = new RelayCommand(RejectWithdrawalExplanation);
         }
 
-        public ObservableCollection<StudentViewModel> StudentWithdrawals { get; set; }
-        public StudentViewModel? SelectedItem { get; set; }
+        public ObservableCollection<StudentDropOutRequestViewModel> StudentWithdrawals { get; set; }
+        public StudentDropOutRequestViewModel? SelectedItem { get; set; }
         public ICommand AcceptWithdrawalExplanationCommand { get; set; }
         public ICommand RejectWithdrawalExplanationCommand { get; set; }
 
@@ -53,6 +53,7 @@ namespace LangLang.ViewModels.TeacherViewModels
                     Course course = _courseRepository.GetById(_courseId) as Course ??
                         throw new InvalidInputException("Course doesn't exist.");
                     course.RemoveStudent(student.Id);
+                    course.DropOutRequests.Remove(SelectedItem.Id);
 
                     _userRepository.Update(student);
                     _courseRepository.Update(course);
@@ -88,6 +89,7 @@ namespace LangLang.ViewModels.TeacherViewModels
                     Course course = _courseRepository.GetById(_courseId) as Course ??
                         throw new InvalidInputException("Course doesn't exist.");
                     course.RemoveStudent(student.Id);
+                    course.DropOutRequests.Remove(SelectedItem.Id);
 
                     _userRepository.Update(student);
                     _courseRepository.Update(course);
@@ -112,7 +114,7 @@ namespace LangLang.ViewModels.TeacherViewModels
                 Student student = _userRepository.GetById(studentId) as Student ??
                   throw new InvalidInputException("Student doesn't exist.");
 
-                StudentWithdrawals.Add(new StudentViewModel(student));
+                StudentWithdrawals.Add(new StudentDropOutRequestViewModel(student, course.DropOutRequests[studentId]));
             }
         }
     }

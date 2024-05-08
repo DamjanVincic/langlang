@@ -25,48 +25,27 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Grid.ColumnSpan="2" FontWeight="Bold" >LIST OF REASONS FOR WITHDRAWAL FROM THE COURSES</TextBlock>
-        <ListView Grid.Row="2" Grid.RowSpan="11" Padding="5" Margin="5" ItemsSource="{Binding Messages}" SelectedItem="{Binding SelectedItem}">
+        <ListView Grid.Row="2" Grid.RowSpan="11" Padding="5" Margin="5" ItemsSource="{Binding StudentWithdrawals}" SelectedItem="{Binding SelectedItem}">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Student" Width="auto">
+                    <GridViewColumn Header="First Name" Width="auto">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Student}"/>
+                                <TextBlock Text="{Binding FirstName}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="Language" Width="auto">
+                    <GridViewColumn Header="Last Name" Width="auto">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding LanguageName}"/>
+                                <TextBlock Text="{Binding LastName}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="Level" Width="auto">
+                    <GridViewColumn Header="Reason" Width="auto">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding LanguageLevel}"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="Week days" Width="auto">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Held}"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="Format" Width="auto">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding IsOnline}"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="Explanation" Width="auto">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding WithdrawalExplanation}"/>
+                                <TextBlock Text="{Binding Reason}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
