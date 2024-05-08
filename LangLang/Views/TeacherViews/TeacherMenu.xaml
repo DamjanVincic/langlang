@@ -31,7 +31,7 @@
         <Button Grid.Row="2" Grid.Column="2"  Content="Current Exam" Command="{Binding CurrentExamCommand}" Background="#55bcbb" Foreground="White" Width="140" Height="40"/>
 
 
-        <Button Grid.Row="3" Grid.Column="1" Content="Log out" Command="{Binding LogOutCommand}" Background="#55bcbb" Foreground="White" Width="140" Height="40"/>
+        <Button Grid.Row="3" Grid.Column="1" Content="Log out" Command="{Binding LogOutCommand}" Background="Red" Foreground="White" Width="140" Height="40"/>
 
     </Grid>
 </Window>

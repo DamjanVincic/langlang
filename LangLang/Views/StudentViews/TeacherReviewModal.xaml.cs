@@ -30,4 +30,9 @@ public partial class TeacherReviewModal : Window
             ResponseTextBox.Text = "";
         }
     }
+
+    private void ResponseTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+
+    }
 }
