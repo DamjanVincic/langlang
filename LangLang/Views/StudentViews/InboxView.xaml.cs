@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using LangLang.ViewModels.StudentViewModels;
 
 namespace LangLang.Views.StudentViews
 {
@@ -19,9 +20,10 @@ namespace LangLang.Views.StudentViews
     /// </summary>
     public partial class InboxView : Window
     {
-        public InboxView()
+        public InboxView(int studentId)
         {
             InitializeComponent();
+            DataContext = new InboxViewModel(studentId);
         }
     }
 }

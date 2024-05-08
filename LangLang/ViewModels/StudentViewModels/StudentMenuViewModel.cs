@@ -36,6 +36,7 @@ public class StudentMenuViewModel : ViewModelBase
         DropActiveCourseCommand = new RelayCommand(DropActiveCourse);
         EditAccountCommand = new RelayCommand(EditAccount);
         DeleteAccountCommand = new RelayCommand(DeleteAccount);
+        InboxCommand = new RelayCommand(Inbox);
         LogOutCommand = new RelayCommand(LogOut);
 
         if (_student.ActiveCourseId.HasValue)
@@ -114,6 +115,7 @@ public class StudentMenuViewModel : ViewModelBase
     public ICommand EditAccountCommand { get; }
     public ICommand DeleteAccountCommand { get; }
     public ICommand LogOutCommand { get; }
+    public ICommand InboxCommand { get; }
 
     private static void ViewCourses()
     {
@@ -132,6 +134,11 @@ public class StudentMenuViewModel : ViewModelBase
     private static void ViewAppliedExams()
     {
         new AppliedExamView().Show();
+    }
+    
+    private  void Inbox()
+    {
+        new InboxView(_student.Id).Show();
     }
     
     private void DropActiveCourse()

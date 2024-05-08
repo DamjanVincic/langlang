@@ -35,7 +35,7 @@
                     <GridViewColumn Header="Message" Width="auto">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Message}"/>
+                                <TextBlock Text="{Binding Text}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
