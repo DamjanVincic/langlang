@@ -31,6 +31,7 @@ namespace LangLang.ViewModels.TeacherViewModels
             CurrentExamCommand = new RelayCommand(CurrentExam);
             StartableCoursesCommand = new RelayCommand(StartableCourses);
             ActiveCoursesCommand = new RelayCommand(ActiveCourses);
+            CoursesWithWithdrawalsCommand = new RelayCommand(CoursesWithWithdrawals);
         }
 
         public ICommand CourseCommand { get; }
@@ -88,8 +89,14 @@ namespace LangLang.ViewModels.TeacherViewModels
         public ICommand ActiveCoursesCommand { get; }
         private void ActiveCourses()
         {
-                var newWindow = new ActiveCoursesView();
-                newWindow.Show();
+            var newWindow = new ActiveCoursesView();
+            newWindow.Show();
+        }
+        public ICommand CoursesWithWithdrawalsCommand { get; }
+        private void CoursesWithWithdrawals()
+        {
+            var newWindow = new CoursesWithStudentWithdrawalsView();
+            newWindow.Show();
         }
     }
 }

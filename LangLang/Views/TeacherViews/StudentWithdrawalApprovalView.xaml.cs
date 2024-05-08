@@ -1,4 +1,6 @@
-﻿using System;
+﻿using LangLang.Models;
+using LangLang.ViewModels.TeacherViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,9 +21,10 @@ namespace LangLang.Views.TeacherViews
     /// </summary>
     public partial class StudentWithdrawalApprovalView : Window
     {
-        public StudentWithdrawalApprovalView()
+        public StudentWithdrawalApprovalView(int courseId)
         {
             InitializeComponent();
+            DataContext = new StudentWithdrawalApprovalViewModel(courseId);
         }
     }
 }

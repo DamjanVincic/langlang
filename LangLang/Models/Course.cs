@@ -140,7 +140,7 @@ namespace LangLang.Models
         {
             if (!Students.ContainsKey(studentId))
                 throw new InvalidInputException("Student hasn't applied to this course.");
-            
+            reason = $"the student wants to withdraw from the course {Language} that started on {StartDate}. Reason : {reason}";
             if (!DropOutRequests.TryAdd(studentId, reason))
                 throw new InvalidInputException("Student has already requested to drop out.");
         }

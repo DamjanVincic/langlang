@@ -16,14 +16,15 @@ using System.Windows.Shapes;
 namespace LangLang.Views.CourseViews
 {
     /// <summary>
-    /// Interaction logic for ActiveCoursesView.xaml
+    /// Interaction logic for CoursesWithStudentWithdrawals.xaml
     /// </summary>
-    public partial class CoursesWithStudentWithdrawalsView : Window
+    public partial class CoursesWithStudentWithdrawals : Window
     {
-        public CoursesWithStudentWithdrawalsView()
+        public CoursesWithStudentWithdrawals()
         {
             InitializeComponent();
-            DataContext = new ActiveCoursesViewModel();
+            DataContext = new CoursesWithStudentWithdrawalsModel();
+
         }
     }
 }

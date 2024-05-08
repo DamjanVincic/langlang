@@ -45,7 +45,7 @@ public class MainViewModel : ViewModelBase
 
     private void Login()
     {
-        new TeacherReviewModal().ShowDialog();
+        //new TeacherReviewModal().ShowDialog();
         User? user = _userService.Login(Email!, Password!);
 
         switch (user)
