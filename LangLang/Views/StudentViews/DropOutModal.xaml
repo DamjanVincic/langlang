@@ -5,7 +5,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:LangLang.Views.StudentViews"
         mc:Ignorable="d"
-        Title="DropOutModal" Height="250" Width="300"
+        Title="DropOutModal" Height="250" Width="300" 
+        WindowStartupLocation="CenterScreen"
         Background="#bbe5e4">
     <Grid>
         <Grid.RowDefinitions>
