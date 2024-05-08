@@ -65,7 +65,7 @@ public class CourseService : ICourseService
         {
             Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
 
-            if ((DateTime.Now - course.StartDate.ToDateTime(TimeOnly.MinValue)).Days <= 0 && course.Confirmed)
+            if ((DateTime.Now - course.StartDate.ToDateTime(TimeOnly.MinValue)).Days <= 0 && course.Confirmed && !course.IsFinished)
             {
                 activeCourses.Add(course);
             }
@@ -136,6 +136,13 @@ public class CourseService : ICourseService
 
         teacher!.CourseIds.Remove(id);
         _userRepository.Update(teacher);
+
+        foreach (Student student in course.Students.Keys.Select(studentId => (_userRepository.GetById(studentId) as Student)!))
+        {
+            student.RemoveCourse(course.Id);
+            _userRepository.Update(student);
+        }
+        
         _scheduleService.Delete(id);
         _courseRepository.Delete(id);
     }

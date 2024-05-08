@@ -35,7 +35,8 @@ public class StudentService : IStudentService
 
     public List<Course> GetAppliedCourses(int studentId)
     {
-        return _courseRepository.GetAll().Where(course => course.Students.ContainsKey(studentId)).ToList();
+        Student? student = _userRepository.GetById(studentId) as Student;
+        return student!.AppliedCourses.Select(courseId => _courseRepository.GetById(courseId)!).ToList();
     }
 
     public List<Exam> GetAppliedExams(Student student)
@@ -271,6 +272,10 @@ public class StudentService : IStudentService
         
         student.DropActiveCourse();
         _userRepository.Update(student);
+
+        // Update the logged in student
+        if (UserService.LoggedInUser?.Id == studentId)
+            _userService.Login(student.Email, student.Password);
     }
 
     public void AddCourseGrade(int studentId, int courseId, int knowledgeGrade, int activityGrade)

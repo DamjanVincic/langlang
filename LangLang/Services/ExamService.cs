@@ -94,6 +94,12 @@ public class ExamService : IExamService
         _userRepository.Update(teacher);
 
         _scheduleService.Delete(id);
+        
+        foreach (Student? student in exam.StudentIds.Select(studentId => _userRepository.GetById(studentId) as Student))
+        {
+            student!.AppliedExams.Remove(exam.Id);
+            _userRepository.Update(student);
+        }
 
         _examRepository.Delete(id);
     }
