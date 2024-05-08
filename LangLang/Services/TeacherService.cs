@@ -121,7 +121,8 @@ public class TeacherService : ITeacherService
         {
             Student student = (_userRepository.GetById(studentId) as Student)!;
             student.LanguagePassFail[course.Language.Id] = false;
-            student.DropActiveCourse();
+            // Course is dropped whe student reviews the teacher
+            // student.DropActiveCourse();
             _studentService.ResumeApplications(studentId);
             _userRepository.Update(student);
         }

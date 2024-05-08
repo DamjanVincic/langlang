@@ -267,6 +267,10 @@ public class StudentService : IStudentService
         
         student.DropActiveCourse();
         _userRepository.Update(student);
+
+        // Update the logged in student
+        if (UserService.LoggedInUser?.Id == studentId)
+            _userService.Login(student.Email, student.Password);
     }
 
     public void AddCourseGrade(int studentId, int courseId, int knowledgeGrade, int activityGrade)
