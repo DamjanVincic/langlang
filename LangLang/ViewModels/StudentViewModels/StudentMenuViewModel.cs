@@ -142,7 +142,7 @@ public class StudentMenuViewModel : ViewModelBase
             if (!dialog.ShowDialog()!.Value) return;
             
             _studentService.DropActiveCourse(_student.Id, dialog.ResponseText);
-            MessageBox.Show("Course dropped successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("Request for dropping out from the course has been sent.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             // TODO: Refresh the active course here (after binding it to a view)
         }
         catch (InvalidInputException ex)
