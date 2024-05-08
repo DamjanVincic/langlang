@@ -119,7 +119,7 @@ public class UserService : IUserService
             course.RemoveStudent(student.Id);
             _courseRepository.Update(course);
         }
-
+        
         foreach(Exam exam in _examService.GetAll())
         {
             // remove student from exams only ih exam was not held
