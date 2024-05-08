@@ -18,7 +18,7 @@ namespace LangLang.Views.DirectorViews
         public DirectorMainMenu()
         {
             InitializeComponent();
-            DataContext = new DirectorViewModel(this);
+            DataContext = new DirectorMenuViewModel(this);
         }
     }
 }

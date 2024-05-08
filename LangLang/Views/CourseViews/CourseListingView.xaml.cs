@@ -7,14 +7,14 @@ using LangLang.ViewModels.CourseViewModels;
 namespace LangLang.Views.CourseViews
 {
     /// <summary>
-    /// Interaction logic for ExistingCoursesView.xaml
+    /// Interaction logic for CourseListingView.xaml
     /// </summary>
-    public partial class ExistingCoursesView : Window
+    public partial class CourseListingView : Window
     {
-        public ExistingCoursesView()
+        public CourseListingView()
         {
             InitializeComponent();
-            DataContext = new ExistingCoursesViewModel();
+            DataContext = new CourseListingViewModel();
         }
         public class MaxStudentsVisibilityConverter : IValueConverter
         {

@@ -4,11 +4,11 @@ using LangLang.ViewModels.TeacherViewModels;
 namespace LangLang.Views.DirectorViews
 {
     /// <summary>
-    /// Interaction logic for TeachersView.xaml
+    /// Interaction logic for TeacherListingView.xaml
     /// </summary>
-    public partial class TeachersView : Window
+    public partial class TeacherListingView : Window
     {
-        public TeachersView()
+        public TeacherListingView()
         {
             DataContext = new TeacherListingViewModel(this);
 
