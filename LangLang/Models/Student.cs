@@ -27,6 +27,8 @@ public class Student : User
         LanguagePassFail = languagePassFail;
         AppliedCourses = appliedCourses;
         AppliedExams = appliedExams;
+        ExamGradeIds = examGradeIds;
+        CourseGradeIds = courseGradeIds;
     }
     
     public Education? Education { get; set; }
