@@ -97,6 +97,9 @@ public class StudentService : IStudentService
                 throw new InvalidInputException("Cant apply for exam while waiting for results.");
             }
         }
+        Exam appliedExam = _examRepository.GetById(examId)!;
+        appliedExam.StudentIds.Add(student.Id);
+        _examRepository.Update(appliedExam);
         student.AppliedExams.Add(examId);
         _userRepository.Update(student);
     }
@@ -246,7 +249,9 @@ public class StudentService : IStudentService
             _examGradeService.Delete(student.ExamGradeIds[examId]);
 
         student.ExamGradeIds[examId] = examGradeId;
-        student.LanguagePassFail[exam.Language.Id] = true;
+
+        ExamGrade examGrade = _examGradeService.GetById(examGradeId);
+        student.LanguagePassFail[exam.Language.Id] = examGrade.Passed;
 
         _userRepository.Update(student);
     }

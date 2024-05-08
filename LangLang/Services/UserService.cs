@@ -120,10 +120,14 @@ public class UserService : IUserService
             _courseRepository.Update(course);
         }
         
-        foreach (Exam exam in student.AppliedExams.Select(examId => _examService.GetById(examId)!))
+        foreach(Exam exam in _examService.GetAll())
         {
-            exam.RemoveStudent(student.Id);
-            _examRepository.Update(exam);
+            // remove student from exams only ih exam was not held
+            if (exam.StudentIds.Contains(student.Id) && exam.TeacherGraded != true)
+            {
+                exam.StudentIds.Remove(student.Id);
+                _examRepository.Update(exam);
+            }
         }
         
         if (student.ActiveCourseId is null) return;
