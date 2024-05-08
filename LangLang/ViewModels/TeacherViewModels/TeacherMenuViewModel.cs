@@ -5,6 +5,7 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
 using LangLang.Services;
+using LangLang.ViewModels.CourseViewModels;
 using LangLang.Views.CourseViews;
 using LangLang.Views.ExamViews;
 using LangLang.Views.TeacherViews;
@@ -86,16 +87,16 @@ namespace LangLang.ViewModels.TeacherViewModels
             newWindow.Show();
         }
 
-        public ICommand ActiveCoursesCommand { get; }
-        private void ActiveCourses()
-        {
-            var newWindow = new ActiveCoursesView();
-            newWindow.Show();
-        }
         public ICommand CoursesWithWithdrawalsCommand { get; }
         private void CoursesWithWithdrawals()
         {
             var newWindow = new CoursesWithStudentWithdrawalsView();
+            newWindow.Show();
+        }
+        public ICommand ActiveCoursesCommand { get; }
+        private void ActiveCourses()
+        {
+            var newWindow = new ActiveCoursesView(); 
             newWindow.Show();
         }
     }

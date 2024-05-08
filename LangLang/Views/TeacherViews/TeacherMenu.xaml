@@ -6,22 +6,23 @@
         mc:Ignorable="d"
         Title="TeacherMenu" Height="450" Width="800">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height ="*"/>
+            <RowDefinition Height ="*"/>
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-
-        <Button Command="{Binding CourseCommand}" Content="Courses" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
-        <Button Command="{Binding ExamCommand}" Content="Exams" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
-        <Button Command="{Binding LogOutCommand}" Content="Log Out" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
-        <Button Command="{Binding StartableExamsCommand}" Content="Startable exams" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
-        <Button Command="{Binding CurrentExamCommand}" Content="Current exam" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
-        <Button Command="{Binding StartableCoursesCommand}" Content="Startable courses" Grid.Column="5" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
-        <Button Command="{Binding ActiveCoursesCommand}" Content="Active courses" Grid.Column="6" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+        <Button Command="{Binding CourseCommand}" Content="Courses" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+        <Button Command="{Binding ExamCommand}" Content="Exams" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+        <Button Command="{Binding LogOutCommand}" Content="Log Out" Grid.Column="2" RenderTransformOrigin="0.881,2.368"/>
+        <Button Command="{Binding StartableExamsCommand}" Content="Startable exams" Grid.Column="3"/>
+        <Button Command="{Binding CurrentExamCommand}" Content="Current exam" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+        <Button Command="{Binding StartableCoursesCommand}" Content="Startable courses" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+        <Button Command="{Binding ActiveCoursesCommand}" Content="Active courses" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+        <Button Command="{Binding CoursesWithWithdrawalsCommand}" Content="CoursesWithWithdrawals" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
     </Grid>
 </Window>

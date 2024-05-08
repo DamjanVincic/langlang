@@ -18,9 +18,9 @@ namespace LangLang.Views.CourseViews
     /// <summary>
     /// Interaction logic for CoursesWithStudentWithdrawals.xaml
     /// </summary>
-    public partial class CoursesWithStudentWithdrawals : Window
+    public partial class CoursesWithStudentWithdrawalsView : Window
     {
-        public CoursesWithStudentWithdrawals()
+        public CoursesWithStudentWithdrawalsView()
         {
             InitializeComponent();
             DataContext = new CoursesWithStudentWithdrawalsModel();
