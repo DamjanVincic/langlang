@@ -198,13 +198,13 @@ public class ExamService : IExamService
     }
     public void SendEmail(int examId)
     {
-        foreach(ExamGrade examGrade in _examGradeRepository.GetAll())
+        foreach (ExamGrade examGrade in _examGradeRepository.GetAll().Where(eg => eg.ExamId == examId))
         {
             string messageText = "YOUR GRADES: 1. Reading: " + examGrade.ReadingPoints.ToString()
                 + " points 2. Listening: " + examGrade.ListeningPoints.ToString() +
                 " points 3. Talking " + examGrade.TalkingPoints.ToString() + " points 4. Writing " + examGrade.WritingPoints.ToString() + " points.";
             Message message = new Message(examGrade.StudentId, messageText);
             _messageRepository.Add(message);
-        }    
+        }
     }
 }
