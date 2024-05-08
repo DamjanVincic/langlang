@@ -83,7 +83,9 @@ public class TeacherService : ITeacherService
                     break;
                 default:
                     student.SetActiveCourse(courseId);
+                    student.RemoveCourse(courseId);
                     _studentService.PauseOtherApplications(studentId, courseId);
+                    _userRepository.Update(student);
                     _messageService.Add(studentId, $"Your application for the course {course.Language.Name} has been accepted.");
                     break;
             }
