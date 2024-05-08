@@ -23,14 +23,14 @@ namespace LangLang.ViewModels.TeacherViewModels
         public StudentWithdrawalApprovalViewModel(int courseId)
         {
             _courseId = courseId;
-            StudentWithdrawals = new ObservableCollection<SingleStudentViewModel>();
+            StudentWithdrawals = new ObservableCollection<StudentViewModel>();
             RefreshStudentWIthdrawalList();
             AcceptWithdrawalExplanationCommand= new RelayCommand(AcceptWithdrawalExplanation);
             RejectWithdrawalExplanationCommand = new RelayCommand(RejectWithdrawalExplanation);
         }
 
-        public ObservableCollection<SingleStudentViewModel> StudentWithdrawals { get; set; }
-        public SingleStudentViewModel? SelectedItem { get; set; }
+        public ObservableCollection<StudentViewModel> StudentWithdrawals { get; set; }
+        public StudentViewModel? SelectedItem { get; set; }
         public ICommand AcceptWithdrawalExplanationCommand { get; set; }
         public ICommand RejectWithdrawalExplanationCommand { get; set; }
 
@@ -112,7 +112,7 @@ namespace LangLang.ViewModels.TeacherViewModels
                 Student student = _userRepository.GetById(studentId) as Student ??
                   throw new InvalidInputException("Student doesn't exist.");
 
-                StudentWithdrawals.Add(new SingleStudentViewModel(student));
+                StudentWithdrawals.Add(new StudentViewModel(student));
             }
         }
     }

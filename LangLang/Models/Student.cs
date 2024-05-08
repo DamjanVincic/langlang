@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using LangLang.Views.CourseViews;
+using Newtonsoft.Json;
 
 namespace LangLang.Models;
 
@@ -15,6 +16,21 @@ public class Student : User
         AppliedExams = new List<int>();
         ActiveCourseId = null;
     }
+    
+    [JsonConstructor]
+    public Student(string firstName, string lastName, string email, string password, Gender gender, string phone, Education education, int penaltyPoints, int? activeCourseId, Dictionary<int, bool> languagePassFail, List<int> appliedCourses, List<int> appliedExams, Dictionary<int, int> examGradeIds, Dictionary<int, int> courseGradeIds)
+        : base(firstName, lastName, email, password, gender, phone)
+    {
+        Education = education;
+        PenaltyPoints = penaltyPoints;
+        ActiveCourseId = activeCourseId;
+        LanguagePassFail = languagePassFail;
+        AppliedCourses = appliedCourses;
+        AppliedExams = appliedExams;
+        ExamGradeIds = examGradeIds;
+        CourseGradeIds = courseGradeIds;
+    }
+    
     public Education? Education { get; set; }
     public int PenaltyPoints { get; set; }
     public int? ActiveCourseId { get; private set; } = null;

@@ -94,6 +94,12 @@ public class ExamService : IExamService
         _userRepository.Update(teacher);
 
         _scheduleService.Delete(id);
+        
+        foreach (Student? student in exam.StudentIds.Select(studentId => _userRepository.GetById(studentId) as Student))
+        {
+            student!.AppliedExams.Remove(exam.Id);
+            _userRepository.Update(student);
+        }
 
         _examRepository.Delete(id);
     }
@@ -153,23 +159,27 @@ public class ExamService : IExamService
         throw new InvalidInputException("There are currently no exams");
     }
 
-    public void CheckGrades(int examId)
+    public void FinishExam(int examId)
     {
         Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
+        CheckGrades(exam);
 
+        exam.TeacherGraded = true;
+        _examRepository.Update(exam);
+    }
+
+    private void CheckGrades(Exam exam)
+    {
         foreach (int studentId in exam.StudentIds)
         {
             Student student = _userRepository.GetById(studentId) as Student ??
                               throw new InvalidInputException("Student doesn't exist.");
 
-            if (!student.ExamGradeIds.ContainsKey(examId))
+            if (!student.ExamGradeIds.ContainsKey(exam.Id))
             {
                 throw new InvalidInputException("Not all students have been graded.");
             }
         }
-        
-        exam.TeacherGraded = true;
-        _examRepository.Update(exam);
     }
     public List<Exam> GetUngradedExams()
     {

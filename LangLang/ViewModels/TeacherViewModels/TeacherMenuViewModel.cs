@@ -39,7 +39,7 @@ namespace LangLang.ViewModels.TeacherViewModels
 
         private void Course()
         {
-            var newWindow = new ExistingCoursesView();
+            var newWindow = new CourseListingView();
             newWindow.Show();
         }
 

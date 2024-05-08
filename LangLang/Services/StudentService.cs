@@ -35,7 +35,8 @@ public class StudentService : IStudentService
 
     public List<Course> GetAppliedCourses(int studentId)
     {
-        return _courseRepository.GetAll().Where(course => course.Students.ContainsKey(studentId)).ToList();
+        Student? student = _userRepository.GetById(studentId) as Student;
+        return student!.AppliedCourses.Select(courseId => _courseRepository.GetById(courseId)!).ToList();
     }
 
     public List<Exam> GetAppliedExams(Student student)
@@ -96,6 +97,9 @@ public class StudentService : IStudentService
                 throw new InvalidInputException("Cant apply for exam while waiting for results.");
             }
         }
+        Exam appliedExam = _examRepository.GetById(examId)!;
+        appliedExam.StudentIds.Add(student.Id);
+        _examRepository.Update(appliedExam);
         student.AppliedExams.Add(examId);
         _userRepository.Update(student);
     }
@@ -245,7 +249,9 @@ public class StudentService : IStudentService
             _examGradeService.Delete(student.ExamGradeIds[examId]);
 
         student.ExamGradeIds[examId] = examGradeId;
-        student.LanguagePassFail[exam.Language.Id] = true;
+
+        ExamGrade examGrade = _examGradeService.GetById(examGradeId);
+        student.LanguagePassFail[exam.Language.Id] = examGrade.Passed;
 
         _userRepository.Update(student);
     }
@@ -266,6 +272,10 @@ public class StudentService : IStudentService
         
         student.DropActiveCourse();
         _userRepository.Update(student);
+
+        // Update the logged in student
+        if (UserService.LoggedInUser?.Id == studentId)
+            _userService.Login(student.Email, student.Password);
     }
 
     public void AddCourseGrade(int studentId, int courseId, int knowledgeGrade, int activityGrade)

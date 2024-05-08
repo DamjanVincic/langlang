@@ -14,9 +14,11 @@ namespace LangLang.ViewModels.StudentViewModels
             _courseGrade = courseGrade;
         }
 
-        public int StudentId => _student.Id;
+        public int Id => _student.Id;
         public String FirstName => _student.FirstName;
         public String LastName => _student.LastName;
+        public Gender Gender => _student.Gender;
+        public Education? Education => _student.Education;
         public String KnowledgeGrade => _courseGrade == null ? "/" : _courseGrade.KnowledgeGrade.ToString();
         public String ActivityGrade => _courseGrade == null ? "/" : _courseGrade.ActivityGrade.ToString();
     }
