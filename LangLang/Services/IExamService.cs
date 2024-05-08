@@ -18,4 +18,5 @@ public interface IExamService
     public void FinishExam(int examId);
     public List<Exam> GetUngradedExams();
     public void SendGrades(int examId);
+    public void SendEmail(int examId);
 }
