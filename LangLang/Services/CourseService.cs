@@ -168,4 +168,11 @@ public class CourseService : ICourseService
         course.IsFinished = true;
         _courseRepository.Update(course);
     }
+
+    public void RejectStudentsApplication(int courseId, int studentId)
+    {
+        Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
+        course.RemoveStudent(studentId);
+        _courseRepository.Update(course);
+    }
 }

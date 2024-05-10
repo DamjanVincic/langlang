@@ -36,7 +36,7 @@ namespace LangLang.ViewModels.CourseViewModels
 
         public ObservableCollection<StudentCourseGradeViewModel> Students { get; set; } = new();
         public StudentCourseGradeViewModel? SelectedItem { get; set; }
-        public string? SelectedPenaltyPointReason {  get; set; }
+        public PenaltyPointReason? SelectedPenaltyPointReason {  get; set; }
 
         public ICommand PenalizeCommand { get; set; }
         public ICommand FinishCourseCommand { get; set; }
@@ -86,7 +86,7 @@ namespace LangLang.ViewModels.CourseViewModels
                 MessageBox.Show("No student selected.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            if (string.IsNullOrEmpty(SelectedPenaltyPointReason))
+            if (SelectedPenaltyPointReason == null)
             {
                 MessageBox.Show("Must input penalty reason.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
@@ -99,7 +99,7 @@ namespace LangLang.ViewModels.CourseViewModels
             {
                 try
                 {
-                    _studentService.Penalize(SelectedItem.StudentId, _courseId);
+                    _studentService.AddPenaltyPoint(SelectedItem.StudentId, (PenaltyPointReason)SelectedPenaltyPointReason, _courseId, UserService.LoggedInUser.Id, DateOnly.FromDateTime(DateTime.Now));
                     MessageBox.Show("Successfully given penalty point.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     RefreshStudents();
                 }

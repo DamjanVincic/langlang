@@ -13,6 +13,7 @@ namespace LangLang.ViewModels.CourseViewModels
     {
         private readonly int _courseId;
         private readonly ICourseService _courseService = new CourseService();
+        private readonly IStudentService _studentService = new StudentService();
         private readonly Window _startCourseWindow;
         public StartCourseViewModel(int courseId, Window startCourseWindow)
         {
@@ -51,7 +52,10 @@ namespace LangLang.ViewModels.CourseViewModels
                 MessageBox.Show("Must input the reason for rejection.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            //_courseService.RejectStudentsApplication(_courseId, SelectedItem.Id);
+            _courseService.RejectStudentsApplication(_courseId, SelectedItem.Id);
+            //TODO
+            //_studentService.SendNotiffication();
+            
             MessageBox.Show("Student rejected successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
 
         }

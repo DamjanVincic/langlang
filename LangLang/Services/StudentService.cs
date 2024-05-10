@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Input;
 using LangLang.Models;
 using LangLang.Repositories;
 
@@ -16,6 +15,8 @@ public class StudentService : IStudentService
     private readonly IUserService _userService = new UserService();
     private readonly IExamGradeService _examGradeService = new ExamGradeService();
     private readonly ICourseGradeService _courseGradeService = new CourseGradeService();
+    private readonly IPenaltyPointService _penaltyPointService = new PenaltyPointService();
+
 
     public List<Student> GetAll()
     {
@@ -165,15 +166,48 @@ public class StudentService : IStudentService
         _examRepository.Update(exam);
         _userService.Delete(studentId);
     }
-    
-    public void Penalize(int studentId, int courseId)
+    public void CheckIfFirstInMonth()
+    {
+        DateOnly currentDate = DateOnly.FromDateTime(DateTime.Now);
+        int dayOfMonth = currentDate.Day;
+
+        if (dayOfMonth != 1 || UserService.LoggedInUser is not Student student || student.PenaltyPoints <= 0)
+        {
+            return;
+        }
+
+        --student.PenaltyPoints;
+        _userRepository.Update(student);
+        RemoveStudentPenaltyPoint(student.Id);
+    }
+
+    private void RemoveStudentPenaltyPoint(int studentId)
+    {
+        List<PenaltyPoint> penaltyPoints = _penaltyPointService.GetAll();
+
+        foreach (PenaltyPoint point in penaltyPoints)
+        {
+            if (point.StudentId == studentId && !point.Deleted)
+            {
+                _penaltyPointService.Delete(point.Id);
+                break;
+            }
+        }
+    }
+
+    public void AddPenaltyPoint(int studentId, PenaltyPointReason penaltyPointReason, int courseId,
+        int teacherId, DateOnly datePenaltyPointGiven)
     {
         Student student = _userRepository.GetById(studentId) as Student ??
                           throw new InvalidInputException("Student doesn't exist.");
-
-        Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
-
-        // TODO : inform the student about the penalty point and assign it to him
+        _ = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
+        ++student.PenaltyPoints;
+        _userRepository.Update(student);
+        _penaltyPointService.Add(penaltyPointReason, student.Id, courseId, teacherId, datePenaltyPointGiven);
+        if (student.PenaltyPoints == 3)
+        {
+            _userService.Delete(student.Id);
+        }
     }
 
     public void AddExamGrade(int studentId, int examId, int writing, int reading, int listening, int talking)

@@ -16,6 +16,7 @@ public class MainViewModel : ViewModelBase
 {
     private readonly IUserService _userService = new UserService();
     private readonly ITeacherService _teacherService = new TeacherService();
+    private readonly IStudentService _studentService = new StudentService();
     private readonly IUserRepository _userRep = new UserFileRepository();
     private readonly ICourseRepository courseRepository = new CourseFileRepository();
 
@@ -49,7 +50,7 @@ public class MainViewModel : ViewModelBase
                 MessageBox.Show("Invalid email or password.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             case Student:
-                _userService.CheckIfFirstInMonth();
+                _studentService.CheckIfFirstInMonth();
                 new StudentView().Show();
                 break;
             case Director:

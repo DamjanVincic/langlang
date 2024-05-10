@@ -22,5 +22,5 @@ public interface ICourseService
     public void Delete(int id);
     public void ConfirmCourse(int courseId);
     public void FinishCourse(int courseId);
-
+    void RejectStudentsApplication(int courseId, int studentId);
 }
