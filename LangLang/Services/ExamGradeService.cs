@@ -24,6 +24,7 @@ namespace LangLang.Services
             return _examGradeRepository.GetById(id);
         }
 
+        // TODO: NOP 6
         public int Add(int examId, int studentId, int readingPoints, int writingPoints, int listeningPoints,
             int talkingPoints)
         {

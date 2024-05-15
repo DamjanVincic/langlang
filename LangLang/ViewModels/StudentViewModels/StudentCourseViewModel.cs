@@ -108,6 +108,7 @@ public class StudentCourseViewModel : ViewModelBase
         }
     }
 
+    // TODO: CYCLO_SWITCH 6
     private bool FilterCourses(object obj)
     {
         if (obj is CourseViewModel courseViewModel)
