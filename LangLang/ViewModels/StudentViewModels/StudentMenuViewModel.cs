@@ -102,9 +102,6 @@ public class StudentMenuViewModel : ViewModelBase
         }
     }
 
-    public ObservableCollection<Course> AvailableCourses { get; set; }
-    public ObservableCollection<Exam> AvailableExams { get; set; }
-
     public string FullName => $"{_student.FirstName} {_student.LastName}";
 
     public ICommand ViewCoursesCommand { get; }

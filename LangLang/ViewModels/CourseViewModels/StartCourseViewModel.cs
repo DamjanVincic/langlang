@@ -7,7 +7,6 @@ using GalaSoft.MvvmLight.Command;
 using System.Collections.ObjectModel;
 using LangLang.Models;
 using LangLang.ViewModels.StudentViewModels;
-using LangLang.Models;
 
 namespace LangLang.ViewModels.CourseViewModels
 {
