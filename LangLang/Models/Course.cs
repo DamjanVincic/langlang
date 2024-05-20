@@ -16,6 +16,7 @@ namespace LangLang.Models
             int teacherId) : base(language, maxStudents, startDate, teacherId, scheduledTime)
         {
             Duration = duration;
+            StartDate = startDate;
             Held = held;
             CreatorId = creatorId;
             AreApplicationsClosed = areApplicationsClosed;
