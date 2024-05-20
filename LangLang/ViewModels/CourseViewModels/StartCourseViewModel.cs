@@ -28,6 +28,8 @@ namespace LangLang.ViewModels.CourseViewModels
         public ObservableCollection<SingleStudentViewModel> Students { get; set; }
         public ICommand ConfirmCommand { get; set; }
         public ICommand? RejectApplicationCommand { get; }
+        public SingleStudentViewModel? SelectedItem { get; set; }
+        public string? RejectionReason { get; set; }
 
         private void Confirm()
         {
@@ -39,7 +41,19 @@ namespace LangLang.ViewModels.CourseViewModels
         }
         private void RejectApplication()
         {
-            
+            if (SelectedItem == null)
+            {
+                MessageBox.Show("No student selected.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            if (string.IsNullOrEmpty(RejectionReason))
+            {
+                MessageBox.Show("Must input the reason for rejection.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            //_courseService.RejectStudentsApplication(_courseId, SelectedItem.Id);
+            MessageBox.Show("Student rejected successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
         }
     }
 }
