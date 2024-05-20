@@ -13,11 +13,13 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <Button Command="{Binding LogOutCommand}" Background="Red" Foreground="White" Width="100" Height="40" Content="Log Out" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
         <Button Command="{Binding ViewTeachersCommand}" Background="#55bcbb" Foreground="White" Width="140" Height="40" Content="View Teachers" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
-        <Button Command="{Binding SendOutGradesCommand}" Background="#55bcbb" Foreground="White" Width="140" Height="40" Content="Send out grades" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+        <Button Command="{Binding SendOutGradesCommand}" Background="#55bcbb" Foreground="White" Width="140" Height="40" Content="Send out grades" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+        <Button Command="{Binding AddExamCommand}" Background="#55bcbb" Foreground="White" Width="140" Height="40" Content="Add exam" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+        <Button Command="{Binding LogOutCommand}" Background="Red" Foreground="White" Width="100" Height="40" Content="Log Out" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
 
     </Grid>
 </Window>

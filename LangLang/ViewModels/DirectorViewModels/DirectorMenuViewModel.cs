@@ -21,11 +21,13 @@ namespace LangLang.ViewModels.DirectorViewModels
             _directorViewWindow = directorViewWindow;
             ViewTeachersCommand = new RelayCommand(ViewTeachers);
             SendOutGradesCommand = new RelayCommand(SendOutGrades);
+            AddExamCommand = new RelayCommand(AddExam);
             LogOutCommand = new RelayCommand(LogOut);
         }
 
         public RelayCommand ViewTeachersCommand { get; }
         public RelayCommand SendOutGradesCommand { get; }
+        public RelayCommand AddExamCommand { get; }
         public ICommand LogOutCommand { get; }
 
         private void LogOut()
@@ -39,6 +41,11 @@ namespace LangLang.ViewModels.DirectorViewModels
         {
             var teachersView = new TeacherListingView();
             teachersView.Show();
+        }
+        private void AddExam()
+        {
+            //var teachersView = new TeacherListingView();
+            //teachersView.Show();
         }
         private void SendOutGrades()
         {
