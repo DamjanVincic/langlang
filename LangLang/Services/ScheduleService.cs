@@ -24,13 +24,14 @@ public class ScheduleService : IScheduleService
                 {
                     foreach (int day in dayDifferences)
                     {
-                        _scheduleRepository.Add(scheduleItem, startDate);
-                        startDate = startDate.AddDays(day);
+                        _scheduleRepository.Add(scheduleItem);
+                        course.StartDate = startDate.AddDays(day);
                     }
                 }
+                course.StartDate = startDate;
                 break;
             case Exam:
-                _scheduleRepository.Add(scheduleItem, scheduleItem.Date);
+                _scheduleRepository.Add(scheduleItem);
                 break;
         }
     }
@@ -100,12 +101,22 @@ public class ScheduleService : IScheduleService
         {
             if (item.Id == scheduleItem.Id && toEdit) continue;
             if (item.IsOnline && item.TeacherId != scheduleItem.TeacherId) continue;
-
+            //online i isti teacher ili uzivo
             TimeOnly startTimeCheck, endTimeCheck;
             startTimeCheck = item.ScheduledTime;
             endTimeCheck = scheduleItem is Course ? startTimeCheck.AddMinutes(Course.ClassDuration) : startTimeCheck.AddMinutes(Exam.ExamDuration);
             if (!DoPeriodsOverlap(startTime, endTime, startTimeCheck, endTimeCheck)) continue;
-            if (item.IsOnline || (!item.IsOnline && ++amountOverlapping >= 2))
+            //preklapa se vreme
+            //ako je online gledaj da li je isti teacher
+            //ako je uzivo gledaj broj mesta i da li je isti teacher
+            // uvek da li je isti teacher
+            //online i teacher se ne poklapa dobro
+            //online i poklapa se dobro
+            //uzivo i ne poklapa se teacher i ima ucionica  n ili (t i n) = n ili n = n
+            //  uzivo i poklapa se teacher i ima ucionica   t ili 
+            //   uzivo i ne poklapa se teacher i nema ucionica   n ili (t i t) = t
+            //  uzivo i poklapa se teacher i nema ucionica    t ili (t i t) = t
+            if (item.TeacherId == scheduleItem.TeacherId || ((!item.IsOnline && ++amountOverlapping >= 2)))
                 return false;
         }
         return true;
