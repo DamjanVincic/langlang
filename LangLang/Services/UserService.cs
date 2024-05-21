@@ -28,7 +28,7 @@ public class UserService : IUserService
         return _userRepository.GetById(id);
     }
 
-    public void Add(string firstName, string lastName, string email, string password, Gender gender, string phone,
+    public void Add(string? firstName, string? lastName, string? email, string? password, Gender gender, string? phone,
         Education? education = null, List<Language>? languages = null)
     {
         if (_userRepository.GetAll().Any(user => user.Email.Equals(email)))
