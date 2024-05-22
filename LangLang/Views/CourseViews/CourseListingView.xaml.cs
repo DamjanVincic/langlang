@@ -16,6 +16,7 @@ namespace LangLang.Views.CourseViews
             InitializeComponent();
             DataContext = new CourseListingViewModel();
         }
+        // TODO: NOP 4
         public class MaxStudentsVisibilityConverter : IValueConverter
         {
             public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

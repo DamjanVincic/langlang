@@ -73,6 +73,7 @@ namespace LangLang.ViewModels.CourseViewModels
             RefreshCourses();
         }
 
+        // TODO: MNOC 3
         private void Delete()
         {
             if (SelectedItem == null)
@@ -142,6 +143,7 @@ namespace LangLang.ViewModels.CourseViewModels
             }
         }
 
+        // TODO: CYCLO_SWITCH 7
         private bool FilterCourses(object obj)
         {
             if (obj is CourseViewModel courseViewModel)

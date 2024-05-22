@@ -17,6 +17,7 @@ public class PenaltyPointService : IPenaltyPointService
     {
         return _penaltyPointRepository.GetById(id);
     }
+    // TODO: NOP 6
     public void Add(PenaltyPointReason penaltyPointReason, int studentId, int courseId, int teacherId, DateOnly datePenaltyPointGiven)
     {
         PenaltyPoint point = new(penaltyPointReason, false, studentId, courseId, teacherId, datePenaltyPointGiven);
