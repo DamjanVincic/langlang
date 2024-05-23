@@ -68,6 +68,7 @@ public class StudentService : IStudentService
     if language from that course is in the dict than student has finished that course
     if its in the dict and it has value true then student passed exam, if its false he didnt pass it yet
     */
+    // TODO: MNOC 3
     private bool IsNeededCourseFinished(Exam exam, Student student)
     {
 
@@ -139,6 +140,7 @@ public class StudentService : IStudentService
         _courseRepository.Update(course);
     }
 
+    // TODO: MNOC 3
     public void WithdrawFromCourse(int studentId, int courseId)
     {
         Student student = _userRepository.GetById(studentId) as Student ??
@@ -221,6 +223,7 @@ public class StudentService : IStudentService
         }
     }
 
+    // TODO: NOP 6
     public void AddPenaltyPoint(int studentId, PenaltyPointReason penaltyPointReason, int courseId,
         int teacherId, DateOnly datePenaltyPointGiven)
     {

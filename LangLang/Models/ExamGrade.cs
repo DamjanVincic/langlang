@@ -111,6 +111,7 @@
             }
         }
 
+        // TODO: CYCLO_SWITCH 6, MNOC 5
         private void CalculatePassed()
         {
             if (_readingPoints < ReadingPointsMax / 2 ||

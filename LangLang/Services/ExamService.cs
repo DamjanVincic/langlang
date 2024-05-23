@@ -46,6 +46,7 @@ public class ExamService : IExamService
         _userRepository.Update(teacher);
     }
 
+    // TODO: MELOC 21, CYCLO_SWITCH 6, NOP 7, MNOC 5 
     public void Update(int id, string languageName, LanguageLevel languageLevel, int maxStudents, DateOnly date,
         int teacherId, TimeOnly time)
     {
@@ -122,6 +123,7 @@ public class ExamService : IExamService
         return students;
     }
 
+    // TODO: CYCLO_SWITCH 6,  MNOC 3
     public List<Exam> GetStartableExams(int teacherId)
     {
         Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
