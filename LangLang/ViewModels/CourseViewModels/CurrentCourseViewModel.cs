@@ -42,17 +42,9 @@ namespace LangLang.ViewModels.CourseViewModels
         public ICommand FinishCourseCommand { get; set; }
         public ICommand EnterGradeCommand { get; set; }
 
-        public static IEnumerable<string?> PenaltyPointReasonValues => Enum.GetValues(typeof(PenaltyPointReason))
-            .Cast<PenaltyPointReason?>()
-            .Where(reason => reason != PenaltyPointReason.DroppingOutDenied) 
-            .Select(reason => FormatPenaltyPointReasonValue((PenaltyPointReason)reason!));
+        public static IEnumerable<PenaltyPointReason?> PenaltyPointReasonValues => Enum.GetValues(typeof(PenaltyPointReason))
+            .Cast<PenaltyPointReason?>();
 
-        private static string FormatPenaltyPointReasonValue(PenaltyPointReason reason)
-        {
-            string reasonString = reason.ToString();
-            reasonString = string.Concat(reasonString.Select((x, i) => i > 0 && char.IsUpper(x) ? " " + x.ToString().ToLower() : x.ToString()));
-            return reasonString;
-        }
         private void EnterGrade()
         {
             if (SelectedItem == null)

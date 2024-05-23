@@ -27,7 +27,7 @@ public class StudentService : IStudentService
     {
         // TODO: Validate to not show the courses that the student has already applied to and
         return _courseRepository.GetAll().Where(course =>
-            course.StudentIds.Count < course.MaxStudents &&
+            (course.StudentIds.Count < course.MaxStudents || course.IsOnline) &&
             (course.StartDate.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days >= 7 &&
             !course.StudentIds.Contains(studentId)).ToList();
     }

@@ -6,6 +6,7 @@ using System.Windows;
 using GalaSoft.MvvmLight.Command;
 using System.Collections.ObjectModel;
 using LangLang.ViewModels.StudentViewModels;
+using LangLang.Models;
 
 namespace LangLang.ViewModels.CourseViewModels
 {
@@ -57,7 +58,9 @@ namespace LangLang.ViewModels.CourseViewModels
             //_studentService.SendNotiffication();
             
             MessageBox.Show("Student rejected successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            Students.Remove(SelectedItem);
 
         }
     }
 }
+
