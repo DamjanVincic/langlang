@@ -13,6 +13,7 @@ public class ExamService : IExamService
     private readonly IScheduleService _scheduleService = new ScheduleService();
     private readonly ILanguageService _languageService = new LanguageService();
     private readonly IExamGradeRepository _examGradeRepository = new ExamGradeFileRepository();
+    private readonly IExamGradeService _examGradeService = new ExamGradeService();
     private readonly IMessageService _messageService = new MessageService();   
 
     public List<Exam> GetAll()
@@ -211,5 +212,42 @@ public class ExamService : IExamService
                 " points 3. Talking " + examGrade.TalkingPoints.ToString() + " points 4. Writing " + examGrade.WritingPoints.ToString() + " points.";
             _messageService.Add(examGrade.StudentId, messageText);
         }
+    }
+    /*
+        Prosečan broj poena ostvaren na svakom od delova svih ispita u poslednjih
+        godinu dana. 
+        Koliko je studenata slušalo kurs, a koliko položilo, pored toga
+        navesti i procenat studenata koji je položio u odnosu na one koje je slušao
+    */
+    public void AveragePointsInLastYear()
+    {
+
+        Dictionary<int, List<int>> averagePoints = new Dictionary<int, List<int>>();
+        foreach (Exam exam in GetAll())
+        {
+            if (exam.Date.ToDateTime(TimeOnly.MinValue) >= DateTime.Today.AddYears(-1))
+            {
+                List<ExamGrade> examGrades = _examGradeService.GetByExamId(exam.Id);
+                averagePoints[exam.Id] = CalculateAverage(examGrades);
+            }
+        }
+    }
+
+    public List<int> CalculateAverage(List<ExamGrade> grades)
+    {
+        List<int> sumOfPoints = new List<int> { 0, 0, 0, 0 };
+
+        foreach (var grade in grades)
+        {
+            sumOfPoints[0] += grade.ListeningPoints;
+            sumOfPoints[1] += grade.TalkingPoints;
+            sumOfPoints[2] += grade.WritingPoints;
+            sumOfPoints[3] += grade.ReadingPoints;
+        }
+
+        int count = grades.Count;
+        List<int> averagePoints = sumOfPoints.Select(sum => sum / count).ToList();
+        
+        return averagePoints;
     }
 }
