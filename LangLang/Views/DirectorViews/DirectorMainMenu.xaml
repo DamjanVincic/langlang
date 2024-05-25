@@ -13,11 +13,26 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
         <Button Command="{Binding LogOutCommand}" Background="Red" Foreground="White" Width="100" Height="40" Content="Log Out" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
         <Button Command="{Binding ViewTeachersCommand}" Background="#55bcbb" Foreground="White" Width="140" Height="40" Content="View Teachers" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
         <Button Command="{Binding SendOutGradesCommand}" Background="#55bcbb" Foreground="White" Width="140" Height="40" Content="Send out grades" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
 
+        <Grid Grid.Column="3" Background="AliceBlue">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <TextBlock FontWeight="Bold">REPORTS</TextBlock>
+            <Button Command="{Binding PenaltyPointReportCommand}" Grid.Row="1" Background="#55bcbb" Foreground="White" Width="140" Height="40" Content="Penalty Points" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+            <Button Command="{Binding CourseReportCommand}" Grid.Row="2" Background="#55bcbb" Foreground="White" Width="140" Height="40" Content="Courses" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+            <Button Command="{Binding ScoreReportCommand}" Grid.Row="3" Background="#55bcbb" Foreground="White" Width="140" Height="40" Content="Scores/Pass Rate" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+            <Button Command="{Binding AverageStatsCommand}" Grid.Row="4" Background="#55bcbb" Foreground="White" Width="140" Height="40" Content="Average Stats" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+        </Grid>
     </Grid>
 </Window>
