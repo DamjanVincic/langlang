@@ -25,7 +25,7 @@ public class ExamService : IExamService
         return _examRepository.GetById(id);
     }
 
-    public void Add(string languageName, LanguageLevel languageLevel, int maxStudents, DateOnly examDate, int teacherId,
+    public void Add(string? languageName, LanguageLevel languageLevel, int maxStudents, DateOnly examDate, int teacherId,
         TimeOnly examTime)
     {
         Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??

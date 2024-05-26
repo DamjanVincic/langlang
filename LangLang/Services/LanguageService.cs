@@ -19,7 +19,7 @@ public class LanguageService : ILanguageService
         return _languageRepository.GetAll().Select(language => language.Name).Distinct().ToList();
     }
 
-    public Language? GetLanguage(string name, LanguageLevel level)
+    public Language? GetLanguage(string? name, LanguageLevel level)
     {
         return _languageRepository.GetAll().FirstOrDefault(language => language.Name == name && language.Level == level);
     }

@@ -102,7 +102,7 @@ public class StudentExamViewModel : ViewModelBase
 
         try
         {
-            Exam? exam = _examService.GetById(SelectedItem.Id);
+            Exam exam = _examService.GetById(SelectedItem.Id)!;
             _studentService.ApplyStudentExam(_student, exam.Id);
             MessageBox.Show("You have applied for the exam.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
         }
