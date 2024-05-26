@@ -23,6 +23,7 @@ namespace LangLang.Services
         private readonly ICourseRepository _courseRepository = new CourseFileRepository();
         private readonly IExamRepository _examRepository = new ExamFileRepository();
         private readonly ILanguageRepository _languageRepository = new LanguageFileRepository();
+        private readonly IPenaltyPointRepository _penaltyPointRepository = new PenaltyPointFileRepository();
 
         private const string ReportsFolderName = "Reports";
         private const string LanguageReportSubfolder = "LanguageReports";
@@ -80,6 +81,42 @@ namespace LangLang.Services
             }
 
             return courseCount;
+        }
+
+        private Dictionary<int, double> GetPenaltyAvg()
+        {
+            Dictionary<int,int> coursePenaltyCount = new();
+
+            foreach (PenaltyPoint penaltyPoint in _penaltyPointRepository.GetAll())
+            {
+                if ((DateTime.Now - penaltyPoint.DatePenaltyPointGiven.ToDateTime(TimeOnly.MinValue)).TotalDays > 365) continue;
+
+                if (!coursePenaltyCount.TryAdd(penaltyPoint.CourseId, 1))
+                    coursePenaltyCount[penaltyPoint.CourseId] += 1;
+            }
+
+            Dictionary<int, int> languagePenaltyCount = new();
+            Dictionary<int, int> languageCourseCount = new();
+
+            foreach (int courseId in coursePenaltyCount.Keys)
+            {
+                Course course = _courseRepository.GetById(courseId);
+
+                if (!languagePenaltyCount.TryAdd(course.Language.Id, coursePenaltyCount[courseId]))
+                    languagePenaltyCount[course.Language.Id] += coursePenaltyCount[courseId];
+
+                if (!languageCourseCount.TryAdd(course.Language.Id, 1))
+                    languageCourseCount[course.Language.Id] += 1;
+            }
+
+            Dictionary<int, double> penaltyAvg = new();
+
+            foreach (int languageId in languagePenaltyCount.Keys)
+            {
+                penaltyAvg[languageId]=languagePenaltyCount[languageId]/languageCourseCount[languageId];
+            }
+
+            return penaltyAvg;
         }
 
 
