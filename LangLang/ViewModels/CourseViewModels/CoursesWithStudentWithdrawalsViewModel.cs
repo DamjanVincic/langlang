@@ -13,14 +13,14 @@ using LangLang.Views.TeacherViews;
 
 namespace LangLang.ViewModels.CourseViewModels
 {
-    class CoursesWithStudentWithdrawalsModel : ViewModelBase
+    class CoursesWithStudentWithdrawalsViewModel : ViewModelBase
     {
         private readonly ICourseService _courseService;
         private readonly Teacher _teacher = UserService.LoggedInUser as Teacher ??
                                             throw new InvalidOperationException("No one is logged in.");
         private readonly ObservableCollection<CourseViewModel> _coursesWithWithdrawals;
 
-        public CoursesWithStudentWithdrawalsModel(ICourseService courseService)
+        public CoursesWithStudentWithdrawalsViewModel(ICourseService courseService)
         {
             _courseService = courseService;
             

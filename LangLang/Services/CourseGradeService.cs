@@ -6,10 +6,17 @@ namespace LangLang.Services
 {
     internal class CourseGradeService : ICourseGradeService
     {
-        private readonly ICourseGradeRepository _courseGradeRepository = new CourseGradeFileRepository();
-        private readonly IUserRepository _userRepository = new UserFileRepository();
-        private readonly ICourseRepository _courseRepository = new CourseFileRepository();
+        private readonly ICourseGradeRepository _courseGradeRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly ICourseRepository _courseRepository;
 
+        public CourseGradeService(ICourseGradeRepository courseGradeRepository, IUserRepository userRepository, ICourseRepository courseRepository)
+        {
+            _courseGradeRepository = courseGradeRepository;
+            _userRepository = userRepository;
+            _courseRepository = courseRepository;
+        }
+        
         public List<CourseGrade> GetAll()
         {
             return _courseGradeRepository.GetAll();

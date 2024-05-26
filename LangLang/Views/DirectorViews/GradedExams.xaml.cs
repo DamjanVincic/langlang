@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using LangLang.Models;
 using LangLang.ViewModels.DirectorViewModels;
 
 namespace LangLang.Views.DirectorViews
@@ -11,7 +12,7 @@ namespace LangLang.Views.DirectorViews
         public GradedExams()
         {
             InitializeComponent();
-            DataContext = new GradedExamsViewModel();
+            DataContext = ServiceProvider.GetRequiredService<GradedExamsViewModel>();
         }
     }
 }

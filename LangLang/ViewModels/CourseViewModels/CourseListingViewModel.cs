@@ -16,9 +16,9 @@ namespace LangLang.ViewModels.CourseViewModels
 {
     public class CourseListingViewModel : ViewModelBase
     {
-        private readonly ITeacherService _teacherService = new TeacherService();
-        private readonly ILanguageService _languageService = new LanguageService();
-        private readonly ICourseService _courseService = new CourseService();
+        private readonly ITeacherService _teacherService;
+        private readonly ILanguageService _languageService;
+        private readonly ICourseService _courseService;
 
         private readonly Teacher _teacher = UserService.LoggedInUser as Teacher ??
                                             throw new InvalidOperationException("No one is logged in.");
@@ -31,8 +31,12 @@ namespace LangLang.ViewModels.CourseViewModels
         private string? _selectedDuration;
         private string? _selectedFormat;
 
-        public CourseListingViewModel()
+        public CourseListingViewModel(ITeacherService teacherService, ILanguageService languageService, ICourseService courseService)
         {
+            _teacherService = teacherService;
+            _languageService = languageService;
+            _courseService = courseService;
+            
             _courses = new ObservableCollection<CourseViewModel>(_teacherService.GetCourses(_teacher.Id)
                 .Select(course => new CourseViewModel(course)));
             CoursesCollectionView = CollectionViewSource.GetDefaultView(_courses);

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LangLang.Services
 {
-    internal class DirectorService
+    internal class DirectorService : IDirectorService
     {
     }
 }

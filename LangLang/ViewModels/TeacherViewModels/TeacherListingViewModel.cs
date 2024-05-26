@@ -1,11 +1,9 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
-using System.Net;
 using System.Windows.Data;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
@@ -15,16 +13,14 @@ using LangLang.Repositories;
 using LangLang.Services;
 using LangLang.Views.TeacherViews;
 using LangLang.Views.DirectorViews;
-using Teacher = LangLang.Models.Teacher;
 namespace LangLang.ViewModels.TeacherViewModels
 {
     public class TeacherListingViewModel : ViewModelBase
     {
-        private readonly IUserService _userService = new UserService();
-        private readonly ITeacherService _teacherService = new TeacherService();
-        private readonly ILanguageService _languageService = new LanguageService();
-        private readonly ICourseService _courseService = new CourseService();
-        private readonly ICourseRepository _courseRepository = new CourseFileRepository();
+        private readonly IUserService _userService = ServiceProvider.GetRequiredService<IUserService>();
+        private readonly ITeacherService _teacherService = ServiceProvider.GetRequiredService<ITeacherService>();
+        private readonly ILanguageService _languageService = ServiceProvider.GetRequiredService<ILanguageService>();
+        private readonly ICourseRepository _courseRepository = ServiceProvider.GetRequiredService<ICourseRepository>();
 
         private string? _selectedLanguageName;
         private string? _selectedLanguageLevel;
