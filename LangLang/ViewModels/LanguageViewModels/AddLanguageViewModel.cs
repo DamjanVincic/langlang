@@ -21,7 +21,7 @@ namespace LangLang.ViewModels.LanguageViewModels
             AddLanguageCommand = new RelayCommand(AddLanguage);
         }
 
-        public string LanguageName { get; set; }
+        public string? LanguageName { get; set; }
         public LanguageLevel SelectedLanguageLevel { get; set; }
         public IEnumerable<string> LanguageLevelValues => Enum.GetNames(typeof(LanguageLevel));
 
@@ -31,6 +31,9 @@ namespace LangLang.ViewModels.LanguageViewModels
         {
             try
             {
+                if (LanguageName is null)
+                    throw new InvalidInputException("Language name cannot be empty.");
+                
                 _languageService.Add(LanguageName, SelectedLanguageLevel);
 
                 MessageBox.Show("Language added successfully.", "Success", MessageBoxButton.OK,

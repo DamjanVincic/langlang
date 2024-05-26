@@ -58,7 +58,7 @@ namespace LangLang.ViewModels.CourseViewModels
             get => _minutes.ToString("00");
             set => _minutes = int.Parse(value);
         }
-        public bool[]? SelectedWeekdays { get; set; }
+        public bool[] SelectedWeekdays { get; set; }
 
         public ICommand EditCourseCommand { get; }
         public static IEnumerable<string?> FormatValues => new List<string?> { "online", "in-person" };
