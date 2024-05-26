@@ -33,30 +33,44 @@ namespace LangLang.Services
         {
             Directory.CreateDirectory(Path.Combine(ReportsFolderName, LanguageReportSubfolder));
 
-            Dictionary<int, int> courseCount = GetCourseCount();
+            Dictionary<int, double> courseCount = GetCourseCount();
 
             PlotModel courseCountPlotModel = createLanguagePlotModel("Course count", courseCount);
 
             string courseCountPath = Path.Combine(ReportsFolderName, LanguageReportSubfolder, "courseCount.pdf");
             SaveToPdf(courseCountPlotModel, courseCountPath);
 
-            Dictionary<int, int> examCount = GetExamCount();
+            Dictionary<int, double> examCount = GetExamCount();
 
             PlotModel examCountPlotModel = createLanguagePlotModel("Exam count", examCount);
 
             string examCountPath = Path.Combine(ReportsFolderName, LanguageReportSubfolder, "examCount.pdf");
             SaveToPdf(examCountPlotModel, examCountPath);
 
+            Dictionary<int, double> penaltyAvg = GetPenaltyAvg();
+
+            PlotModel penaltyAvgPlotModel = createLanguagePlotModel("Penalty point average", penaltyAvg);
+
+            string penaltyAvgPath = Path.Combine(ReportsFolderName, LanguageReportSubfolder, "penaltyAvg.pdf");
+            SaveToPdf(penaltyAvgPlotModel, penaltyAvgPath);
+
+            Dictionary<int, double> examGradeAvg = GetExamGradeAvg();
+
+            PlotModel examGradeAvgPlotModel = createLanguagePlotModel("Exam Grade average", examGradeAvg);
+
+            string examGradeAvgPath = Path.Combine(ReportsFolderName, LanguageReportSubfolder, "examGradeAvg.pdf");
+            SaveToPdf(examGradeAvgPlotModel, examGradeAvgPath);
+
             string reportPath = Path.Combine(ReportsFolderName, LanguageReportSubfolder,
                 DateTime.Now.ToString("yyyy-MMMM-dd-hh-mm") + ".pdf");
 
-            MergePdf(reportPath, new[] { courseCountPath, examCountPath });
+            MergePdf(reportPath, new[] { courseCountPath, examCountPath, penaltyAvgPath, examGradeAvgPath });
         }
 
-        private Dictionary<int, int> GetExamCount()
+        private Dictionary<int, double> GetExamCount()
         {
             // LanguageId, Exam count
-            Dictionary<int, int> examCount = new();
+            Dictionary<int, double> examCount = new();
 
             foreach (Exam exam in _examRepository.GetAll())
             {
@@ -69,10 +83,10 @@ namespace LangLang.Services
             return examCount;
         }
 
-        private Dictionary<int, int> GetCourseCount()
+        private Dictionary<int, double> GetCourseCount()
         {
             // LanguageId, Course count
-            Dictionary<int, int> courseCount = new();
+            Dictionary<int, double> courseCount = new();
 
             foreach (Course course in _courseRepository.GetAll())
             {
@@ -116,7 +130,7 @@ namespace LangLang.Services
 
             foreach (int languageId in languagePenaltyCount.Keys)
             {
-                penaltyAvg[languageId] = languagePenaltyCount[languageId] / languageCourseCount[languageId];
+                penaltyAvg[languageId] = (double)languagePenaltyCount[languageId] / languageCourseCount[languageId];
             }
 
             return penaltyAvg;
@@ -145,7 +159,7 @@ namespace LangLang.Services
 
             foreach (int languageId in languageGradeSum.Keys)
             {
-                examGradeAvg[languageId] = languageGradeSum[languageId] / languageGradeCount[languageId];
+                examGradeAvg[languageId] = (double)languageGradeSum[languageId] / languageGradeCount[languageId];
             }
 
             return examGradeAvg;
@@ -153,7 +167,7 @@ namespace LangLang.Services
 
 
 
-    private PlotModel createLanguagePlotModel(string title, Dictionary<int, int> data)
+    private PlotModel createLanguagePlotModel(string title, Dictionary<int,double> data)
         {
             var plotModel = new PlotModel();
             plotModel.Title = title;
