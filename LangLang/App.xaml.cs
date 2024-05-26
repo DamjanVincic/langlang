@@ -4,6 +4,7 @@ using System.Windows;
 using LangLang.Models;
 using LangLang.Repositories;
 using Microsoft.Extensions.DependencyInjection;
+using ServiceProvider = LangLang.Models.ServiceProvider;
 
 namespace LangLang
 {
@@ -12,17 +13,15 @@ namespace LangLang
     /// </summary>
     public partial class App : Application
     {
-        private readonly IServiceProvider _serviceProvider;
-        
         public App()
         {
             var services = new ServiceCollection();
             ConfigureServices(services);
-            _serviceProvider = services.BuildServiceProvider();
+            ServiceProvider.Instance = services.BuildServiceProvider();
             
             Director director = new Director("Nadja", "Zoric", "nadjazoric@gmail.com", "PatrikZvezdasti011", Gender.Female, "1234567890123");
             
-            IUserRepository userRepository = _serviceProvider.GetRequiredService<IUserRepository>();
+            IUserRepository userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
             if (userRepository.GetAll().All(user => user.Email != director.Email))
                 userRepository.Add(director);
             
@@ -39,7 +38,7 @@ namespace LangLang
         {
             base.OnStartup(e);
             
-            var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
+            var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
             mainWindow.Show();
         }
         
