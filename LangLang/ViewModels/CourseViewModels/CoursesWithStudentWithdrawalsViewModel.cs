@@ -1,14 +1,10 @@
 ﻿using GalaSoft.MvvmLight;
 using LangLang.Models;
 using LangLang.Services;
-using LangLang.Views.CourseViews;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows;
@@ -19,13 +15,15 @@ namespace LangLang.ViewModels.CourseViewModels
 {
     class CoursesWithStudentWithdrawalsModel : ViewModelBase
     {
-        private readonly ICourseService _courseService = new CourseService();
+        private readonly ICourseService _courseService;
         private readonly Teacher _teacher = UserService.LoggedInUser as Teacher ??
                                             throw new InvalidOperationException("No one is logged in.");
         private readonly ObservableCollection<CourseViewModel> _coursesWithWithdrawals;
 
-        public CoursesWithStudentWithdrawalsModel()
+        public CoursesWithStudentWithdrawalsModel(ICourseService courseService)
         {
+            _courseService = courseService;
+            
             _coursesWithWithdrawals = new ObservableCollection<CourseViewModel>(_courseService.GetCoursesWithWithdrawals(_teacher.Id).Select(course => new CourseViewModel(course)));
             CoursesWithWithdrawalsCollectionView = CollectionViewSource.GetDefaultView(_coursesWithWithdrawals);
             SeeWithdrawalsListCommand = new RelayCommand(SeeWithdrawalsList);
