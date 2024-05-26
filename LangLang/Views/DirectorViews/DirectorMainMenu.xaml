@@ -34,5 +34,6 @@
             <Button Command="{Binding ScoreReportCommand}" Grid.Row="3" Background="#55bcbb" Foreground="White" Width="140" Height="40" Content="Scores/Pass Rate" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
             <Button Command="{Binding AverageStatsCommand}" Grid.Row="4" Background="#55bcbb" Foreground="White" Width="140" Height="40" Content="Average Stats" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
         </Grid>
+        
     </Grid>
 </Window>

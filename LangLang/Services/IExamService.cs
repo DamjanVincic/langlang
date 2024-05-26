@@ -19,4 +19,5 @@ public interface IExamService
     public List<Exam> GetUngradedExams();
     public void SendGrades(int examId);
     public void SendEmail(int examId);
+    public Dictionary<int, List<int>> AveragePointsInLastYear();
 }

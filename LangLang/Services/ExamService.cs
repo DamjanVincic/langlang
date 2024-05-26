@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.Linq;
 using LangLang.Models;
 using LangLang.Repositories;
@@ -219,7 +220,7 @@ public class ExamService : IExamService
         Koliko je studenata slušalo kurs, a koliko položilo, pored toga
         navesti i procenat studenata koji je položio u odnosu na one koje je slušao
     */
-    public void AveragePointsInLastYear()
+    public Dictionary<int, List<int>> AveragePointsInLastYear()
     {
 
         Dictionary<int, List<int>> averagePoints = new Dictionary<int, List<int>>();
@@ -227,10 +228,18 @@ public class ExamService : IExamService
         {
             if (exam.Date.ToDateTime(TimeOnly.MinValue) >= DateTime.Today.AddYears(-1))
             {
-                List<ExamGrade> examGrades = _examGradeService.GetByExamId(exam.Id);
-                averagePoints[exam.Id] = CalculateAverage(examGrades);
+                if(exam.TeacherGraded)
+                {
+                    List<ExamGrade> examGrades = _examGradeService.GetByExamId(exam.Id);
+                    averagePoints[exam.Id] = CalculateAverage(examGrades);
+                }
+                else
+                {
+                    averagePoints[exam.Id] = new List<int> { -1,-1,-1,-1};
+                }
             }
         }
+        return averagePoints;
     }
 
     public List<int> CalculateAverage(List<ExamGrade> grades)
