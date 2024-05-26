@@ -52,6 +52,26 @@ namespace LangLang.Services
             }
         }
 
+        private PlotModel createLanguagePlotModel(string title, Dictionary<int, int> data)
+        {
+            var plotModel = new PlotModel();
+            plotModel.Title = title;
+
+            var categoryAxis = new CategoryAxis { Position = AxisPosition.Left };
+            categoryAxis.Labels.AddRange(data.Keys.Select(id => _languageRepository.GetById(id).ToString()).ToList());
+
+            var valueAxis = new LinearAxis { Position = AxisPosition.Bottom, MinimumPadding = 0, MaximumPadding = 0.06, AbsoluteMinimum = 0 };
+
+            var barSeries = new BarSeries {StrokeColor = OxyColors.Black, StrokeThickness = 1 };
+            barSeries.ActualItems.AddRange(data.Values.Select(value => new BarItem { Value = value }).ToList());
+
+            plotModel.Series.Add(barSeries);
+            plotModel.Axes.Add(categoryAxis);
+            plotModel.Axes.Add(valueAxis);
+
+            return plotModel;
+        }
+
         private static void SaveToPdf(PlotModel plotModel, string filePath)
         {
             using (var stream = File.Create(filePath))
