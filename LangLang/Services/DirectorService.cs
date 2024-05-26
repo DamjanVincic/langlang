@@ -29,6 +29,45 @@ namespace LangLang.Services
 
         public void GenerateLanguageReport()
         {
+            Directory.CreateDirectory(Path.Combine(ReportsFolderName,LanguageReportSubfolder));
+
+            Dictionary<int, int> courseCount = GetCourseCount();
+
+            PlotModel courseCountPlotModel = createLanguagePlotModel("Course count", courseCount);
+
+            string courseCountPath = Path.Combine(ReportsFolderName, LanguageReportSubfolder, "courseCount.pdf");
+            SaveToPdf(courseCountPlotModel, courseCountPath);
+
+            Dictionary<int, int> examCount = GetExamCount();
+
+            PlotModel examCountPlotModel = createLanguagePlotModel("Exam count", examCount);
+
+            string examCountPath = Path.Combine(ReportsFolderName, LanguageReportSubfolder, "examCount.pdf");
+            SaveToPdf(examCountPlotModel, examCountPath);
+
+            string reportPath= Path.Combine(ReportsFolderName, LanguageReportSubfolder, DateTime.Now.ToString("yyyy-MMMM-dd-hh-mm")+".pdf");
+
+            MergePdf(reportPath, new[] { courseCountPath, examCountPath });
+        }
+
+        private Dictionary<int, int> GetExamCount()
+        {
+            // LanguageId, Exam count
+            Dictionary<int, int> examCount = new();
+
+            foreach (Exam exam in _examRepository.GetAll())
+            {
+                if ((DateTime.Now - exam.Date.ToDateTime(TimeOnly.MinValue)).TotalDays > 365) continue;
+
+                if (!examCount.TryAdd(exam.Language.Id, 1))
+                    examCount[exam.Language.Id] += 1;
+            }
+
+            return examCount;
+        }
+
+        private Dictionary<int, int> GetCourseCount()
+        {
             // LanguageId, Course count
             Dictionary<int, int> courseCount = new();
 
@@ -40,17 +79,10 @@ namespace LangLang.Services
                     courseCount[course.Language.Id] += 1;
             }
 
-            // LanguageId, Exam count
-            Dictionary<int, int> examCount = new();
-
-            foreach (Exam exam in _examRepository.GetAll())
-            {
-                if ((DateTime.Now - exam.Date.ToDateTime(TimeOnly.MinValue)).TotalDays > 365) continue;
-
-                if (!examCount.TryAdd(exam.Language.Id, 1))
-                    courseCount[exam.Language.Id] += 1;
-            }
+            return courseCount;
         }
+
+
 
         private PlotModel createLanguagePlotModel(string title, Dictionary<int, int> data)
         {
