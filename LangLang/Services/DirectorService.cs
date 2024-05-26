@@ -18,19 +18,20 @@ using PdfSharp.Drawing;
 
 namespace LangLang.Services
 {
-    public class DirectorService:IDirectorService
+    public class DirectorService : IDirectorService
     {
         private readonly ICourseRepository _courseRepository = new CourseFileRepository();
         private readonly IExamRepository _examRepository = new ExamFileRepository();
         private readonly ILanguageRepository _languageRepository = new LanguageFileRepository();
         private readonly IPenaltyPointRepository _penaltyPointRepository = new PenaltyPointFileRepository();
+        private readonly IExamGradeRepository _examGradeRepository = new ExamGradeFileRepository();
 
         private const string ReportsFolderName = "Reports";
         private const string LanguageReportSubfolder = "LanguageReports";
 
         public void GenerateLanguageReport()
         {
-            Directory.CreateDirectory(Path.Combine(ReportsFolderName,LanguageReportSubfolder));
+            Directory.CreateDirectory(Path.Combine(ReportsFolderName, LanguageReportSubfolder));
 
             Dictionary<int, int> courseCount = GetCourseCount();
 
@@ -46,7 +47,8 @@ namespace LangLang.Services
             string examCountPath = Path.Combine(ReportsFolderName, LanguageReportSubfolder, "examCount.pdf");
             SaveToPdf(examCountPlotModel, examCountPath);
 
-            string reportPath= Path.Combine(ReportsFolderName, LanguageReportSubfolder, DateTime.Now.ToString("yyyy-MMMM-dd-hh-mm")+".pdf");
+            string reportPath = Path.Combine(ReportsFolderName, LanguageReportSubfolder,
+                DateTime.Now.ToString("yyyy-MMMM-dd-hh-mm") + ".pdf");
 
             MergePdf(reportPath, new[] { courseCountPath, examCountPath });
         }
@@ -85,11 +87,12 @@ namespace LangLang.Services
 
         private Dictionary<int, double> GetPenaltyAvg()
         {
-            Dictionary<int,int> coursePenaltyCount = new();
+            Dictionary<int, int> coursePenaltyCount = new();
 
             foreach (PenaltyPoint penaltyPoint in _penaltyPointRepository.GetAll())
             {
-                if ((DateTime.Now - penaltyPoint.DatePenaltyPointGiven.ToDateTime(TimeOnly.MinValue)).TotalDays > 365) continue;
+                if ((DateTime.Now - penaltyPoint.DatePenaltyPointGiven.ToDateTime(TimeOnly.MinValue)).TotalDays >
+                    365) continue;
 
                 if (!coursePenaltyCount.TryAdd(penaltyPoint.CourseId, 1))
                     coursePenaltyCount[penaltyPoint.CourseId] += 1;
@@ -113,15 +116,44 @@ namespace LangLang.Services
 
             foreach (int languageId in languagePenaltyCount.Keys)
             {
-                penaltyAvg[languageId]=languagePenaltyCount[languageId]/languageCourseCount[languageId];
+                penaltyAvg[languageId] = languagePenaltyCount[languageId] / languageCourseCount[languageId];
             }
 
             return penaltyAvg;
         }
 
+        private Dictionary<int, double> GetExamGradeAvg()
+        {
+            Dictionary<int, int> languageGradeCount = new();
+            Dictionary<int, int> languageGradeSum = new();
+
+            foreach (ExamGrade examGrade in _examGradeRepository.GetAll())
+            {
+                Exam exam = _examRepository.GetById(examGrade.ExamId);
+
+                if ((DateTime.Now - exam.Date.ToDateTime(TimeOnly.MinValue)).TotalDays > 365) 
+                    continue;
+
+                if (!languageGradeCount.TryAdd(exam.Language.Id, 1))
+                    languageGradeCount[exam.Language.Id] += 1;
+
+                if (!languageGradeSum.TryAdd(exam.Language.Id, examGrade.PointsSum))
+                    languageGradeSum[exam.Language.Id] += examGrade.PointsSum;
+            }
+
+            Dictionary<int, double> examGradeAvg = new();
+
+            foreach (int languageId in languageGradeSum.Keys)
+            {
+                examGradeAvg[languageId] = languageGradeSum[languageId] / languageGradeCount[languageId];
+            }
+
+            return examGradeAvg;
+        }
 
 
-        private PlotModel createLanguagePlotModel(string title, Dictionary<int, int> data)
+
+    private PlotModel createLanguagePlotModel(string title, Dictionary<int, int> data)
         {
             var plotModel = new PlotModel();
             plotModel.Title = title;
