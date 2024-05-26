@@ -65,6 +65,8 @@ namespace LangLang.Services
                 DateTime.Now.ToString("yyyy-MMMM-dd-hh-mm") + ".pdf");
 
             MergePdf(reportPath, new[] { courseCountPath, examCountPath, penaltyAvgPath, examGradeAvgPath });
+
+            EmailService.SendMessage("Language report","Today's language report is attached in this email",reportPath);
         }
 
         private Dictionary<int, double> GetExamCount()
