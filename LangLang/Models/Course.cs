@@ -10,7 +10,7 @@ namespace LangLang.Models
 
         private int _duration;
         private List<Weekday> _held = null!;
-        
+
         public Course(Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents,
             int? creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed,
             int teacherId) : base(language, maxStudents, startDate, teacherId, scheduledTime)
@@ -21,14 +21,14 @@ namespace LangLang.Models
             CreatorId = creatorId;
             AreApplicationsClosed = areApplicationsClosed;
             IsOnline = isOnline;
-            IsFinished = false;
         }
 
         // Constructor without date validation for deserializing
         [JsonConstructor]
         public Course(int id, Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents,
-            int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed, int teacherId,
-            Dictionary<int, ApplicationStatus> students) : base(id, language, maxStudents, startDate, teacherId, scheduledTime)
+            bool isFinished, bool studentsNotified, int creatorId, TimeOnly scheduledTime, DateOnly startDate,
+            bool areApplicationsClosed, int teacherId, Dictionary<int, ApplicationStatus> students)
+                        : base(id, language, maxStudents, startDate, teacherId, scheduledTime)
         {
             Duration = duration;
             Held = held;
@@ -36,7 +36,8 @@ namespace LangLang.Models
             AreApplicationsClosed = areApplicationsClosed;
             IsOnline = isOnline;
             Students = students;
-            IsFinished = false;
+            IsFinished = isFinished;
+            StudentsNotified = studentsNotified;
         }
 
         public new int MaxStudents
@@ -70,7 +71,10 @@ namespace LangLang.Models
         }
 
         public new bool IsOnline { get; set; }
-        public bool IsFinished {  get; set; }
+        public bool IsFinished { get; set; } = false;
+
+        // If the best students were notified by the director
+        public bool StudentsNotified { get; set; } = false;
 
         public int? CreatorId { get; set; } = null;
 
@@ -90,7 +94,7 @@ namespace LangLang.Models
         // TODO: Add logic to respective methods when a student drops out from, or others to resume their applications etc.
         // Dictionary of student IDs and their application status
         public Dictionary<int, ApplicationStatus> Students { get; } = new();
-        
+
         // Dictionary of student IDs and their reasons for requesting to drop out
         public Dictionary<int, string> DropOutRequests { get; } = new();
 
@@ -117,30 +121,31 @@ namespace LangLang.Models
             if (duration <= 0)
                 throw new InvalidInputException("Invalid input: Duration must be greater than 0.");
         }
-        
+
         public void AddStudent(int studentId)
         {
             if (Students.Count >= MaxStudents && !IsOnline)
 
                 throw new InvalidInputException("The course is full.");
-            
+
             if (!Students.TryAdd(studentId, ApplicationStatus.Pending))
                 throw new InvalidInputException("Student has already applied to this course.");
         }
-        
+
         public void RemoveStudent(int studentId)
         {
             if (!Students.ContainsKey(studentId))
                 throw new InvalidInputException("Student hasn't applied to this course.");
-            
+
             Students.Remove(studentId);
         }
-        
+
         public void AddDropOutRequest(int studentId, string reason)
         {
             if (!Students.ContainsKey(studentId))
                 throw new InvalidInputException("Student hasn't applied to this course.");
-            reason = $"the student wants to withdraw from the course {Language} that started on {StartDate}. Reason : {reason}";
+            reason =
+                $"the student wants to withdraw from the course {Language} that started on {StartDate}. Reason : {reason}";
             if (!DropOutRequests.TryAdd(studentId, reason))
                 throw new InvalidInputException("Student has already requested to drop out.");
         }

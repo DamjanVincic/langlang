@@ -30,11 +30,17 @@ public class TeacherService : ITeacherService
         return _userRepository.GetAll().OfType<Teacher>().ToList();
     }
 
-    public List<Course> GetCourses(int teacherId)
+    public List<Course> GetCourses(int teacherId, int pageIndex = 1, int? amount = null)
     {
-        return _courseRepository.GetAll().Where(course => course.TeacherId == teacherId).ToList();
-    }
+        List<Course> courses = _courseRepository.GetAll().Where(course => course.TeacherId == teacherId).ToList();
+        amount ??= courses.Count;
 
+        return courses.Skip((pageIndex - 1) * amount.Value).Take(amount.Value).ToList();
+    }
+    public int GetCourseCount(int teacherId)
+    {
+        return _courseRepository.GetAll().Count(course => course.TeacherId == teacherId);
+    }
     public List<Exam> GetExams(int teacherId)
     {
         return _examService.GetAll().Where(exam => exam.TeacherId == teacherId).ToList();
