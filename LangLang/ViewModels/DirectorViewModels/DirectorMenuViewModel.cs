@@ -1,5 +1,5 @@
-﻿using System.Windows;
-using System.Windows.Input;
+﻿using System;
+using System.Windows;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
@@ -71,7 +71,7 @@ namespace LangLang.ViewModels.DirectorViewModels
         private void GenerateLanguageReport()
         {
             throw new NotImplementedException();
-
+        }
         private void NotifyBestStudents()
         {
             new BestStudentsNotificationView().ShowDialog();
