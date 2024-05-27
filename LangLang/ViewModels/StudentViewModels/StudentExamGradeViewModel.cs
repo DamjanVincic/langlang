@@ -11,8 +11,8 @@ namespace LangLang.ViewModels.StudentViewModels
     public class StudentExamGradeViewModel:ViewModelBase
     {
         private readonly Student _student;
-        private readonly ExamGrade _examGrade;
-        public StudentExamGradeViewModel(Student student, ExamGrade examGrade)
+        private readonly ExamGrade? _examGrade;
+        public StudentExamGradeViewModel(Student student, ExamGrade? examGrade)
         {
             _student = student;
             _examGrade = examGrade;

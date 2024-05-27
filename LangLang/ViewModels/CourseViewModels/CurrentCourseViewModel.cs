@@ -92,7 +92,7 @@ namespace LangLang.ViewModels.CourseViewModels
             {
                 try
                 {
-                    _studentService.AddPenaltyPoint(SelectedItem.Id, (PenaltyPointReason)SelectedPenaltyPointReason, _courseId, UserService.LoggedInUser.Id, DateOnly.FromDateTime(DateTime.Now));
+                    _studentService.AddPenaltyPoint(SelectedItem.Id, (PenaltyPointReason)SelectedPenaltyPointReason, _courseId, UserService.LoggedInUser!.Id, DateOnly.FromDateTime(DateTime.Now));
                     MessageBox.Show("Successfully given penalty point.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     RefreshStudents();
                 }

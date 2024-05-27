@@ -127,6 +127,7 @@ namespace LangLang.ViewModels.ExamViewModels
             UpdateExamList();
         }
 
+        // TODO: MNOC 3
         private void Delete()
         {
             if (SelectedItem == null)

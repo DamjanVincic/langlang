@@ -16,19 +16,16 @@ namespace LangLang.Views.CourseViews
             InitializeComponent();
             DataContext = new CourseListingViewModel();
         }
+        // TODO: NOP 4
         public class MaxStudentsVisibilityConverter : IValueConverter
         {
-            public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+            public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
             {
                 string? format = value as string;
-                if (format.Equals("in-person"))
-                {
-                    return Visibility.Visible;
-                }
-                return Visibility.Collapsed;
+                return format is "in-person" ? Visibility.Visible : Visibility.Collapsed;
             }
 
-            public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+            public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
             {
                 throw new NotImplementedException();
             }
