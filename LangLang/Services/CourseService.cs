@@ -64,7 +64,7 @@ public class CourseService : ICourseService
         {
             Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
 
-            if ((DateTime.Now - course.StartDate.ToDateTime(TimeOnly.MinValue)).Days <= 0 && course.Confirmed && !course.IsFinished)
+            if ((DateTime.Now - course.StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays >= 0 && course.Confirmed && !course.IsFinished)
             {
                 activeCourses.Add(course);
             }
