@@ -8,11 +8,19 @@ namespace LangLang.Services;
 
 public class CourseService : ICourseService
 {
-    private readonly ICourseRepository _courseRepository = new CourseFileRepository();
-    private readonly IUserRepository _userRepository = new UserFileRepository();
-    private readonly ILanguageService _languageService = new LanguageService();
-    private readonly IScheduleService _scheduleService = new ScheduleService();
+    private readonly ICourseRepository _courseRepository;
+    private readonly IUserRepository _userRepository;
+    private readonly ILanguageService _languageService;
+    private readonly IScheduleService _scheduleService;
 
+    public CourseService(ICourseRepository courseRepository, IUserRepository userRepository, ILanguageService languageService, IScheduleService scheduleService)
+    {
+        _courseRepository = courseRepository;
+        _userRepository = userRepository;
+        _languageService = languageService;
+        _scheduleService = scheduleService;
+    }
+    
     public List<Course> GetAll()
     {
         return _courseRepository.GetAll();

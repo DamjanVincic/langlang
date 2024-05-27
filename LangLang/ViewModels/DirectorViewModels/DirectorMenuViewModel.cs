@@ -12,7 +12,7 @@ namespace LangLang.ViewModels.DirectorViewModels
     {
         private readonly Director _director = UserService.LoggedInUser as Director ?? throw new InvalidInputException("No one is logged in.");
         private readonly Window _directorViewWindow;
-        private readonly IUserService _userService = new UserService();
+        private readonly IUserService _userService = ServiceProvider.GetRequiredService<IUserService>();
 
         public DirectorMenuViewModel(Window directorViewWindow)
         {

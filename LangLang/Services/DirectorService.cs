@@ -18,15 +18,27 @@ namespace LangLang.Services
         private const int NumberOfTopStudents = 3;
         private const string ReportsFolderName = "Reports";
         private const string LanguageReportSubfolder = "LanguageReports";
+        
+        private readonly ICourseRepository _courseRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly ICourseGradeService _courseGradeService;
+        private readonly IExamRepository _examRepository;
+        private readonly ILanguageRepository _languageRepository;
+        private readonly IPenaltyPointRepository _penaltyPointRepository;
+        private readonly IExamGradeRepository _examGradeRepository;
 
-        // TODO: Implement dependency injection
-        private readonly ICourseRepository _courseRepository = new CourseFileRepository();
-        private readonly IUserRepository _userRepository = new UserFileRepository();
-        private readonly ICourseGradeService _courseGradeService = new CourseGradeService();
-        private readonly IExamRepository _examRepository = new ExamFileRepository();
-        private readonly ILanguageRepository _languageRepository = new LanguageFileRepository();
-        private readonly IPenaltyPointRepository _penaltyPointRepository = new PenaltyPointFileRepository();
-        private readonly IExamGradeRepository _examGradeRepository = new ExamGradeFileRepository();
+        public DirectorService(ICourseRepository courseRepository, IUserRepository userRepository,
+            ICourseGradeService courseGradeService, IExamRepository examRepository, ILanguageRepository languageRepository,
+            IPenaltyPointRepository penaltyPointRepository, IExamGradeRepository examGradeRepository)
+        {
+            _courseRepository = courseRepository;
+            _userRepository = userRepository;
+            _courseGradeService = courseGradeService;
+            _examRepository = examRepository;
+            _languageRepository = languageRepository;
+            _penaltyPointRepository = penaltyPointRepository;
+            _examGradeRepository = examGradeRepository;
+        }
 
         // knowledgePoints - if true they have priority over activity points
         public void NotifyBestStudents(int courseId, bool knowledgePoints)

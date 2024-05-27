@@ -12,11 +12,10 @@ namespace LangLang.ViewModels.CourseViewModels
 {
     class StartCourseViewModel : ViewModelBase
     {
-        private readonly ITeacherService _teacherService = new TeacherService();
-        
+        private readonly ITeacherService _teacherService = ServiceProvider.GetRequiredService<ITeacherService>();
+        private readonly ICourseService _courseService = ServiceProvider.GetRequiredService<ICourseService>();
+
         private readonly int _courseId;
-        private readonly ICourseService _courseService = new CourseService();
-        private readonly IStudentService _studentService = new StudentService();
         private readonly Window _startCourseWindow;
         public StartCourseViewModel(int courseId, Window startCourseWindow)
         {

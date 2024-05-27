@@ -8,7 +8,12 @@ namespace LangLang.Services;
 
 public class ScheduleService : IScheduleService
 {
-    private readonly IScheduleRepository _scheduleRepository = new ScheduleFileRepository();
+    private readonly IScheduleRepository _scheduleRepository;
+    
+    public ScheduleService(IScheduleRepository scheduleRepository)
+    {
+        _scheduleRepository = scheduleRepository;
+    }
     
     public void Add(ScheduleItem scheduleItem)
     {

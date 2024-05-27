@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using LangLang.Models;
 using LangLang.ViewModels.CourseViewModels;
 
 namespace LangLang.Views.CourseViews
@@ -11,7 +12,7 @@ namespace LangLang.Views.CourseViews
         public AddCourseView()
         {
             InitializeComponent();
-            DataContext = new AddCourseViewModel();
+            DataContext = ServiceProvider.GetRequiredService<AddCourseViewModel>();
         }
     }
 }
