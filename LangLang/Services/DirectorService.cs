@@ -13,7 +13,6 @@ namespace LangLang.Services
         private readonly ICourseRepository _courseRepository = new CourseFileRepository();
         private readonly IUserRepository _userRepository = new UserFileRepository();
         private readonly ICourseGradeService _courseGradeService = new CourseGradeService();
-        private readonly IMessageService _messageService = new MessageService();
 
         // knowledgePoints - if true they have priority over activity points
         public void NotifyBestStudents(int courseId, bool knowledgePoints)
@@ -36,10 +35,9 @@ namespace LangLang.Services
             
             List<Student> bestStudents = rankedStudents.OrderByDescending(pair => pair.Value).Take(NumberOfTopStudents).Select(pair => pair.Key).ToList();
             
-            // TODO: Send email instead of a message
             foreach (Student student in bestStudents)
             {
-                _messageService.Add(student.Id, $"Congratulations! You are one of the best students in the course {course.Language.Name} {course.Language.Level}.");
+                EmailService.SendMessage($"Congratulations {student.FirstName} {student.LastName}!", $"You are one of the best students in the course {course.Language.Name} {course.Language.Level}.");
             }
             
             course.StudentsNotified = true;
