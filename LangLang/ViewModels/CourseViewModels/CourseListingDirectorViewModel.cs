@@ -95,6 +95,7 @@ namespace LangLang.ViewModels.CourseViewModels
         public void AddTeacher()
         {
 
+            RefreshCourses();
         }
 
 

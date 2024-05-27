@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Input;
 using LangLang.Models;
 using LangLang.Repositories;
 
@@ -16,6 +17,7 @@ public class TeacherService : ITeacherService
     private readonly IStudentService _studentService = new StudentService();
     private readonly IMessageService _messageService = new MessageService();    
     private readonly IExamRepository _examRepository = new ExamFileRepository();
+    private readonly ITeacherService _teacherService = new TeacherService();
 
     public List<Teacher> GetAll()
     {
@@ -56,7 +58,6 @@ public class TeacherService : ITeacherService
     // ONLY DELETE EXAMS AND COURSES IN THE FUTURE
     public void Delete(int teacherId)
     {
-        _userRepository.Delete(teacherId);
         foreach(Course course in _courseRepository.GetAll())
         {
             if (course.TeacherId == teacherId && (DateTime.Now - course.StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays >= 0 && course.Confirmed && !course.IsFinished)
@@ -84,9 +85,10 @@ public class TeacherService : ITeacherService
             // if exam is in the future delete it
             if(exam.Date.ToDateTime(TimeOnly.MinValue) > DateTime.Today && exam.TeacherId == teacherId)
             {
-                _examRepository.Delete(exam.Id);
+                _examService.Delete(exam.Id);
             }    
         }
+        _userRepository.Delete(teacherId);
     }
 
     public void RejectStudentApplication(int studentId, int courseId)
@@ -167,5 +169,19 @@ public class TeacherService : ITeacherService
             _studentService.ResumeApplications(studentId);
             _userRepository.Update(student);
         }
+    }
+    // get all available teachers and sort them based on ranking
+    // pick the first one as the best choice
+    public void SmartPick(Course course)
+    {
+        List<Teacher> availableTeachers = _teacherService.GetAvailableTeachers(course)
+            .OrderByDescending(teacher => teacher.Rating)
+            .ToList();
+
+        if (!availableTeachers.Any())
+            throw new Exception("There are no available substitute teachers");
+
+        course.Id = availableTeachers.First().Id;
+        availableTeachers.First().CourseIds.Add(course.Id);
     }
 }
