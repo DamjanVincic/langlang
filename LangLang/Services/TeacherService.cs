@@ -17,7 +17,6 @@ public class TeacherService : ITeacherService
     private readonly IStudentService _studentService = new StudentService();
     private readonly IMessageService _messageService = new MessageService();    
     private readonly IExamRepository _examRepository = new ExamFileRepository();
-    private readonly ITeacherService _teacherService = new TeacherService();
 
     public List<Teacher> GetAll()
     {
@@ -63,19 +62,19 @@ public class TeacherService : ITeacherService
             if (course.TeacherId == teacherId && (DateTime.Now - course.StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays >= 0 && course.Confirmed && !course.IsFinished)
             {
                 throw new InvalidInputException("You cannot delete this teacher while they are on an active course.");
-            }
+            }                                                                                         
 
             if (course.TeacherId == teacherId && course.StartDate.ToDateTime(TimeOnly.MinValue) > DateTime.Today)
             {
                 // creator of the course is either teacher or director
-                switch (_userRepository.GetById(course.CreatorId ?? throw new InvalidInputException(nameof(course.CreatorId))))
+                switch (_userRepository.GetById(course.CreatorId))
                 {
                     case Teacher:
                         _courseService.Delete(course.Id);
                         break;
                     case Director:
                         course.TeacherId = null;
-                        _courseService.Update(course.Id,course.Duration, course.Held, course.IsOnline, course.MaxStudents, course.ScheduledTime, course.StartDate, course.AreApplicationsClosed, course.TeacherId);
+                        _courseRepository.Update(course);
                         break;
                 }
             }
@@ -172,16 +171,18 @@ public class TeacherService : ITeacherService
     }
     // get all available teachers and sort them based on ranking
     // pick the first one as the best choice
-    public void SmartPick(Course course)
+    public int? SmartPick(Course course)
     {
-        List<Teacher> availableTeachers = _teacherService.GetAvailableTeachers(course)
+        List<Teacher> availableTeachers = GetAvailableTeachers(course)
             .OrderByDescending(teacher => teacher.Rating)
             .ToList();
 
         if (!availableTeachers.Any())
             throw new Exception("There are no available substitute teachers");
 
-        course.Id = availableTeachers.First().Id;
+        course.TeacherId = availableTeachers.First().Id;
         availableTeachers.First().CourseIds.Add(course.Id);
+        _courseRepository.Update(course);
+        return course.TeacherId;
     }
 }

@@ -149,6 +149,8 @@ namespace LangLang.ViewModels.TeacherViewModels
             }
         }
 
+        /*
+
         private void PutSubstituteTeachers()
         {
             Dictionary<int, Course> activeTeachersCourses = _teacherService.GetCourses(SelectedItem!.Id)
@@ -181,6 +183,7 @@ namespace LangLang.ViewModels.TeacherViewModels
             newWindow.ShowDialog();
             return substituteTeacherId;
         }
+        */
 
         private void LogOut()
         {

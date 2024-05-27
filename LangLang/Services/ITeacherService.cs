@@ -13,4 +13,5 @@ public interface ITeacherService
     public void RejectStudentApplication(int studentId, int courseId);
     public void ConfirmCourse(int courseId);
     public void FinishCourse(int courseId);
+    public int? SmartPick(Course course);
 }

@@ -90,8 +90,9 @@ public class ExamService : IExamService
         // TODO: Delete from schedule, students etc.
 
         Exam exam = _examRepository.GetById(id) ?? throw new InvalidInputException("Exam doesn't exist.");
-        Teacher teacher = _userRepository.GetById(exam.TeacherId ?? throw new InvalidInputException("TeacherId is null.")) as Teacher ?? 
+        Teacher teacher = _userRepository.GetById(exam.TeacherId) as Teacher ?? 
             throw new InvalidInputException("Teacher doesn't exist.");
+
 
         teacher.ExamIds.Remove(exam.Id);
         _userRepository.Update(teacher);

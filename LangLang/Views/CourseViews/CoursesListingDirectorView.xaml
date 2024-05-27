@@ -160,7 +160,7 @@
             <Button Command="{Binding AddCommand}"  Content="Add" Grid.Column="0" Grid.Row="10" Margin="10" VerticalAlignment="Bottom" Width="80" Height="40" Background="#55bcbb" Foreground="White" />
             <Button Command="{Binding EditCommand}" Content="Edit" Grid.Column="1" Grid.Row="12" Margin="10" Width="80" Height="40" Background="#f46231" Foreground="White" />
             <Button Command="{Binding DeleteCommand}" Content="Delete" Grid.Column="2" Grid.Row="13" Margin="10" Width="80" Height="40" Background="#ec3629" Foreground="White" />
-            <Button Command="{Binding AddTeacherCommand}" Content="Smart pick" Grid.Column="3" Grid.Row="13" Margin="10" Width="100" Height="40" Background="#55bcbb" Foreground="White" />
+            <Button Command="{Binding SmartPickCommand}" Content="Smart pick" Grid.Column="3" Grid.Row="13" Margin="10" Width="100" Height="40" Background="#55bcbb" Foreground="White" />
         </Grid>
 
     </Grid>

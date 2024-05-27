@@ -91,13 +91,13 @@ public class CourseService : ICourseService
 
     // TODO: NOP 11
     public void Add(string languageName, LanguageLevel languageLevel, int duration, List<Weekday> held, bool isOnline,
-        int maxStudents, int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed,
-        int teacherId)
+        int maxStudents, int? creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed,
+        int? teacherId)
     {
         Language language = _languageService.GetLanguage(languageName, languageLevel) ??
                             throw new InvalidInputException("Language with the given level doesn't exist.");
-        Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
-                          throw new InvalidInputException("User doesn't exist.");
+        Teacher teacher = _userRepository.GetById(teacherId ?? throw new InvalidInputException("Teacher ID is null.")) as Teacher ??
+                            throw new InvalidInputException("User doesn't exist.");
 
         startDate = SetValidStartDate(startDate, held);
         Course course = new(language, duration, held, isOnline, maxStudents, creatorId, scheduledTime, startDate,
@@ -115,7 +115,7 @@ public class CourseService : ICourseService
         bool areApplicationsClosed, int? teacherId)
     {
         Course course = _courseRepository.GetById(id) ?? throw new InvalidInputException("Course doesn't exist.");
-        Teacher teacher = _userRepository.GetById(teacherId ?? throw new InvalidInputException("Teacher ID is null.")) as Teacher ?? 
+        Teacher teacher = _userRepository.GetById(teacherId) as Teacher ?? 
             throw new InvalidInputException("User doesn't exist.");
 
 

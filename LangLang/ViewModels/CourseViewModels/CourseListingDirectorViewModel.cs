@@ -16,10 +16,9 @@ namespace LangLang.ViewModels.CourseViewModels
 {
     public class CourseListingDirectorViewModel : ViewModelBase
     {
-        private readonly ITeacherService _teacherService = new TeacherService();
         private readonly ILanguageService _languageService = new LanguageService();
         private readonly ICourseService _courseService = new CourseService();
-
+        private readonly ITeacherService _teacherService = new TeacherService();
         private readonly Director _director = UserService.LoggedInUser as Director ??
                                             throw new InvalidOperationException("No one is logged in.");
 
@@ -40,7 +39,7 @@ namespace LangLang.ViewModels.CourseViewModels
             AddCommand = new RelayCommand(Add);
             EditCommand = new RelayCommand(Edit);
             DeleteCommand = new RelayCommand(Delete);
-            AddTeacherCommand = new RelayCommand(AddTeacher);
+            SmartPickCommand = new RelayCommand(AddTeacher);
         }
 
         public CourseViewModel? SelectedItem { get; set; }
@@ -54,7 +53,7 @@ namespace LangLang.ViewModels.CourseViewModels
         public ICommand AddCommand { get; }
         public ICommand EditCommand { get; }
         public ICommand DeleteCommand { get; }
-        public ICommand AddTeacherCommand {  get; }
+        public ICommand SmartPickCommand {  get; }
 
         private void Add()
         {
@@ -94,7 +93,15 @@ namespace LangLang.ViewModels.CourseViewModels
         }
         public void AddTeacher()
         {
+            if(SelectedItem == null)
+                MessageBox.Show("Please select an Course.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 
+            Course course = _courseService.GetById(SelectedItem.Id) ?? throw new InvalidOperationException("Course doesn't exist.");
+            if (course.TeacherId != null)
+            {
+                // otvori prozor za rucni odabir novog
+            }
+            else _teacherService.SmartPick(course);
             RefreshCourses();
         }
 
