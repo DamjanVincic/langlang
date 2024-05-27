@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
 using LangLang.Models;
 using LangLang.Repositories;
 
@@ -8,16 +11,18 @@ namespace LangLang.Services
 {
     public class DirectorService : IDirectorService
     {
+        // TODO: Implement dependency injection
         private readonly IUserRepository _userRepository = new UserFileRepository();
         private readonly IPenaltyPointRepository _penaltyPointRepository = new PenaltyPointFileRepository();
         private readonly ICourseGradeRepository _courseGradeRepository = new CourseGradeFileRepository();
+        private readonly ICourseRepository _courseRepository = new CourseFileRepository();
 
         // Number of penalties on every course in the last year
         // Average number of points for students with 0 through 3 penalties
         public void GeneratePenaltyReport()
         {
-            // courseId, penaltyCount
-            Dictionary<int, int> coursePenalties = new();
+            // course, penaltyCount
+            Dictionary<Course, int> coursePenalties = new();
             
             // numberOfPenalties (0 - 3), (pointType, pointCount)
             Dictionary<int, Dictionary<string, double>> averageStudentPoints = new();
@@ -29,8 +34,10 @@ namespace LangLang.Services
             {
                 if ((DateTime.Now - penaltyPoint.Date.ToDateTime(TimeOnly.MinValue)).TotalDays > 365) continue;
                 
-                if (!coursePenalties.TryAdd(penaltyPoint.CourseId, 1))
-                    coursePenalties[penaltyPoint.CourseId] += 1;
+                Course course = _courseRepository.GetById(penaltyPoint.CourseId)!;
+                
+                if (!coursePenalties.TryAdd(course, 1))
+                    coursePenalties[course] += 1;
             }
 
             foreach (Student student in _userRepository.GetAll().OfType<Student>())
@@ -52,7 +59,7 @@ namespace LangLang.Services
                     averageActivityGrade /= courseGrades.Count;
                 }
                 
-                if (!averageStudentPoints.TryAdd(numberOfPenalties, new Dictionary<string, double> { { "knowledgeGrade", 0 }, { "activityGrade", 0 } }))
+                if (!averageStudentPoints.TryAdd(numberOfPenalties, new Dictionary<string, double> { { "knowledgeGrade", averageKnowledgeGrade }, { "activityGrade", averageActivityGrade } }))
                 {
                     averageStudentPoints[numberOfPenalties]["knowledgeGrade"] += averageKnowledgeGrade;
                     averageStudentPoints[numberOfPenalties]["activityGrade"] += averageActivityGrade;
