@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using LangLang.Models;
 using LangLang.Repositories;
@@ -13,7 +14,8 @@ public class TeacherService : ITeacherService
     private readonly ICourseService _courseService = new CourseService();
     private readonly IScheduleService _scheduleService = new ScheduleService();
     private readonly IStudentService _studentService = new StudentService();
-    private readonly IMessageService _messageService = new MessageService();
+    private readonly IMessageService _messageService = new MessageService();    
+    private readonly IExamRepository _examRepository = new ExamFileRepository();
 
     public List<Teacher> GetAll()
     {
@@ -46,6 +48,45 @@ public class TeacherService : ITeacherService
         }
 
         return availableTeachers;
+    }
+
+    // delete all courses and exams that the teacher created
+    // if they are on active course it can not be deleted
+    // if they are on courses or exams that director chose, just remove them
+    // ONLY DELETE EXAMS AND COURSES IN THE FUTURE
+    public void Delete(int teacherId)
+    {
+        _userRepository.Delete(teacherId);
+        foreach(Course course in _courseRepository.GetAll())
+        {
+            if (course.TeacherId == teacherId && (DateTime.Now - course.StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays >= 0 && course.Confirmed && !course.IsFinished)
+            {
+                throw new InvalidInputException("You cannot delete this teacher while they are on an active course.");
+            }
+
+            if (course.TeacherId == teacherId && course.StartDate.ToDateTime(TimeOnly.MinValue) > DateTime.Today)
+            {
+                // creator of the course is either teacher or director
+                switch (_userRepository.GetById(course.CreatorId ?? throw new InvalidInputException(nameof(course.CreatorId))))
+                {
+                    case Teacher:
+                        _courseRepository.Delete(course.Id);
+                        break;
+                    case Director:
+                        course.TeacherId = null;
+                        _courseRepository.Update(course);
+                        break;
+                }
+            }
+        }
+        foreach(Exam exam in _examRepository.GetAll())
+        {
+            // if exam is in the future delete it
+            if(exam.Date.ToDateTime(TimeOnly.MinValue) > DateTime.Today && exam.TeacherId == teacherId)
+            {
+                _examRepository.Delete(exam.Id);
+            }    
+        }
     }
 
     public void RejectStudentApplication(int studentId, int courseId)

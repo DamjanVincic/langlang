@@ -8,7 +8,7 @@ namespace LangLang.Models
         private int _maxStudents;
         private DateOnly _date;
 
-        protected ScheduleItem(Language language, int maxStudents, DateOnly date, int teacherId, TimeOnly time)
+        protected ScheduleItem(Language language, int maxStudents, DateOnly date, int? teacherId, TimeOnly time)
         {
             Language = language;
             TeacherId = teacherId;

@@ -40,6 +40,7 @@ namespace LangLang.ViewModels.CourseViewModels
             AddCommand = new RelayCommand(Add);
             EditCommand = new RelayCommand(Edit);
             DeleteCommand = new RelayCommand(Delete);
+            AddTeacherCommand = new RelayCommand(AddTeacher);
         }
 
         public CourseViewModel? SelectedItem { get; set; }
@@ -53,6 +54,7 @@ namespace LangLang.ViewModels.CourseViewModels
         public ICommand AddCommand { get; }
         public ICommand EditCommand { get; }
         public ICommand DeleteCommand { get; }
+        public ICommand AddTeacherCommand {  get; }
 
         private void Add()
         {
@@ -89,6 +91,10 @@ namespace LangLang.ViewModels.CourseViewModels
 
             MessageBox.Show("Course deleted successfully.", "Success", MessageBoxButton.OK,
                 MessageBoxImage.Information);
+        }
+        public void AddTeacher()
+        {
+
         }
 
 
