@@ -69,6 +69,7 @@ namespace LangLang
             services.AddTransient<AppliedExamListingViewModel>();
             services.AddTransient<StudentExamViewModel>();
             services.AddTransient<StartableExamsViewModel>();
+            services.AddTransient<BestStudentsNotificationViewModel>();
         }
         
         protected override void OnStartup(StartupEventArgs e)

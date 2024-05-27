@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using GalaSoft.MvvmLight;
@@ -12,9 +11,8 @@ namespace LangLang.ViewModels.DirectorViewModels;
 
 public class BestStudentsNotificationViewModel : ViewModelBase
 {
-    // TODO: Switch to dependency injection
-    private readonly ICourseService _courseService = new  CourseService();
-    private readonly IDirectorService _directorService = new DirectorService();
+    private readonly ICourseService _courseService;
+    private readonly IDirectorService _directorService;
     
     public ObservableCollection<CourseViewModel> FinishedCourses { get; }
     public CourseViewModel? SelectedCourse { get; set; }
@@ -22,8 +20,11 @@ public class BestStudentsNotificationViewModel : ViewModelBase
     
     public RelayCommand NotifyStudentsCommand { get; }
     
-    public BestStudentsNotificationViewModel()
+    public BestStudentsNotificationViewModel(ICourseService courseService, IDirectorService directorService)
     {
+        _courseService = courseService;
+        _directorService = directorService;
+        
         FinishedCourses = new ObservableCollection<CourseViewModel>(_courseService.GetFinishedCourses().Select(course => new CourseViewModel(course)));
         NotifyStudentsCommand = new RelayCommand(NotifyStudents);
     }
