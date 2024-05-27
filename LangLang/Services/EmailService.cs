@@ -16,7 +16,7 @@ namespace LangLang.Services
     {
         private const string SenderPassword = "ykmc owwc bbrz uhbq";
         private const string SenderEmail = "langlang3b@gmail.com";
-        private const string ReceiverEmail = "krivokapic.sv41.2022@uns.ac.rs";
+        private const string ReceiverEmail = "usinalog2@gmail.com";
 
         public static void SendMessage(string subject, string body, string? attachmentPath = null)
         {
