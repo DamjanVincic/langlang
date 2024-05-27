@@ -10,8 +10,8 @@ public interface IStudentService
     public List<Student> GetAll();
     public List<Course> GetAvailableCourses(int studentId, int pageIndex = 1, int? amount = null);
     public List<Course> GetAppliedCourses(int studentId, int pageIndex = 1, int? amount = null);
-    public List<Exam> GetAvailableExams(Student student);
-    public List<Exam> GetAppliedExams(Student student);
+    public List<Exam> GetAvailableExams(int studentId, int pageIndex = 1, int? amount = null);
+    public List<Exam> GetAppliedExams(int studentId, int pageIndex = 1, int? amount = null);
     public void ApplyForCourse(int studentId, int courseId);
     public void WithdrawFromCourse(int studentId, int courseId);
     public void ApplyStudentExam(Student student, int examId);

@@ -43,15 +43,19 @@ public class StudentService : IStudentService
         return courses.Skip((pageIndex - 1) * amount.Value).Take(amount.Value).ToList();
     }
 
-    public List<Exam> GetAppliedExams(Student student)
+    public List<Exam> GetAppliedExams(int studentId, int pageIndex = 1, int? amount = null)
     {
+        Student student = (_userRepository.GetById(studentId) as Student)!;
+        
         var appliedExamIds = student.AppliedExams;
 
         var appliedExams = _examRepository.GetAll()
             .Where(exam => appliedExamIds.Contains(exam.Id))
             .ToList();
 
-        return appliedExams;
+        amount ??= appliedExams.Count;
+
+        return appliedExams.Skip((pageIndex - 1) * amount.Value).Take(amount.Value).ToList();
     }
 
 
@@ -60,14 +64,20 @@ public class StudentService : IStudentService
      2. exam must have at least one available spot for student
      3. search date must be at least 30 days before the date the exam is held
      */
-    public List<Exam> GetAvailableExams(Student student)
+    public List<Exam> GetAvailableExams(int studentId, int pageIndex = 1, int? amount = null)
     {
         // Nakon što je učenik završio kurs, prikazuju mu se svi dostupni termini ispita koji se
         // odnose na jezik i nivo jezika koji je učenik obradio na kursu
 
-        return _examRepository.GetAll().Where(exam =>
-            exam.StudentIds.Count < exam.MaxStudents && IsNeededCourseFinished(exam, student) &&
-            (exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days >= 30).ToList();
+        Student student = (_userRepository.GetById(studentId) as Student)!;
+
+        List<Exam> exams = _examRepository.GetAll().Where(exam =>
+                            exam.StudentIds.Count < exam.MaxStudents && IsNeededCourseFinished(exam, student) &&
+                            (exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days >= 30).ToList();
+
+        amount ??= exams.Count;
+        
+        return exams.Skip((pageIndex - 1) * amount.Value).Take(amount.Value).ToList();
     }
 
     /*
