@@ -1,12 +1,10 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
 using LangLang.Services;
 using LangLang.Views.DirectorViews;
-using LangLang.Views.TeacherViews;
 
 namespace LangLang.ViewModels.DirectorViewModels
 {
@@ -21,11 +19,13 @@ namespace LangLang.ViewModels.DirectorViewModels
             _directorViewWindow = directorViewWindow;
             ViewTeachersCommand = new RelayCommand(ViewTeachers);
             SendOutGradesCommand = new RelayCommand(SendOutGrades);
+            NotifyBestStudentsCommand = new RelayCommand(NotifyBestStudents);
             LogOutCommand = new RelayCommand(LogOut);
         }
 
         public RelayCommand ViewTeachersCommand { get; }
         public RelayCommand SendOutGradesCommand { get; }
+        public RelayCommand NotifyBestStudentsCommand { get; }
         public ICommand LogOutCommand { get; }
 
         private void LogOut()
@@ -44,6 +44,11 @@ namespace LangLang.ViewModels.DirectorViewModels
         {
             var sendGradesView = new GradedExams();
             sendGradesView.Show();
+        }
+
+        private void NotifyBestStudents()
+        {
+            new BestStudentsNotificationView().ShowDialog();
         }
     }
 }
