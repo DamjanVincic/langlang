@@ -253,7 +253,7 @@ public class StudentService : IStudentService
 
         student.ExamGradeIds[examId] = examGradeId;
 
-        ExamGrade examGrade = _examGradeService.GetById(examGradeId);
+        ExamGrade examGrade = _examGradeService.GetById(examGradeId)!;
         student.LanguagePassFail[exam.Language.Id] = examGrade.Passed;
 
         _userRepository.Update(student);

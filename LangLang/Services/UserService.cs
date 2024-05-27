@@ -29,7 +29,7 @@ public class UserService : IUserService
     }
 
     // TODO: NOP 8
-    public void Add(string firstName, string lastName, string email, string password, Gender gender, string phone,
+    public void Add(string? firstName, string? lastName, string? email, string? password, Gender gender, string? phone,
         Education? education = null, List<Language>? languages = null)
     {
         if (_userRepository.GetAll().Any(user => user.Email.Equals(email)))
@@ -49,8 +49,10 @@ public class UserService : IUserService
     {
         User user = _userRepository.GetById(id) ?? throw new InvalidInputException("User doesn't exist");
 
-        if (user is Student studentCheck && (studentCheck.AppliedCourses.Any() || studentCheck.ActiveCourseId != null || studentCheck.AppliedExams.Any()))
-            throw new InvalidInputException("You cannot change your information if you have applied to, or enrolled in any courses");
+        if (user is Student studentCheck && (studentCheck.AppliedCourses.Any() || studentCheck.ActiveCourseId != null ||
+                                             studentCheck.AppliedExams.Any()))
+            throw new InvalidInputException(
+                "You cannot change your information if you have applied to, or enrolled in any courses");
 
         user.FirstName = firstName;
         user.LastName = lastName;
@@ -111,7 +113,7 @@ public class UserService : IUserService
 
         LoggedInUser = null;
     }
-    
+
     private void DeleteStudent(Student student)
     {
         foreach (var course in student.AppliedCourses.Select(courseId =>
@@ -121,8 +123,8 @@ public class UserService : IUserService
             course.RemoveStudent(student.Id);
             _courseRepository.Update(course);
         }
-        
-        foreach(Exam exam in _examService.GetAll())
+
+        foreach (Exam exam in _examService.GetAll())
         {
             // remove student from exams only ih exam was not held
             if (exam.StudentIds.Contains(student.Id) && exam.TeacherGraded != true)
@@ -131,9 +133,9 @@ public class UserService : IUserService
                 _examRepository.Update(exam);
             }
         }
-        
+
         if (student.ActiveCourseId is null) return;
-        
+
         Course enrolledCourse = _courseRepository.GetById(student.ActiveCourseId!.Value) ??
                                 throw new InvalidOperationException("Course doesn't exist");
         enrolledCourse.RemoveStudent(student.Id);
@@ -147,8 +149,9 @@ public class UserService : IUserService
         {
             _examService.Delete(examId);
         }
-        
-        List<Course> courses = _courseRepository.GetAll().Where(course => course.TeacherId == teacher.Id && !course.AreApplicationsClosed).ToList();
+
+        List<Course> courses = _courseRepository.GetAll()
+            .Where(course => course.TeacherId == teacher.Id && !course.AreApplicationsClosed).ToList();
 
         foreach (Course course in courses)
         {
