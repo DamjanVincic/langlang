@@ -7,7 +7,7 @@ namespace LangLang.Services;
 public interface ITeacherService
 {
     public List<Teacher> GetAll();
-    public List<Course> GetCourses(int teacherId, int pageIndex = 1, int? amount = null);
+    public List<Course> GetCourses(int teacherId, int pageIndex = 1, int? amount = null, string propertyName = "", string sortingWay = "ascending");
     public int GetCourseCount(int teacherId);
     public List<Exam> GetExams(int teacherId);
     public List<Teacher> GetAvailableTeachers(Course course);

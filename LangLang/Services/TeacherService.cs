@@ -10,7 +10,6 @@ public class TeacherService : ITeacherService
     private readonly IUserRepository _userRepository = new UserFileRepository();
     private readonly ICourseRepository _courseRepository = new CourseFileRepository();
     private readonly IExamService _examService = new ExamService();
-    private readonly ICourseService _courseService = new CourseService();
     private readonly IScheduleService _scheduleService = new ScheduleService();
     private readonly IStudentService _studentService = new StudentService();
     private readonly IMessageService _messageService = new MessageService();
@@ -20,13 +19,30 @@ public class TeacherService : ITeacherService
         return _userRepository.GetAll().OfType<Teacher>().ToList();
     }
 
-    public List<Course> GetCourses(int teacherId, int pageIndex = 1, int? amount = null)
+    public List<Course> GetCourses(int teacherId, int pageIndex = 1, int? amount = null, string propertyName = "", string sortingWay = "ascending")
     {
         List<Course> courses = _courseRepository.GetAll().Where(course => course.TeacherId == teacherId).ToList();
         amount ??= courses.Count;
-
+        switch (propertyName)
+        {
+            case "LanguageName":
+                courses = sortingWay == "ascending" ? courses.OrderBy(course => course.Language.Name).ToList() :
+                                                      courses.OrderByDescending(course => course.Language.Name).ToList();
+                break;
+            case "LanguageLevel":
+                courses = sortingWay == "ascending" ? courses.OrderBy(course => course.Language.Level).ToList() :
+                                                      courses.OrderByDescending(course => course.Language.Level).ToList();
+                break;
+            case "StartDate":
+                courses = sortingWay == "ascending" ? courses.OrderBy(course => course.StartDate).ToList() :
+                                                      courses.OrderByDescending(course => course.StartDate).ToList();
+                break;
+            default:
+                break;
+        }
         return courses.Skip((pageIndex - 1) * amount.Value).Take(amount.Value).ToList();
     }
+
     public int GetCourseCount(int teacherId)
     {
         return _courseRepository.GetAll().Count(course => course.TeacherId == teacherId);
