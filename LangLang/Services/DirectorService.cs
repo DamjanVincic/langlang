@@ -11,6 +11,7 @@ using LangLang.Models;
 using OxyPlot.Series;
 using OxyPlot.Axes;
 using OxyPlot;
+using OxyPlot.WindowsForms;
 using PdfSharp.Pdf.IO;
 using Element = iTextSharp.text.Element;
 using PdfDocument = PdfSharp.Pdf.PdfDocument;
@@ -98,7 +99,7 @@ namespace LangLang.Services
             EmailService.SendMessage("Penalty Report", "Penalty report is attached.", filePath);
         }
         
-        private void GeneratePenaltyReportPdf(Dictionary<Course, int> coursePenalties, Dictionary<int, Dictionary<string, double>> averageStudentPoints, string filePath = "PenaltyReport.pdf")
+        private static void GeneratePenaltyReportPdf(Dictionary<Course, int> coursePenalties, Dictionary<int, Dictionary<string, double>> averageStudentPoints, string filePath = "PenaltyReport.pdf")
         {
             Document document = new Document();
 
@@ -127,6 +128,12 @@ namespace LangLang.Services
             });
 
             document.Add(GenerateAverageStudentPointsTable(averageStudentPoints));
+
+            var plotModel = GenerateStudentAveragePointsChart(averageStudentPoints);
+            byte[] chartBytes = RenderChartAsImage(plotModel);
+            
+            Image image = Image.GetInstance(chartBytes);
+            document.Add(image);
 
             document.Close();
             writer.Close();
@@ -220,6 +227,36 @@ namespace LangLang.Services
             }
 
             return penaltyTable;
+        }
+
+        private static PlotModel GenerateStudentAveragePointsChart(Dictionary<int, Dictionary<string, double>> averageStudentPoints)
+        {
+            var plotModel = new PlotModel { Title = "Average Student Grades by Penalty Count" };
+            
+            var knowledgeSeries = new BarSeries { Title = "Average Knowledge Grade" };
+            var activitySeries = new BarSeries { Title = "Average Activity Grade" };
+            
+            foreach (var (numberOfPenaltyPoints, averagePoints) in averageStudentPoints)
+            {
+                knowledgeSeries.Items.Add(new BarItem(averagePoints["knowledgeGrade"], numberOfPenaltyPoints));
+                activitySeries.Items.Add(new BarItem(averagePoints["activityGrade"], numberOfPenaltyPoints));
+            }
+            
+            plotModel.Series.Add(knowledgeSeries);
+            plotModel.Series.Add(activitySeries);
+            
+            plotModel.Axes.Add(new CategoryAxis { Position = AxisPosition.Left, Title = "Penalty Point Count", ItemsSource = new List<int> {0, 1, 2, 3}});
+            plotModel.Axes.Add(new LinearAxis { Position = AxisPosition.Bottom, Title = "Average Grade" });
+
+            return plotModel;
+        }
+
+        private static byte[] RenderChartAsImage(PlotModel plotModel)
+        {
+            using MemoryStream stream = new MemoryStream();
+            var pngExporter = new PngExporter { Width = 500, Height = 400 };
+            pngExporter.Export(plotModel, stream);
+            return stream.ToArray();
         }
 
         public void GenerateLanguageReport()
@@ -359,10 +396,8 @@ namespace LangLang.Services
 
             return examGradeAvg;
         }
-
-
-
-    private PlotModel CreateLanguagePlotModel(string title, Dictionary<int,double> data)
+        
+        private PlotModel CreateLanguagePlotModel(string title, Dictionary<int,double> data)
         {
             var plotModel = new PlotModel();
             plotModel.Title = title;
