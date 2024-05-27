@@ -112,11 +112,12 @@ public class CourseService : ICourseService
     // TODO: MELOC 24, NOP 9, MNOC 4
     public void Update(int id, int duration, List<Weekday> held,
         bool isOnline, int maxStudents, TimeOnly scheduledTime, DateOnly startDate,
-        bool areApplicationsClosed, int teacherId)
+        bool areApplicationsClosed, int? teacherId)
     {
         Course course = _courseRepository.GetById(id) ?? throw new InvalidInputException("Course doesn't exist.");
-        Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
-                          throw new InvalidInputException("User doesn't exist.");
+        Teacher teacher = _userRepository.GetById(teacherId ?? throw new InvalidInputException("Teacher ID is null.")) as Teacher ?? 
+            throw new InvalidInputException("User doesn't exist.");
+
 
         if ((course.StartDate.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days < 7)
             throw new InvalidInputException("The course can't be changed if it's less than 1 week from now.");

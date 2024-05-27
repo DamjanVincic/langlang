@@ -19,7 +19,7 @@ public interface ICourseService
 
     public void Update(int id, int duration, List<Weekday> held,
         bool isOnline, int maxStudents, TimeOnly scheduledTime, DateOnly startDate,
-        bool areApplicationsClosed, int teacherId);
+        bool areApplicationsClosed, int? teacherId);
 
     public void Delete(int id);
 }

@@ -70,11 +70,11 @@ public class TeacherService : ITeacherService
                 switch (_userRepository.GetById(course.CreatorId ?? throw new InvalidInputException(nameof(course.CreatorId))))
                 {
                     case Teacher:
-                        _courseRepository.Delete(course.Id);
+                        _courseService.Delete(course.Id);
                         break;
                     case Director:
                         course.TeacherId = null;
-                        _courseRepository.Update(course);
+                        _courseService.Update(course.Id,course.Duration, course.Held, course.IsOnline, course.MaxStudents, course.ScheduledTime, course.StartDate, course.AreApplicationsClosed, course.TeacherId);
                         break;
                 }
             }
