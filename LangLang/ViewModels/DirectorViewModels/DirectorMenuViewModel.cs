@@ -15,17 +15,20 @@ namespace LangLang.ViewModels.DirectorViewModels
         private readonly Director _director = UserService.LoggedInUser as Director ?? throw new InvalidInputException("No one is logged in.");
         private readonly Window _directorViewWindow;
         private readonly IUserService _userService = new UserService();
+        private readonly IDirectorService _directorService = new DirectorService();
 
         public DirectorMenuViewModel(Window directorViewWindow)
         {
             _directorViewWindow = directorViewWindow;
             ViewTeachersCommand = new RelayCommand(ViewTeachers);
             SendOutGradesCommand = new RelayCommand(SendOutGrades);
+            PenaltyPointReportCommand = new RelayCommand(PenaltyPointReport);
             LogOutCommand = new RelayCommand(LogOut);
         }
 
         public RelayCommand ViewTeachersCommand { get; }
         public RelayCommand SendOutGradesCommand { get; }
+        public RelayCommand PenaltyPointReportCommand { get; }
         public ICommand LogOutCommand { get; }
 
         private void LogOut()
@@ -44,6 +47,12 @@ namespace LangLang.ViewModels.DirectorViewModels
         {
             var sendGradesView = new GradedExams();
             sendGradesView.Show();
+        }
+
+        private void PenaltyPointReport()
+        {
+            _directorService.GeneratePenaltyReport();
+            MessageBox.Show("Penalty report generated.");
         }
     }
 }
