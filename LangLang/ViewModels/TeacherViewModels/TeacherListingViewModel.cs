@@ -149,7 +149,7 @@ namespace LangLang.ViewModels.TeacherViewModels
 
         private void PutSubstituteTeachers()
         {
-            Dictionary<int, Course> activeTeachersCourses = _teacherService.GetCourses(SelectedItem.Id)
+            Dictionary<int, Course> activeTeachersCourses = _teacherService.GetCourses(SelectedItem!.Id)
                 .Where(course => course.AreApplicationsClosed)
                 .ToDictionary(course => course.Id);
 

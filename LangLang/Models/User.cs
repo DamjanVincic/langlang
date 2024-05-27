@@ -13,14 +13,14 @@ namespace LangLang.Models
         private string _password = null!;
         private string _phone = null!;
 
-        protected User(string firstName, string lastName, string email, string password, Gender gender, string phone)
+        protected User(string? firstName, string? lastName, string? email, string? password, Gender gender, string? phone)
         {
-            FirstName = firstName;
-            LastName = lastName;
-            Email = email;
-            Password = password;
+            FirstName = firstName!;
+            LastName = lastName!;
+            Email = email!;
+            Password = password!;
             Gender = gender;
-            Phone = phone;
+            Phone = phone!;
             Deleted = false;
         }
 
@@ -114,6 +114,7 @@ namespace LangLang.Models
             }
         }
 
+        // TODO: MELOC 20, CYCLO_SWITCH 6
         private static void ValidatePassword(string password)
         {
             if (password == null)

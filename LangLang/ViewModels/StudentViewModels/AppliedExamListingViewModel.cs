@@ -100,7 +100,7 @@ public class AppliedExamListingViewModel : ViewModelBase
         }
         try
         {
-            Exam? exam = _examService.GetById(SelectedItem.Id);
+            Exam exam = _examService.GetById(SelectedItem.Id)!;
             _studentService.DropExam(exam, _student);
             UpdateExamList();
             MessageBox.Show("Exam droped successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);

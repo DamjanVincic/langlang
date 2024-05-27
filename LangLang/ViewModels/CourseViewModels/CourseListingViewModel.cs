@@ -68,6 +68,7 @@ namespace LangLang.ViewModels.CourseViewModels
         public ICommand AddCommand { get; }
         public ICommand EditCommand { get; }
         public ICommand DeleteCommand { get; }
+
         public ICommand ResetFiltersCommand { get; }
         public ICommand PreviousPageCommand { get; }
         public ICommand NextPageCommand { get; }
@@ -210,7 +211,7 @@ namespace LangLang.ViewModels.CourseViewModels
             RefreshCourses();
         }
 
-
+        // TODO: CYCLO_SWITCH 7
         private bool FilterCourses(object obj)
         {
             if (obj is CourseViewModel courseViewModel)

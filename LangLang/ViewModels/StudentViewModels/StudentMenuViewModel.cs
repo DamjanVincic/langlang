@@ -39,14 +39,7 @@ public class StudentMenuViewModel : ViewModelBase
         InboxCommand = new RelayCommand(Inbox);
         LogOutCommand = new RelayCommand(LogOut);
 
-        if (_student.ActiveCourseId.HasValue)
-        {
-            _course = _courseService.GetById(_student.ActiveCourseId.Value);
-        }
-        else
-        {
-            _course = null;
-        }
+        _course = _student.ActiveCourseId.HasValue ? _courseService.GetById(_student.ActiveCourseId.Value) : null;
     }
     
     public int NumberOfPenaltyPoints => _student.PenaltyPoints;
@@ -101,9 +94,6 @@ public class StudentMenuViewModel : ViewModelBase
             }
         }
     }
-
-    public ObservableCollection<Course> AvailableCourses { get; set; }
-    public ObservableCollection<Exam> AvailableExams { get; set; }
 
     public string FullName => $"{_student.FirstName} {_student.LastName}";
 

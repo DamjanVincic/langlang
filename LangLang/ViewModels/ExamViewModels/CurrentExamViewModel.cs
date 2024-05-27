@@ -40,7 +40,7 @@ namespace LangLang.ViewModels.ExamViewModels
         }
 
         public ObservableCollection<StudentExamGradeViewModel> Students { get; set; } = new();
-        public StudentExamGradeViewModel SelectedItem { get; set; }
+        public StudentExamGradeViewModel? SelectedItem { get; set; }
 
         public ICommand AddExamGradeCommand { get; set; }
         public ICommand FinishExamCommand { get; set; }
@@ -102,13 +102,13 @@ namespace LangLang.ViewModels.ExamViewModels
         private void RefreshStudents()
         {
             Students.Clear();
-            Exam exam = _examRepository.GetById(_examId);
+            Exam exam = _examRepository.GetById(_examId)!;
 
             foreach (int studentId in exam.StudentIds)
             {
                 Student student = _userRepository.GetById(studentId) as Student ??
                                   throw new InvalidInputException("Student doesn't exist.");
-                ExamGrade examGrade;
+                ExamGrade? examGrade;
                 if (student.ExamGradeIds.ContainsKey(_examId))
                     examGrade = _examGradeRepository.GetById(student.ExamGradeIds[_examId]) ??
                                 throw new InvalidInputException("Exam grade doesn't exist");
