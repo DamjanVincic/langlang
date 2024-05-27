@@ -24,7 +24,14 @@ public class TeacherService : ITeacherService
     {
         return _courseRepository.GetAll().Where(course => course.TeacherId == teacherId).ToList();
     }
-
+    public List<Course> GetCoursesInRange(int teacherId, int pageIndex, int amount)
+    {
+        return _courseRepository.GetAll().Where(course => course.TeacherId == teacherId).Skip((pageIndex-1)*amount).Take(amount).ToList();
+    }
+    public int GetCourseCount(int teacherId)
+    {
+        return _courseRepository.GetAll().Count(course => course.TeacherId == teacherId);
+    }
     public List<Exam> GetExams(int teacherId)
     {
         return _examService.GetAll().Where(exam => exam.TeacherId == teacherId).ToList();
