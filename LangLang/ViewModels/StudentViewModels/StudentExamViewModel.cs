@@ -153,6 +153,7 @@ public class StudentExamViewModel : ViewModelBase
         {
             Exam exam = _examService.GetById(SelectedItem.Id)!;
             _studentService.ApplyStudentExam(_student, exam.Id);
+            RefreshExams();
             MessageBox.Show("You have applied for the exam.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
         }
         catch (Exception err)

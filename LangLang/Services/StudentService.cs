@@ -73,7 +73,8 @@ public class StudentService : IStudentService
 
         List<Exam> exams = _examRepository.GetAll().Where(exam =>
                             exam.StudentIds.Count < exam.MaxStudents && IsNeededCourseFinished(exam, student) &&
-                            (exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days >= 30).ToList();
+                            (exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days >= 30 &&
+                            !student.AppliedExams.Contains(exam.Id)).ToList();
 
         amount ??= exams.Count;
         
