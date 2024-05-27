@@ -130,14 +130,6 @@ namespace LangLang.ViewModels.CourseViewModels
             {
                 _selectedSortingWay = value;
                 SortCourses();
-                //CoursesCollectionView.SortDescriptions.Clear();
-                //if (value!.Equals("ascending"))
-                //{
-                //    CoursesCollectionView.SortDescriptions.Add(new SortDescription(_selectedPropertyName, ListSortDirection.Ascending));
-                //    return;
-                //}
-                //CoursesCollectionView.SortDescriptions.Add(new SortDescription(_selectedPropertyName, ListSortDirection.Descending));
-                //RefreshCourses();
             }
         }
         public string? SelectedPropertyName
@@ -151,7 +143,6 @@ namespace LangLang.ViewModels.CourseViewModels
         }
         private void SortCourses()
         {
-            CoursesCollectionView.SortDescriptions.Clear();
             if (SelectedPropertyName == null || SelectedSortingWay == null)
             {
                 RefreshCourses();
