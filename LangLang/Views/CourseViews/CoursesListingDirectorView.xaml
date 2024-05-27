@@ -31,11 +31,7 @@
         <ListView Grid.Row="3" Grid.RowSpan="9" Padding="5" Margin="5" ItemsSource="{Binding Courses}" SelectedItem="{Binding SelectedItem}">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding TeacherId}" Value="{x:Null}">
-                            <Setter Property="Background" Value="LightGray"/>
-                        </DataTrigger>
-                    </Style.Triggers>
+                    <Setter Property="Background" Value="{Binding BackgroundColor}"/>
                 </Style>
             </ListView.ItemContainerStyle>
             <ListView.View>

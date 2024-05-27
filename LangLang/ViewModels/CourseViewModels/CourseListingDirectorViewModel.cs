@@ -142,6 +142,7 @@ namespace LangLang.ViewModels.CourseViewModels
             }
         }
 
+
         private void RefreshCourses()
         {
             _courses.Clear();

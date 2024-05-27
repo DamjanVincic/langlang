@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Windows.Media;
 using GalaSoft.MvvmLight;
 using LangLang.Models;
 using LangLang.Services;
@@ -19,6 +20,13 @@ namespace LangLang.ViewModels.CourseViewModels
             _teacher = course.TeacherId.HasValue ? _userService.GetById(course.TeacherId.Value) as Teacher : null;
         }
 
+        public SolidColorBrush BackgroundColor
+        {
+            get
+            {
+                return _course.TeacherId == null ? Brushes.LightGray : Brushes.Transparent;
+            }
+        }
         public int Id => _course.Id;
         public string LanguageName => _course.Language.Name;
         public LanguageLevel LanguageLevel => _course.Language.Level;
