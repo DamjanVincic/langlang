@@ -203,15 +203,25 @@ public class ExamService : IExamService
                 _userRepository.Update(student);
             }
         }
+        SendEmail(examId);
     }
-    public void SendEmail(int examId)
+    private void SendEmail(int examId)
     {
+        Exam exam = _examRepository.GetById(examId)!;
         foreach (ExamGrade examGrade in _examGradeRepository.GetAll().Where(eg => eg.ExamId == examId))
         {
-            string messageText = "YOUR GRADES: 1. Reading: " + examGrade.ReadingPoints.ToString()
-                + " points 2. Listening: " + examGrade.ListeningPoints.ToString() +
-                " points 3. Talking " + examGrade.TalkingPoints.ToString() + " points 4. Writing " + examGrade.WritingPoints.ToString() + " points.";
-            _messageService.Add(examGrade.StudentId, messageText);
+            string passedText = examGrade.Passed
+                ? $"Congratulations, you have passed {exam.Language} exam!\n"
+                : $"Unfortunately, you have failed {exam.Language} exam.\n";
+
+            string pointsText = "Here are your points:\n" +
+                                $"\tReading: {examGrade.ReadingPoints} \n" +
+                                $"\tListening: {examGrade.ListeningPoints} \n" +
+                                $"\tTalking: {examGrade.TalkingPoints} \n" +
+                                $"\tWriting: {examGrade.WritingPoints} \n";
+
+            _messageService.Add(examGrade.StudentId, passedText+pointsText);
+            EmailService.SendMessage("Exam results",passedText+pointsText);
         }
     }
 }
