@@ -20,13 +20,12 @@ public class TeacherService : ITeacherService
         return _userRepository.GetAll().OfType<Teacher>().ToList();
     }
 
-    public List<Course> GetCourses(int teacherId)
+    public List<Course> GetCourses(int teacherId, int pageIndex = 1, int? amount = null)
     {
-        return _courseRepository.GetAll().Where(course => course.TeacherId == teacherId).ToList();
-    }
-    public List<Course> GetCoursesInRange(int teacherId, int pageIndex, int amount)
-    {
-        return _courseRepository.GetAll().Where(course => course.TeacherId == teacherId).Skip((pageIndex-1)*amount).Take(amount).ToList();
+        List<Course> courses = _courseRepository.GetAll().Where(course => course.TeacherId == teacherId).ToList();
+        amount ??= courses.Count;
+
+        return courses.Skip((pageIndex - 1) * amount.Value).Take(amount.Value).ToList();
     }
     public int GetCourseCount(int teacherId)
     {

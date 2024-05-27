@@ -42,7 +42,7 @@ namespace LangLang.ViewModels.CourseViewModels
             _currentPage = 1;
             _totalCourses = _teacherService.GetCourseCount(_teacher.Id);
             CalculateTotalPages();
-            _courses = new ObservableCollection<CourseViewModel>(_teacherService.GetCoursesInRange(_teacher.Id, _currentPage, _itemsPerPage)
+            _courses = new ObservableCollection<CourseViewModel>(_teacherService.GetCourses(_teacher.Id, _currentPage, _itemsPerPage)
                 .Select(course => new CourseViewModel(course)));
             CoursesCollectionView = CollectionViewSource.GetDefaultView(_courses);
             CoursesCollectionView.Filter = FilterCourses;
@@ -228,7 +228,7 @@ namespace LangLang.ViewModels.CourseViewModels
         private void RefreshCourses()
         {
             _courses.Clear();
-            _teacherService.GetCoursesInRange(_teacher.Id, _currentPage, _itemsPerPage).ForEach(course => _courses.Add(new CourseViewModel(course)));
+            _teacherService.GetCourses(_teacher.Id, _currentPage, _itemsPerPage).ForEach(course => _courses.Add(new CourseViewModel(course)));
             CoursesCollectionView.Refresh();
         }
 
