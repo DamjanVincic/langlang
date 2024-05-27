@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using iTextSharp.text;
@@ -76,6 +77,117 @@ namespace LangLang.Services
             }
             
             // Send the report
+            GeneratePenaltyReportPdf(coursePenalties, averageStudentPoints);
+        }
+        
+        private void GeneratePenaltyReportPdf(Dictionary<Course, int> coursePenalties, Dictionary<int, Dictionary<string, double>> averageStudentPoints)
+        {
+            Document document = new Document();
+
+            using FileStream stream = new FileStream("PenaltyReport.pdf", FileMode.Create);
+            PdfWriter writer = PdfWriter.GetInstance(document, stream);
+
+            document.Open();
+
+            Paragraph title = new Paragraph("Penalty Report", new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD))
+            {
+                Alignment = Element.ALIGN_CENTER,
+                SpacingAfter = 20
+            };
+            document.Add(title);
+
+            document.Add(new Paragraph("Course Penalties:", new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD))
+            {
+                SpacingAfter = 10
+            });
+                
+            PdfPTable penaltyTable = new PdfPTable(4)
+            {
+                SpacingAfter = 30
+            };
+
+            penaltyTable.AddCell(new PdfPCell(new Phrase("Course ID", new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD)))
+            {
+                HorizontalAlignment = Element.ALIGN_CENTER
+            });
+            penaltyTable.AddCell(new PdfPCell(new Phrase("Language", new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD)))
+            {
+                HorizontalAlignment = Element.ALIGN_CENTER
+            });
+            penaltyTable.AddCell(new PdfPCell(new Phrase("Start Date", new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD)))
+            {
+                HorizontalAlignment = Element.ALIGN_CENTER
+            });
+            penaltyTable.AddCell(new PdfPCell(new Phrase("Number of Penalties", new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD)))
+            {
+                HorizontalAlignment = Element.ALIGN_CENTER
+            });
+                
+            foreach (var (course, numberOfPenaltyPoints) in coursePenalties)
+            {
+                penaltyTable.AddCell(new PdfPCell(new Phrase(course.Id.ToString()))
+                {
+                    HorizontalAlignment = Element.ALIGN_CENTER
+                });
+                penaltyTable.AddCell(new PdfPCell(new Phrase($"{course.Language.Name} {course.Language.Level}"))
+                {
+                    HorizontalAlignment = Element.ALIGN_CENTER
+                });
+                penaltyTable.AddCell(new PdfPCell(new Phrase(course.StartDate.ToShortDateString()))
+                {
+                    HorizontalAlignment = Element.ALIGN_CENTER
+                });
+                penaltyTable.AddCell(new PdfPCell(new Phrase(numberOfPenaltyPoints.ToString()))
+                {
+                    HorizontalAlignment = Element.ALIGN_CENTER
+                });
+            }
+                
+            document.Add(penaltyTable);
+
+            document.Add(new Paragraph("Average Student Grades:", new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD))
+            {
+                SpacingAfter = 10
+            });
+                
+            PdfPTable averageStudentPointsTable = new PdfPTable(3)
+            {
+                SpacingAfter = 30
+            };
+                
+            averageStudentPointsTable.AddCell(new PdfPCell(new Phrase("Penalty Count", new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD)))
+            {
+                HorizontalAlignment = Element.ALIGN_CENTER
+            });
+            averageStudentPointsTable.AddCell(new PdfPCell(new Phrase("Knowledge Grade", new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD)))
+            {
+                HorizontalAlignment = Element.ALIGN_CENTER
+            });
+            averageStudentPointsTable.AddCell(new PdfPCell(new Phrase("Activity Grade", new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD)))
+            {
+                HorizontalAlignment = Element.ALIGN_CENTER
+            });
+                
+            foreach (var (numberOfPenaltyPoints, averagePoints) in averageStudentPoints)
+            {
+                averageStudentPointsTable.AddCell(new PdfPCell(new Phrase(numberOfPenaltyPoints.ToString()))
+                {
+                    HorizontalAlignment = Element.ALIGN_CENTER
+                });
+                averageStudentPointsTable.AddCell(new PdfPCell(new Phrase(averagePoints["knowledgeGrade"].ToString(CultureInfo.CurrentCulture)))
+                {
+                    HorizontalAlignment = Element.ALIGN_CENTER
+                });
+                averageStudentPointsTable.AddCell(new PdfPCell(new Phrase(averagePoints["activityGrade"].ToString(CultureInfo.CurrentCulture)))
+                {
+                    HorizontalAlignment = Element.ALIGN_CENTER
+                });
+            }
+
+            document.Add(averageStudentPointsTable);
+
+            document.Close();
+            writer.Close();
         }
     }
 }
