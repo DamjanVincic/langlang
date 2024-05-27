@@ -53,7 +53,7 @@ namespace LangLang.Models
             }
         }
 
-        public int TeacherId { get; set; }
+        public int? TeacherId { get; set; }
 
         public DateOnly Date
         {

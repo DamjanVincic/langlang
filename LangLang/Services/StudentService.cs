@@ -265,7 +265,7 @@ public class StudentService : IStudentService
 
         Course? course = _courseRepository.GetById(student!.ActiveCourseId!.Value);
 
-        Teacher? teacher = _userRepository.GetById(course!.TeacherId) as Teacher;
+        Teacher? teacher = course!.TeacherId != null ? _userRepository.GetById(course!.TeacherId.Value) as Teacher : null;
         
         teacher!.AddReview(rating);
         _userRepository.Update(teacher);

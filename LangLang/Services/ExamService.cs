@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using System.Linq;
+using System.Windows.Input;
 using LangLang.Models;
 using LangLang.Repositories;
 
@@ -74,7 +75,7 @@ public class ExamService : IExamService
 
         if (teacher.Id != exam.TeacherId)
         {
-            Teacher? oldTeacher = _userRepository.GetById(exam.TeacherId) as Teacher;
+            Teacher? oldTeacher = exam.TeacherId != null ? _userRepository.GetById(exam.TeacherId.Value) as Teacher : null;
 
             oldTeacher!.ExamIds.Remove(exam.Id);
             _userRepository.Update(oldTeacher);
@@ -91,8 +92,10 @@ public class ExamService : IExamService
         // TODO: Delete from schedule, students etc.
 
         Exam exam = _examRepository.GetById(id) ?? throw new InvalidInputException("Exam doesn't exist.");
-        Teacher teacher = _userRepository.GetById(exam.TeacherId) as Teacher ??
-                          throw new InvalidInputException("Teacher doesn't exist.");
+        Teacher? teacher = exam.TeacherId.HasValue ?
+                           _userRepository.GetById(exam.TeacherId.Value) as Teacher :
+                           throw new InvalidInputException("Teacher doesn't exist.");
+
 
         teacher.ExamIds.Remove(exam.Id);
         _userRepository.Update(teacher);
@@ -220,43 +223,38 @@ public class ExamService : IExamService
         Koliko je studenata slušalo kurs, a koliko položilo, pored toga
         navesti i procenat studenata koji je položio u odnosu na one koje je slušao
     */
-    public Dictionary<int, List<int>> AveragePointsInLastYear()
+    public List<int> AveragePointsInLastYear()
     {
+        List<int> sumOfPoints = new List<int> { 0, 0, 0, 0 };
+        int gradeCount = 0;
 
-        Dictionary<int, List<int>> averagePoints = new Dictionary<int, List<int>>();
+        DateTime oneYearAgo = DateTime.Today.AddYears(-1);
+
         foreach (Exam exam in GetAll())
         {
-            if (exam.Date.ToDateTime(TimeOnly.MinValue) >= DateTime.Today.AddYears(-1))
+            if (exam.Date.ToDateTime(TimeOnly.MinValue) >= oneYearAgo && exam.TeacherGraded)
             {
-                if(exam.TeacherGraded)
+                foreach (ExamGrade grade in _examGradeService.GetByExamId(exam.Id))
                 {
-                    List<ExamGrade> examGrades = _examGradeService.GetByExamId(exam.Id);
-                    averagePoints[exam.Id] = CalculateAverage(examGrades);
-                }
-                else
-                {
-                    averagePoints[exam.Id] = new List<int> { -1,-1,-1,-1};
+                    sumOfPoints[0] += grade.ListeningPoints;
+                    sumOfPoints[1] += grade.TalkingPoints;
+                    sumOfPoints[2] += grade.WritingPoints;
+                    sumOfPoints[3] += grade.ReadingPoints;
+                    gradeCount++;
                 }
             }
         }
-        return averagePoints;
-    }
 
-    public List<int> CalculateAverage(List<ExamGrade> grades)
-    {
-        List<int> sumOfPoints = new List<int> { 0, 0, 0, 0 };
-
-        foreach (var grade in grades)
+        if (gradeCount > 0)
         {
-            sumOfPoints[0] += grade.ListeningPoints;
-            sumOfPoints[1] += grade.TalkingPoints;
-            sumOfPoints[2] += grade.WritingPoints;
-            sumOfPoints[3] += grade.ReadingPoints;
+            for (int i = 0; i < sumOfPoints.Count; i++)
+            {
+                sumOfPoints[i] /= gradeCount;
+            }
         }
 
-        int count = grades.Count;
-        List<int> averagePoints = sumOfPoints.Select(sum => sum / count).ToList();
-        
-        return averagePoints;
+        return sumOfPoints;
     }
+
+
 }

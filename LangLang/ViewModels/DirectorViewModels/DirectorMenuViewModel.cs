@@ -6,11 +6,6 @@ using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
 using LangLang.Services;
 using LangLang.Views.DirectorViews;
-using iTextSharp.text;
-using iTextSharp.text.pdf;
-using System.IO;
-using System.Collections.Generic;
-using PdfSharp.Charting;
 
 namespace LangLang.ViewModels.DirectorViewModels
 {
@@ -58,4 +53,4 @@ namespace LangLang.ViewModels.DirectorViewModels
             }
         }
     }
-}
+

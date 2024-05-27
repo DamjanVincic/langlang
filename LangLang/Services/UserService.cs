@@ -156,7 +156,7 @@ public class UserService : IUserService
             else
             {
                 // Remove from inactive courses
-                course.CreatorId = null;
+                course.TeacherId = null;
                 _courseRepository.Update(course);
             }
         }

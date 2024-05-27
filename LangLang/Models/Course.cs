@@ -72,7 +72,8 @@ namespace LangLang.Models
         public new bool IsOnline { get; set; }
         public bool IsFinished {  get; set; }
 
-        public int? CreatorId { get; set; } = null;
+        public int? CreatorId { get; set; }
+
 
         public DateOnly StartDate
         {
