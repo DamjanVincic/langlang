@@ -11,6 +11,7 @@ public class StudentService : IStudentService
     private readonly IUserRepository _userRepository = new UserFileRepository();
     private readonly ICourseRepository _courseRepository = new CourseFileRepository();
     private readonly IExamRepository _examRepository = new ExamFileRepository();
+    private readonly ILanguageRepository _languageRepository = new LanguageFileRepository();
 
     private readonly IUserService _userService = new UserService();
     private readonly IExamGradeService _examGradeService = new ExamGradeService();
@@ -61,7 +62,10 @@ public class StudentService : IStudentService
         // Nakon što je učenik završio kurs, prikazuju mu se svi dostupni termini ispita koji se
         // odnose na jezik i nivo jezika koji je učenik obradio na kursu
 
-        return _examRepository.GetAll().Where(exam => exam.StudentIds.Count < exam.MaxStudents && IsNeededCourseFinished(exam, student) && (exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days >= 30).ToList();
+        return _examRepository.GetAll().Where(exam =>
+                exam.StudentIds.Count < exam.MaxStudents && IsNeededCourseFinished(exam, student) &&
+                (exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days >= 30 && !IsAlreadyPassed(exam, student))
+            .ToList();
     }
 
     /*
@@ -71,10 +75,21 @@ public class StudentService : IStudentService
     // TODO: MNOC 3
     private bool IsNeededCourseFinished(Exam exam, Student student)
     {
-
         return student.LanguagePassFail.ContainsKey(exam.Language.Id) && student.LanguagePassFail[exam.Language.Id] == false;
     }
 
+    private bool IsAlreadyPassed(Exam exam, Student student)
+    {
+        foreach (int languageId in student.LanguagePassFail.Keys)
+        {
+            Language language = _languageRepository.GetById(languageId)!;
+            if (language.Name == exam.Language.Name && language.Level >= exam.Language.Level &&
+                student.LanguagePassFail[languageId])
+                return true;
+        }
+
+        return false;
+    }
 
     /*
      *  if teacher has graded the exam but director has not sent the email,
