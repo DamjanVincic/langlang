@@ -35,28 +35,28 @@ namespace LangLang.Services
 
             Dictionary<int, double> courseCount = GetCourseCount();
 
-            PlotModel courseCountPlotModel = createLanguagePlotModel("Course count", courseCount);
+            PlotModel courseCountPlotModel = CreateLanguagePlotModel("Course count", courseCount);
 
             string courseCountPath = Path.Combine(ReportsFolderName, LanguageReportSubfolder, "courseCount.pdf");
             SaveToPdf(courseCountPlotModel, courseCountPath);
 
             Dictionary<int, double> examCount = GetExamCount();
 
-            PlotModel examCountPlotModel = createLanguagePlotModel("Exam count", examCount);
+            PlotModel examCountPlotModel = CreateLanguagePlotModel("Exam count", examCount);
 
             string examCountPath = Path.Combine(ReportsFolderName, LanguageReportSubfolder, "examCount.pdf");
             SaveToPdf(examCountPlotModel, examCountPath);
 
             Dictionary<int, double> penaltyAvg = GetPenaltyAvg();
 
-            PlotModel penaltyAvgPlotModel = createLanguagePlotModel("Penalty point average", penaltyAvg);
+            PlotModel penaltyAvgPlotModel = CreateLanguagePlotModel("Penalty point average", penaltyAvg);
 
             string penaltyAvgPath = Path.Combine(ReportsFolderName, LanguageReportSubfolder, "penaltyAvg.pdf");
             SaveToPdf(penaltyAvgPlotModel, penaltyAvgPath);
 
             Dictionary<int, double> examGradeAvg = GetExamGradeAvg();
 
-            PlotModel examGradeAvgPlotModel = createLanguagePlotModel("Exam Grade average", examGradeAvg);
+            PlotModel examGradeAvgPlotModel = CreateLanguagePlotModel("Exam Grade average", examGradeAvg);
 
             string examGradeAvgPath = Path.Combine(ReportsFolderName, LanguageReportSubfolder, "examGradeAvg.pdf");
             SaveToPdf(examGradeAvgPlotModel, examGradeAvgPath);
@@ -119,7 +119,7 @@ namespace LangLang.Services
 
             foreach (int courseId in coursePenaltyCount.Keys)
             {
-                Course course = _courseRepository.GetById(courseId);
+                Course course = _courseRepository.GetById(courseId)!;
 
                 if (!languagePenaltyCount.TryAdd(course.Language.Id, coursePenaltyCount[courseId]))
                     languagePenaltyCount[course.Language.Id] += coursePenaltyCount[courseId];
@@ -145,7 +145,7 @@ namespace LangLang.Services
 
             foreach (ExamGrade examGrade in _examGradeRepository.GetAll())
             {
-                Exam exam = _examRepository.GetById(examGrade.ExamId);
+                Exam exam = _examRepository.GetById(examGrade.ExamId)!;
 
                 if ((DateTime.Now - exam.Date.ToDateTime(TimeOnly.MinValue)).TotalDays > 365) 
                     continue;
@@ -169,13 +169,13 @@ namespace LangLang.Services
 
 
 
-    private PlotModel createLanguagePlotModel(string title, Dictionary<int,double> data)
+    private PlotModel CreateLanguagePlotModel(string title, Dictionary<int,double> data)
         {
             var plotModel = new PlotModel();
             plotModel.Title = title;
 
             var categoryAxis = new CategoryAxis { Position = AxisPosition.Left };
-            categoryAxis.Labels.AddRange(data.Keys.Select(id => _languageRepository.GetById(id).ToString()).ToList());
+            categoryAxis.Labels.AddRange(data.Keys.Select(id => _languageRepository.GetById(id)!.ToString()).ToList());
 
             var valueAxis = new LinearAxis { Position = AxisPosition.Bottom, MinimumPadding = 0, MaximumPadding = 0.06, AbsoluteMinimum = 0 };
 
@@ -199,18 +199,18 @@ namespace LangLang.Services
         }
         private static void MergePdf(string outputFilePath, string[] inputFilePaths)
         {
-            PdfDocument outputPDFDocument = new PdfDocument();
+            PdfDocument outputPdfDocument = new PdfDocument();
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             foreach (string filePath in inputFilePaths)
             {
-                PdfDocument inputPDFDocument = PdfReader.Open(filePath, PdfDocumentOpenMode.Import);
-                outputPDFDocument.Version = inputPDFDocument.Version;
-                foreach (PdfPage page in inputPDFDocument.Pages)
+                PdfDocument inputPdfDocument = PdfReader.Open(filePath, PdfDocumentOpenMode.Import);
+                outputPdfDocument.Version = inputPdfDocument.Version;
+                foreach (PdfPage page in inputPdfDocument.Pages)
                 {
-                    outputPDFDocument.AddPage(page);
+                    outputPdfDocument.AddPage(page);
                 }
             }
-            outputPDFDocument.Save(outputFilePath);
+            outputPdfDocument.Save(outputFilePath);
 
             foreach (string filePath in inputFilePaths)
             {
