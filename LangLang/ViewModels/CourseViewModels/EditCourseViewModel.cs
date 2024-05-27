@@ -12,8 +12,8 @@ namespace LangLang.ViewModels.CourseViewModels
 {
     class EditCourseViewModel : ViewModelBase
     {
-        private readonly ILanguageService _languageService = new LanguageService();
-        private readonly ICourseService _courseService = new CourseService();
+        private readonly ILanguageService _languageService = ServiceProvider.GetRequiredService<ILanguageService>();
+        private readonly ICourseService _courseService = ServiceProvider.GetRequiredService<ICourseService>();
 
         private readonly Teacher _teacher = UserService.LoggedInUser as Teacher ??
                                             throw new InvalidOperationException("No one is logged in.");

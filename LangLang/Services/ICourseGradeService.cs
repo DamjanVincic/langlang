@@ -1,9 +1,5 @@
 ﻿using LangLang.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LangLang.Services
 {
@@ -11,6 +7,7 @@ namespace LangLang.Services
     {
         public List<CourseGrade> GetAll();
         public CourseGrade? GetById(int id);
+        public CourseGrade? GetByStudentAndCourse(int studentId, int courseId);
         public int Add(int courseId, int studentId, int knowledgeGrade, int activityGrade);
         public void Delete(int id);
     }

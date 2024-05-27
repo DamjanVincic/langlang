@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
+using LangLang.Models;
 using LangLang.ViewModels.CourseViewModels;
 
 namespace LangLang.Views.CourseViews
@@ -14,7 +15,7 @@ namespace LangLang.Views.CourseViews
         public CourseListingView()
         {
             InitializeComponent();
-            DataContext = new CourseListingViewModel();
+            DataContext = ServiceProvider.GetRequiredService<CourseListingViewModel>();
         }
         // TODO: NOP 4
         public class MaxStudentsVisibilityConverter : IValueConverter
