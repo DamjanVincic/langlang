@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows;
 using LangLang.Models;
 using LangLang.Repositories;
 
@@ -73,6 +72,12 @@ public class CourseService : ICourseService
 
         return activeCourses;
     }
+
+    public List<Course> GetFinishedCourses()
+    {
+        return GetAll().Where(course => course.IsFinished && !course.StudentsNotified).ToList();
+    }
+    
     public List<Course> GetCoursesWithWithdrawals(int teacherId)
     {
         Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??

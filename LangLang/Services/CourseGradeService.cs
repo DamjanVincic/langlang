@@ -1,6 +1,7 @@
 ﻿using LangLang.Models;
 using LangLang.Repositories;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LangLang.Services
 {
@@ -18,6 +19,11 @@ namespace LangLang.Services
         public CourseGrade? GetById(int id)
         {
             return _courseGradeRepository.GetById(id);
+        }
+        
+        public CourseGrade? GetByStudentAndCourse(int studentId, int courseId)
+        {
+            return GetAll().FirstOrDefault(courseGrade => courseGrade.StudentId == studentId && courseGrade.CourseId == courseId);
         }
 
         public int Add(int courseId, int studentId, int knowledgeGrade, int activityGrade)
