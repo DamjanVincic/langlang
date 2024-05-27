@@ -13,12 +13,18 @@ namespace LangLang.Services.ReportServices
 {
     public class GradeReportService : IGradeReportService
     {
-        private readonly ICourseRepository _courseRepository = new CourseFileRepository();
-        private readonly ITeacherService _teacherService = new TeacherService();
-        private readonly ICourseGradeRepository _courseGradeRepository = new CourseGradeFileRepository();
+        private readonly ICourseRepository _courseRepository;
+        private readonly ITeacherService _teacherService;
+        private readonly ICourseGradeRepository _courseGradeRepository;
 
         private const string ReportsFolderName = "Reports";
         private const string GradeReportSubfolder = "GradeReports";
+        public GradeReportService(ICourseRepository courseRepository, ITeacherService teacherService, ICourseGradeRepository courseGradeRepository)
+        {
+            _courseRepository = courseRepository;
+            _teacherService = teacherService;
+            _courseGradeRepository = courseGradeRepository;
+        }
 
         public void GenerateGradeReport()
         {
