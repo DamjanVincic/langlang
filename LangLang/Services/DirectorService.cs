@@ -77,10 +77,13 @@ namespace LangLang.Services
             }
             
             // Send the report
-            GeneratePenaltyReportPdf(coursePenalties, averageStudentPoints);
+            string filePath = "PenaltyReport.pdf";
+            GeneratePenaltyReportPdf(coursePenalties, averageStudentPoints, filePath);
+            
+            EmailService.SendMessage("Penalty Report", "Penalty report is attached.", filePath);
         }
         
-        private void GeneratePenaltyReportPdf(Dictionary<Course, int> coursePenalties, Dictionary<int, Dictionary<string, double>> averageStudentPoints)
+        private void GeneratePenaltyReportPdf(Dictionary<Course, int> coursePenalties, Dictionary<int, Dictionary<string, double>> averageStudentPoints, string filePath = "PenaltyReport.pdf")
         {
             Document document = new Document();
 
@@ -89,7 +92,7 @@ namespace LangLang.Services
 
             document.Open();
 
-            Paragraph title = new Paragraph("Penalty Report", new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD))
+            Paragraph title = new Paragraph(filePath, new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD))
             {
                 Alignment = Element.ALIGN_CENTER,
                 SpacingAfter = 20
