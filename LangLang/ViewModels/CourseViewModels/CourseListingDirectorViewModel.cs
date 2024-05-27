@@ -11,6 +11,7 @@ using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
 using LangLang.Services;
 using LangLang.Views.CourseViews;
+using LangLang.Views.TeacherViews;
 
 namespace LangLang.ViewModels.CourseViewModels
 {
@@ -100,11 +101,14 @@ namespace LangLang.ViewModels.CourseViewModels
             if (course.TeacherId != null)
             {
                 // otvori prozor za rucni odabir novog
+                List<Teacher> teachers = _teacherService.GetAvailableTeachers(course);
+                var subWindow = new PickSubstituteTeacherView(teachers,course);
+                subWindow.Closed += (sender, args) => RefreshCourses();
+                subWindow.Show();
             }
             else _teacherService.SmartPick(course);
             RefreshCourses();
         }
-
 
         public string? SelectedLanguageName
         {

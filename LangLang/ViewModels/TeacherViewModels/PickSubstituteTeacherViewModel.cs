@@ -8,6 +8,7 @@ using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using LangLang.Models;
+using LangLang.Repositories;
 using LangLang.Services;
 
 namespace LangLang.ViewModels.TeacherViewModels
@@ -15,17 +16,13 @@ namespace LangLang.ViewModels.TeacherViewModels
     internal class PickSubstituteTeacherViewModel : ViewModelBase
     {
         private readonly IUserService _userService = new UserService();
-
+        private readonly ICourseRepository _courseRepository = new CourseFileRepository();
         private readonly ObservableCollection<TeacherViewModel> _displayedTeachers;
-        private int _substituteTeacherId;
         private readonly Course _course;
 
-        public PickSubstituteTeacherViewModel(List<Teacher> availableTeachers,
-            ref int  substituteTeacherId, Course course)
+        public PickSubstituteTeacherViewModel(List<Teacher> availableTeachers, Course course)
         {
             Title = $"Select substitute teacher for course {course.Language}";
-
-            _substituteTeacherId = substituteTeacherId;
             _course = course;
 
             _displayedTeachers = new ObservableCollection<TeacherViewModel>(
@@ -47,8 +44,8 @@ namespace LangLang.ViewModels.TeacherViewModels
                 MessageBox.Show("No teacher selected", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-
-            _substituteTeacherId = SelectedItem.Id;
+            _course.TeacherId = _userService.GetById(SelectedItem.Id).Id;
+            _courseRepository.Update(_course);
             MessageBox.Show("Substitute teacher picked successfully.", "Success", MessageBoxButton.OK,
                 MessageBoxImage.Information);
         }

@@ -149,42 +149,6 @@ namespace LangLang.ViewModels.TeacherViewModels
             }
         }
 
-        /*
-
-        private void PutSubstituteTeachers()
-        {
-            Dictionary<int, Course> activeTeachersCourses = _teacherService.GetCourses(SelectedItem!.Id)
-                .Where(course => course.AreApplicationsClosed)
-                .ToDictionary(course => course.Id);
-
-            Dictionary<int, int> substituteTeacherIds = new Dictionary<int, int>();
-
-            foreach (int courseId in activeTeachersCourses.Keys)
-            {
-                substituteTeacherIds[courseId]= PickSubstituteTeacher(activeTeachersCourses[courseId]);
-            }
-
-            foreach (int courseId in substituteTeacherIds.Keys)
-            {
-                activeTeachersCourses[courseId].TeacherId=substituteTeacherIds[courseId];
-                _courseRepository.Update(activeTeachersCourses[courseId]);
-            }
-        }
-
-        private int PickSubstituteTeacher(Course course)
-        {
-            List<Teacher> availableTeachers = _teacherService.GetAvailableTeachers(course);
-
-            if (!availableTeachers.Any())
-                throw new Exception("There are no available substitute teachers");
-
-            int substituteTeacherId = -1;
-            var newWindow = new PickSubstituteTeacherView(availableTeachers, ref substituteTeacherId, course);
-            newWindow.ShowDialog();
-            return substituteTeacherId;
-        }
-        */
-
         private void LogOut()
         {
             _userService.Logout();
