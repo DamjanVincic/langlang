@@ -135,7 +135,7 @@ public class CourseService : ICourseService
 
         if (teacher.Id != course.TeacherId)
         {
-            Teacher? oldTeacher = _userRepository.GetById(course.TeacherId) as Teacher;
+            Teacher? oldTeacher = course.TeacherId.HasValue ? _userRepository.GetById(course.TeacherId.Value) as Teacher : null;
             oldTeacher!.CourseIds.Remove(course.Id);
             _userRepository.Update(oldTeacher);
             teacher.CourseIds.Add(course.Id);
@@ -148,7 +148,7 @@ public class CourseService : ICourseService
     public void Delete(int id)
     {
         Course course = _courseRepository.GetById(id) ?? throw new InvalidInputException("Course doesn't exist.");
-        Teacher? teacher = _userRepository.GetById(course.TeacherId) as Teacher;
+        Teacher? teacher = course.TeacherId.HasValue ? _userRepository.GetById(course.TeacherId.Value) as Teacher : null;
 
         teacher!.CourseIds.Remove(id);
         _userRepository.Update(teacher);

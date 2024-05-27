@@ -27,7 +27,7 @@ namespace LangLang.Models
         // Constructor without date validation for deserializing
         [JsonConstructor]
         public Course(int id, Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents,
-            int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed, int teacherId,
+            int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed, int? teacherId,
             Dictionary<int, ApplicationStatus> students) : base(id, language, maxStudents, startDate, teacherId, scheduledTime)
         {
             Duration = duration;
