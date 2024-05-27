@@ -4,7 +4,6 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
 using LangLang.Services;
-using LangLang.Repositories;
 using LangLang.Views.StudentViews;
 using LangLang.Views.TeacherViews;
 using LangLang.Views.DirectorViews;
@@ -14,14 +13,9 @@ namespace LangLang.ViewModels.UserViewModels;
 
 public class MainViewModel : ViewModelBase
 {
-    private readonly IUserService _userService = new UserService();
-    // private readonly ITeacherService _teacherService = new TeacherService();
-    private readonly IStudentService _studentService = new StudentService();
-
-    private readonly ICourseService _courseService = new CourseService();
-
-    // private readonly IUserRepository _userRep = new UserFileRepository();
-    // private readonly ICourseRepository courseRepository = new CourseFileRepository();
+    private readonly IUserService _userService = ServiceProvider.GetRequiredService<IUserService>();
+    private readonly IStudentService _studentService = ServiceProvider.GetRequiredService<IStudentService>();
+    private readonly ICourseService _courseService = ServiceProvider.GetRequiredService<ICourseService>();
 
     private readonly Window _loginWindow;
 

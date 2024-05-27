@@ -1,24 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
-using LangLang.Models;
 using LangLang.ViewModels.StudentViewModels;
 using LangLang.Services;
 using System.Windows;
 using GalaSoft.MvvmLight.Command;
+using LangLang.Models;
 
 namespace LangLang.ViewModels.TeacherViewModels
 {
     public class StartExamViewModel:ViewModelBase
     {
+        private readonly IExamService _examService = ServiceProvider.GetRequiredService<IExamService>();
+        
         private readonly int _examId;
-        private readonly IExamService _examService = new ExamService();
         private readonly Window _startExamWindow;
+        
         public StartExamViewModel(int examId, Window startExamWindow)
         {
             _examId = examId;

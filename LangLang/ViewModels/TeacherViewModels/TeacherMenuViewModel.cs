@@ -5,7 +5,6 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
 using LangLang.Services;
-using LangLang.ViewModels.CourseViewModels;
 using LangLang.Views.CourseViews;
 using LangLang.Views.ExamViews;
 using LangLang.Views.TeacherViews;
@@ -14,7 +13,7 @@ namespace LangLang.ViewModels.TeacherViewModels
 {
     class TeacherMenuViewModel : ViewModelBase
     {
-        private readonly IUserService _userService = new UserService();
+        private readonly IUserService _userService = ServiceProvider.GetRequiredService<IUserService>();
 
         private readonly Teacher _teacher = UserService.LoggedInUser as Teacher ??
                                             throw new InvalidOperationException("No one is logged in.");

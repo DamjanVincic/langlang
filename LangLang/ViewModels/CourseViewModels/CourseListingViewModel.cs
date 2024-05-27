@@ -16,9 +16,9 @@ namespace LangLang.ViewModels.CourseViewModels
 {
     public class CourseListingViewModel : ViewModelBase
     {
-        private readonly ITeacherService _teacherService = new TeacherService();
-        private readonly ILanguageService _languageService = new LanguageService();
-        private readonly ICourseService _courseService = new CourseService();
+        private readonly ITeacherService _teacherService;
+        private readonly ILanguageService _languageService;
+        private readonly ICourseService _courseService;
 
         private readonly Teacher _teacher = UserService.LoggedInUser as Teacher ??
                                             throw new InvalidOperationException("No one is logged in.");
@@ -32,13 +32,18 @@ namespace LangLang.ViewModels.CourseViewModels
         private string? _selectedFormat;
         private string? _selectedSortingWay;
         private string? _selectedPropertyName;
-
+        
         private int _currentPage;
         private  readonly int _itemsPerPage = 2;
         private int _totalPages;
         private int _totalCourses;
-        public CourseListingViewModel()
+        
+        public CourseListingViewModel(ITeacherService teacherService, ILanguageService languageService, ICourseService courseService)
         {
+            _teacherService = teacherService;
+            _languageService = languageService;
+            _courseService = courseService;
+            
             _currentPage = 1;
             _totalCourses = _teacherService.GetCourseCount(_teacher.Id);
             CalculateTotalPages();

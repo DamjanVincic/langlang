@@ -10,7 +10,7 @@ namespace LangLang.ViewModels.StudentViewModels;
 
 public class StudentEditViewModel : ViewModelBase
 {
-    private readonly IUserService _userService = new UserService();
+    private readonly IUserService _userService = ServiceProvider.GetRequiredService<IUserService>();
 
     private readonly Student _student =
         UserService.LoggedInUser as Student ?? throw new InvalidInputException("No one is logged in.");

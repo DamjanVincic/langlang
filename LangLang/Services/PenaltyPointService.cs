@@ -6,7 +6,12 @@ using LangLang.Models;
 namespace LangLang.Services;
 public class PenaltyPointService : IPenaltyPointService
 {
-    private readonly IPenaltyPointRepository _penaltyPointRepository = new PenaltyPointRepository();
+    private readonly IPenaltyPointRepository _penaltyPointRepository;
+    
+    public PenaltyPointService(IPenaltyPointRepository penaltyPointRepository)
+    {
+        _penaltyPointRepository = penaltyPointRepository;
+    }
 
     public List<PenaltyPoint> GetAll()
     {
