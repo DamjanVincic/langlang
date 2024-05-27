@@ -16,12 +16,13 @@ namespace LangLang.ViewModels.CourseViewModels
 {
     class CurrentCourseViewModel : ViewModelBase
     {
-        private readonly IUserRepository _userRepository = new UserFileRepository();
-        private readonly ICourseRepository _courseRepository = new CourseFileRepository();
-        private readonly ICourseGradeRepository _courseGradeRepository = new CourseGradeFileRepository();
-        private readonly ICourseService _courseService = new CourseService();
-        private readonly IStudentService _studentService = new StudentService();
-        private readonly ITeacherService _teacherService = new TeacherService();
+        private readonly IUserRepository _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
+        private readonly ICourseRepository _courseRepository = ServiceProvider.GetRequiredService<ICourseRepository>();
+        private readonly ICourseGradeRepository _courseGradeRepository = ServiceProvider.GetRequiredService<ICourseGradeRepository>();
+        
+        private readonly IStudentService _studentService = ServiceProvider.GetRequiredService<IStudentService>();
+        private readonly ITeacherService _teacherService = ServiceProvider.GetRequiredService<ITeacherService>();
+        
         private readonly int _courseId;
         private readonly Window _currentWindow;
 

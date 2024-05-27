@@ -13,7 +13,7 @@ namespace LangLang.ViewModels.UserViewModels;
 
 public class RegisterViewModel : ViewModelBase
 {
-    private readonly IUserService _userService = new UserService();
+    private readonly IUserService _userService = ServiceProvider.GetRequiredService<IUserService>();
 
     public string? FirstName { get; set; }
     public string? LastName { get; set; }

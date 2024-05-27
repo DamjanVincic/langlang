@@ -1,4 +1,4 @@
-﻿using LangLang.Repositories;
+using LangLang.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -22,17 +22,32 @@ namespace LangLang.Services
 {
     public class DirectorService : IDirectorService
     {
+        private const int NumberOfTopStudents = 3;
         private const string ReportsFolderName = "Reports";
         private const string LanguageReportSubfolder = "LanguageReports";
         
-        // TODO: Implement dependency injection
-        private readonly IUserRepository _userRepository = new UserFileRepository();
-        private readonly IPenaltyPointRepository _penaltyPointRepository = new PenaltyPointFileRepository();
-        private readonly ICourseGradeRepository _courseGradeRepository = new CourseGradeFileRepository();
-        private readonly ICourseRepository _courseRepository = new CourseFileRepository();
-        private readonly IExamRepository _examRepository = new ExamFileRepository();
-        private readonly ILanguageRepository _languageRepository = new LanguageFileRepository();
-        private readonly IExamGradeRepository _examGradeRepository = new ExamGradeFileRepository();
+        private readonly ICourseRepository _courseRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly ICourseGradeRepository _courseGradeRepository;
+        private readonly ICourseGradeService _courseGradeService;
+        private readonly IExamRepository _examRepository;
+        private readonly ILanguageRepository _languageRepository;
+        private readonly IPenaltyPointRepository _penaltyPointRepository;
+        private readonly IExamGradeRepository _examGradeRepository;
+        
+        public DirectorService(ICourseRepository courseRepository, IUserRepository userRepository, ICourseGradeRepository courseGradeRepository,
+            ICourseGradeService courseGradeService, IExamRepository examRepository, ILanguageRepository languageRepository,
+            IPenaltyPointRepository penaltyPointRepository, IExamGradeRepository examGradeRepository)
+        {
+            _courseRepository = courseRepository;
+            _userRepository = userRepository;
+            _courseGradeRepository = courseGradeRepository;
+            _courseGradeService = courseGradeService;
+            _examRepository = examRepository;
+            _languageRepository = languageRepository;
+            _penaltyPointRepository = penaltyPointRepository;
+            _examGradeRepository = examGradeRepository;
+        }
 
         // Number of penalties on every course in the last year
         // Average number of points for students with 0 through 3 penalties
@@ -259,6 +274,37 @@ namespace LangLang.Services
             return stream.ToArray();
         }
 
+        // knowledgePoints - if true they have priority over activity points
+        public void NotifyBestStudents(int courseId, bool knowledgePoints)
+        {
+            double knowledgePointsMultiplier = knowledgePoints ? 1.5 : 1;
+            double activityPointsMultiplier = knowledgePoints ? 1 : 1.5;
+            double penaltyMultiplier = 2.0;
+
+            Course course = _courseRepository.GetById(courseId)!;
+
+            // student, calculatedPoints
+            Dictionary<Student, double> rankedStudents = new();
+
+            foreach (Student student in course.Students.Keys.Select(studentId => (_userRepository.GetById(studentId) as Student)!))
+            {
+                CourseGrade courseGrade = _courseGradeService.GetByStudentAndCourse(student.Id, courseId)!;
+                double studentPoints = courseGrade.KnowledgeGrade * knowledgePointsMultiplier + courseGrade.ActivityGrade * activityPointsMultiplier - student.PenaltyPoints * penaltyMultiplier;
+                rankedStudents.Add(student, studentPoints);
+            }
+
+            List<Student> bestStudents = rankedStudents.OrderByDescending(pair => pair.Value).Take(NumberOfTopStudents).Select(pair => pair.Key).ToList();
+
+            foreach (Student student in bestStudents)
+            {
+                EmailService.SendMessage($"Congratulations {student.FirstName} {student.LastName}!",
+                    $"You are one of the best students in the course {course.Language.Name} {course.Language.Level}.");
+            }
+
+            course.StudentsNotified = true;
+            _courseRepository.Update(course);
+        }
+        
         public void GenerateLanguageReport()
         {
             Directory.CreateDirectory(Path.Combine(ReportsFolderName, LanguageReportSubfolder));
@@ -296,7 +342,8 @@ namespace LangLang.Services
 
             MergePdf(reportPath, new[] { courseCountPath, examCountPath, penaltyAvgPath, examGradeAvgPath });
 
-            EmailService.SendMessage("Language report","Today's language report is attached in this email",reportPath);
+            EmailService.SendMessage("Language report", "Today's language report is attached in this email",
+                reportPath);
         }
 
         private Dictionary<int, double> GetExamCount()
@@ -377,7 +424,7 @@ namespace LangLang.Services
             {
                 Exam exam = _examRepository.GetById(examGrade.ExamId)!;
 
-                if ((DateTime.Now - exam.Date.ToDateTime(TimeOnly.MinValue)).TotalDays > 365) 
+                if ((DateTime.Now - exam.Date.ToDateTime(TimeOnly.MinValue)).TotalDays > 365)
                     continue;
 
                 if (!languageGradeCount.TryAdd(exam.Language.Id, 1))
@@ -396,8 +443,8 @@ namespace LangLang.Services
 
             return examGradeAvg;
         }
-        
-        private PlotModel CreateLanguagePlotModel(string title, Dictionary<int,double> data)
+
+        private PlotModel CreateLanguagePlotModel(string title, Dictionary<int, double> data)
         {
             var plotModel = new PlotModel();
             plotModel.Title = title;
@@ -405,9 +452,10 @@ namespace LangLang.Services
             var categoryAxis = new CategoryAxis { Position = AxisPosition.Left };
             categoryAxis.Labels.AddRange(data.Keys.Select(id => _languageRepository.GetById(id)!.ToString()).ToList());
 
-            var valueAxis = new LinearAxis { Position = AxisPosition.Bottom, MinimumPadding = 0, MaximumPadding = 0.06, AbsoluteMinimum = 0 };
+            var valueAxis = new LinearAxis
+                { Position = AxisPosition.Bottom, MinimumPadding = 0, MaximumPadding = 0.06, AbsoluteMinimum = 0 };
 
-            var barSeries = new BarSeries {StrokeColor = OxyColors.Black, StrokeThickness = 1 };
+            var barSeries = new BarSeries { StrokeColor = OxyColors.Black, StrokeThickness = 1 };
             barSeries.ActualItems.AddRange(data.Values.Select(value => new BarItem { Value = value }).ToList());
 
             plotModel.Series.Add(barSeries);
@@ -425,6 +473,7 @@ namespace LangLang.Services
                 pdfExporter.Export(plotModel, stream);
             }
         }
+
         private static void MergePdf(string outputFilePath, string[] inputFilePaths)
         {
             PdfDocument outputPdfDocument = new PdfDocument();
@@ -438,6 +487,7 @@ namespace LangLang.Services
                     outputPdfDocument.AddPage(page);
                 }
             }
+
             outputPdfDocument.Save(outputFilePath);
 
             foreach (string filePath in inputFilePaths)

@@ -15,13 +15,15 @@ namespace LangLang.ViewModels.CourseViewModels
 {
     class ActiveCoursesViewModel : ViewModelBase
     {
-        private readonly ICourseService _courseService = new CourseService();
+        private readonly ICourseService _courseService;
         private readonly Teacher _teacher = UserService.LoggedInUser as Teacher ??
                                             throw new InvalidOperationException("No one is logged in.");
         private readonly ObservableCollection<CourseViewModel> _activeCourses;
 
-        public ActiveCoursesViewModel()
+        public ActiveCoursesViewModel(ICourseService courseService)
         {
+            _courseService = courseService;
+            
             _activeCourses = new ObservableCollection<CourseViewModel>(_courseService.GetActiveCourses(_teacher.Id).Select(course => new CourseViewModel(course)));
             ActiveCoursesCollectionView = CollectionViewSource.GetDefaultView(_activeCourses);
             SeeStudentsListCommand = new RelayCommand(SeeStudentsList);

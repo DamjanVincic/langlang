@@ -7,13 +7,23 @@ namespace LangLang.Services;
 
 public class TeacherService : ITeacherService
 {
-    private readonly IUserRepository _userRepository = new UserFileRepository();
-    private readonly ICourseRepository _courseRepository = new CourseFileRepository();
-    private readonly IExamService _examService = new ExamService();
-    private readonly ICourseService _courseService = new CourseService();
-    private readonly IScheduleService _scheduleService = new ScheduleService();
-    private readonly IStudentService _studentService = new StudentService();
-    private readonly IMessageService _messageService = new MessageService();
+    private readonly IUserRepository _userRepository;
+    private readonly ICourseRepository _courseRepository;
+    
+    private readonly IExamService _examService;
+    private readonly IScheduleService _scheduleService;
+    private readonly IStudentService _studentService;
+    private readonly IMessageService _messageService;
+
+    public TeacherService(IUserRepository userRepository, ICourseRepository courseRepository, IExamService examService, IScheduleService scheduleService, IStudentService studentService, IMessageService messageService)
+    {
+        _userRepository = userRepository;
+        _courseRepository = courseRepository;
+        _examService = examService;
+        _scheduleService = scheduleService;
+        _studentService = studentService;
+        _messageService = messageService;
+    }
 
     public List<Teacher> GetAll()
     {
