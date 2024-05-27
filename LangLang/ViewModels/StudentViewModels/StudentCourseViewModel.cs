@@ -19,8 +19,8 @@ public class StudentCourseViewModel : ViewModelBase
     private readonly Student _student = UserService.LoggedInUser as Student ??
                                         throw new InvalidOperationException("No one is logged in.");
 
-    private readonly ILanguageService _languageService = new LanguageService();
-    private readonly IStudentService _studentService = new StudentService();
+    private readonly ILanguageService _languageService = ServiceProvider.GetRequiredService<ILanguageService>();
+    private readonly IStudentService _studentService = ServiceProvider.GetRequiredService<IStudentService>();
 
     private string? _selectedLanguageName;
     private string? _selectedLanguageLevel;

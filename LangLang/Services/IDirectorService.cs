@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LangLang.Services
+﻿namespace LangLang.Services
 {
-    internal interface IDirectorService
+    public interface IDirectorService
     {
+        public void NotifyBestStudents(int courseId, bool knowledgePoints);
     }
 }

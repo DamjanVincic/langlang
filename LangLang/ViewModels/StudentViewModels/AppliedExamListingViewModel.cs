@@ -16,9 +16,10 @@ namespace LangLang.ViewModels.StudentViewModels;
 
 public class AppliedExamListingViewModel : ViewModelBase
 {
-    private readonly ILanguageService _languageService = new LanguageService();
-    private readonly IStudentService _studentService = new StudentService();
-    private readonly IExamService _examService = new ExamService();
+    private readonly ILanguageService _languageService;
+    private readonly IStudentService _studentService;
+    private readonly IExamService _examService;
+    
     private string? _languageNameSelected;
     private string? _languageLevelSelected;
     private DateTime _dateSelected;
@@ -26,14 +27,18 @@ public class AppliedExamListingViewModel : ViewModelBase
     private string? _selectedPropertyName;
     
     private readonly Student _student = UserService.LoggedInUser as Student ?? throw new InvalidInputException("No one is logged in.");
-
+    
     private int _currentPage = 1;
     private const int ItemsPerPage = 5;
     private int _totalPages;
     private readonly int _totalCourses;
     
-    public AppliedExamListingViewModel()
+    public AppliedExamListingViewModel(ILanguageService languageService, IStudentService studentService, IExamService examService)
     {
+        _languageService = languageService;
+        _studentService = studentService;
+        _examService = examService;
+        
         _totalCourses = _studentService.GetAppliedExams(_student.Id).Count;
         CalculateTotalPages();
         

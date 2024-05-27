@@ -16,10 +16,10 @@ namespace LangLang.ViewModels.StudentViewModels;
 
 public class StudentExamViewModel : ViewModelBase
 {
-    private readonly ILanguageService _languageService = new LanguageService();
-    private readonly IStudentService _studentService = new StudentService();
-    private readonly IExamService _examService = new ExamService();
-    private Student _student = UserService.LoggedInUser as Student ??
+    private readonly ILanguageService _languageService;
+    private readonly IStudentService _studentService;
+    private readonly IExamService _examService;
+    private readonly Student _student = UserService.LoggedInUser as Student ??
                               throw new InvalidOperationException("No one is logged in.");
     
     private string? _languageNameSelected;
@@ -33,8 +33,12 @@ public class StudentExamViewModel : ViewModelBase
     private int _totalPages;
     private readonly int _totalCourses;
     
-    public StudentExamViewModel()
+    public StudentExamViewModel(ILanguageService languageService, IStudentService studentService, IExamService examService)
     {
+        _languageService = languageService;
+        _studentService = studentService;
+        _examService = examService;
+        
         _totalCourses = _studentService.GetAvailableExams(_student.Id).Count;
         CalculateTotalPages();
         

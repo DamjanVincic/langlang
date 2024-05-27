@@ -12,12 +12,14 @@ namespace LangLang.ViewModels.CourseViewModels
 {
     class StartableCoursesViewModel : ViewModelBase
     {
-        private readonly ICourseService _courseService = new CourseService();
+        private readonly ICourseService _courseService;
         private readonly Teacher _teacher = UserService.LoggedInUser as Teacher ??
                                             throw new InvalidOperationException("No one is logged in.");
 
-        public StartableCoursesViewModel()
+        public StartableCoursesViewModel(ICourseService courseService)
         {
+            _courseService = courseService;
+            
             StartableCourses = new ObservableCollection<CourseViewModel>();
             RefreshStartableCourses();
             StartCourseCommand = new RelayCommand(StartCourse);
