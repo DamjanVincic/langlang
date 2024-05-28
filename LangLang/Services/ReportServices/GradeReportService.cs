@@ -72,7 +72,9 @@ namespace LangLang.Services.ReportServices
                 ++gradeNums;
             }
 
-            return new List<double> { knowledgeGradeSum / gradeNums, activityGradeSum / gradeNums };
+            return gradeNums > 0
+                ? new List<double> { knowledgeGradeSum / gradeNums, activityGradeSum / gradeNums }
+                : new List<double> { 0, 0 };
         }
 
         private static PlotModel CreateGradePlotModel(List<double> data)

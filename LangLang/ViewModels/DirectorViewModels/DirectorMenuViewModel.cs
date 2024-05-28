@@ -16,6 +16,9 @@ namespace LangLang.ViewModels.DirectorViewModels
         private readonly Window _directorViewWindow;
 
         private readonly IGradeReportService _gradeReportService =  ServiceProvider.GetRequiredService<IGradeReportService>();
+
+        private readonly ILanguageReportService _languageReportService =
+            ServiceProvider.GetRequiredService<ILanguageReportService>();
         private readonly IUserService _userService = ServiceProvider.GetRequiredService<IUserService>();
         private readonly IDirectorService _directorService = ServiceProvider.GetRequiredService<IDirectorService>();
 
@@ -81,7 +84,16 @@ namespace LangLang.ViewModels.DirectorViewModels
         }
         private void GenerateGradeReport()
         {
-            _gradeReportService.GenerateGradeReport();
+            try
+            {
+                _gradeReportService.GenerateGradeReport();
+                MessageBox.Show("Report sent successfully.", "Success", MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
         private void GeneratePointReport()
         {
@@ -89,7 +101,16 @@ namespace LangLang.ViewModels.DirectorViewModels
         }
         private void GenerateLanguageReport()
         {
-            throw new NotImplementedException();
+            try
+            {
+                _languageReportService.GenerateLanguageReport();
+                MessageBox.Show("Report sent successfully.", "Success", MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
         
         private void NotifyBestStudents()
