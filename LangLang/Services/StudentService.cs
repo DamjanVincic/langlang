@@ -210,7 +210,7 @@ public class StudentService : IStudentService
         DateOnly currentDate = DateOnly.FromDateTime(DateTime.Now);
         int dayOfMonth = currentDate.Day;
 
-        if (dayOfMonth != 1 || UserService.LoggedInUser is not Student student || student.PenaltyPoints <= 0)
+        if (dayOfMonth != 10 || UserService.LoggedInUser is not Student student || student.PenaltyPoints <= 0)
         {
             return;
         }
@@ -222,7 +222,7 @@ public class StudentService : IStudentService
 
     private void RemoveStudentPenaltyPoint(int studentId)
     {
-        List<PenaltyPoint> penaltyPoints = _penaltyPointService.GetAll();
+        List<PenaltyPoint> penaltyPoints = _penaltyPointService.GetAll();                                             
 
         foreach (PenaltyPoint point in penaltyPoints)
         {

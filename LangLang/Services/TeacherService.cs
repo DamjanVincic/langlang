@@ -8,19 +8,18 @@ namespace LangLang.Services;
 
 public class TeacherService : ITeacherService
 {
-
     private readonly IUserRepository _userRepository;
     private readonly ICourseRepository _courseRepository;
-    private readonly IExamService _examService;
+    private readonly IExamRepository _examRepository
     private readonly IScheduleService _scheduleService;
     private readonly IStudentService _studentService;
     private readonly IMessageService _messageService;
 
-    public TeacherService(IUserRepository userRepository, ICourseRepository courseRepository, IExamService examService, IScheduleService scheduleService, IStudentService studentService, IMessageService messageService)
+    public TeacherService(IUserRepository userRepository, ICourseRepository courseRepository, IExamRepository examRepository, IScheduleService scheduleService, IStudentService studentService, IMessageService messageService)
     {
         _userRepository = userRepository;
         _courseRepository = courseRepository;
-        _examService = examService;
+        _examRepository = examRepository;
         _scheduleService = scheduleService;
         _studentService = studentService;
         _messageService = messageService;
@@ -84,13 +83,39 @@ public class TeacherService : ITeacherService
         return courses.Skip((pageIndex - 1) * amount.Value).Take(amount.Value).ToList();
     }
 
+    public List<Exam> GetExams(int teacherId, int pageIndex = 1, int? amount = null, string propertyName = "", string sortingWay = "ascending")
+    {
+        List<Exam> exams = _examRepository.GetAll().Where(exam => exam.TeacherId == teacherId).ToList();
+        amount ??= exams.Count;
+
+        switch (propertyName)
+        {
+            case "Language":
+                exams = sortingWay == "ascending" ? exams.OrderBy(exam => exam.Language.Name).ToList() :
+                                                      exams.OrderByDescending(exam => exam.Language.Name).ToList();
+                break;
+            case "LanguageLevel":
+                exams = sortingWay == "ascending" ? exams.OrderBy(exam => exam.Language.Level).ToList() :
+                                                      exams.OrderByDescending(exam => exam.Language.Level).ToList();
+                break;
+            case "ExamDate":
+                exams = sortingWay == "ascending" ? exams.OrderBy(exam => exam.Date).ToList() :
+                                                      exams.OrderByDescending(exam => exam.Date).ToList();
+                break;
+            default:
+                break;
+        }
+        return exams.Skip((pageIndex - 1) * amount.Value).Take(amount.Value).ToList();
+    }
+
+
     public int GetCourseCount(int teacherId)
     {
         return _courseRepository.GetAll().Count(course => course.TeacherId == teacherId);
     }
-    public List<Exam> GetExams(int teacherId)
+    public int GetExamCount(int teacherId)
     {
-        return _examService.GetAll().Where(exam => exam.TeacherId == teacherId).ToList();
+        return _examRepository.GetAll().Count(exam => exam.TeacherId == teacherId);
     }
 
     public List<Teacher> GetAvailableTeachers(Course course)
