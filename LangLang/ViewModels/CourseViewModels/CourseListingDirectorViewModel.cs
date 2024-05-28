@@ -94,8 +94,11 @@ namespace LangLang.ViewModels.CourseViewModels
         }
         public void AddTeacher()
         {
-            if(SelectedItem == null)
+            if (SelectedItem == null) 
+            { 
                 MessageBox.Show("Please select an Course.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return; 
+            }
 
             Course course = _courseService.GetById(SelectedItem.Id) ?? throw new InvalidOperationException("Course doesn't exist.");
             if (course.TeacherId != null)

@@ -138,7 +138,7 @@ namespace LangLang.ViewModels.TeacherViewModels
                 if (SelectedItem == null)
                     throw new Exception("No teacher selected");
 
-                _teacherService.Delete(SelectedItem.Id);
+                _userService.Delete(SelectedItem.Id);
 
                 _teachers.Remove(SelectedItem);
                 TeachersCollectionView.Refresh();

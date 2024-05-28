@@ -17,7 +17,7 @@ namespace LangLang.ViewModels.CourseViewModels
         public CourseViewModel(Course course)
         {
             _course = course;
-            _teacher = _userService.GetById(course.TeacherId.Value) as Teacher;
+            _teacher = course.TeacherId.HasValue ? _userService.GetById(course.TeacherId.Value) as Teacher : null;
         }
 
         public SolidColorBrush BackgroundColor

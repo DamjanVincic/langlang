@@ -30,10 +30,9 @@ public class UserFileRepository : IUserRepository
         }
         else
         {
-            return null; 
+            return null;
         }
     }
-
 
     public void Add(User user)
     {
