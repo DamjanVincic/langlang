@@ -38,6 +38,7 @@ public class UserFileRepository : IUserRepository
     public void Update(User user)
     {
         LoadData();
+        if(user!=null)
         _users[user.Id] = user;
         SaveData();
     }

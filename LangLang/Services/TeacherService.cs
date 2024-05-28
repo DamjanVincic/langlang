@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using LangLang.Models;
 using LangLang.Repositories;
@@ -7,24 +8,86 @@ namespace LangLang.Services;
 
 public class TeacherService : ITeacherService
 {
-    private readonly IUserRepository _userRepository = new UserFileRepository();
-    private readonly ICourseRepository _courseRepository = new CourseFileRepository();
-    private readonly IExamService _examService = new ExamService();
-    private readonly ICourseService _courseService = new CourseService();
-    private readonly IScheduleService _scheduleService = new ScheduleService();
-    private readonly IStudentService _studentService = new StudentService();
-    private readonly IMessageService _messageService = new MessageService();
+
+    private readonly IUserRepository _userRepository;
+    private readonly ICourseRepository _courseRepository;
+    private readonly IExamService _examService;
+    private readonly IScheduleService _scheduleService;
+    private readonly IStudentService _studentService;
+    private readonly IMessageService _messageService;
+
+    public TeacherService(IUserRepository userRepository, ICourseRepository courseRepository, IExamService examService, IScheduleService scheduleService, IStudentService studentService, IMessageService messageService)
+    {
+        _userRepository = userRepository;
+        _courseRepository = courseRepository;
+        _examService = examService;
+        _scheduleService = scheduleService;
+        _studentService = studentService;
+        _messageService = messageService;
+    }
 
     public List<Teacher> GetAll()
     {
         return _userRepository.GetAll().OfType<Teacher>().ToList();
     }
 
-    public List<Course> GetCourses(int teacherId)
+    public List<Teacher> GetPage(int pageIndex = 1, int? amount = null, string propertyName = "",
+        string sortingWay = "ascending")
     {
-        return _courseRepository.GetAll().Where(course => course.TeacherId == teacherId).ToList();
+        List<Teacher> teachers = _userRepository.GetAll().OfType<Teacher>().Where(teacher => !teacher.Deleted).ToList();
+
+        amount ??= teachers.Count;
+        switch (propertyName)
+        {
+            case "Name":
+                teachers = sortingWay == "ascending"
+                    ? teachers.OrderBy(teacher => teacher.FirstName + teacher.LastName).ToList()
+                    : teachers.OrderByDescending(teacher => teacher.FirstName + teacher.LastName).ToList();
+                break;
+            case "DateAdded":
+                teachers = sortingWay == "ascending"
+                    ? teachers.OrderBy(teacher => teacher.DateCreated).ToList()
+                    : teachers.OrderByDescending(teacher => teacher.DateCreated).ToList();
+                break;
+            default:
+                break;
+        }
+        return teachers.Skip((pageIndex - 1) * amount.Value).Take(amount.Value).ToList();
     }
 
+    public int Count()
+    {
+        return _userRepository.GetAll().OfType<Teacher>().Where(teacher => !teacher.Deleted).ToList().Count;
+    }
+
+    public List<Course> GetCourses(int teacherId, int pageIndex = 1, int? amount = null, string propertyName = "", string sortingWay = "ascending")
+    {
+        List<Course> courses = _courseRepository.GetAll().Where(course => course.TeacherId == teacherId).ToList();
+        amount ??= courses.Count;
+        switch (propertyName)
+        {
+            case "LanguageName":
+                courses = sortingWay == "ascending" ? courses.OrderBy(course => course.Language.Name).ToList() :
+                                                      courses.OrderByDescending(course => course.Language.Name).ToList();
+                break;
+            case "LanguageLevel":
+                courses = sortingWay == "ascending" ? courses.OrderBy(course => course.Language.Level).ToList() :
+                                                      courses.OrderByDescending(course => course.Language.Level).ToList();
+                break;
+            case "StartDate":
+                courses = sortingWay == "ascending" ? courses.OrderBy(course => course.StartDate).ToList() :
+                                                      courses.OrderByDescending(course => course.StartDate).ToList();
+                break;
+            default:
+                break;
+        }
+        return courses.Skip((pageIndex - 1) * amount.Value).Take(amount.Value).ToList();
+    }
+
+    public int GetCourseCount(int teacherId)
+    {
+        return _courseRepository.GetAll().Count(course => course.TeacherId == teacherId);
+    }
     public List<Exam> GetExams(int teacherId)
     {
         return _examService.GetAll().Where(exam => exam.TeacherId == teacherId).ToList();
@@ -40,6 +103,21 @@ public class TeacherService : ITeacherService
                 course.AreApplicationsClosed, teacher_.Id);
 
             if (_scheduleService.ValidateScheduleItem(tempCourse, true))
+            {
+                availableTeachers.Add(teacher_);
+            }
+        }
+
+        return availableTeachers;
+    }
+    public List<Teacher> GetAvailableTeachers(Exam exam)
+    {
+        List<Teacher> availableTeachers = new List<Teacher>();
+        foreach (Teacher teacher_ in GetAll())
+        {
+            Exam tempExam = new Exam(exam.Language, exam.MaxStudents, exam.Date, teacher_.Id, exam.ScheduledTime);
+
+            if (_scheduleService.ValidateScheduleItem(tempExam, true))
             {
                 availableTeachers.Add(teacher_);
             }
@@ -126,5 +204,35 @@ public class TeacherService : ITeacherService
             _studentService.ResumeApplications(studentId);
             _userRepository.Update(student);
         }
+    }
+    // get all available teachers and sort them based on ranking
+    // pick the first one as the best choice
+    public int? SmartPick(Course course)
+    {
+        List<Teacher> availableTeachers = GetAvailableTeachers(course)
+            .OrderByDescending(teacher => teacher.Rating)
+            .ToList();
+
+        if (!availableTeachers.Any())
+            throw new InvalidInputException("There are no available substitute teachers");
+
+        course.TeacherId = availableTeachers.First().Id;
+        availableTeachers.First().CourseIds.Add(course.Id);
+        _courseRepository.Update(course);
+        return course.TeacherId;
+    }
+    public int? SmartPick(Exam exam)
+    {
+        List<Teacher> availableTeachers = GetAvailableTeachers(exam)
+            .OrderByDescending(teacher => teacher.Rating)
+            .ToList();
+
+        if (!availableTeachers.Any())
+            throw new InvalidInputException("There are no available substitute teachers");
+
+        exam.TeacherId = availableTeachers.First().Id;
+        availableTeachers.First().ExamIds.Add(exam.Id);
+        _examService.Update(exam.Id, exam.Language.Name, exam.Language.Level ,exam.MaxStudents, exam.Date, exam.TeacherId, exam.ScheduledTime);
+        return exam.TeacherId;
     }
 }

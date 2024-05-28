@@ -9,6 +9,11 @@
         WindowStartupLocation="CenterScreen"
         Background="#bbe5e4">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*" />
@@ -21,5 +26,40 @@
         <Button Command="{Binding AddExamCommand}" Background="#55bcbb" Foreground="White" Width="140" Height="40" Content="Add exam" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
         <Button Command="{Binding LogOutCommand}" Background="Red" Foreground="White" Width="100" Height="40" Content="Log Out" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
 
+        <Grid Grid.Column="0" Grid.RowSpan="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Button Command="{Binding ViewTeachersCommand}" Background="#55bcbb" Foreground="White" Width="140" Height="40" Content="View Teachers" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+            <Button Command="{Binding ViewCoursesCommand}" Background="#55bcbb" Foreground="White" Width="140" Height="40" Content="View Courses" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+            <Button Command="{Binding ViewExamsCommand}" Background="#55bcbb" Foreground="White" Width="140" Height="40" Content="View Exams" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+        </Grid>
+
+        <Button Command="{Binding SendOutGradesCommand}" Background="#55bcbb" Foreground="White" Width="140" Height="40" Content="Send out grades" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+        <Button Command="{Binding NotifyBestStudentsCommand}" Background="#55bcbb" Foreground="White" Width="180" Height="40" Content="Notify Best Students" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+        <Button Command="{Binding LogOutCommand}" Background="Red" Foreground="White" Width="100" Height="40" Content="Log Out" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+
+
+        <Grid Grid.Column="3" Grid.RowSpan="2" Background="AliceBlue">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <TextBlock FontWeight="Bold">REPORTS</TextBlock>
+
+            <Button Command="{Binding PenaltyPointReportCommand}" Grid.Row="1" Background="#55bcbb" Foreground="White" Width="140" Height="40" Content="Penalty points" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+            <Button Command="{Binding GradeReportCommand}" Grid.Row="2" Background="#55bcbb" Foreground="White" Width="140" Height="auto" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10">
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center">Average course and teachers grade</TextBlock>
+            </Button>
+            <Button Command="{Binding PointReportCommand}" Grid.Row="3" Background="#55bcbb" Foreground="White" Width="140" Height="auto" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10">
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center">Average exam points and pass rates</TextBlock>
+            </Button>
+            <Button Command="{Binding LanguageReportCommand}" Grid.Row="4" Background="#55bcbb" Foreground="White" Width="140" Height="40" Content="Languages" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+        </Grid>
     </Grid>
 </Window>

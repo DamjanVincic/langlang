@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -12,15 +14,15 @@ namespace LangLang.ViewModels.ExamViewModels
 {
     class AddExamViewModel : ViewModelBase
     {
-        private readonly ILanguageService _languageService = new LanguageService();
-        private readonly IExamService _examService = new ExamService();
+        private readonly ILanguageService _languageService = ServiceProvider.GetRequiredService<ILanguageService>();
+        private readonly IExamService _examService = ServiceProvider.GetRequiredService<IExamService>();
+        private readonly ITeacherService _teacherService = ServiceProvider.GetRequiredService<ITeacherService>();
 
         private DateTime _dateSelected;
 
         private readonly Exam? _exam;
 
-        private readonly Teacher _teacher = UserService.LoggedInUser as Teacher ??
-                                            throw new InvalidOperationException("No one is logged in.");
+        private readonly User _loggedIn = UserService.LoggedInUser;
 
         private readonly Window _addExamWindow;
 
@@ -43,7 +45,7 @@ namespace LangLang.ViewModels.ExamViewModels
             EnterExamCommand = new RelayCommand(AddExam);
         }
 
-        public string Name { get; set; }
+        public string? Name { get; set; }
         public LanguageLevel LanguageLevel { get; set; }
         public IEnumerable<string> LanguageNames => _languageService.GetAllNames();
         public int MaxStudents { get; set; }
@@ -79,15 +81,25 @@ namespace LangLang.ViewModels.ExamViewModels
             {
                 if (_exam is null)
                 {
-                    _examService.Add(Name, LanguageLevel, MaxStudents, ExamDate, _teacher.Id,
-                        new TimeOnly(HourSelected, MinuteSelected));
+                    int? teacherId;
+                    if (_loggedIn is Director)
+                    {
+                        Exam exam = _examService.Add(Name, LanguageLevel, MaxStudents, ExamDate, null, new TimeOnly(HourSelected, MinuteSelected));
+                        teacherId = _teacherService.SmartPick(exam);
+                        exam.TeacherId = teacherId;
+                        _examService.Update(exam.Id, exam.Language.Name, exam.Language.Level, exam.MaxStudents, exam.Date, exam.TeacherId, exam.ScheduledTime);
+                    }
+                    else
+                    {
+                        Exam exam = _examService.Add(Name, LanguageLevel, MaxStudents, ExamDate, _loggedIn.Id, new TimeOnly(HourSelected, MinuteSelected));
+                    }
 
                     MessageBox.Show("Exam added successfully.", "Success", MessageBoxButton.OK,
                         MessageBoxImage.Information);
                 }
                 else
                 {
-                    _examService.Update(_exam.Id, Name, LanguageLevel, MaxStudents, ExamDate, _teacher.Id,
+                    _examService.Update(_exam.Id, Name!, LanguageLevel, MaxStudents, ExamDate, _loggedIn.Id,
                         new TimeOnly(HourSelected, MinuteSelected));
 
                     MessageBox.Show("Exam edited successfully.", "Success", MessageBoxButton.OK,

@@ -12,8 +12,8 @@ namespace LangLang.ViewModels.CourseViewModels
 {
     class EditCourseViewModel : ViewModelBase
     {
-        private readonly ILanguageService _languageService = new LanguageService();
-        private readonly ICourseService _courseService = new CourseService();
+        private readonly ILanguageService _languageService = ServiceProvider.GetRequiredService<ILanguageService>();
+        private readonly ICourseService _courseService = ServiceProvider.GetRequiredService<ICourseService>();
 
         private readonly Teacher _teacher = UserService.LoggedInUser as Teacher ??
                                             throw new InvalidOperationException("No one is logged in.");
@@ -58,7 +58,7 @@ namespace LangLang.ViewModels.CourseViewModels
             get => _minutes.ToString("00");
             set => _minutes = int.Parse(value);
         }
-        public bool[]? SelectedWeekdays { get; set; }
+        public bool[] SelectedWeekdays { get; set; }
 
         public ICommand EditCourseCommand { get; }
         public static IEnumerable<string?> FormatValues => new List<string?> { "online", "in-person" };
@@ -66,6 +66,7 @@ namespace LangLang.ViewModels.CourseViewModels
         public IEnumerable<string?> HourValues => _hoursValues;
         public IEnumerable<string?> MinuteValues => _minutesValues;
 
+        // TODO: MELOC 28, CYCLO_SWITCH 9, MNOC 5
         private void EditCourse()
         {
             if ((!Format.Equals("online") && MaxStudents <= 0)|| Duration <= 0 || StartDate == default 

@@ -10,7 +10,7 @@ namespace LangLang.Repositories
         public void Update(CourseGrade courseGrade);
         public void Delete(int id);
         public int GenerateId();
-        public CourseGrade GetById(int id);
+        public CourseGrade? GetById(int id);
     }
 }
 

@@ -16,9 +16,9 @@ namespace LangLang.ViewModels.ExamViewModels
 {
     public class ExamListingViewModel : ViewModelBase
     {
-        private readonly ITeacherService _teacherService = new TeacherService();
-        private readonly ILanguageService _languageService = new LanguageService();
-        private readonly IExamService _examService = new ExamService();
+        private readonly ITeacherService _teacherService;
+        private readonly ILanguageService _languageService;
+        private readonly IExamService _examService;
 
         private readonly ObservableCollection<ExamViewModel> _exams;
 
@@ -29,8 +29,12 @@ namespace LangLang.ViewModels.ExamViewModels
         private string? _languageLevelSelected;
         private DateTime _dateSelected;
 
-        public ExamListingViewModel()
+        public ExamListingViewModel(ITeacherService teacherService, ILanguageService languageService, IExamService examService)
         {
+            _teacherService = teacherService;
+            _languageService = languageService;
+            _examService = examService;
+            
             _exams = new ObservableCollection<ExamViewModel>(_teacherService.GetExams(_teacher.Id)
                 .Select(exam => new ExamViewModel(exam)));
             ExamCollectionView = CollectionViewSource.GetDefaultView(_exams);
@@ -118,6 +122,7 @@ namespace LangLang.ViewModels.ExamViewModels
             UpdateExamList();
         }
 
+        // TODO: MNOC 3
         private void Delete()
         {
             if (SelectedItem == null)

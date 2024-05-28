@@ -8,29 +8,20 @@ namespace LangLang.Models
 {
     public class Teacher : User
     {
-        private List<Language> _qualifications = new();
-        
         [JsonProperty]
         private int TotalRating { get; set; }
         
         [JsonProperty]
         private int NumberOfReviews { get; set; }
 
-        public Teacher(string firstName, string lastName, string email, string password, Gender gender, string phone,
-            List<Language> qualifications) : base(firstName, lastName, email, password, gender, phone)
+        public Teacher(string? firstName, string? lastName, string? email, string? password, Gender gender, string? phone,
+            List<Language> qualifications, DateOnly? dateCreated = null) : base(firstName, lastName, email, password, gender, phone)
         {
             Qualifications = qualifications;
-            DateCreated = DateOnly.FromDateTime(DateTime.Now);
+            DateCreated = dateCreated == null ? DateOnly.FromDateTime(DateTime.Now) : dateCreated.GetValueOrDefault();
         }
 
-        public List<Language> Qualifications
-        {
-            get => _qualifications;
-            set
-            {
-                _qualifications = value;
-            }
-        }
+        public List<Language> Qualifications { get; set; } = new();
 
         public DateOnly DateCreated { get; }
         public List<int> CourseIds { get; } = new();

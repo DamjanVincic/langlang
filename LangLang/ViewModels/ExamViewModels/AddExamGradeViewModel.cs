@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -18,7 +13,7 @@ namespace LangLang.ViewModels.ExamViewModels
         private readonly int _examId;
         private readonly Window _currentWindow;
 
-        private readonly IStudentService _studentService = new StudentService();
+        private readonly IStudentService _studentService = ServiceProvider.GetRequiredService<IStudentService>();
 
         public AddExamGradeViewModel(int studentId, int examId, Window currentWindow)
         {

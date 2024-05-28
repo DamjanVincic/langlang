@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
-using LangLang.Repositories;
 using LangLang.Services;
 using LangLang.ViewModels.StudentViewModels;
 using LangLang.Views.ExamViews;
@@ -20,12 +15,12 @@ namespace LangLang.ViewModels.ExamViewModels
     {
         private readonly Teacher _teacher = UserService.LoggedInUser as Teacher ??
                                             throw new InvalidOperationException("No one is logged in.");
-
-        private readonly IUserRepository _userRepository = new UserFileRepository();
-        private readonly IExamRepository _examRepository = new ExamFileRepository();
-        private readonly IExamGradeRepository _examGradeRepository = new ExamGradeFileRepository();
-        private readonly IExamService _examService = new ExamService();
-        private readonly IStudentService _studentService = new StudentService();
+        
+        private readonly IExamService _examService = ServiceProvider.GetRequiredService<IExamService>();
+        private readonly IStudentService _studentService = ServiceProvider.GetRequiredService<IStudentService>();
+        private readonly IUserService _userService = ServiceProvider.GetRequiredService<IUserService>();
+        private readonly IExamGradeService _examGradeService = ServiceProvider.GetRequiredService<IExamGradeService>();
+        
         private readonly int _examId;
         private readonly Window _currentWindow;
 
@@ -40,7 +35,7 @@ namespace LangLang.ViewModels.ExamViewModels
         }
 
         public ObservableCollection<StudentExamGradeViewModel> Students { get; set; } = new();
-        public StudentExamGradeViewModel SelectedItem { get; set; }
+        public StudentExamGradeViewModel? SelectedItem { get; set; }
 
         public ICommand AddExamGradeCommand { get; set; }
         public ICommand FinishExamCommand { get; set; }
@@ -102,15 +97,15 @@ namespace LangLang.ViewModels.ExamViewModels
         private void RefreshStudents()
         {
             Students.Clear();
-            Exam exam = _examRepository.GetById(_examId);
+            Exam exam = _examService.GetById(_examId)!;
 
             foreach (int studentId in exam.StudentIds)
             {
-                Student student = _userRepository.GetById(studentId) as Student ??
+                Student student = _userService.GetById(studentId) as Student ??
                                   throw new InvalidInputException("Student doesn't exist.");
-                ExamGrade examGrade;
+                ExamGrade? examGrade;
                 if (student.ExamGradeIds.ContainsKey(_examId))
-                    examGrade = _examGradeRepository.GetById(student.ExamGradeIds[_examId]) ??
+                    examGrade = _examGradeService.GetById(student.ExamGradeIds[_examId]) ??
                                 throw new InvalidInputException("Exam grade doesn't exist");
                 else
                     examGrade = null;

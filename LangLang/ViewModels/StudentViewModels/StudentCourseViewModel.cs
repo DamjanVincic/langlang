@@ -19,14 +19,14 @@ public class StudentCourseViewModel : ViewModelBase
     private readonly Student _student = UserService.LoggedInUser as Student ??
                                         throw new InvalidOperationException("No one is logged in.");
 
-    private readonly ILanguageService _languageService = new LanguageService();
-    private readonly IStudentService _studentService = new StudentService();
+    private readonly ILanguageService _languageService = ServiceProvider.GetRequiredService<ILanguageService>();
+    private readonly IStudentService _studentService = ServiceProvider.GetRequiredService<IStudentService>();
 
     private string? _selectedLanguageName;
     private string? _selectedLanguageLevel;
     private DateTime _selectedDate;
-    private string _selectedDuration;
-    private string _selectedFormat;
+    private string? _selectedDuration;
+    private string? _selectedFormat;
 
     private readonly bool _applied;
 
@@ -88,7 +88,7 @@ public class StudentCourseViewModel : ViewModelBase
         }
     }
 
-    public string SelectedDuration
+    public string? SelectedDuration
     {
         get => _selectedDuration;
         set
@@ -98,7 +98,7 @@ public class StudentCourseViewModel : ViewModelBase
         }
     }
 
-    public string SelectedFormat
+    public string? SelectedFormat
     {
         get => _selectedFormat;
         set
@@ -108,6 +108,7 @@ public class StudentCourseViewModel : ViewModelBase
         }
     }
 
+    // TODO: CYCLO_SWITCH 6
     private bool FilterCourses(object obj)
     {
         if (obj is CourseViewModel courseViewModel)

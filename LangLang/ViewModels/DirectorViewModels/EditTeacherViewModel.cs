@@ -12,7 +12,7 @@ namespace LangLang.ViewModels.DirectorViewModels
 {
     internal class EditTeacherViewModel : ViewModelBase
     {
-        private readonly IUserService _userService = new UserService();
+        private readonly IUserService _userService = ServiceProvider.GetRequiredService<IUserService>();
 
         private readonly Teacher _teacher;
 
