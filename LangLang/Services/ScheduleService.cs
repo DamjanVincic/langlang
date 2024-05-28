@@ -102,7 +102,7 @@ public class ScheduleService : IScheduleService
 
         TimeOnly startTime = scheduleItem.ScheduledTime;
         TimeOnly endTime = scheduleItem is Course ? startTime.AddMinutes(Course.ClassDuration) : startTime.AddMinutes(Exam.ExamDuration);
-        int amountOverlapping = 0;
+        int overlappingAmount = 0;
 
         foreach (ScheduleItem item in scheduleItems)
         {
@@ -123,7 +123,7 @@ public class ScheduleService : IScheduleService
             //  uzivo i poklapa se teacher i ima ucionica   t ili 
             //   uzivo i ne poklapa se teacher i nema ucionica   n ili (t i t) = t
             //  uzivo i poklapa se teacher i nema ucionica    t ili (t i t) = t
-            if (item.TeacherId == scheduleItem.TeacherId || ((!item.IsOnline && ++amountOverlapping >= 2)))
+            if (item.TeacherId == scheduleItem.TeacherId || ((!item.IsOnline && ++overlappingAmount >= 2)))
                 return false;
         }
         return true;

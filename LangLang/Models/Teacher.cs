@@ -15,10 +15,10 @@ namespace LangLang.Models
         private int NumberOfReviews { get; set; }
 
         public Teacher(string? firstName, string? lastName, string? email, string? password, Gender gender, string? phone,
-            List<Language> qualifications) : base(firstName, lastName, email, password, gender, phone)
+            List<Language> qualifications, DateOnly? dateCreated = null) : base(firstName, lastName, email, password, gender, phone)
         {
             Qualifications = qualifications;
-            DateCreated = DateOnly.FromDateTime(DateTime.Now);
+            DateCreated = dateCreated == null ? DateOnly.FromDateTime(DateTime.Now) : dateCreated.GetValueOrDefault();
         }
 
         public List<Language> Qualifications { get; set; } = new();
