@@ -17,6 +17,7 @@ namespace LangLang.ViewModels.CourseViewModels
 {
     public class CourseListingDirectorViewModel : ViewModelBase
     {
+        // TODO: DI
         private readonly ILanguageService _languageService = new LanguageService();
         private readonly ICourseService _courseService = new CourseService();
         private readonly ITeacherService _teacherService = new TeacherService();

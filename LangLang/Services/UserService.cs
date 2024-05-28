@@ -154,11 +154,12 @@ public class UserService : IUserService
             if (course.TeacherId == teacher.Id && course.StartDate.ToDateTime(TimeOnly.MinValue) > DateTime.Today)
             {
                 // creator of the course is either teacher or director
-                switch (_userRepository.GetById(course.CreatorId))
+                switch (course.CreatorId.HasValue ? _userRepository.GetById(course.CreatorId.Value) : null)
                 {
                     case Teacher:
                         _courseService.Delete(course.Id);
                         break;
+                    case null:
                     case Director:
                         course.TeacherId = null;
                         _courseRepository.Update(course);

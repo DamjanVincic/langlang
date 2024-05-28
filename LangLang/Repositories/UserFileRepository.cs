@@ -20,18 +20,11 @@ public class UserFileRepository : IUserRepository
         return _users.Values.ToList();
     }
 
-    public User? GetById(int? id)
+    public User? GetById(int id)
     {
-        if (id.HasValue)
-        {
-            LoadData();
-            _users.TryGetValue(id.Value, out var user);
-            return user;
-        }
-        else
-        {
-            return null;
-        }
+        LoadData();
+        _users.TryGetValue(id, out var user);
+        return user;
     }
 
     public void Add(User user)

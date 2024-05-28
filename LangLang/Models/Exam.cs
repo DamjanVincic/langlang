@@ -8,12 +8,11 @@ namespace LangLang.Models
     {
         public const int ExamDuration = 360;
 
-        public Exam(Language language, int maxStudents, DateOnly date, int? teacherId, TimeOnly time,
-                    bool teacherGraded, bool directorGraded)
+        public Exam(Language language, int maxStudents, DateOnly date, int? teacherId, TimeOnly time)
                     : base(language, maxStudents, date, teacherId, time)
         {
-            TeacherGraded = teacherGraded;
-            DirectorGraded = directorGraded;
+            TeacherGraded = false;
+            DirectorGraded = false;
         }
 
 
