@@ -8,12 +8,22 @@ namespace LangLang.Services;
 
 public class ExamService : IExamService
 {
-    private readonly IExamRepository _examRepository = new ExamFileRepository();
-    private readonly IUserRepository _userRepository = new UserFileRepository();
-    private readonly IScheduleService _scheduleService = new ScheduleService();
-    private readonly ILanguageService _languageService = new LanguageService();
-    private readonly IExamGradeRepository _examGradeRepository = new ExamGradeFileRepository();
-    private readonly IMessageService _messageService = new MessageService();   
+    private readonly IExamRepository _examRepository;
+    private readonly IUserRepository _userRepository;
+    private readonly IScheduleService _scheduleService;
+    private readonly ILanguageService _languageService;
+    private readonly IExamGradeRepository _examGradeRepository;
+    private readonly IMessageService _messageService;   
+    
+    public ExamService(IExamRepository examRepository, IUserRepository userRepository, IScheduleService scheduleService, ILanguageService languageService, IExamGradeRepository examGradeRepository, IMessageService messageService)
+    {
+        _examRepository = examRepository;
+        _userRepository = userRepository;
+        _scheduleService = scheduleService;
+        _languageService = languageService;
+        _examGradeRepository = examGradeRepository;
+        _messageService = messageService;
+    }
 
     public List<Exam> GetAll()
     {

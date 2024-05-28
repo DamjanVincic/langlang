@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using LangLang.Models;
 using LangLang.ViewModels.CourseViewModels;
 
 
@@ -12,7 +13,7 @@ namespace LangLang.Views.CourseViews
         public CoursesListingDirectorView()
         {
             InitializeComponent();
-            DataContext = new CourseListingDirectorViewModel(); 
+            DataContext = ServiceProvider.GetRequiredService<CourseListingDirectorViewModel>(); 
         }
     }
 }

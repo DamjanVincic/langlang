@@ -16,9 +16,9 @@ namespace LangLang.ViewModels.CourseViewModels
 {
     public class CourseListingViewModel : ViewModelBase
     {
-        private readonly ITeacherService _teacherService = new TeacherService();
-        private readonly ILanguageService _languageService = new LanguageService();
-        private readonly ICourseService _courseService = new CourseService();
+        private readonly ITeacherService _teacherService;
+        private readonly ILanguageService _languageService;
+        private readonly ICourseService _courseService;
 
         private readonly Teacher _teacher = UserService.LoggedInUser as Teacher ??
                                             throw new InvalidOperationException("No one is logged in.");
@@ -30,18 +30,35 @@ namespace LangLang.ViewModels.CourseViewModels
         private DateTime _selectedDate;
         private string? _selectedDuration;
         private string? _selectedFormat;
-
-        public CourseListingViewModel()
+        private string? _selectedSortingWay;
+        private string? _selectedPropertyName;
+        
+        private int _currentPage;
+        private  readonly int _itemsPerPage = 2;
+        private int _totalPages;
+        private int _totalCourses;
+        
+        public CourseListingViewModel(ITeacherService teacherService, ILanguageService languageService, ICourseService courseService)
         {
-            _courses = new ObservableCollection<CourseViewModel>(_teacherService.GetCourses(_teacher.Id)
+            _teacherService = teacherService;
+            _languageService = languageService;
+            _courseService = courseService;
+            
+            _currentPage = 1;
+            _totalCourses = _teacherService.GetCourseCount(_teacher.Id);
+            CalculateTotalPages();
+            _courses = new ObservableCollection<CourseViewModel>(_teacherService.GetCourses(_teacher.Id, _currentPage, _itemsPerPage)
                 .Select(course => new CourseViewModel(course)));
             CoursesCollectionView = CollectionViewSource.GetDefaultView(_courses);
             CoursesCollectionView.Filter = FilterCourses;
-
             AddCommand = new RelayCommand(Add);
             EditCommand = new RelayCommand(Edit);
             DeleteCommand = new RelayCommand(Delete);
+            ResetFiltersCommand = new RelayCommand(ResetFilters);
+            PreviousPageCommand = new RelayCommand(PreviousPage);
+            NextPageCommand = new RelayCommand(NextPage);
         }
+
 
         public CourseViewModel? SelectedItem { get; set; }
 
@@ -49,49 +66,17 @@ namespace LangLang.ViewModels.CourseViewModels
         public IEnumerable<String> LanguageNameValues => _languageService.GetAllNames();
         public static IEnumerable<String> LanguageLevelValues => Enum.GetNames(typeof(LanguageLevel));
         public static IEnumerable<String> FormatValues => new List<String> { "online", "in-person" };
+        public static IEnumerable<String> SortingWays => new List<String> { "ascending", "descending" };
+        public static IEnumerable<String> PropertyNames => new List<String> { "LanguageName","LanguageLevel", "StartDate" };
         public IEnumerable<CourseViewModel> Courses => _courses;
 
         public ICommand AddCommand { get; }
         public ICommand EditCommand { get; }
         public ICommand DeleteCommand { get; }
 
-        private void Add()
-        {
-            var newWindow = new AddCourseView();
-            newWindow.ShowDialog();
-            RefreshCourses();
-        }
-
-        private void Edit()
-        {
-            if (SelectedItem == null)
-            {
-                MessageBox.Show("Please select a course to edit.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-            new EditCourseView(_courseService.GetById(SelectedItem.Id)).ShowDialog();
-            RefreshCourses();
-        }
-
-        // TODO: MNOC 3
-        private void Delete()
-        {
-            if (SelectedItem == null)
-            {
-                MessageBox.Show("Please select an Course to delete.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-            if (MessageBox.Show("Are you sure?", "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.No)
-                return;
-
-            Course course = _courseService.GetById(SelectedItem.Id) ?? throw new InvalidOperationException("Course doesn't exist.");
-            _courseService.Delete(course.Id);
-            RefreshCourses();
-
-            MessageBox.Show("Course deleted successfully.", "Success", MessageBoxButton.OK,
-                MessageBoxImage.Information);
-        }
-
+        public ICommand ResetFiltersCommand { get; }
+        public ICommand PreviousPageCommand { get; }
+        public ICommand NextPageCommand { get; }
 
         public string? SelectedLanguageName
         {
@@ -143,6 +128,92 @@ namespace LangLang.ViewModels.CourseViewModels
             }
         }
 
+        public string? SelectedSortingWay
+        {
+            get => _selectedSortingWay;
+            set
+            {
+                _selectedSortingWay = value;
+                SortCourses();
+            }
+        }
+        public string? SelectedPropertyName
+        {
+            get => _selectedPropertyName;
+            set
+            {
+                _selectedPropertyName = value;
+                SortCourses();
+            }
+        }
+        private void SortCourses()
+        {
+            if (SelectedPropertyName == null || SelectedSortingWay == null)
+            {
+                RefreshCourses();
+                return;
+            }
+
+            RefreshCourses(SelectedPropertyName, SelectedSortingWay);
+        }
+        private void Add()
+        {
+            var newWindow = new AddCourseView();
+            newWindow.ShowDialog();
+            _totalCourses = _teacherService.GetCourseCount(_teacher.Id);
+            CalculateTotalPages();
+            RefreshCourses();
+        }
+
+        private void Edit()
+        {
+            if (SelectedItem == null)
+            {
+                MessageBox.Show("Please select a course to edit.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            new EditCourseView(_courseService.GetById(SelectedItem.Id)).ShowDialog();
+            RefreshCourses();
+        }
+
+        private void Delete()
+        {
+            if (SelectedItem == null)
+            {
+                MessageBox.Show("Please select an Course to delete.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            if (MessageBox.Show("Are you sure?", "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                return;
+
+            Course course = _courseService.GetById(SelectedItem.Id) ?? throw new InvalidOperationException("Course doesn't exist.");
+            _courseService.Delete(course.Id);
+            _totalCourses--;
+            CalculateTotalPages();
+            RefreshCourses();
+
+            MessageBox.Show("Course deleted successfully.", "Success", MessageBoxButton.OK,
+                MessageBoxImage.Information);
+        }
+
+        private void CalculateTotalPages()
+        {
+            _totalPages = (int)Math.Ceiling((double)_totalCourses / _itemsPerPage);
+        }
+        private void NextPage()
+        {
+            if (_currentPage + 1 > _totalPages) { return; }
+            _currentPage++;
+            RefreshCourses(SelectedPropertyName!, SelectedSortingWay!);
+        }
+
+        private void PreviousPage()
+        {
+            if (_currentPage < 2) { return; }
+            _currentPage--;
+            RefreshCourses(SelectedPropertyName!, SelectedSortingWay!);
+        }
+
         // TODO: CYCLO_SWITCH 7
         private bool FilterCourses(object obj)
         {
@@ -158,11 +229,20 @@ namespace LangLang.ViewModels.CourseViewModels
             return false;
         }
 
-        private void RefreshCourses()
+        private void RefreshCourses(string propertyName = "", string sortingWay = "ascending")
         {
             _courses.Clear();
-            _teacherService.GetCourses(_teacher.Id).ForEach(course => _courses.Add(new CourseViewModel(course)));
+            _teacherService.GetCourses(_teacher.Id, _currentPage, _itemsPerPage, propertyName, sortingWay).ForEach(course => _courses.Add(new CourseViewModel(course)));
             CoursesCollectionView.Refresh();
+        }
+
+        private void ResetFilters()
+        {
+            SelectedLanguageLevel = null!;
+            SelectedLanguageName = null!;
+            SelectedDate = DateTime.MinValue;
+            SelectedDuration = null!;
+            SelectedFormat = null!;
         }
     }
 }

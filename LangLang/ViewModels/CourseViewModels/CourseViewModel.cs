@@ -9,7 +9,7 @@ namespace LangLang.ViewModels.CourseViewModels
 {
     public class CourseViewModel : ViewModelBase
     {
-        private readonly IUserService _userService = new UserService();
+        private readonly IUserService _userService = ServiceProvider.GetRequiredService<IUserService>();
 
         private readonly Course _course;
         private readonly Teacher? _teacher;

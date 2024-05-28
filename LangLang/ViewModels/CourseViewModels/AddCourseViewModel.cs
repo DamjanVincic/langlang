@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using System.Xml.Linq;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
@@ -13,9 +12,10 @@ namespace LangLang.ViewModels.CourseViewModels
 {
     class AddCourseViewModel : ViewModelBase
     {
-        private readonly ILanguageService _languageService = new LanguageService();
-        private readonly ICourseService _courseService = new CourseService();
-        private readonly ITeacherService _teacherService = new TeacherService();
+        private readonly ILanguageService _languageService;
+        private readonly ICourseService _courseService;
+        private readonly ITeacherService _teacherService;
+
         // the one that is not null is logged in, do this in order to not repeat the code
         private readonly User loggedInUser;
         private readonly Teacher _teacher;
@@ -27,14 +27,19 @@ namespace LangLang.ViewModels.CourseViewModels
                                          .Select(minute => minute.ToString("00"))
                                          .ToList();
 
-        public AddCourseViewModel()
+        public AddCourseViewModel(ILanguageService languageService, ICourseService courseService, ITeacherService teacherService)
         {
+            _languageService = languageService;
+            _courseService = courseService;
+            _teacherService = teacherService;
+            
             loggedInUser = UserService.LoggedInUser ??
             throw new InvalidOperationException("No one is logged in.");
 
             _teacher = loggedInUser as Teacher;
             _director = loggedInUser as Director;
-
+            
+            
             SelectedWeekdays = new bool[7];
             AddCourseCommand = new RelayCommand(AddCourse);
         }

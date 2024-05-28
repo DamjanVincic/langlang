@@ -6,7 +6,12 @@ namespace LangLang.Services;
 
 public class MessageService : IMessageService
 {
-    private readonly IMessageRepository _messageRepository = new MessageFileRepository();
+    private readonly IMessageRepository _messageRepository;
+    
+    public MessageService(IMessageRepository messageRepository)
+    {
+        _messageRepository = messageRepository;
+    }
     
     public List<Message> GetAll()
     {

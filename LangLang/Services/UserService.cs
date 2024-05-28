@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using LangLang.Models;
 using LangLang.Repositories;
@@ -11,12 +10,21 @@ public class UserService : IUserService
 {
     public static User? LoggedInUser { get; private set; }
 
-    private readonly IUserRepository _userRepository = new UserFileRepository();
-    private readonly ICourseRepository _courseRepository = new CourseFileRepository();
-    private readonly IExamRepository _examRepository = new ExamFileRepository();
-    private readonly ICourseService _courseService = new CourseService();
-    private readonly IExamService _examService = new ExamService();
-    private readonly IPenaltyPointService _penaltyPointService = new PenaltyPointService();
+    private readonly IUserRepository _userRepository;
+    private readonly ICourseRepository _courseRepository;
+    private readonly IExamRepository _examRepository;
+    private readonly ICourseService _courseService;
+    private readonly IExamService _examService;
+
+    public UserService(IUserRepository userRepository, ICourseRepository courseRepository, IExamRepository examRepository,
+        ICourseService courseService, IExamService examService)
+    {
+        _userRepository = userRepository;
+        _courseRepository = courseRepository;
+        _examRepository = examRepository;
+        _courseService = courseService;
+        _examService = examService;
+    }
 
     public List<User> GetAll()
     {

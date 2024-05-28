@@ -15,8 +15,9 @@ namespace LangLang.ViewModels.TeacherViewModels
 {
     internal class PickSubstituteTeacherViewModel : ViewModelBase
     {
-        private readonly IUserService _userService = new UserService();
-        private readonly ICourseService _courseService = new CourseService();
+        private readonly IUserService _userService = ServiceProvider.GetRequiredService<IUserService>();
+        private readonly ICourseService _courseService = ServiceProvider.GetRequiredService<ICourseService>();
+
         private readonly ObservableCollection<TeacherViewModel> _displayedTeachers;
         private readonly Course _course;
 

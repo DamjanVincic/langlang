@@ -74,6 +74,11 @@
             }
         }
 
+        public int PointsSum
+        {
+            get => _listeningPoints + _readingPoints + _talkingPoints + _writingPoints;
+        }
+
         public bool Passed
         {
             get => _passed;

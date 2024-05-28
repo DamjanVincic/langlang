@@ -1,11 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using LangLang.Models;
 using LangLang.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows;
 using GalaSoft.MvvmLight.Command;
@@ -18,7 +13,7 @@ namespace LangLang.ViewModels.CourseViewModels
         private readonly int _courseId;
         private readonly Window _currentWindow;
 
-        private readonly IStudentService _studentService = new StudentService();
+        private readonly IStudentService _studentService = ServiceProvider.GetRequiredService<IStudentService>();
 
         public AddCourseGradeViewModel(int studentId, int courseId, Window currentWindow)
         {
