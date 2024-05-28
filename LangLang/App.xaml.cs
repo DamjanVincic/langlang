@@ -3,6 +3,7 @@ using System.Windows;
 using LangLang.Models;
 using LangLang.Repositories;
 using LangLang.Services;
+using LangLang.Services.ReportServices;
 using LangLang.ViewModels.CourseViewModels;
 using LangLang.ViewModels.DirectorViewModels;
 using LangLang.ViewModels.ExamViewModels;
@@ -57,6 +58,7 @@ namespace LangLang
             services.AddScoped<IStudentService, StudentService>();
             services.AddScoped<ITeacherService, TeacherService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IGradeReportService, GradeReportService>();
 
             services.AddTransient<MainWindow>();
             services.AddTransient<ActiveCoursesViewModel>();
@@ -70,6 +72,7 @@ namespace LangLang
             services.AddTransient<StudentExamViewModel>();
             services.AddTransient<StartableExamsViewModel>();
             services.AddTransient<BestStudentsNotificationViewModel>();
+            services.AddTransient<CourseListingDirectorViewModel>();
         }
         
         protected override void OnStartup(StartupEventArgs e)

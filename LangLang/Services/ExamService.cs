@@ -83,10 +83,13 @@ public class ExamService : IExamService
 
         if (teacher.Id != exam.TeacherId)
         {
-            Teacher? oldTeacher = _userRepository.GetById(exam.TeacherId) as Teacher;
+            Teacher? oldTeacher = exam.TeacherId.HasValue ? _userRepository.GetById(exam.TeacherId.Value) as Teacher : null;
 
-            oldTeacher!.ExamIds.Remove(exam.Id);
-            _userRepository.Update(oldTeacher);
+            if (oldTeacher is not null)
+            {
+                oldTeacher.ExamIds.Remove(exam.Id);
+                _userRepository.Update(oldTeacher);
+            }
 
             teacher.ExamIds.Add(exam.Id);
             _userRepository.Update(teacher);
@@ -100,11 +103,14 @@ public class ExamService : IExamService
         // TODO: Delete from schedule, students etc.
 
         Exam exam = _examRepository.GetById(id) ?? throw new InvalidInputException("Exam doesn't exist.");
-        Teacher teacher = _userRepository.GetById(exam.TeacherId) as Teacher ??
-                          throw new InvalidInputException("Teacher doesn't exist.");
+        Teacher? teacher = exam.TeacherId.HasValue ? _userRepository.GetById(exam.TeacherId.Value) as Teacher ?? 
+            throw new InvalidInputException("Teacher doesn't exist.") : null;
 
-        teacher.ExamIds.Remove(exam.Id);
-        _userRepository.Update(teacher);
+        if (teacher is not null)
+        {
+            teacher.ExamIds.Remove(exam.Id);
+            _userRepository.Update(teacher);
+        }
 
         _scheduleService.Delete(id);
         
