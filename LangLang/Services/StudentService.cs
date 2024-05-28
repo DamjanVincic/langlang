@@ -34,31 +34,39 @@ public class StudentService : IStudentService
         return _userRepository.GetAll().OfType<Student>().ToList();
     }
 
-    public List<Course> GetAvailableCourses(int studentId)
+    public List<Course> GetAvailableCourses(int studentId, int pageIndex = 1, int? amount = null)
     {
-        return _courseRepository.GetAll().Where(course =>
-
+        List<Course> courses =_courseRepository.GetAll().Where(course =>
             (course.Students.Count < course.MaxStudents || course.IsOnline) &&
-
             (course.StartDate.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days >= 7 &&
             !course.Students.ContainsKey(studentId)).ToList();
+        
+        amount ??= courses.Count;
+        
+        return courses.Skip((pageIndex - 1) * amount.Value).Take(amount.Value).ToList();
     }
 
-    public List<Course> GetAppliedCourses(int studentId)
+    public List<Course> GetAppliedCourses(int studentId, int pageIndex = 1, int? amount = null)
     {
         Student? student = _userRepository.GetById(studentId) as Student;
-        return student!.AppliedCourses.Select(courseId => _courseRepository.GetById(courseId)!).ToList();
+        List<Course> courses = student!.AppliedCourses.Select(courseId => _courseRepository.GetById(courseId)!).ToList();
+        amount ??= courses.Count;
+        return courses.Skip((pageIndex - 1) * amount.Value).Take(amount.Value).ToList();
     }
 
-    public List<Exam> GetAppliedExams(Student student)
+    public List<Exam> GetAppliedExams(int studentId, int pageIndex = 1, int? amount = null)
     {
+        Student student = (_userRepository.GetById(studentId) as Student)!;
+        
         var appliedExamIds = student.AppliedExams;
 
         var appliedExams = _examRepository.GetAll()
             .Where(exam => appliedExamIds.Contains(exam.Id))
             .ToList();
 
-        return appliedExams;
+        amount ??= appliedExams.Count;
+
+        return appliedExams.Skip((pageIndex - 1) * amount.Value).Take(amount.Value).ToList();
     }
 
 
@@ -67,12 +75,21 @@ public class StudentService : IStudentService
      2. exam must have at least one available spot for student
      3. search date must be at least 30 days before the date the exam is held
      */
-    public List<Exam> GetAvailableExams(Student student)
+    public List<Exam> GetAvailableExams(int studentId, int pageIndex = 1, int? amount = null)
     {
         // Nakon što je učenik završio kurs, prikazuju mu se svi dostupni termini ispita koji se
         // odnose na jezik i nivo jezika koji je učenik obradio na kursu
 
-        return _examRepository.GetAll().Where(exam => exam.StudentIds.Count < exam.MaxStudents && IsNeededCourseFinished(exam, student) && (exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days >= 30).ToList();
+        Student student = (_userRepository.GetById(studentId) as Student)!;
+
+        List<Exam> exams = _examRepository.GetAll().Where(exam =>
+                            exam.StudentIds.Count < exam.MaxStudents && IsNeededCourseFinished(exam, student) &&
+                            (exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days >= 30 &&
+                            !student.AppliedExams.Contains(exam.Id)).ToList();
+
+        amount ??= exams.Count;
+        
+        return exams.Skip((pageIndex - 1) * amount.Value).Take(amount.Value).ToList();
     }
 
     /*
@@ -82,8 +99,8 @@ public class StudentService : IStudentService
     // TODO: MNOC 3
     private bool IsNeededCourseFinished(Exam exam, Student student)
     {
-
-        return student.LanguagePassFail.ContainsKey(exam.Language.Id) && student.LanguagePassFail[exam.Language.Id] == false;
+        return student.LanguagePassFail.ContainsKey(exam.Language.Id) &&
+               student.LanguagePassFail[exam.Language.Id] == false;
     }
 
 
@@ -97,10 +114,12 @@ public class StudentService : IStudentService
         {
             throw new InvalidInputException("You already applied");
         }
+
         if (_examRepository.GetById(examId) == null)
         {
             throw new InvalidInputException("Exam not found.");
         }
+
         foreach (int id in student.AppliedExams)
         {
             Exam exam = _examRepository.GetById(id)!;
@@ -109,6 +128,7 @@ public class StudentService : IStudentService
                 throw new InvalidInputException("Cant apply for exam while waiting for results.");
             }
         }
+
         Exam appliedExam = _examRepository.GetById(examId)!;
         appliedExam.StudentIds.Add(student.Id);
         _examRepository.Update(appliedExam);
@@ -122,10 +142,12 @@ public class StudentService : IStudentService
         {
             throw new InvalidInputException("Exam not found.");
         }
+
         if (!student.AppliedExams.Contains(exam.Id))
         {
             throw new InvalidInputException("Exam does not exist");
         }
+
         if ((exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days < 10)
             throw new InvalidInputException("The exam can't be dropped if it's less than 10 days from now.");
 
@@ -140,7 +162,7 @@ public class StudentService : IStudentService
 
         if (student.ActiveCourseId is not null)
             throw new InvalidInputException("You are already enrolled in a course.");
-        
+
         Course course = _courseRepository.GetById(courseId) ??
                         throw new InvalidInputException("Course doesn't exist.");
 
@@ -177,7 +199,7 @@ public class StudentService : IStudentService
 
         if (student.ActiveCourseId is null)
             throw new InvalidInputException("You are not enrolled in a course.");
-        
+
         Course course = _courseRepository.GetById(student.ActiveCourseId!.Value) ??
                         throw new InvalidInputException("Course doesn't exist.");
 
@@ -205,6 +227,7 @@ public class StudentService : IStudentService
         _examRepository.Update(exam);
         _userService.Delete(studentId);
     }
+
     public void CheckIfFirstInMonth()
     {
         DateOnly currentDate = DateOnly.FromDateTime(DateTime.Now);
@@ -269,7 +292,7 @@ public class StudentService : IStudentService
 
         _userRepository.Update(student);
     }
-    
+
     /// <summary>
     /// Reviews the teacher after the student has finished the course and removes the active course from the student
     /// </summary>
@@ -280,10 +303,10 @@ public class StudentService : IStudentService
         Course course = _courseRepository.GetById(student!.ActiveCourseId!.Value)!;
 
         Teacher teacher = (_userRepository.GetById(course.TeacherId!.Value) as Teacher)!;
-        
+
         teacher.AddReview(rating);
         _userRepository.Update(teacher);
-        
+
         student.DropActiveCourse();
         _userRepository.Update(student);
 
@@ -316,7 +339,7 @@ public class StudentService : IStudentService
     public void PauseOtherApplications(int studentId, int courseId)
     {
         Student student = (_userRepository.GetById(studentId) as Student)!;
-        
+
         foreach (Course course in student.AppliedCourses.Select(id => _courseRepository.GetById(id)!))
         {
             if (course.Id == courseId)
@@ -324,7 +347,7 @@ public class StudentService : IStudentService
 
             if (!course.Students.ContainsKey(studentId))
                 throw new InvalidInputException($"Student hasn't applied to the course with ID {course.Id}.");
-            
+
             course.Students[studentId] = ApplicationStatus.Paused;
             _courseRepository.Update(course);
         }
@@ -339,7 +362,7 @@ public class StudentService : IStudentService
         {
             if (!course.Students.ContainsKey(studentId))
                 throw new InvalidInputException($"Student hasn't applied to the course with ID {course.Id}.");
-            
+
             course.Students[studentId] = ApplicationStatus.Pending;
             _courseRepository.Update(course);
         }
