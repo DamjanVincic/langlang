@@ -4,6 +4,7 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
 using LangLang.Services;
+using LangLang.Views.CourseViews;
 using LangLang.Services.ReportServices;
 using LangLang.Views.DirectorViews;
 
@@ -20,6 +21,8 @@ namespace LangLang.ViewModels.DirectorViewModels
         {
             _directorViewWindow = directorViewWindow;
             ViewTeachersCommand = new RelayCommand(ViewTeachers);
+            ViewCoursesCommand = new RelayCommand(ViewCourses);
+            ViewExamsCommand = new RelayCommand(ViewExams);
             SendOutGradesCommand = new RelayCommand(SendOutGrades);
             NotifyBestStudentsCommand = new RelayCommand(NotifyBestStudents);
             LogOutCommand = new RelayCommand(LogOut);
@@ -30,6 +33,8 @@ namespace LangLang.ViewModels.DirectorViewModels
         }
 
         public RelayCommand ViewTeachersCommand { get; }
+        public RelayCommand ViewCoursesCommand { get; }
+        public RelayCommand ViewExamsCommand { get; }
         public RelayCommand SendOutGradesCommand { get; }
         public RelayCommand PenaltyPointReportCommand { get; }
         public RelayCommand NotifyBestStudentsCommand { get; }
@@ -54,6 +59,16 @@ namespace LangLang.ViewModels.DirectorViewModels
         {
             var sendGradesView = new GradedExams();
             sendGradesView.Show();
+        }
+
+        private void ViewExams()
+        {
+
+        }
+        private void ViewCourses()
+        {
+            var coursesView = new CoursesListingDirectorView();
+            coursesView.Show();
         }
 
         private void GeneratePenaltyPointReport()

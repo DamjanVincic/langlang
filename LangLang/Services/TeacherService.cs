@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Navigation;
 using LangLang.Models;
 using LangLang.Repositories;
 
@@ -11,7 +11,6 @@ public class TeacherService : ITeacherService
 
     private readonly IUserRepository _userRepository;
     private readonly ICourseRepository _courseRepository;
-    
     private readonly IExamService _examService;
     private readonly IScheduleService _scheduleService;
     private readonly IStudentService _studentService;
@@ -190,5 +189,21 @@ public class TeacherService : ITeacherService
             _studentService.ResumeApplications(studentId);
             _userRepository.Update(student);
         }
+    }
+    // get all available teachers and sort them based on ranking
+    // pick the first one as the best choice
+    public int? SmartPick(Course course)
+    {
+        List<Teacher> availableTeachers = GetAvailableTeachers(course)
+            .OrderByDescending(teacher => teacher.Rating)
+            .ToList();
+
+        if (!availableTeachers.Any())
+            throw new InvalidInputException("There are no available substitute teachers");
+
+        course.TeacherId = availableTeachers.First().Id;
+        availableTeachers.First().CourseIds.Add(course.Id);
+        _courseRepository.Update(course);
+        return course.TeacherId;
     }
 }

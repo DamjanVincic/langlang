@@ -13,7 +13,7 @@ namespace LangLang.Models
 
         public Course(Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents,
             int? creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed,
-            int teacherId) : base(language, maxStudents, startDate, teacherId, scheduledTime)
+            int? teacherId) : base(language, maxStudents, startDate, teacherId, scheduledTime)
         {
             Duration = duration;
             StartDate = startDate;

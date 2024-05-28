@@ -103,14 +103,16 @@ public class CourseService : ICourseService
 
 
     // TODO: NOP 11
-    public void Add(string languageName, LanguageLevel languageLevel, int duration, List<Weekday> held, bool isOnline,
-        int maxStudents, int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed,
-        int teacherId)
+    public Course Add(string languageName, LanguageLevel languageLevel, int duration, List<Weekday> held, bool isOnline,
+        int maxStudents, int? creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed,
+        int? teacherId)
     {
         Language language = _languageService.GetLanguage(languageName, languageLevel) ??
                             throw new InvalidInputException("Language with the given level doesn't exist.");
-        Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
-                          throw new InvalidInputException("User doesn't exist.");
+        Teacher? teacher = null;
+        if (teacherId != null)
+            teacher = _userRepository.GetById(teacherId.Value) as Teacher ??
+                      throw new InvalidInputException("User doesn't exist.");
 
         startDate = SetValidStartDate(startDate, held);
         Course course = new(language, duration, held, isOnline, maxStudents, creatorId, scheduledTime, startDate,
@@ -118,22 +120,28 @@ public class CourseService : ICourseService
 
         _scheduleService.Add(course);
         _courseRepository.Add(course);
-        teacher.CourseIds.Add(course.Id);
-        _userRepository.Update(teacher);
+
+        if (teacher != null)
+        {
+            teacher.CourseIds.Add(course.Id);
+            _userRepository.Update(teacher);
+        }
+        return course;
     }
 
     // TODO: MELOC 24, NOP 9, MNOC 4
     public void Update(int id, int duration, List<Weekday> held,
         bool isOnline, int maxStudents, TimeOnly scheduledTime, DateOnly startDate,
-        bool areApplicationsClosed, int teacherId)
+        bool areApplicationsClosed, int? teacherId)
     {
         Course course = _courseRepository.GetById(id) ?? throw new InvalidInputException("Course doesn't exist.");
-        Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
-                          throw new InvalidInputException("User doesn't exist.");
-
+        Teacher? teacher = teacherId.HasValue ? _userRepository.GetById(teacherId.Value) as Teacher ?? throw new InvalidInputException("User doesn't exist.") : null;
+        
         if ((course.StartDate.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days < 7)
             throw new InvalidInputException("The course can't be changed if it's less than 1 week from now.");
 
+        int? oldTeacherId = course.TeacherId;
+        
         startDate = SetValidStartDate(startDate, held);
         course.Duration = duration;
         course.Held = held;
@@ -146,11 +154,15 @@ public class CourseService : ICourseService
 
         _scheduleService.Update(course);
 
-        if (teacher.Id != course.TeacherId)
+        Teacher? oldTeacher = oldTeacherId.HasValue ? _userRepository.GetById(oldTeacherId.Value) as Teacher : null;
+        if (oldTeacher is not null)
         {
-            Teacher? oldTeacher = _userRepository.GetById(course.TeacherId) as Teacher;
-            oldTeacher!.CourseIds.Remove(course.Id);
+            oldTeacher.CourseIds.Remove(course.Id);
             _userRepository.Update(oldTeacher);
+        }
+
+        if (teacher is not null)
+        {
             teacher.CourseIds.Add(course.Id);
             _userRepository.Update(teacher);
         }
@@ -161,10 +173,13 @@ public class CourseService : ICourseService
     public void Delete(int id)
     {
         Course course = _courseRepository.GetById(id) ?? throw new InvalidInputException("Course doesn't exist.");
-        Teacher? teacher = _userRepository.GetById(course.TeacherId) as Teacher;
+        Teacher? teacher = course.TeacherId.HasValue ? _userRepository.GetById(course.TeacherId.Value) as Teacher : null;
 
-        teacher!.CourseIds.Remove(id);
-        _userRepository.Update(teacher);
+        if (teacher is not null)
+        {
+            teacher.CourseIds.Remove(id);
+            _userRepository.Update(teacher);
+        }
 
         foreach (Student student in course.Students.Keys.Select(studentId => (_userRepository.GetById(studentId) as Student)!))
         {

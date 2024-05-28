@@ -8,18 +8,17 @@ namespace LangLang.Models
     {
         public const int ExamDuration = 360;
 
-        public Exam(Language language, int maxStudents, DateOnly date, int teacherId, TimeOnly time)
-            : base(language, maxStudents, date, teacherId, time)
+        public Exam(Language language, int maxStudents, DateOnly date, int? teacherId, TimeOnly time)
+                    : base(language, maxStudents, date, teacherId, time)
         {
-
-            TeacherGraded=false;
-            DirectorGraded=false;
-
+            TeacherGraded = false;
+            DirectorGraded = false;
         }
+
 
         // Constructor without date validation for deserializing
         [JsonConstructor]
-        public Exam(int id, Language language, int maxStudents, DateOnly date, int teacherId, TimeOnly time)
+        public Exam(int id, Language language, int maxStudents, DateOnly date, int? teacherId, TimeOnly time)
             : base(id, language, maxStudents, date, teacherId, time)
         {
         }

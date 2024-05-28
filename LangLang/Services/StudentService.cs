@@ -277,11 +277,11 @@ public class StudentService : IStudentService
     {
         Student? student = _userRepository.GetById(studentId) as Student;
 
-        Course? course = _courseRepository.GetById(student!.ActiveCourseId!.Value);
+        Course course = _courseRepository.GetById(student!.ActiveCourseId!.Value)!;
 
-        Teacher? teacher = _userRepository.GetById(course!.TeacherId) as Teacher;
+        Teacher teacher = (_userRepository.GetById(course.TeacherId!.Value) as Teacher)!;
         
-        teacher!.AddReview(rating);
+        teacher.AddReview(rating);
         _userRepository.Update(teacher);
         
         student.DropActiveCourse();
