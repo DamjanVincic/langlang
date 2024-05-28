@@ -11,15 +11,17 @@ public class TeacherService : ITeacherService
     private readonly IUserRepository _userRepository;
     private readonly ICourseRepository _courseRepository;
     private readonly IExamRepository _examRepository;
+    private readonly IExamService _examService;
     private readonly IScheduleService _scheduleService;
     private readonly IStudentService _studentService;
     private readonly IMessageService _messageService;
 
-    public TeacherService(IUserRepository userRepository, ICourseRepository courseRepository, IExamRepository examRepository, IScheduleService scheduleService, IStudentService studentService, IMessageService messageService)
+    public TeacherService(IUserRepository userRepository, ICourseRepository courseRepository, IExamRepository examRepository, IExamService examService, IScheduleService scheduleService, IStudentService studentService, IMessageService messageService)
     {
         _userRepository = userRepository;
         _courseRepository = courseRepository;
         _examRepository = examRepository;
+        _examService = examService;
         _scheduleService = scheduleService;
         _studentService = studentService;
         _messageService = messageService;
@@ -135,6 +137,21 @@ public class TeacherService : ITeacherService
 
         return availableTeachers;
     }
+    public List<Teacher> GetAvailableTeachers(Exam exam)
+    {
+        List<Teacher> availableTeachers = new List<Teacher>();
+        foreach (Teacher teacher_ in GetAll())
+        {
+            Exam tempExam = new Exam(exam.Language, exam.MaxStudents, exam.Date, teacher_.Id, exam.ScheduledTime);
+
+            if (_scheduleService.ValidateScheduleItem(tempExam, true))
+            {
+                availableTeachers.Add(teacher_);
+            }
+        }
+
+        return availableTeachers;
+    }
 
     public void RejectStudentApplication(int studentId, int courseId)
     {
@@ -230,5 +247,19 @@ public class TeacherService : ITeacherService
         availableTeachers.First().CourseIds.Add(course.Id);
         _courseRepository.Update(course);
         return course.TeacherId;
+    }
+    public int? SmartPick(Exam exam)
+    {
+        List<Teacher> availableTeachers = GetAvailableTeachers(exam)
+            .OrderByDescending(teacher => teacher.Rating)
+            .ToList();
+
+        if (!availableTeachers.Any())
+            throw new InvalidInputException("There are no available substitute teachers");
+
+        exam.TeacherId = availableTeachers.First().Id;
+        availableTeachers.First().ExamIds.Add(exam.Id);
+        _examService.Update(exam.Id, exam.Language.Name, exam.Language.Level ,exam.MaxStudents, exam.Date, exam.TeacherId, exam.ScheduledTime);
+        return exam.TeacherId;
     }
 }

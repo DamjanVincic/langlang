@@ -40,30 +40,36 @@ public class ExamService : IExamService
         return _examRepository.GetById(id);
     }
 
-    public void Add(string? languageName, LanguageLevel languageLevel, int maxStudents, DateOnly examDate, int teacherId,
+    public Exam Add(string? languageName, LanguageLevel languageLevel, int maxStudents, DateOnly examDate, int? teacherId,
         TimeOnly examTime)
     {
-        Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
-                          throw new InvalidInputException("User doesn't exist.");
+        Teacher? teacher = null;
+        if (teacherId != null)
+            teacher = _userRepository.GetById(teacherId.Value) as Teacher ??
+                      throw new InvalidInputException("User doesn't exist.");
 
         Language language = _languageService.GetLanguage(languageName, languageLevel) ??
                             throw new InvalidInputException("Language with the given level doesn't exist.");
 
 
         Exam exam = new(language, maxStudents, examDate, teacherId, examTime)
-            { Id = _examRepository.GenerateId() };
+        { Id = _examRepository.GenerateId() };
 
 
         _scheduleService.Add(exam);
         _examRepository.Add(exam);
 
-        teacher.ExamIds.Add(exam.Id);
-        _userRepository.Update(teacher);
+        if (teacher != null)
+        {
+            teacher.ExamIds.Add(exam.Id);
+            _userRepository.Update(teacher);
+        }
+        return exam;
     }
 
     // TODO: MELOC 21, CYCLO_SWITCH 6, NOP 7, MNOC 5 
     public void Update(int id, string languageName, LanguageLevel languageLevel, int maxStudents, DateOnly date,
-        int teacherId, TimeOnly time)
+        int? teacherId, TimeOnly time)
     {
         // TODO: Decide which information should be updated
 
@@ -72,30 +78,35 @@ public class ExamService : IExamService
         if ((exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days < 14)
             throw new InvalidInputException("The exam can't be changed if it's less than 2 weeks from now.");
 
-        Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
-                          throw new InvalidInputException("User doesn't exist.");
+        Teacher? teacher = null;
+        if (teacherId.HasValue)
+            teacher = _userRepository.GetById(teacherId.Value) as Teacher ?? throw new InvalidInputException("User doesn't exist.");;
+
 
         Language language = _languageService.GetLanguage(languageName, languageLevel) ??
                             throw new InvalidInputException("Language with the given level doesn't exist.");
 
+        int? oldTeacherId = exam.TeacherId;
+        
         exam.Language = language;
         exam.MaxStudents = maxStudents;
         exam.Date = date;
         exam.ScheduledTime = time;
+        exam.TeacherId = teacherId;
 
         // Validates if it can be added to the current schedule
         _scheduleService.Update(exam);
+        
+        Teacher? oldTeacher = oldTeacherId.HasValue ? _userRepository.GetById(oldTeacherId.Value) as Teacher : null;
 
-        if (teacher.Id != exam.TeacherId)
+        if (oldTeacher is not null)
         {
-            Teacher? oldTeacher = exam.TeacherId.HasValue ? _userRepository.GetById(exam.TeacherId.Value) as Teacher : null;
+            oldTeacher.ExamIds.Remove(exam.Id);
+            _userRepository.Update(oldTeacher);
+        }
 
-            if (oldTeacher is not null)
-            {
-                oldTeacher.ExamIds.Remove(exam.Id);
-                _userRepository.Update(oldTeacher);
-            }
-
+        if (teacher is not null)
+        {
             teacher.ExamIds.Add(exam.Id);
             _userRepository.Update(teacher);
         }
