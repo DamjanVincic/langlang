@@ -56,11 +56,7 @@ namespace LangLang.ViewModels.DirectorViewModels
             var teachersView = new TeacherListingView();
             teachersView.Show();
         }
-        private void AddExam()
-        {
-            //var teachersView = new TeacherListingView();
-            //teachersView.Show();
-        }
+        
         private void SendOutGrades()
         {
             var sendGradesView = new GradedExams();
