@@ -13,5 +13,6 @@ namespace LangLang.Services
         public ExamGrade? GetById(int id);
         public int Add(int examId, int studentId, int readingPoints, int writingPoints, int listeningPoints, int talkingPoints);
         public void Delete(int id);
+        public List<ExamGrade> GetByExamId(int examId);
     }
 }

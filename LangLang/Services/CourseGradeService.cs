@@ -32,6 +32,11 @@ namespace LangLang.Services
         {
             return GetAll().FirstOrDefault(courseGrade => courseGrade.StudentId == studentId && courseGrade.CourseId == courseId);
         }
+        public List<CourseGrade> GetByCourseId(int courseId)
+        {
+            return GetAll().Where(courseGrade => courseGrade.CourseId == courseId).ToList();
+        }
+
 
         public int Add(int courseId, int studentId, int knowledgeGrade, int activityGrade)
         {

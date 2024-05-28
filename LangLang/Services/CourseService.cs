@@ -154,6 +154,7 @@ public class CourseService : ICourseService
 
         _scheduleService.Update(course);
 
+
         Teacher? oldTeacher = oldTeacherId.HasValue ? _userRepository.GetById(oldTeacherId.Value) as Teacher : null;
         if (oldTeacher is not null)
         {

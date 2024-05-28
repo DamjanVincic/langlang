@@ -76,7 +76,8 @@ namespace LangLang.Models
         // If the best students were notified by the director
         public bool StudentsNotified { get; set; } = false;
 
-        public int? CreatorId { get; set; } = null;
+        public int? CreatorId { get; set; }
+
 
         public DateOnly StartDate
         {
