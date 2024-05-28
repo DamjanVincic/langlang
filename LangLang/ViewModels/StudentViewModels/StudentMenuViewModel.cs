@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Globalization;
 using System.Windows;
-using System.Windows.Documents;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -16,11 +13,11 @@ namespace LangLang.ViewModels.StudentViewModels;
 
 public class StudentMenuViewModel : ViewModelBase
 {
-    private readonly IUserService _userService = new UserService();
-    private readonly IStudentService _studentService = new StudentService();
+    private readonly IUserService _userService = ServiceProvider.GetRequiredService<IUserService>();
+    private readonly IStudentService _studentService = ServiceProvider.GetRequiredService<IStudentService>();
+    private readonly ICourseService _courseService = ServiceProvider.GetRequiredService<ICourseService>();
 
     private readonly Student _student = UserService.LoggedInUser as Student ?? throw new InvalidInputException("No one is logged in.");
-    private readonly CourseService _courseService = new CourseService();
     private readonly Course? _course;
 
     private readonly Window _studentViewWindow;

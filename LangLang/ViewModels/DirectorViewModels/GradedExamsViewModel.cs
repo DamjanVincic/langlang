@@ -3,12 +3,9 @@ using LangLang.Models;
 using LangLang.Services;
 using LangLang.ViewModels.ExamViewModels;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -18,10 +15,12 @@ namespace LangLang.ViewModels.DirectorViewModels;
 public class GradedExamsViewModel
 {
 
-    private readonly IExamService _examService = new ExamService();
+    private readonly IExamService _examService;
 
-    public GradedExamsViewModel()
+    public GradedExamsViewModel(IExamService examService)
     {
+        _examService = examService;
+        
         UngradedExams = new ObservableCollection<ExamViewModel>(_examService.GetUngradedExams().Select(exam => new ExamViewModel(exam)));
         ExamCollectionView = CollectionViewSource.GetDefaultView(UngradedExams);
 

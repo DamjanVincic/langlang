@@ -10,9 +10,9 @@ namespace LangLang.Views.TeacherViews
     /// </summary>
     public partial class PickSubstituteTeacherView : Window
     {
-        public PickSubstituteTeacherView(List<Teacher> availableTeachers, ref int substituteTeacherId, Course course)
+        public PickSubstituteTeacherView(List<Teacher> availableTeachers, Course course)
         {
-            DataContext = new PickSubstituteTeacherViewModel(availableTeachers, ref substituteTeacherId, course);
+            DataContext = new PickSubstituteTeacherViewModel(availableTeachers, course);
             InitializeComponent();
         }
     }

@@ -26,7 +26,7 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Grid.ColumnSpan="2" FontWeight="Bold">APPLIED EXAMS</TextBlock>
-        <ListView Grid.Row="3" Grid.RowSpan="9" Padding="5" Margin="5" SelectedItem="{Binding SelectedItem}" ItemsSource="{Binding AppliedExams}" >
+        <ListView Grid.Row="5" Grid.RowSpan="7" Padding="5" Margin="5" SelectedItem="{Binding SelectedItem}" ItemsSource="{Binding AppliedExams}" >
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Language">
@@ -84,13 +84,48 @@
 
         </Grid>
 
-
-        <Grid Grid.Row="13">
+        <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Button Command="{Binding DropExamCommand}" Content="Drop application" Grid.Column="0" Background="Red" Foreground="White" Width="150" Height="40" Grid.ColumnSpan="2"/>
+
+            <TextBlock Text="Property name:" Grid.Column="1"/>
+            <TextBlock Text="Asc/Desc:" Grid.Column="2"/>
+
+        </Grid>
+        <TextBlock Text="SORT BY" Margin="20 0 0 0" HorizontalAlignment="Left" Grid.Row="3" Grid.RowSpan="2"/>
+        <Grid Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="114*"/>
+                <ColumnDefinition Width="89*"/>
+                <ColumnDefinition Width="25*"/>
+                <ColumnDefinition Width="114*"/>
+                <ColumnDefinition Width="114*"/>
+                <ColumnDefinition Width="114*"/>
+                <ColumnDefinition Width="114*"/>
+                <ColumnDefinition Width="114*"/>
+            </Grid.ColumnDefinitions>
+
+            <ComboBox ItemsSource="{Binding PropertyNames}" SelectedItem="{Binding SelectedPropertyName, Mode=TwoWay}" Grid.Column="1" Margin="5,5,5,5" Grid.ColumnSpan="2"/>
+            <ComboBox ItemsSource="{Binding SortingWays}" SelectedItem="{Binding SelectedSortingWay, Mode=TwoWay}" Grid.Column="3" Margin="5,5,5,5"/>
+        </Grid>
+
+        <Grid Grid.Row="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button Command="{Binding DropExamCommand}" Content="Drop application" Grid.Column="1" Background="Red" Foreground="White" Width="150" Height="40" Grid.ColumnSpan="2"/>
+            <Button Command="{Binding PreviousPageCommand}" Width="30" Height="30" Background="White" Foreground="#ec3629" Content="◀️"  Grid.Column="0"/>
+            <Button Command="{Binding NextPageCommand}" Width="30" Height="30" Background="White" Foreground="#ec3629" Content="▶️" Grid.Column="3"/>
         </Grid>
     </Grid>
 </Window>

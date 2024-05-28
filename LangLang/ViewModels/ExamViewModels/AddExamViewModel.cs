@@ -12,8 +12,8 @@ namespace LangLang.ViewModels.ExamViewModels
 {
     class AddExamViewModel : ViewModelBase
     {
-        private readonly ILanguageService _languageService = new LanguageService();
-        private readonly IExamService _examService = new ExamService();
+        private readonly ILanguageService _languageService = ServiceProvider.GetRequiredService<ILanguageService>();
+        private readonly IExamService _examService = ServiceProvider.GetRequiredService<IExamService>();
 
         private DateTime _dateSelected;
 

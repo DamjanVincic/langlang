@@ -11,7 +11,7 @@ namespace LangLang.ViewModels.LanguageViewModels
 {
     internal class AddLanguageViewModel : ViewModelBase
     {
-        private readonly ILanguageService _languageService = new LanguageService();
+        private readonly ILanguageService _languageService = ServiceProvider.GetRequiredService<ILanguageService>();
 
         private readonly Window _addLanguageWindow;
 

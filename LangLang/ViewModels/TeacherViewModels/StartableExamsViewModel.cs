@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
@@ -11,19 +7,20 @@ using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
 using LangLang.Services;
 using LangLang.ViewModels.ExamViewModels;
-using LangLang.ViewModels.StudentViewModels;
 using LangLang.Views.TeacherViews;
 
 namespace LangLang.ViewModels.TeacherViewModels
 {
     internal class StartableExamsViewModel:ViewModelBase
     {
-        private readonly IExamService _examService = new ExamService();
+        private readonly IExamService _examService;
         private readonly Teacher _teacher = UserService.LoggedInUser as Teacher ??
                                             throw new InvalidOperationException("No one is logged in.");
 
-        public StartableExamsViewModel()
+        public StartableExamsViewModel(IExamService examService)
         {
+            _examService = examService;
+            
             StartableExams = new ObservableCollection<ExamViewModel>();
             RefreshStartableExams();
             StartExamCommand = new RelayCommand(StartExam);

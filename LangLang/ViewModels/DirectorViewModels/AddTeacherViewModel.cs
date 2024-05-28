@@ -16,8 +16,8 @@ namespace LangLang.ViewModels.DirectorViewModels
 {
     internal class AddTeacherViewModel : ViewModelBase
     {
-        private readonly IUserService _userService = new UserService();
-        private readonly ILanguageService _languageService = new LanguageService();
+        private readonly IUserService _userService = ServiceProvider.GetRequiredService<IUserService>();
+        private readonly ILanguageService _languageService = ServiceProvider.GetRequiredService<ILanguageService>();
 
         private readonly ListBox _qualificationsListBox;
         private readonly Window _addTeacherWindow;

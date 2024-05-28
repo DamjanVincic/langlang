@@ -8,12 +8,22 @@ namespace LangLang.Services;
 
 public class ExamService : IExamService
 {
-    private readonly IExamRepository _examRepository = new ExamFileRepository();
-    private readonly IUserRepository _userRepository = new UserFileRepository();
-    private readonly IScheduleService _scheduleService = new ScheduleService();
-    private readonly ILanguageService _languageService = new LanguageService();
-    private readonly IExamGradeRepository _examGradeRepository = new ExamGradeFileRepository();
-    private readonly IMessageService _messageService = new MessageService();   
+    private readonly IExamRepository _examRepository;
+    private readonly IUserRepository _userRepository;
+    private readonly IScheduleService _scheduleService;
+    private readonly ILanguageService _languageService;
+    private readonly IExamGradeRepository _examGradeRepository;
+    private readonly IMessageService _messageService;   
+    
+    public ExamService(IExamRepository examRepository, IUserRepository userRepository, IScheduleService scheduleService, ILanguageService languageService, IExamGradeRepository examGradeRepository, IMessageService messageService)
+    {
+        _examRepository = examRepository;
+        _userRepository = userRepository;
+        _scheduleService = scheduleService;
+        _languageService = languageService;
+        _examGradeRepository = examGradeRepository;
+        _messageService = messageService;
+    }
 
     public List<Exam> GetAll()
     {
@@ -73,10 +83,13 @@ public class ExamService : IExamService
 
         if (teacher.Id != exam.TeacherId)
         {
-            Teacher? oldTeacher = _userRepository.GetById(exam.TeacherId) as Teacher;
+            Teacher? oldTeacher = exam.TeacherId.HasValue ? _userRepository.GetById(exam.TeacherId.Value) as Teacher : null;
 
-            oldTeacher!.ExamIds.Remove(exam.Id);
-            _userRepository.Update(oldTeacher);
+            if (oldTeacher is not null)
+            {
+                oldTeacher.ExamIds.Remove(exam.Id);
+                _userRepository.Update(oldTeacher);
+            }
 
             teacher.ExamIds.Add(exam.Id);
             _userRepository.Update(teacher);
@@ -90,11 +103,14 @@ public class ExamService : IExamService
         // TODO: Delete from schedule, students etc.
 
         Exam exam = _examRepository.GetById(id) ?? throw new InvalidInputException("Exam doesn't exist.");
-        Teacher teacher = _userRepository.GetById(exam.TeacherId) as Teacher ??
-                          throw new InvalidInputException("Teacher doesn't exist.");
+        Teacher? teacher = exam.TeacherId.HasValue ? _userRepository.GetById(exam.TeacherId.Value) as Teacher ?? 
+            throw new InvalidInputException("Teacher doesn't exist.") : null;
 
-        teacher.ExamIds.Remove(exam.Id);
-        _userRepository.Update(teacher);
+        if (teacher is not null)
+        {
+            teacher.ExamIds.Remove(exam.Id);
+            _userRepository.Update(teacher);
+        }
 
         _scheduleService.Delete(id);
         
