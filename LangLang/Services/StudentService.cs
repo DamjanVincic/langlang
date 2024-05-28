@@ -11,17 +11,19 @@ public class StudentService : IStudentService
     private readonly IUserRepository _userRepository;
     private readonly ICourseRepository _courseRepository;
     private readonly IExamRepository _examRepository;
+    private readonly ILanguageRepository _languageRepository;
 
     private readonly IUserService _userService;
     private readonly IExamGradeService _examGradeService;
     private readonly ICourseGradeService _courseGradeService;
     private readonly IPenaltyPointService _penaltyPointService;
     
-    public StudentService(IUserRepository userRepository, ICourseRepository courseRepository, IExamRepository examRepository, IUserService userService, IExamGradeService examGradeService, ICourseGradeService courseGradeService, IPenaltyPointService penaltyPointService)
+    public StudentService(IUserRepository userRepository, ICourseRepository courseRepository, ILanguageRepository languageRepository, IExamRepository examRepository, IUserService userService, IExamGradeService examGradeService, ICourseGradeService courseGradeService, IPenaltyPointService penaltyPointService)
     {
         _userRepository = userRepository;
         _courseRepository = courseRepository;
         _examRepository = examRepository;
+        _languageRepository = languageRepository;
         _userService = userService;
         _examGradeService = examGradeService;
         _courseGradeService = courseGradeService;
@@ -79,12 +81,13 @@ public class StudentService : IStudentService
     {
         // Nakon što je učenik završio kurs, prikazuju mu se svi dostupni termini ispita koji se
         // odnose na jezik i nivo jezika koji je učenik obradio na kursu
-
+        
         Student student = (_userRepository.GetById(studentId) as Student)!;
 
         List<Exam> exams = _examRepository.GetAll().Where(exam =>
                             exam.StudentIds.Count < exam.MaxStudents && IsNeededCourseFinished(exam, student) &&
                             (exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days >= 30 &&
+                            !IsAlreadyPassed(exam, student) &&
                             !student.AppliedExams.Contains(exam.Id)).ToList();
 
         amount ??= exams.Count;
@@ -103,6 +106,18 @@ public class StudentService : IStudentService
                student.LanguagePassFail[exam.Language.Id] == false;
     }
 
+    private bool IsAlreadyPassed(Exam exam, Student student)
+    {
+        foreach (int languageId in student.LanguagePassFail.Keys)
+        {
+            Language language = _languageRepository.GetById(languageId)!;
+            if (language.Name == exam.Language.Name && language.Level >= exam.Language.Level &&
+                student.LanguagePassFail[languageId])
+                return true;
+        }
+
+        return false;
+    }
 
     /*
      *  if teacher has graded the exam but director has not sent the email,

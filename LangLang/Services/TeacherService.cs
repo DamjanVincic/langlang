@@ -10,7 +10,7 @@ public class TeacherService : ITeacherService
 {
     private readonly IUserRepository _userRepository;
     private readonly ICourseRepository _courseRepository;
-    private readonly IExamRepository _examRepository
+    private readonly IExamRepository _examRepository;
     private readonly IScheduleService _scheduleService;
     private readonly IStudentService _studentService;
     private readonly IMessageService _messageService;
