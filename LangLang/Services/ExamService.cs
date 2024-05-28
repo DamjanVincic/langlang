@@ -78,24 +78,16 @@ public class ExamService : IExamService
         if ((exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days < 14)
             throw new InvalidInputException("The exam can't be changed if it's less than 2 weeks from now.");
 
-        Teacher teacher = null;
+        Teacher? teacher = null;
         if (teacherId.HasValue)
-        {
-            teacher = _userRepository.GetById(teacherId.Value) as Teacher;
-            if (teacher == null)
-            {
-                throw new InvalidInputException("User doesn't exist.");
-            }
-        }
-        else
-        {
-            throw new InvalidInputException("Invalid teacher ID.");
-        }
+            teacher = _userRepository.GetById(teacherId.Value) as Teacher ?? throw new InvalidInputException("User doesn't exist.");;
 
 
         Language language = _languageService.GetLanguage(languageName, languageLevel) ??
                             throw new InvalidInputException("Language with the given level doesn't exist.");
 
+        int? oldTeacherId = exam.TeacherId;
+        
         exam.Language = language;
         exam.MaxStudents = maxStudents;
         exam.Date = date;
@@ -104,17 +96,17 @@ public class ExamService : IExamService
 
         // Validates if it can be added to the current schedule
         _scheduleService.Update(exam);
+        
+        Teacher? oldTeacher = oldTeacherId.HasValue ? _userRepository.GetById(oldTeacherId.Value) as Teacher : null;
 
-        if (teacher.Id != exam.TeacherId)
+        if (oldTeacher is not null)
         {
-            Teacher? oldTeacher = exam.TeacherId.HasValue ? _userRepository.GetById(exam.TeacherId.Value) as Teacher : null;
+            oldTeacher.ExamIds.Remove(exam.Id);
+            _userRepository.Update(oldTeacher);
+        }
 
-            if (oldTeacher is not null)
-            {
-                oldTeacher.ExamIds.Remove(exam.Id);
-                _userRepository.Update(oldTeacher);
-            }
-
+        if (teacher is not null)
+        {
             teacher.ExamIds.Add(exam.Id);
             _userRepository.Update(teacher);
         }

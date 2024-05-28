@@ -11,15 +11,17 @@ public class TeacherService : ITeacherService
     private readonly IUserRepository _userRepository;
     private readonly ICourseRepository _courseRepository;
     private readonly IExamRepository _examRepository;
+    private readonly IExamService _examService;
     private readonly IScheduleService _scheduleService;
     private readonly IStudentService _studentService;
     private readonly IMessageService _messageService;
 
-    public TeacherService(IUserRepository userRepository, ICourseRepository courseRepository, IExamRepository examRepository, IScheduleService scheduleService, IStudentService studentService, IMessageService messageService)
+    public TeacherService(IUserRepository userRepository, ICourseRepository courseRepository, IExamRepository examRepository, IExamService examService, IScheduleService scheduleService, IStudentService studentService, IMessageService messageService)
     {
         _userRepository = userRepository;
         _courseRepository = courseRepository;
         _examRepository = examRepository;
+        _examService = examService;
         _scheduleService = scheduleService;
         _studentService = studentService;
         _messageService = messageService;
