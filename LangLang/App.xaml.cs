@@ -59,7 +59,11 @@ namespace LangLang
             services.AddScoped<ITeacherService, TeacherService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IGradeReportService, GradeReportService>();
+<<<<<<< HEAD
             services.AddTransient<IPassRateReportService, PassRateReportService>();
+=======
+            services.AddScoped<ILanguageReportService, LanguageReportService>();
+>>>>>>> origin/develop
 
             services.AddTransient<MainWindow>();
             services.AddTransient<ActiveCoursesViewModel>();
@@ -73,7 +77,7 @@ namespace LangLang
             services.AddTransient<StudentExamViewModel>();
             services.AddTransient<StartableExamsViewModel>();
             services.AddTransient<BestStudentsNotificationViewModel>();
-
+            services.AddTransient<CourseListingDirectorViewModel>();
         }
 
         protected override void OnStartup(StartupEventArgs e)

@@ -8,7 +8,7 @@ namespace LangLang.Models
         private int _maxStudents;
         private DateOnly _date;
 
-        protected ScheduleItem(Language language, int maxStudents, DateOnly date, int teacherId, TimeOnly time)
+        protected ScheduleItem(Language language, int maxStudents, DateOnly date, int? teacherId, TimeOnly time)
         {
             Language = language;
             TeacherId = teacherId;
@@ -19,7 +19,7 @@ namespace LangLang.Models
         }
 
         // Constructor without date validation for deserializing
-        protected ScheduleItem(int id, Language language, int maxStudents, DateOnly date, int teacherId, TimeOnly time)
+        protected ScheduleItem(int id, Language language, int maxStudents, DateOnly date, int? teacherId, TimeOnly time)
         {
             Id = id;
             Language = language;
