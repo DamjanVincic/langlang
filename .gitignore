@@ -1,5 +1,7 @@
 # Files for storing app data
 *.json
+# Custom reports
+*.pdf
 
 # Created by https://www.toptal.com/developers/gitignore/api/dotnetcore,csharp,visualstudio,visualstudiocode,vs,vim,rider,intellij+all,intellij+iml,intellij
 # Edit at https://www.toptal.com/developers/gitignore?templates=dotnetcore,csharp,visualstudio,visualstudiocode,vs,vim,rider,intellij+all,intellij+iml,intellij

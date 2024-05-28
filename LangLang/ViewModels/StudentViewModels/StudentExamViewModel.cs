@@ -21,9 +21,17 @@ public class StudentExamViewModel : ViewModelBase
     private readonly IExamService _examService;
     private readonly Student _student = UserService.LoggedInUser as Student ??
                               throw new InvalidOperationException("No one is logged in.");
+    
     private string? _languageNameSelected;
     private string? _languageLevelSelected;
     private DateTime _dateSelected;
+    private string? _selectedSortingWay;
+    private string? _selectedPropertyName;
+    
+    private int _currentPage = 1;
+    private const int ItemsPerPage = 5;
+    private int _totalPages;
+    private readonly int _totalCourses;
     
     public StudentExamViewModel(ILanguageService languageService, IStudentService studentService, IExamService examService)
     {
@@ -31,12 +39,17 @@ public class StudentExamViewModel : ViewModelBase
         _studentService = studentService;
         _examService = examService;
         
-        AvailableExams = new ObservableCollection<ExamViewModel>(_studentService.GetAvailableExams(_student).Select(exam => new ExamViewModel(exam)));
+        _totalCourses = _studentService.GetAvailableExams(_student.Id).Count;
+        CalculateTotalPages();
+        
+        AvailableExams = new ObservableCollection<ExamViewModel>(_studentService.GetAvailableExams(_student.Id, _currentPage, ItemsPerPage).Select(exam => new ExamViewModel(exam)));
         ExamCollectionView = CollectionViewSource.GetDefaultView(AvailableExams);
         ExamCollectionView.Filter = FilterExams;
+        
         ResetFiltersCommand = new RelayCommand(ResetFilters);
-
         ApplyForExamCommand = new RelayCommand(Apply);
+        PreviousPageCommand = new RelayCommand(PreviousPage);
+        NextPageCommand = new RelayCommand(NextPage);
     }
     
     public ObservableCollection<ExamViewModel> AvailableExams { get; }
@@ -44,8 +57,13 @@ public class StudentExamViewModel : ViewModelBase
     public ICollectionView ExamCollectionView { get; set; }
     public IEnumerable<LanguageLevel> LanguageLevelValues => Enum.GetValues(typeof(LanguageLevel)).Cast<LanguageLevel>();
     public IEnumerable<string> LanguageNames => _languageService.GetAllNames();
+    public static IEnumerable<String> SortingWays => new List<String> { "ascending", "descending" };
+    public static IEnumerable<String> PropertyNames => new List<String> { "LanguageName","LanguageLevel", "ExamDate" };
+    
     public ICommand ResetFiltersCommand { get; }
     public ICommand ApplyForExamCommand { get; }
+    public ICommand PreviousPageCommand { get; }
+    public ICommand NextPageCommand { get; }
 
 
     public string? LanguageNameSelected
@@ -75,6 +93,37 @@ public class StudentExamViewModel : ViewModelBase
         {
             _dateSelected = value;
             ExamCollectionView.Refresh();
+        }
+    }
+    
+    public string? SelectedSortingWay
+    {
+        get => _selectedSortingWay;
+        set
+        {
+            _selectedSortingWay = value;
+            ExamCollectionView.SortDescriptions.Clear();
+            if (value!.Equals("ascending"))
+            {
+                ExamCollectionView.SortDescriptions.Add(new SortDescription(_selectedPropertyName, ListSortDirection.Ascending));
+                return;
+            }
+            ExamCollectionView.SortDescriptions.Add(new SortDescription(_selectedPropertyName, ListSortDirection.Descending));
+        }
+    }
+    public string? SelectedPropertyName
+    {
+        get => _selectedPropertyName;
+        set
+        {
+            _selectedPropertyName = value;
+            ExamCollectionView.SortDescriptions.Clear();
+            if (value!.Equals("ascending"))
+            {
+                ExamCollectionView.SortDescriptions.Add(new SortDescription(_selectedPropertyName, ListSortDirection.Ascending));
+                return;
+            }
+            ExamCollectionView.SortDescriptions.Add(new SortDescription(_selectedPropertyName, ListSortDirection.Descending));
         }
     }
     
@@ -108,6 +157,7 @@ public class StudentExamViewModel : ViewModelBase
         {
             Exam exam = _examService.GetById(SelectedItem.Id)!;
             _studentService.ApplyStudentExam(_student, exam.Id);
+            RefreshExams();
             MessageBox.Show("You have applied for the exam.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
         }
         catch (Exception err)
@@ -116,4 +166,30 @@ public class StudentExamViewModel : ViewModelBase
         }
     }
 
+    private void PreviousPage()
+    {
+        if (_currentPage < 2) { return; }
+        _currentPage--;
+        RefreshExams();
+    }
+
+    private void NextPage()
+    {
+        if (_currentPage + 1 > _totalPages) { return; }
+        _currentPage++;
+        RefreshExams();
+    }
+    
+    private void CalculateTotalPages()
+    {
+        _totalPages = (int)Math.Ceiling((double)_totalCourses / ItemsPerPage);
+    }
+    
+    private void RefreshExams()
+    {
+        AvailableExams.Clear();
+        _studentService.GetAvailableExams(_student.Id, _currentPage, ItemsPerPage)
+            .ForEach(exam => AvailableExams.Add(new ExamViewModel(exam)));
+        ExamCollectionView.Refresh();
+    }
 }

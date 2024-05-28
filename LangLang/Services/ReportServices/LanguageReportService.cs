@@ -115,7 +115,7 @@ namespace LangLang.Services.ReportServices
 
             foreach (PenaltyPoint penaltyPoint in _penaltyPointRepository.GetAll())
             {
-                if ((DateTime.Now - penaltyPoint.DatePenaltyPointGiven.ToDateTime(TimeOnly.MinValue)).TotalDays >
+                if ((DateTime.Now - penaltyPoint.Date.ToDateTime(TimeOnly.MinValue)).TotalDays >
                     365) continue;
 
                 if (!coursePenaltyCount.TryAdd(penaltyPoint.CourseId, 1))

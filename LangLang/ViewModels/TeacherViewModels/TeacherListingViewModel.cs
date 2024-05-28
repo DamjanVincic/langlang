@@ -50,8 +50,8 @@ namespace LangLang.ViewModels.TeacherViewModels
                 .Select(teacher => new TeacherViewModel(teacher)));
             TeachersCollectionView = CollectionViewSource.GetDefaultView(_teachers);
 
-            EditCommand = new RelayCommand(OpenEditWindow);
-            AddCommand = new RelayCommand(OpenAddWindow);
+            EditCommand = new RelayCommand(EditTeacher);
+            AddCommand = new RelayCommand(AddTeacher);
             DeleteCommand = new RelayCommand(DeleteTeacher);
             LogOutCommand = new RelayCommand(LogOut);
 
@@ -168,7 +168,7 @@ namespace LangLang.ViewModels.TeacherViewModels
             return false;
         }
 
-        private void OpenEditWindow()
+        private void EditTeacher()
         {
             if (SelectedItem == null)
             {
@@ -188,13 +188,16 @@ namespace LangLang.ViewModels.TeacherViewModels
             UpdateTeacherList();
         }
 
-        private void OpenAddWindow()
+        private void AddTeacher()
         {
             var newWindow = new AddTeacherView();
             newWindow.ShowDialog();
             UpdateTeacherList();
         }
 
+        // delete all courses and exams that the teacher created
+        // if they are on active course it can not be deleted
+        // if they are on courses or exams that director chose, just remove them
         private void DeleteTeacher()
         {
             try
@@ -202,7 +205,6 @@ namespace LangLang.ViewModels.TeacherViewModels
                 if (SelectedItem == null)
                     throw new Exception("No teacher selected");
 
-                PutSubstituteTeachers();
                 _userService.Delete(SelectedItem.Id);
 
                 _teachers.Remove(SelectedItem);
@@ -212,39 +214,6 @@ namespace LangLang.ViewModels.TeacherViewModels
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-        }
-
-        private void PutSubstituteTeachers()
-        {
-            Dictionary<int, Course> activeTeachersCourses = _teacherService.GetCourses(SelectedItem!.Id)
-                .Where(course => course.AreApplicationsClosed)
-                .ToDictionary(course => course.Id);
-
-            Dictionary<int, int> substituteTeacherIds = new Dictionary<int, int>();
-
-            foreach (int courseId in activeTeachersCourses.Keys)
-            {
-                substituteTeacherIds[courseId]= PickSubstituteTeacher(activeTeachersCourses[courseId]);
-            }
-
-            foreach (int courseId in substituteTeacherIds.Keys)
-            {
-                activeTeachersCourses[courseId].TeacherId=substituteTeacherIds[courseId];
-                _courseRepository.Update(activeTeachersCourses[courseId]);
-            }
-        }
-
-        private int PickSubstituteTeacher(Course course)
-        {
-            List<Teacher> availableTeachers = _teacherService.GetAvailableTeachers(course);
-
-            if (!availableTeachers.Any())
-                throw new Exception("There are no available substitute teachers");
-
-            int substituteTeacherId = -1;
-            var newWindow = new PickSubstituteTeacherView(availableTeachers, ref substituteTeacherId, course);
-            newWindow.ShowDialog();
-            return substituteTeacherId;
         }
 
         private void LogOut()

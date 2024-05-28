@@ -10,16 +10,16 @@ namespace LangLang.Models
         public int StudentId { get; set; }
         public int CourseId { get; set; }
         public int TeacherId { get; set; }
-        public DateOnly DatePenaltyPointGiven { get; set; }
+        public DateOnly Date { get; set; }
 
-        public PenaltyPoint(PenaltyPointReason penaltyPointReason, bool deleted, int studentId, int courseId, int teacherId, DateOnly datePenaltyPointGiven)
+        public PenaltyPoint(PenaltyPointReason penaltyPointReason, bool deleted, int studentId, int courseId, int teacherId, DateOnly date)
         {
             PenaltyPointReason = penaltyPointReason;
             Deleted = deleted;
             StudentId = studentId;
             CourseId = courseId;
             TeacherId = teacherId;
-            DatePenaltyPointGiven = datePenaltyPointGiven;
+            Date = date;
         }
     }
 }

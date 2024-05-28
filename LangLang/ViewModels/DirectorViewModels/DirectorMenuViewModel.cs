@@ -4,6 +4,7 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
 using LangLang.Services;
+using LangLang.Views.CourseViews;
 using LangLang.Services.ReportServices;
 using LangLang.Views.DirectorViews;
 
@@ -13,16 +14,21 @@ namespace LangLang.ViewModels.DirectorViewModels
     {
         private readonly Director _director = UserService.LoggedInUser as Director ?? throw new InvalidInputException("No one is logged in.");
         private readonly Window _directorViewWindow;
+
         private readonly IGradeReportService _gradeReportService =  ServiceProvider.GetRequiredService<IGradeReportService>();
 
         private readonly ILanguageReportService _languageReportService =
             ServiceProvider.GetRequiredService<ILanguageReportService>();
         private readonly IUserService _userService = ServiceProvider.GetRequiredService<IUserService>();
+        private readonly IDirectorService _directorService = ServiceProvider.GetRequiredService<IDirectorService>();
 
         public DirectorMenuViewModel(Window directorViewWindow)
         {
             _directorViewWindow = directorViewWindow;
+            
             ViewTeachersCommand = new RelayCommand(ViewTeachers);
+            ViewCoursesCommand = new RelayCommand(ViewCourses);
+            ViewExamsCommand = new RelayCommand(ViewExams);
             SendOutGradesCommand = new RelayCommand(SendOutGrades);
             NotifyBestStudentsCommand = new RelayCommand(NotifyBestStudents);
             LogOutCommand = new RelayCommand(LogOut);
@@ -33,6 +39,8 @@ namespace LangLang.ViewModels.DirectorViewModels
         }
 
         public RelayCommand ViewTeachersCommand { get; }
+        public RelayCommand ViewCoursesCommand { get; }
+        public RelayCommand ViewExamsCommand { get; }
         public RelayCommand SendOutGradesCommand { get; }
         public RelayCommand PenaltyPointReportCommand { get; }
         public RelayCommand NotifyBestStudentsCommand { get; }
@@ -59,9 +67,20 @@ namespace LangLang.ViewModels.DirectorViewModels
             sendGradesView.Show();
         }
 
+        private void ViewExams()
+        {
+
+        }
+        private void ViewCourses()
+        {
+            var coursesView = new CoursesListingDirectorView();
+            coursesView.Show();
+        }
+
         private void GeneratePenaltyPointReport()
         {
-            throw new NotImplementedException();
+            _directorService.GeneratePenaltyReport();
+            MessageBox.Show("Penalty report generated.");
         }
         private void GenerateGradeReport()
         {
@@ -93,6 +112,7 @@ namespace LangLang.ViewModels.DirectorViewModels
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+        
         private void NotifyBestStudents()
         {
             new BestStudentsNotificationView().ShowDialog();
