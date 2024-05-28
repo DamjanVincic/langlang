@@ -138,14 +138,11 @@ public class CourseService : ICourseService
 
         _scheduleService.Update(course);
 
-        if (teacher.Id != course.TeacherId)
-        {
-            Teacher? oldTeacher = _userRepository.GetById(course.TeacherId) as Teacher;
-            oldTeacher!.CourseIds.Remove(course.Id);
-            _userRepository.Update(oldTeacher);
-            teacher.CourseIds.Add(course.Id);
-            _userRepository.Update(teacher);
-        }
+        Teacher? oldTeacher = _userRepository.GetById(course.TeacherId) as Teacher;
+        oldTeacher!.CourseIds.Remove(course.Id);
+        _userRepository.Update(oldTeacher);
+        teacher.CourseIds.Add(course.Id);
+        _userRepository.Update(teacher);
 
         _courseRepository.Update(course);
     }

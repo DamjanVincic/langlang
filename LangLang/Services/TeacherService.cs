@@ -14,6 +14,7 @@ public class TeacherService : ITeacherService
     private readonly IScheduleService _scheduleService = new ScheduleService();
     private readonly IStudentService _studentService = new StudentService();
     private readonly IMessageService _messageService = new MessageService();
+    private readonly IExamRepository _examRepository = new ExamFileRepository();
 
     public List<Teacher> GetAll()
     {
@@ -27,13 +28,20 @@ public class TeacherService : ITeacherService
 
         return courses.Skip((pageIndex - 1) * amount.Value).Take(amount.Value).ToList();
     }
+    public List<Exam> GetExams(int teacherId, int pageIndex = 1, int? amount = null)
+    {
+        List<Exam> exams = _examRepository.GetAll().Where(exam => exam.TeacherId == teacherId).ToList();
+        amount ??= exams.Count;
+
+        return exams.Skip((pageIndex - 1) * amount.Value).Take(amount.Value).ToList();
+    }
     public int GetCourseCount(int teacherId)
     {
         return _courseRepository.GetAll().Count(course => course.TeacherId == teacherId);
     }
-    public List<Exam> GetExams(int teacherId)
+    public int GetExamCount(int teacherId)
     {
-        return _examService.GetAll().Where(exam => exam.TeacherId == teacherId).ToList();
+        return _examRepository.GetAll().Count(exam => exam.TeacherId == teacherId);
     }
 
     public List<Teacher> GetAvailableTeachers(Course course)

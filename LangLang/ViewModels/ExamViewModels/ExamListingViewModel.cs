@@ -11,14 +11,13 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
 using LangLang.Services;
+using LangLang.ViewModels.CourseViewModels;
 using LangLang.Views.ExamViews;
 
 namespace LangLang.ViewModels.ExamViewModels
 {
     public class ExamListingViewModel : ViewModelBase
     {
-        private const int PageSize = 2;
-
         private readonly ITeacherService _teacherService = new TeacherService();
         private readonly ILanguageService _languageService = new LanguageService();
         private readonly IExamService _examService = new ExamService();
@@ -31,37 +30,45 @@ namespace LangLang.ViewModels.ExamViewModels
         private string? _languageNameSelected;
         private string? _languageLevelSelected;
         private DateTime _dateSelected;
-        private int _currentPage = 1;
+        private string? _selectedSortingWay;
+        private string? _selectedPropertyName;
 
+        private int _currentPage;
+        private readonly int _itemsPerPage = 5;
+        private int _totalPages;
+        private int _totalExams;
         public ExamListingViewModel()
         {
-            _exams = new ObservableCollection<ExamViewModel>(_teacherService.GetExams(_teacher.Id)
+            _currentPage = 1;
+            _totalExams = _teacherService.GetExamCount(_teacher.Id);
+            CalculateTotalPages();
+            _exams = new ObservableCollection<ExamViewModel>(_teacherService.GetExams(_teacher.Id, _currentPage, _itemsPerPage)
                 .Select(exam => new ExamViewModel(exam)));
             ExamCollectionView = CollectionViewSource.GetDefaultView(_exams);
             ExamCollectionView.Filter = FilterExams;
-            ExamCollectionView.CollectionChanged += OnExamCollectionViewChanged;
-
             AddCommand = new RelayCommand(Add);
             EditCommand = new RelayCommand(Edit);
             DeleteCommand = new RelayCommand(Delete);
-
-            UpdateExamList();
+            PreviousPageCommand = new RelayCommand(PreviousPage);
+            NextPageCommand = new RelayCommand(NextPage);
         }
 
         public ExamViewModel? SelectedItem { get; set; }
         public ICollectionView ExamCollectionView { get; set; }
 
-        public IEnumerable<LanguageLevel> LanguageLevelValues =>
-            Enum.GetValues(typeof(LanguageLevel)).Cast<LanguageLevel>();
+        public static IEnumerable<String> LanguageLevelValues => Enum.GetNames(typeof(LanguageLevel));
 
-        public IEnumerable<string> LanguageNames => _languageService.GetAllNames();
+        public IEnumerable<String> LanguageNames => _languageService.GetAllNames();
         public IEnumerable<ExamViewModel> Exams => _exams;
+        public static IEnumerable<String> SortingWays => new List<String> { "ascending", "descending" };
+        public static IEnumerable<String> PropertyNames => new List<String> { "Language", "LanguageLevel", "ExamDate" };
 
         public ICommand AddCommand { get; }
         public ICommand EditCommand { get; }
         public ICommand DeleteCommand { get; }
-        public ICommand NextPageCommand => new RelayCommand(NextPage);
-        public ICommand PreviousPageCommand => new RelayCommand(PreviousPage);
+
+        public ICommand PreviousPageCommand { get; }
+        public ICommand NextPageCommand { get; }
 
         public string? LanguageNameSelected
         {
@@ -93,24 +100,43 @@ namespace LangLang.ViewModels.ExamViewModels
             }
         }
 
-        private bool FilterExams(object obj)
+        public string? SelectedSortingWay
         {
-            if (obj is ExamViewModel examViewModel)
+            get => _selectedSortingWay;
+            set
             {
-                return examViewModel.FilterLanguageName(LanguageNameSelected) &&
-                       examViewModel.FilterLevel(LanguageLevelSelected) &&
-                       examViewModel.FilterDateHeld(DateSelected) &&
-                       examViewModel.FilterTeacherId(_teacher.Id);
+                _selectedSortingWay = value;
+                ApplySorting();
             }
+        }
 
-            return false;
+        public string? SelectedPropertyName
+        {
+            get => _selectedPropertyName;
+            set
+            {
+                _selectedPropertyName = value;
+                ApplySorting();
+            }
+        }
+
+        private void ApplySorting()
+        {
+            if (_selectedPropertyName == null || _selectedSortingWay == null)
+                return;
+
+            ExamCollectionView.SortDescriptions.Clear();
+            var sortDirection = _selectedSortingWay.Equals("ascending") ? ListSortDirection.Ascending : ListSortDirection.Descending;
+            ExamCollectionView.SortDescriptions.Add(new SortDescription(_selectedPropertyName, sortDirection));
         }
 
         private void Add()
         {
             var newWindow = new AddExamView();
             newWindow.ShowDialog();
-            UpdateExamList();
+            _totalExams = _teacherService.GetExamCount(_teacher.Id);
+            CalculateTotalPages();
+            RefreshExams();
         }
 
         private void Edit()
@@ -124,7 +150,7 @@ namespace LangLang.ViewModels.ExamViewModels
             Exam exam = _examService.GetById(SelectedItem.Id) ?? throw new InvalidOperationException("Exam not found.");
 
             new AddExamView(exam).ShowDialog();
-            UpdateExamList();
+            RefreshExams();
         }
 
         // TODO: MNOC 3
@@ -141,53 +167,49 @@ namespace LangLang.ViewModels.ExamViewModels
 
             Exam exam = _examService.GetById(SelectedItem.Id) ?? throw new InvalidOperationException("Exam not found.");
             _examService.Delete(exam.Id);
-            UpdateExamList();
+            _totalExams--;
+            CalculateTotalPages();
+            RefreshExams();
 
             MessageBox.Show("Exam deleted successfully.", "Success", MessageBoxButton.OK,
                 MessageBoxImage.Information);
         }
-
-        /*
-        private void UpdateExamList()
+        private void CalculateTotalPages()
         {
-            _exams.Clear();
-            _teacherService.GetExams(_teacher.Id).ForEach(exam => _exams.Add(new ExamViewModel(exam)));
-            ExamCollectionView.Refresh();
+            _totalPages = (int)Math.Ceiling((double)_totalExams / _itemsPerPage);
         }
-        */
 
         private void NextPage()
         {
+            if (_currentPage + 1 > _totalPages) { return; }
             _currentPage++;
-            UpdateExamList();
+            RefreshExams();
         }
 
         private void PreviousPage()
         {
-            if (_currentPage > 1)
+            if (_currentPage < 2) { return; }
+            _currentPage--;
+            RefreshExams();
+        }
+        private bool FilterExams(object obj)
+        {
+            if (obj is ExamViewModel examViewModel)
             {
-                _currentPage--;
-                UpdateExamList();
+                return examViewModel.FilterLanguageName(LanguageNameSelected) &&
+                       examViewModel.FilterLevel(LanguageLevelSelected) &&
+                       examViewModel.FilterDateHeld(DateSelected) &&
+                       examViewModel.FilterTeacherId(_teacher.Id);
             }
+
+            return false;
         }
 
-        private void UpdateExamList()
+        private void RefreshExams()
         {
             _exams.Clear();
-            var exams = _teacherService.GetExams(_teacher.Id)
-                                       .Skip((_currentPage - 1) * PageSize)
-                                       .Take(PageSize)
-                                       .Select(exam => new ExamViewModel(exam));
-            foreach (var exam in exams)
-            {
-                _exams.Add(exam);
-            }
+            _teacherService.GetExams(_teacher.Id, _currentPage, _itemsPerPage).ForEach(exam => _exams.Add(new ExamViewModel(exam)));
             ExamCollectionView.Refresh();
-        }
-
-        private void OnExamCollectionViewChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            RaisePropertyChanged(nameof(Exams));
         }
     }
 }
