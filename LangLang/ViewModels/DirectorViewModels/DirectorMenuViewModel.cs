@@ -14,12 +14,15 @@ namespace LangLang.ViewModels.DirectorViewModels
     {
         private readonly Director _director = UserService.LoggedInUser as Director ?? throw new InvalidInputException("No one is logged in.");
         private readonly Window _directorViewWindow;
+
         private readonly IGradeReportService _gradeReportService =  ServiceProvider.GetRequiredService<IGradeReportService>();
         private readonly IUserService _userService = ServiceProvider.GetRequiredService<IUserService>();
+        private readonly IDirectorService _directorService = ServiceProvider.GetRequiredService<IDirectorService>();
 
         public DirectorMenuViewModel(Window directorViewWindow)
         {
             _directorViewWindow = directorViewWindow;
+            
             ViewTeachersCommand = new RelayCommand(ViewTeachers);
             ViewCoursesCommand = new RelayCommand(ViewCourses);
             ViewExamsCommand = new RelayCommand(ViewExams);
@@ -73,7 +76,8 @@ namespace LangLang.ViewModels.DirectorViewModels
 
         private void GeneratePenaltyPointReport()
         {
-            throw new NotImplementedException();
+            _directorService.GeneratePenaltyReport();
+            MessageBox.Show("Penalty report generated.");
         }
         private void GenerateGradeReport()
         {
@@ -87,6 +91,7 @@ namespace LangLang.ViewModels.DirectorViewModels
         {
             throw new NotImplementedException();
         }
+        
         private void NotifyBestStudents()
         {
             new BestStudentsNotificationView().ShowDialog();
