@@ -10,13 +10,25 @@ namespace LangLang.Services;
 
 public class ExamService : IExamService
 {
-    private readonly IExamRepository _examRepository = new ExamFileRepository();
-    private readonly IUserRepository _userRepository = new UserFileRepository();
-    private readonly IScheduleService _scheduleService = new ScheduleService();
-    private readonly ILanguageService _languageService = new LanguageService();
-    private readonly IExamGradeRepository _examGradeRepository = new ExamGradeFileRepository();
-    private readonly IExamGradeService _examGradeService = new ExamGradeService();
-    private readonly IMessageService _messageService = new MessageService();   
+
+    private readonly IExamRepository _examRepository;
+    private readonly IUserRepository _userRepository;
+    private readonly IScheduleService _scheduleService;
+    private readonly ILanguageService _languageService;
+    private readonly IExamGradeRepository _examGradeRepository;
+    private readonly IMessageService _messageService;
+    private readonly IExamGradeService _examGradeService;
+    
+    public ExamService(IExamRepository examRepository, IUserRepository userRepository, IScheduleService scheduleService, ILanguageService languageService, IExamGradeRepository examGradeRepository, IMessageService messageService, IExamGradeService examGradeService)
+    {
+        _examRepository = examRepository;
+        _userRepository = userRepository;
+        _scheduleService = scheduleService;
+        _languageService = languageService;
+        _examGradeRepository = examGradeRepository;
+        _messageService = messageService;
+        _examGradeService = examGradeService;
+    }
 
     public List<Exam> GetAll()
     {
@@ -28,7 +40,7 @@ public class ExamService : IExamService
         return _examRepository.GetById(id);
     }
 
-    public void Add(string languageName, LanguageLevel languageLevel, int maxStudents, DateOnly examDate, int teacherId,
+    public void Add(string? languageName, LanguageLevel languageLevel, int maxStudents, DateOnly examDate, int teacherId,
         TimeOnly examTime)
     {
         Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
@@ -49,6 +61,7 @@ public class ExamService : IExamService
         _userRepository.Update(teacher);
     }
 
+    // TODO: MELOC 21, CYCLO_SWITCH 6, NOP 7, MNOC 5 
     public void Update(int id, string languageName, LanguageLevel languageLevel, int maxStudents, DateOnly date,
         int teacherId, TimeOnly time)
     {
@@ -127,6 +140,7 @@ public class ExamService : IExamService
         return students;
     }
 
+    // TODO: CYCLO_SWITCH 6,  MNOC 3
     public List<Exam> GetStartableExams(int teacherId)
     {
         Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
@@ -217,44 +231,4 @@ public class ExamService : IExamService
             _messageService.Add(examGrade.StudentId, messageText);
         }
     }
-    /*
-        Prosečan broj poena ostvaren na svakom od delova svih ispita u poslednjih
-        godinu dana. 
-        Koliko je studenata slušalo kurs, a koliko položilo, pored toga
-        navesti i procenat studenata koji je položio u odnosu na one koje je slušao
-    */
-    public List<int> AveragePointsInLastYear()
-    {
-        List<int> sumOfPoints = new List<int> { 0, 0, 0, 0 };
-        int gradeCount = 0;
-
-        DateTime oneYearAgo = DateTime.Today.AddYears(-1);
-
-        foreach (Exam exam in GetAll())
-        {
-            if (exam.Date.ToDateTime(TimeOnly.MinValue) >= oneYearAgo && exam.TeacherGraded)
-            {
-                foreach (ExamGrade grade in _examGradeService.GetByExamId(exam.Id))
-                {
-                    sumOfPoints[0] += grade.ListeningPoints;
-                    sumOfPoints[1] += grade.TalkingPoints;
-                    sumOfPoints[2] += grade.WritingPoints;
-                    sumOfPoints[3] += grade.ReadingPoints;
-                    gradeCount++;
-                }
-            }
-        }
-
-        if (gradeCount > 0)
-        {
-            for (int i = 0; i < sumOfPoints.Count; i++)
-            {
-                sumOfPoints[i] /= gradeCount;
-            }
-        }
-
-        return sumOfPoints;
-    }
-
-
 }

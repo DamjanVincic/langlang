@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using System.Xml.Linq;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
@@ -13,8 +12,8 @@ namespace LangLang.ViewModels.CourseViewModels
 {
     class AddCourseViewModel : ViewModelBase
     {
-        private readonly ILanguageService _languageService = new LanguageService();
-        private readonly ICourseService _courseService = new CourseService();
+        private readonly ILanguageService _languageService;
+        private readonly ICourseService _courseService;
 
         private readonly Teacher _teacher = UserService.LoggedInUser as Teacher ??
                                             throw new InvalidOperationException("No one is logged in.");
@@ -24,8 +23,11 @@ namespace LangLang.ViewModels.CourseViewModels
                                          .Select(minute => minute.ToString("00"))
                                          .ToList();
 
-        public AddCourseViewModel()
+        public AddCourseViewModel(ILanguageService languageService, ICourseService courseService)
         {
+            _languageService = languageService;
+            _courseService = courseService;
+            
             SelectedWeekdays = new bool[7];
             AddCourseCommand = new RelayCommand(AddCourse);
         }
@@ -52,6 +54,7 @@ namespace LangLang.ViewModels.CourseViewModels
         public IEnumerable<string?> HourValues => _hours;
         public IEnumerable<string?> MinuteValues => _minutes;
 
+        // TODOL: MELOC 30, CYCLO_SWITCH 10, MNOC 5
         private void AddCourse()
         {
             if (string.IsNullOrEmpty(LanguageName) ||

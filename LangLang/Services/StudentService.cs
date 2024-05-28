@@ -8,14 +8,25 @@ namespace LangLang.Services;
 
 public class StudentService : IStudentService
 {
-    private readonly IUserRepository _userRepository = new UserFileRepository();
-    private readonly ICourseRepository _courseRepository = new CourseFileRepository();
-    private readonly IExamRepository _examRepository = new ExamFileRepository();
+    private readonly IUserRepository _userRepository;
+    private readonly ICourseRepository _courseRepository;
+    private readonly IExamRepository _examRepository;
 
-    private readonly IUserService _userService = new UserService();
-    private readonly IExamGradeService _examGradeService = new ExamGradeService();
-    private readonly ICourseGradeService _courseGradeService = new CourseGradeService();
-    private readonly IPenaltyPointService _penaltyPointService = new PenaltyPointService();
+    private readonly IUserService _userService;
+    private readonly IExamGradeService _examGradeService;
+    private readonly ICourseGradeService _courseGradeService;
+    private readonly IPenaltyPointService _penaltyPointService;
+    
+    public StudentService(IUserRepository userRepository, ICourseRepository courseRepository, IExamRepository examRepository, IUserService userService, IExamGradeService examGradeService, ICourseGradeService courseGradeService, IPenaltyPointService penaltyPointService)
+    {
+        _userRepository = userRepository;
+        _courseRepository = courseRepository;
+        _examRepository = examRepository;
+        _userService = userService;
+        _examGradeService = examGradeService;
+        _courseGradeService = courseGradeService;
+        _penaltyPointService = penaltyPointService;
+    }
 
 
     public List<Student> GetAll()
@@ -68,6 +79,7 @@ public class StudentService : IStudentService
     if language from that course is in the dict than student has finished that course
     if its in the dict and it has value true then student passed exam, if its false he didnt pass it yet
     */
+    // TODO: MNOC 3
     private bool IsNeededCourseFinished(Exam exam, Student student)
     {
 
@@ -139,6 +151,7 @@ public class StudentService : IStudentService
         _courseRepository.Update(course);
     }
 
+    // TODO: MNOC 3
     public void WithdrawFromCourse(int studentId, int courseId)
     {
         Student student = _userRepository.GetById(studentId) as Student ??
@@ -221,6 +234,7 @@ public class StudentService : IStudentService
         }
     }
 
+    // TODO: NOP 6
     public void AddPenaltyPoint(int studentId, PenaltyPointReason penaltyPointReason, int courseId,
         int teacherId, DateOnly datePenaltyPointGiven)
     {
@@ -250,7 +264,7 @@ public class StudentService : IStudentService
 
         student.ExamGradeIds[examId] = examGradeId;
 
-        ExamGrade examGrade = _examGradeService.GetById(examGradeId);
+        ExamGrade examGrade = _examGradeService.GetById(examGradeId)!;
         student.LanguagePassFail[exam.Language.Id] = examGrade.Passed;
 
         _userRepository.Update(student);

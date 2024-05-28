@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
+using LangLang.Repositories;
 using LangLang.Services;
+using LangLang.Services.ReportServices;
 using LangLang.Views.DirectorViews;
 
 namespace LangLang.ViewModels.DirectorViewModels
@@ -13,22 +14,31 @@ namespace LangLang.ViewModels.DirectorViewModels
     {
         private readonly Director _director = UserService.LoggedInUser as Director ?? throw new InvalidInputException("No one is logged in.");
         private readonly Window _directorViewWindow;
-        private readonly IUserService _userService = new UserService();
-        private readonly IExamService _examService = new ExamService();
+        private readonly IGradeReportService _gradeReportService = ServiceProvider.GetRequiredService<IGradeReportService>();
+        private readonly IPassRateReportService _passRateReportService = ServiceProvider.GetRequiredService<IPassRateReportService>();
 
+        private readonly IUserService _userService = ServiceProvider.GetRequiredService<IUserService>();
         public DirectorMenuViewModel(Window directorViewWindow)
         {
             _directorViewWindow = directorViewWindow;
             ViewTeachersCommand = new RelayCommand(ViewTeachers);
             SendOutGradesCommand = new RelayCommand(SendOutGrades);
+            NotifyBestStudentsCommand = new RelayCommand(NotifyBestStudents);
             LogOutCommand = new RelayCommand(LogOut);
-            ScoreReportCommand = new RelayCommand(ScoreReport);
+            PenaltyPointReportCommand = new RelayCommand(GeneratePenaltyPointReport);
+            GradeReportCommand = new RelayCommand(GenerateGradeReport);
+            PointReportCommand = new RelayCommand(GeneratePointReport);
+            LanguageReportCommand = new RelayCommand(GenerateLanguageReport);
         }
 
         public RelayCommand ViewTeachersCommand { get; }
         public RelayCommand SendOutGradesCommand { get; }
-        public ICommand LogOutCommand { get; }
-        public RelayCommand ScoreReportCommand { get; }
+        public RelayCommand PenaltyPointReportCommand { get; }
+        public RelayCommand NotifyBestStudentsCommand { get; }
+        public RelayCommand LogOutCommand { get; }
+        public RelayCommand GradeReportCommand { get; }
+        public RelayCommand PointReportCommand { get; }
+        public RelayCommand LanguageReportCommand { get; }
 
         private void LogOut()
         {
@@ -47,10 +57,27 @@ namespace LangLang.ViewModels.DirectorViewModels
             var sendGradesView = new GradedExams();
             sendGradesView.Show();
         }
-        private void ScoreReport()
+
+        private void GeneratePenaltyPointReport()
         {
-            
-            }
+            throw new NotImplementedException();
+        }
+        private void GenerateGradeReport()
+        {
+            _gradeReportService.GenerateGradeReport();
+        }
+        private void GeneratePointReport()
+        {
+            _passRateReportService.GeneratePointsPassRateReport();
+        }
+        private void GenerateLanguageReport()
+        {
+            throw new NotImplementedException();
+        }
+        private void NotifyBestStudents()
+        {
+            new BestStudentsNotificationView().ShowDialog();
+
         }
     }
-
+}

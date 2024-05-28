@@ -74,6 +74,11 @@
             }
         }
 
+        public int PointsSum
+        {
+            get => _listeningPoints + _readingPoints + _talkingPoints + _writingPoints;
+        }
+
         public bool Passed
         {
             get => _passed;
@@ -111,6 +116,7 @@
             }
         }
 
+        // TODO: CYCLO_SWITCH 6, MNOC 5
         private void CalculatePassed()
         {
             if (_readingPoints < ReadingPointsMax / 2 ||

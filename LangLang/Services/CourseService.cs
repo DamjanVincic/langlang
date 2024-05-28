@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows;
 using LangLang.Models;
 using LangLang.Repositories;
 
@@ -9,11 +8,19 @@ namespace LangLang.Services;
 
 public class CourseService : ICourseService
 {
-    private readonly ICourseRepository _courseRepository = new CourseFileRepository();
-    private readonly IUserRepository _userRepository = new UserFileRepository();
-    private readonly ILanguageService _languageService = new LanguageService();
-    private readonly IScheduleService _scheduleService = new ScheduleService();
+    private readonly ICourseRepository _courseRepository;
+    private readonly IUserRepository _userRepository;
+    private readonly ILanguageService _languageService;
+    private readonly IScheduleService _scheduleService;
 
+    public CourseService(ICourseRepository courseRepository, IUserRepository userRepository, ILanguageService languageService, IScheduleService scheduleService)
+    {
+        _courseRepository = courseRepository;
+        _userRepository = userRepository;
+        _languageService = languageService;
+        _scheduleService = scheduleService;
+    }
+    
     public List<Course> GetAll()
     {
         return _courseRepository.GetAll();
@@ -65,7 +72,7 @@ public class CourseService : ICourseService
         {
             Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
 
-            if ((DateTime.Now - course.StartDate.ToDateTime(TimeOnly.MinValue)).Days <= 0 && course.Confirmed && !course.IsFinished)
+            if ((DateTime.Now - course.StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays >= 0 && course.Confirmed && !course.IsFinished)
             {
                 activeCourses.Add(course);
             }
@@ -73,6 +80,12 @@ public class CourseService : ICourseService
 
         return activeCourses;
     }
+
+    public List<Course> GetFinishedCourses()
+    {
+        return GetAll().Where(course => course.IsFinished && !course.StudentsNotified).ToList();
+    }
+    
     public List<Course> GetCoursesWithWithdrawals(int teacherId)
     {
         Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
@@ -89,6 +102,7 @@ public class CourseService : ICourseService
     }
 
 
+    // TODO: NOP 11
     public void Add(string languageName, LanguageLevel languageLevel, int duration, List<Weekday> held, bool isOnline,
         int maxStudents, int creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed,
         int teacherId)
@@ -108,6 +122,7 @@ public class CourseService : ICourseService
         _userRepository.Update(teacher);
     }
 
+    // TODO: MELOC 24, NOP 9, MNOC 4
     public void Update(int id, int duration, List<Weekday> held,
         bool isOnline, int maxStudents, TimeOnly scheduledTime, DateOnly startDate,
         bool areApplicationsClosed, int teacherId)

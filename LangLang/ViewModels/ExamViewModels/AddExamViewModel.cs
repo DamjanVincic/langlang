@@ -12,8 +12,8 @@ namespace LangLang.ViewModels.ExamViewModels
 {
     class AddExamViewModel : ViewModelBase
     {
-        private readonly ILanguageService _languageService = new LanguageService();
-        private readonly IExamService _examService = new ExamService();
+        private readonly ILanguageService _languageService = ServiceProvider.GetRequiredService<ILanguageService>();
+        private readonly IExamService _examService = ServiceProvider.GetRequiredService<IExamService>();
 
         private DateTime _dateSelected;
 
@@ -43,7 +43,7 @@ namespace LangLang.ViewModels.ExamViewModels
             EnterExamCommand = new RelayCommand(AddExam);
         }
 
-        public string Name { get; set; }
+        public string? Name { get; set; }
         public LanguageLevel LanguageLevel { get; set; }
         public IEnumerable<string> LanguageNames => _languageService.GetAllNames();
         public int MaxStudents { get; set; }
@@ -87,7 +87,7 @@ namespace LangLang.ViewModels.ExamViewModels
                 }
                 else
                 {
-                    _examService.Update(_exam.Id, Name, LanguageLevel, MaxStudents, ExamDate, _teacher.Id,
+                    _examService.Update(_exam.Id, Name!, LanguageLevel, MaxStudents, ExamDate, _teacher.Id,
                         new TimeOnly(HourSelected, MinuteSelected));
 
                     MessageBox.Show("Exam edited successfully.", "Success", MessageBoxButton.OK,

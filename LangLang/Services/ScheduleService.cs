@@ -8,7 +8,12 @@ namespace LangLang.Services;
 
 public class ScheduleService : IScheduleService
 {
-    private readonly IScheduleRepository _scheduleRepository = new ScheduleFileRepository();
+    private readonly IScheduleRepository _scheduleRepository;
+    
+    public ScheduleService(IScheduleRepository scheduleRepository)
+    {
+        _scheduleRepository = scheduleRepository;
+    }
     
     public void Add(ScheduleItem scheduleItem)
     {
@@ -48,6 +53,7 @@ public class ScheduleService : IScheduleService
         _scheduleRepository.Delete(id);
     }
 
+    // TODO: MELOC 20, CYCLO_SWITCH 6
     public bool ValidateScheduleItem(ScheduleItem scheduleItem, bool toEdit = false)
     {
         switch (scheduleItem)
@@ -86,6 +92,7 @@ public class ScheduleService : IScheduleService
         return dayDifferences;
     }
 
+    // TODO: MELOC 18, CYCLO_SWITCH 15, MNOC 3
     private bool IsAvailable(ScheduleItem scheduleItem, DateOnly date, bool toEdit)
     {
         List<ScheduleItem> scheduleItems = _scheduleRepository.GetByDate(date);
@@ -95,7 +102,7 @@ public class ScheduleService : IScheduleService
 
         TimeOnly startTime = scheduleItem.ScheduledTime;
         TimeOnly endTime = scheduleItem is Course ? startTime.AddMinutes(Course.ClassDuration) : startTime.AddMinutes(Exam.ExamDuration);
-        int amountOverlapping = 0;
+        int overlappingAmount = 0;
 
         foreach (ScheduleItem item in scheduleItems)
         {
@@ -116,12 +123,14 @@ public class ScheduleService : IScheduleService
             //  uzivo i poklapa se teacher i ima ucionica   t ili 
             //   uzivo i ne poklapa se teacher i nema ucionica   n ili (t i t) = t
             //  uzivo i poklapa se teacher i nema ucionica    t ili (t i t) = t
-            if (item.TeacherId == scheduleItem.TeacherId || ((!item.IsOnline && ++amountOverlapping >= 2)))
+            if (item.TeacherId == scheduleItem.TeacherId || ((!item.IsOnline && ++overlappingAmount >= 2)))
                 return false;
         }
         return true;
     }
 
+
+    // TODO: NOP 4
     private static bool DoPeriodsOverlap(TimeOnly startTime, TimeOnly endTime, TimeOnly startTimeCheck, TimeOnly endTimeCheck)
     {
         return !(startTime >= endTimeCheck || startTimeCheck >= endTime);

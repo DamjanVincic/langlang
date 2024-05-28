@@ -16,8 +16,8 @@ namespace LangLang.ViewModels.DirectorViewModels
 {
     internal class AddTeacherViewModel : ViewModelBase
     {
-        private readonly IUserService _userService = new UserService();
-        private readonly ILanguageService _languageService = new LanguageService();
+        private readonly IUserService _userService = ServiceProvider.GetRequiredService<IUserService>();
+        private readonly ILanguageService _languageService = ServiceProvider.GetRequiredService<ILanguageService>();
 
         private readonly ListBox _qualificationsListBox;
         private readonly Window _addTeacherWindow;
@@ -32,12 +32,12 @@ namespace LangLang.ViewModels.DirectorViewModels
             _qualificationsListBox = qualificationsListBox;
         }
 
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public string? Email { get; set; }
+        public string? Password { get; set; }
         public Gender Gender { get; set; }
-        public string Phone { get; set; }
+        public string? Phone { get; set; }
         public ICollectionView QualificationCollectionView { get; set; }
 
         public IEnumerable<Gender> GenderValues => Enum.GetValues(typeof(Gender)).Cast<Gender>();
@@ -51,6 +51,7 @@ namespace LangLang.ViewModels.DirectorViewModels
             UpdateQualifications();
         }
 
+        // TODO: MELOC 16
         private void AddTeacher()
         {
             try

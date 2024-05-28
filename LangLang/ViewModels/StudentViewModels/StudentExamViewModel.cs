@@ -16,17 +16,21 @@ namespace LangLang.ViewModels.StudentViewModels;
 
 public class StudentExamViewModel : ViewModelBase
 {
-    private readonly ILanguageService _languageService = new LanguageService();
-    private readonly IStudentService _studentService = new StudentService();
-    private readonly IExamService _examService = new ExamService();
-    private Student _student = UserService.LoggedInUser as Student ??
+    private readonly ILanguageService _languageService;
+    private readonly IStudentService _studentService;
+    private readonly IExamService _examService;
+    private readonly Student _student = UserService.LoggedInUser as Student ??
                               throw new InvalidOperationException("No one is logged in.");
     private string? _languageNameSelected;
     private string? _languageLevelSelected;
     private DateTime _dateSelected;
     
-    public StudentExamViewModel()
+    public StudentExamViewModel(ILanguageService languageService, IStudentService studentService, IExamService examService)
     {
+        _languageService = languageService;
+        _studentService = studentService;
+        _examService = examService;
+        
         AvailableExams = new ObservableCollection<ExamViewModel>(_studentService.GetAvailableExams(_student).Select(exam => new ExamViewModel(exam)));
         ExamCollectionView = CollectionViewSource.GetDefaultView(AvailableExams);
         ExamCollectionView.Filter = FilterExams;
@@ -102,7 +106,7 @@ public class StudentExamViewModel : ViewModelBase
 
         try
         {
-            Exam? exam = _examService.GetById(SelectedItem.Id);
+            Exam exam = _examService.GetById(SelectedItem.Id)!;
             _studentService.ApplyStudentExam(_student, exam.Id);
             MessageBox.Show("You have applied for the exam.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
         }
