@@ -53,16 +53,17 @@ public class ExamService : IExamService
 
 
         Exam exam = new(language, maxStudents, examDate, teacherId, examTime)
-            { Id = _examRepository.GenerateId() };
+        { Id = _examRepository.GenerateId() };
 
 
         _scheduleService.Add(exam);
         _examRepository.Add(exam);
 
-        if(teacher!= null)
-        teacher.ExamIds.Add(exam.Id);
-        _userRepository.Update(teacher);
-
+        if (teacher != null)
+        {
+            teacher.ExamIds.Add(exam.Id);
+            _userRepository.Update(teacher);
+        }
         return exam;
     }
 
