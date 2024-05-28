@@ -56,6 +56,11 @@ public class TeacherService : ITeacherService
         return teachers.Skip((pageIndex - 1) * amount.Value).Take(amount.Value).ToList();
     }
 
+    public int Count()
+    {
+        return _userRepository.GetAll().OfType<Teacher>().Where(teacher => !teacher.Deleted).ToList().Count;
+    }
+
     public List<Course> GetCourses(int teacherId, int pageIndex = 1, int? amount = null, string propertyName = "", string sortingWay = "ascending")
     {
         List<Course> courses = _courseRepository.GetAll().Where(course => course.TeacherId == teacherId).ToList();
