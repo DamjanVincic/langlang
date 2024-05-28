@@ -3,6 +3,7 @@ using System.Windows;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
+using LangLang.Repositories;
 using LangLang.Services;
 using LangLang.Views.CourseViews;
 using LangLang.Services.ReportServices;
@@ -16,12 +17,11 @@ namespace LangLang.ViewModels.DirectorViewModels
         private readonly Window _directorViewWindow;
 
         private readonly IGradeReportService _gradeReportService =  ServiceProvider.GetRequiredService<IGradeReportService>();
-
-        private readonly ILanguageReportService _languageReportService =
-            ServiceProvider.GetRequiredService<ILanguageReportService>();
+        private readonly IPassRateReportService _passRateReportService = ServiceProvider.GetRequiredService<IPassRateReportService>();
+        private readonly ILanguageReportService _languageReportService = ServiceProvider.GetRequiredService<ILanguageReportService>();
         private readonly IUserService _userService = ServiceProvider.GetRequiredService<IUserService>();
         private readonly IDirectorService _directorService = ServiceProvider.GetRequiredService<IDirectorService>();
-
+        
         public DirectorMenuViewModel(Window directorViewWindow)
         {
             _directorViewWindow = directorViewWindow;
@@ -97,7 +97,7 @@ namespace LangLang.ViewModels.DirectorViewModels
         }
         private void GeneratePointReport()
         {
-            throw new NotImplementedException();
+            _passRateReportService.GeneratePointsPassRateReport();
         }
         private void GenerateLanguageReport()
         {

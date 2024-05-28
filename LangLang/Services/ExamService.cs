@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.Linq;
+using System.Windows.Input;
 using LangLang.Models;
 using LangLang.Repositories;
 
@@ -8,14 +10,16 @@ namespace LangLang.Services;
 
 public class ExamService : IExamService
 {
+
     private readonly IExamRepository _examRepository;
     private readonly IUserRepository _userRepository;
     private readonly IScheduleService _scheduleService;
     private readonly ILanguageService _languageService;
     private readonly IExamGradeRepository _examGradeRepository;
-    private readonly IMessageService _messageService;   
+    private readonly IMessageService _messageService;
+    private readonly IExamGradeService _examGradeService;
     
-    public ExamService(IExamRepository examRepository, IUserRepository userRepository, IScheduleService scheduleService, ILanguageService languageService, IExamGradeRepository examGradeRepository, IMessageService messageService)
+    public ExamService(IExamRepository examRepository, IUserRepository userRepository, IScheduleService scheduleService, ILanguageService languageService, IExamGradeRepository examGradeRepository, IMessageService messageService, IExamGradeService examGradeService)
     {
         _examRepository = examRepository;
         _userRepository = userRepository;
@@ -23,6 +27,7 @@ public class ExamService : IExamService
         _languageService = languageService;
         _examGradeRepository = examGradeRepository;
         _messageService = messageService;
+        _examGradeService = examGradeService;
     }
 
     public List<Exam> GetAll()

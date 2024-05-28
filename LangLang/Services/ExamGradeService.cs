@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using LangLang.Models;
 using LangLang.Repositories;
 
@@ -27,7 +28,13 @@ namespace LangLang.Services
             return _examGradeRepository.GetById(id);
         }
 
-        // TODO: NOP 6
+        public List<ExamGrade> GetByExamId(int examId)
+        {
+            return _examGradeRepository.GetAll()
+                                        .Where(grade => grade.ExamId == examId)
+                                        .ToList();
+        }
+
         public int Add(int examId, int studentId, int readingPoints, int writingPoints, int listeningPoints,
             int talkingPoints)
         {
