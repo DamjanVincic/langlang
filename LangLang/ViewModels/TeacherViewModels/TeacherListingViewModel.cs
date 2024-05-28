@@ -13,6 +13,8 @@ using LangLang.Repositories;
 using LangLang.Services;
 using LangLang.Views.TeacherViews;
 using LangLang.Views.DirectorViews;
+using LangLang.ViewModels.CourseViewModels;
+
 namespace LangLang.ViewModels.TeacherViewModels
 {
     public class TeacherListingViewModel : ViewModelBase
@@ -25,15 +27,26 @@ namespace LangLang.ViewModels.TeacherViewModels
         private string? _selectedLanguageName;
         private string? _selectedLanguageLevel;
         private DateTime _selectedDateCreated;
+        private string? _selectedSortingWay;
+        private string? _selectedPropertyName;
+
+        private int _currentPage;
+        private readonly int _itemsPerPage = 2;
+        private int _totalPages;
+        private int _totalTeachers;
 
         private readonly ObservableCollection<TeacherViewModel> _teachers;
         private readonly Window _teacherListingWindow;
 
         public TeacherListingViewModel(Window teacherListingWindow)
         {
+            _currentPage = 1;
+            _totalTeachers = _teacherService.Count();
+            CalculateTotalPages();
+
             _teacherListingWindow = teacherListingWindow;
 
-            _teachers = new ObservableCollection<TeacherViewModel>(_teacherService.GetAll()
+            _teachers = new ObservableCollection<TeacherViewModel>(_teacherService.GetPage(_currentPage,_itemsPerPage)
                 .Select(teacher => new TeacherViewModel(teacher)));
             TeachersCollectionView = CollectionViewSource.GetDefaultView(_teachers);
 
@@ -43,16 +56,23 @@ namespace LangLang.ViewModels.TeacherViewModels
             LogOutCommand = new RelayCommand(LogOut);
 
             TeachersCollectionView.Filter = FilterTeachers;
+
+            PreviousPageCommand = new RelayCommand(PreviousPage);
+            NextPageCommand = new RelayCommand(NextPage);
         }
 
         public ICollectionView TeachersCollectionView { get; }
         public IEnumerable<TeacherViewModel> Teachers => _teachers;
         public IEnumerable<String> LanguageNameValues => _languageService.GetAllNames();
         public IEnumerable<String> LanguageLevelValues => Enum.GetNames(typeof(LanguageLevel));
+        public static IEnumerable<String> SortingWays => new List<String> { "ascending", "descending" };
+        public static IEnumerable<String> PropertyNames => new List<String> { "Name", "DateAdded" };
         public ICommand EditCommand { get; }
         public ICommand AddCommand { get; }
         public ICommand DeleteCommand { get; }
         public ICommand LogOutCommand { get; }
+        public ICommand PreviousPageCommand { get; }
+        public ICommand NextPageCommand { get; }
         public TeacherViewModel? SelectedItem { get; set; }
 
         public string? SelectedLanguageName
@@ -83,6 +103,57 @@ namespace LangLang.ViewModels.TeacherViewModels
                 _selectedDateCreated = value;
                 TeachersCollectionView.Refresh();
             }
+        }
+
+        public string? SelectedSortingWay
+        {
+            get => _selectedSortingWay;
+            set
+            {
+                _selectedSortingWay = value;
+                SortTeachers();
+            }
+        }
+        public string? SelectedPropertyName
+        {
+            get => _selectedPropertyName;
+            set
+            {
+                _selectedPropertyName = value;
+                SortTeachers();
+            }
+        }
+
+        private void SortTeachers()
+        {
+            if (SelectedPropertyName == null || SelectedSortingWay == null)
+            {
+                RefreshTeachers();
+                return;
+            }
+
+            RefreshTeachers(SelectedPropertyName, SelectedSortingWay);
+        }
+
+        private void NextPage()
+        {
+            if (_currentPage + 1 > _totalPages) { return; }
+            _currentPage++;
+            RefreshTeachers(SelectedPropertyName!, SelectedSortingWay!);
+        }
+
+        private void PreviousPage()
+        {
+            if (_currentPage < 2) { return; }
+            _currentPage--;
+            RefreshTeachers(SelectedPropertyName!, SelectedSortingWay!);
+        }
+
+        private void RefreshTeachers(string propertyName = "", string sortingWay = "ascending")
+        {
+            _teachers.Clear();
+            _teacherService.GetPage(_currentPage, _itemsPerPage, propertyName, sortingWay).ForEach(teacher => _teachers.Add(new TeacherViewModel(teacher)));
+            TeachersCollectionView.Refresh();
         }
 
         private bool FilterTeachers(object obj)
@@ -188,6 +259,11 @@ namespace LangLang.ViewModels.TeacherViewModels
             _teachers.Clear();
             _teacherService.GetAll().ForEach(teacher => _teachers.Add(new TeacherViewModel(teacher)));
             TeachersCollectionView.Refresh();
+        }
+
+        private void CalculateTotalPages()
+        {
+            _totalPages = (int)Math.Ceiling((double)_totalTeachers / _itemsPerPage);
         }
     }
 

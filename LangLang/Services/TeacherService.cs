@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Navigation;
 using LangLang.Models;
 using LangLang.Repositories;
 
@@ -29,6 +30,35 @@ public class TeacherService : ITeacherService
     public List<Teacher> GetAll()
     {
         return _userRepository.GetAll().OfType<Teacher>().ToList();
+    }
+
+    public List<Teacher> GetPage(int pageIndex = 1, int? amount = null, string propertyName = "",
+        string sortingWay = "ascending")
+    {
+        List<Teacher> teachers = _userRepository.GetAll().OfType<Teacher>().Where(teacher => !teacher.Deleted).ToList();
+
+        amount ??= teachers.Count;
+        switch (propertyName)
+        {
+            case "Name":
+                teachers = sortingWay == "ascending"
+                    ? teachers.OrderBy(teacher => teacher.FirstName + teacher.LastName).ToList()
+                    : teachers.OrderByDescending(teacher => teacher.FirstName + teacher.LastName).ToList();
+                break;
+            case "DateAdded":
+                teachers = sortingWay == "ascending"
+                    ? teachers.OrderBy(teacher => teacher.DateCreated).ToList()
+                    : teachers.OrderByDescending(teacher => teacher.DateCreated).ToList();
+                break;
+            default:
+                break;
+        }
+        return teachers.Skip((pageIndex - 1) * amount.Value).Take(amount.Value).ToList();
+    }
+
+    public int Count()
+    {
+        return _userRepository.GetAll().OfType<Teacher>().Where(teacher => !teacher.Deleted).ToList().Count;
     }
 
     public List<Course> GetCourses(int teacherId, int pageIndex = 1, int? amount = null, string propertyName = "", string sortingWay = "ascending")
