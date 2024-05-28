@@ -3,6 +3,7 @@ using System.Windows;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
+using LangLang.Repositories;
 using LangLang.Services;
 using LangLang.Views.CourseViews;
 using LangLang.Services.ReportServices;
@@ -15,12 +16,17 @@ namespace LangLang.ViewModels.DirectorViewModels
     {
         private readonly Director _director = UserService.LoggedInUser as Director ?? throw new InvalidInputException("No one is logged in.");
         private readonly Window _directorViewWindow;
-        private readonly IGradeReportService _gradeReportService =  ServiceProvider.GetRequiredService<IGradeReportService>();
-        private readonly IUserService _userService = ServiceProvider.GetRequiredService<IUserService>();
 
+        private readonly IGradeReportService _gradeReportService =  ServiceProvider.GetRequiredService<IGradeReportService>();
+        private readonly IPassRateReportService _passRateReportService = ServiceProvider.GetRequiredService<IPassRateReportService>();
+        private readonly ILanguageReportService _languageReportService = ServiceProvider.GetRequiredService<ILanguageReportService>();
+        private readonly IUserService _userService = ServiceProvider.GetRequiredService<IUserService>();
+        private readonly IDirectorService _directorService = ServiceProvider.GetRequiredService<IDirectorService>();
+        
         public DirectorMenuViewModel(Window directorViewWindow)
         {
             _directorViewWindow = directorViewWindow;
+            
             ViewTeachersCommand = new RelayCommand(ViewTeachers);
             ViewCoursesCommand = new RelayCommand(ViewCourses);
             ViewExamsCommand = new RelayCommand(ViewExams);
@@ -80,20 +86,40 @@ namespace LangLang.ViewModels.DirectorViewModels
 
         private void GeneratePenaltyPointReport()
         {
-            throw new NotImplementedException();
+            _directorService.GeneratePenaltyReport();
+            MessageBox.Show("Penalty report generated.");
         }
         private void GenerateGradeReport()
         {
-            _gradeReportService.GenerateGradeReport();
+            try
+            {
+                _gradeReportService.GenerateGradeReport();
+                MessageBox.Show("Report sent successfully.", "Success", MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
         private void GeneratePointReport()
         {
-            throw new NotImplementedException();
+            _passRateReportService.GeneratePointsPassRateReport();
         }
         private void GenerateLanguageReport()
         {
-            throw new NotImplementedException();
+            try
+            {
+                _languageReportService.GenerateLanguageReport();
+                MessageBox.Show("Report sent successfully.", "Success", MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
+        
         private void NotifyBestStudents()
         {
             new BestStudentsNotificationView().ShowDialog();

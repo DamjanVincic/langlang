@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.Linq;
+using System.Windows.Input;
 using LangLang.Models;
 using LangLang.Repositories;
 
@@ -8,14 +10,16 @@ namespace LangLang.Services;
 
 public class ExamService : IExamService
 {
+
     private readonly IExamRepository _examRepository;
     private readonly IUserRepository _userRepository;
     private readonly IScheduleService _scheduleService;
     private readonly ILanguageService _languageService;
     private readonly IExamGradeRepository _examGradeRepository;
-    private readonly IMessageService _messageService;   
+    private readonly IMessageService _messageService;
+    private readonly IExamGradeService _examGradeService;
     
-    public ExamService(IExamRepository examRepository, IUserRepository userRepository, IScheduleService scheduleService, ILanguageService languageService, IExamGradeRepository examGradeRepository, IMessageService messageService)
+    public ExamService(IExamRepository examRepository, IUserRepository userRepository, IScheduleService scheduleService, ILanguageService languageService, IExamGradeRepository examGradeRepository, IMessageService messageService, IExamGradeService examGradeService)
     {
         _examRepository = examRepository;
         _userRepository = userRepository;
@@ -23,6 +27,7 @@ public class ExamService : IExamService
         _languageService = languageService;
         _examGradeRepository = examGradeRepository;
         _messageService = messageService;
+        _examGradeService = examGradeService;
     }
 
     public List<Exam> GetAll()
@@ -237,15 +242,25 @@ public class ExamService : IExamService
                 _userRepository.Update(student);
             }
         }
+        SendEmail(examId);
     }
-    public void SendEmail(int examId)
+    private void SendEmail(int examId)
     {
+        Exam exam = _examRepository.GetById(examId)!;
         foreach (ExamGrade examGrade in _examGradeRepository.GetAll().Where(eg => eg.ExamId == examId))
         {
-            string messageText = "YOUR GRADES: 1. Reading: " + examGrade.ReadingPoints.ToString()
-                + " points 2. Listening: " + examGrade.ListeningPoints.ToString() +
-                " points 3. Talking " + examGrade.TalkingPoints.ToString() + " points 4. Writing " + examGrade.WritingPoints.ToString() + " points.";
-            _messageService.Add(examGrade.StudentId, messageText);
+            string passedText = examGrade.Passed
+                ? $"Congratulations, you have passed {exam.Language} exam!\n"
+                : $"Unfortunately, you have failed {exam.Language} exam.\n";
+
+            string pointsText = "Here are your points:\n" +
+                                $"\tReading: {examGrade.ReadingPoints} \n" +
+                                $"\tListening: {examGrade.ListeningPoints} \n" +
+                                $"\tTalking: {examGrade.TalkingPoints} \n" +
+                                $"\tWriting: {examGrade.WritingPoints} \n";
+
+            _messageService.Add(examGrade.StudentId, passedText+pointsText);
+            EmailService.SendMessage("Exam results",passedText+pointsText);
         }
     }
 }
