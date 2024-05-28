@@ -34,7 +34,7 @@ namespace LangLang.ViewModels.ExamViewModels
         private string? _selectedPropertyName;
 
         private int _currentPage;
-        private readonly int _itemsPerPage = 5;
+        private readonly int _itemsPerPage = 2;
         private int _totalPages;
         private int _totalExams;
         public ExamListingViewModel()
@@ -106,28 +106,27 @@ namespace LangLang.ViewModels.ExamViewModels
             set
             {
                 _selectedSortingWay = value;
-                ApplySorting();
+                SortExams();
             }
         }
-
         public string? SelectedPropertyName
         {
             get => _selectedPropertyName;
             set
             {
                 _selectedPropertyName = value;
-                ApplySorting();
+                SortExams();
             }
         }
-
-        private void ApplySorting()
+        private void SortExams()
         {
-            if (_selectedPropertyName == null || _selectedSortingWay == null)
+            if (SelectedPropertyName == null || SelectedSortingWay == null)
+            {
+                RefreshExams();
                 return;
+            }
 
-            ExamCollectionView.SortDescriptions.Clear();
-            var sortDirection = _selectedSortingWay.Equals("ascending") ? ListSortDirection.Ascending : ListSortDirection.Descending;
-            ExamCollectionView.SortDescriptions.Add(new SortDescription(_selectedPropertyName, sortDirection));
+            RefreshExams(SelectedPropertyName, SelectedSortingWay);
         }
 
         private void Add()
@@ -183,14 +182,14 @@ namespace LangLang.ViewModels.ExamViewModels
         {
             if (_currentPage + 1 > _totalPages) { return; }
             _currentPage++;
-            RefreshExams();
+            RefreshExams(SelectedPropertyName!, SelectedSortingWay!);
         }
 
         private void PreviousPage()
         {
             if (_currentPage < 2) { return; }
             _currentPage--;
-            RefreshExams();
+            RefreshExams(SelectedPropertyName!, SelectedSortingWay!);
         }
         private bool FilterExams(object obj)
         {
@@ -204,11 +203,10 @@ namespace LangLang.ViewModels.ExamViewModels
 
             return false;
         }
-
-        private void RefreshExams()
+        private void RefreshExams(string propertyName = "", string sortingWay = "ascending")
         {
             _exams.Clear();
-            _teacherService.GetExams(_teacher.Id, _currentPage, _itemsPerPage).ForEach(exam => _exams.Add(new ExamViewModel(exam)));
+            _teacherService.GetExams(_teacher.Id, _currentPage, _itemsPerPage, propertyName, sortingWay).ForEach(exam => _exams.Add(new ExamViewModel(exam)));
             ExamCollectionView.Refresh();
         }
     }
