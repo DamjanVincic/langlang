@@ -8,14 +8,25 @@ namespace LangLang.Services;
 
 public class StudentService : IStudentService
 {
-    private readonly IUserRepository _userRepository = new UserFileRepository();
-    private readonly ICourseRepository _courseRepository = new CourseFileRepository();
-    private readonly IExamRepository _examRepository = new ExamFileRepository();
+    private readonly IUserRepository _userRepository;
+    private readonly ICourseRepository _courseRepository;
+    private readonly IExamRepository _examRepository;
 
-    private readonly IUserService _userService = new UserService();
-    private readonly IExamGradeService _examGradeService = new ExamGradeService();
-    private readonly ICourseGradeService _courseGradeService = new CourseGradeService();
-    private readonly IPenaltyPointService _penaltyPointService = new PenaltyPointService();
+    private readonly IUserService _userService;
+    private readonly IExamGradeService _examGradeService;
+    private readonly ICourseGradeService _courseGradeService;
+    private readonly IPenaltyPointService _penaltyPointService;
+    
+    public StudentService(IUserRepository userRepository, ICourseRepository courseRepository, IExamRepository examRepository, IUserService userService, IExamGradeService examGradeService, ICourseGradeService courseGradeService, IPenaltyPointService penaltyPointService)
+    {
+        _userRepository = userRepository;
+        _courseRepository = courseRepository;
+        _examRepository = examRepository;
+        _userService = userService;
+        _examGradeService = examGradeService;
+        _courseGradeService = courseGradeService;
+        _penaltyPointService = penaltyPointService;
+    }
 
 
     public List<Student> GetAll()
@@ -266,11 +277,11 @@ public class StudentService : IStudentService
     {
         Student? student = _userRepository.GetById(studentId) as Student;
 
-        Course? course = _courseRepository.GetById(student!.ActiveCourseId!.Value);
+        Course course = _courseRepository.GetById(student!.ActiveCourseId!.Value)!;
 
-        Teacher? teacher = _userRepository.GetById(course!.TeacherId) as Teacher;
+        Teacher teacher = (_userRepository.GetById(course.TeacherId!.Value) as Teacher)!;
         
-        teacher!.AddReview(rating);
+        teacher.AddReview(rating);
         _userRepository.Update(teacher);
         
         student.DropActiveCourse();

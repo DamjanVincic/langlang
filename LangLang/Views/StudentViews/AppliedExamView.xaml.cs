@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using LangLang.Models;
 using LangLang.ViewModels.StudentViewModels;
 
 namespace LangLang.Views.StudentViews
@@ -11,7 +12,7 @@ namespace LangLang.Views.StudentViews
         public AppliedExamView()
         {
             InitializeComponent();
-            DataContext = new AppliedExamListingViewModel();
+            DataContext = ServiceProvider.GetRequiredService<AppliedExamListingViewModel>();
         }
     }
 }

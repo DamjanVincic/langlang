@@ -7,7 +7,10 @@ namespace LangLang.Services;
 public interface ITeacherService
 {
     public List<Teacher> GetAll();
-    public List<Course> GetCourses(int teacherId, int pageIndex = 1, int? amount = null);
+
+    public List<Teacher> GetPage(int pageIndex = 1, int? amount = null, string propertyName = "", string sortingWay = "ascending");
+    public int Count();
+    public List<Course> GetCourses(int teacherId, int pageIndex = 1, int? amount = null, string propertyName = "", string sortingWay = "ascending");
     public int GetCourseCount(int teacherId);
     public List<Exam> GetExams(int teacherId, int pageIndex = 1, int? amount = null, string propertyName = "", string sortingWay = "ascending");
     public List<Teacher> GetAvailableTeachers(Course course);
@@ -15,4 +18,6 @@ public interface ITeacherService
     public void ConfirmCourse(int courseId);
     public void FinishCourse(int courseId);
     public int GetExamCount(int teacherId);
+    public int? SmartPick(Course course);
+
 }

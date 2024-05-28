@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using System.Xml.Linq;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
@@ -13,19 +12,34 @@ namespace LangLang.ViewModels.CourseViewModels
 {
     class AddCourseViewModel : ViewModelBase
     {
-        private readonly ILanguageService _languageService = new LanguageService();
-        private readonly ICourseService _courseService = new CourseService();
+        private readonly ILanguageService _languageService;
+        private readonly ICourseService _courseService;
+        private readonly ITeacherService _teacherService;
 
-        private readonly Teacher _teacher = UserService.LoggedInUser as Teacher ??
-                                            throw new InvalidOperationException("No one is logged in.");
+        // the one that is not null is logged in, do this in order to not repeat the code
+        private readonly User loggedInUser;
+        private readonly Teacher _teacher;
+        private readonly Director _director;
+
         private readonly List<string> _hours = Enumerable.Range(0, 24).Select(hour => hour.ToString("00")).ToList();
         private readonly List<string> _minutes = Enumerable.Range(0, 60)
                                          .Where(minute => minute % 15 == 0)
                                          .Select(minute => minute.ToString("00"))
                                          .ToList();
 
-        public AddCourseViewModel()
+        public AddCourseViewModel(ILanguageService languageService, ICourseService courseService, ITeacherService teacherService)
         {
+            _languageService = languageService;
+            _courseService = courseService;
+            _teacherService = teacherService;
+            
+            loggedInUser = UserService.LoggedInUser ??
+            throw new InvalidOperationException("No one is logged in.");
+
+            _teacher = loggedInUser as Teacher;
+            _director = loggedInUser as Director;
+            
+            
             SelectedWeekdays = new bool[7];
             AddCourseCommand = new RelayCommand(AddCourse);
         }
@@ -71,9 +85,22 @@ namespace LangLang.ViewModels.CourseViewModels
                 ScheduledTime = new TimeOnly().AddHours(Hours).AddMinutes(Minutes);
                 bool isOnline = Format != null && Format.Equals("online");
                 DateOnly startDate = new(StartDate.Year, StartDate.Month, StartDate.Day);
-              
-                _courseService.Add(LanguageName, LanguageLevel, Duration, Held, isOnline, MaxStudents,
-                    CreatorId, ScheduledTime, startDate, false, _teacher.Id);
+
+                int? teacherId;
+                int? creatorId;
+                if (_teacher != null)
+                {
+                    teacherId = _teacher.Id;
+                    creatorId = _teacher.Id;
+                }
+                else
+                {
+                    Course course = _courseService.Add(LanguageName, LanguageLevel, Duration, Held, isOnline, MaxStudents,
+                    _director.Id, ScheduledTime, startDate, false, null);
+                    teacherId = _teacherService.SmartPick(course);
+                    course.TeacherId = teacherId;
+                    _courseService.Update(course.Id, course.Duration, course.Held, course.IsOnline, course.MaxStudents, course.ScheduledTime, course.StartDate, course.AreApplicationsClosed, course.TeacherId);
+                }
                         
                 MessageBox.Show("Course added successfully.", "Success", MessageBoxButton.OK,
                     MessageBoxImage.Information);

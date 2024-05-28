@@ -16,9 +16,9 @@ namespace LangLang.ViewModels.CourseViewModels
 {
     public class CourseListingViewModel : ViewModelBase
     {
-        private readonly ITeacherService _teacherService = new TeacherService();
-        private readonly ILanguageService _languageService = new LanguageService();
-        private readonly ICourseService _courseService = new CourseService();
+        private readonly ITeacherService _teacherService;
+        private readonly ILanguageService _languageService;
+        private readonly ICourseService _courseService;
 
         private readonly Teacher _teacher = UserService.LoggedInUser as Teacher ??
                                             throw new InvalidOperationException("No one is logged in.");
@@ -32,13 +32,18 @@ namespace LangLang.ViewModels.CourseViewModels
         private string? _selectedFormat;
         private string? _selectedSortingWay;
         private string? _selectedPropertyName;
-
+        
         private int _currentPage;
-        private  readonly int _itemsPerPage = 5;
+        private  readonly int _itemsPerPage = 2;
         private int _totalPages;
         private int _totalCourses;
-        public CourseListingViewModel()
+        
+        public CourseListingViewModel(ITeacherService teacherService, ILanguageService languageService, ICourseService courseService)
         {
+            _teacherService = teacherService;
+            _languageService = languageService;
+            _courseService = courseService;
+            
             _currentPage = 1;
             _totalCourses = _teacherService.GetCourseCount(_teacher.Id);
             CalculateTotalPages();
@@ -129,13 +134,7 @@ namespace LangLang.ViewModels.CourseViewModels
             set
             {
                 _selectedSortingWay = value;
-                CoursesCollectionView.SortDescriptions.Clear();
-                if (value!.Equals("ascending"))
-                {
-                    CoursesCollectionView.SortDescriptions.Add(new SortDescription(_selectedPropertyName, ListSortDirection.Ascending));
-                    return;
-                }
-                CoursesCollectionView.SortDescriptions.Add(new SortDescription(_selectedPropertyName, ListSortDirection.Descending));
+                SortCourses();
             }
         }
         public string? SelectedPropertyName
@@ -144,14 +143,18 @@ namespace LangLang.ViewModels.CourseViewModels
             set
             {
                 _selectedPropertyName = value;
-                CoursesCollectionView.SortDescriptions.Clear();
-                if (value!.Equals("ascending"))
-                {
-                    CoursesCollectionView.SortDescriptions.Add(new SortDescription(_selectedPropertyName, ListSortDirection.Ascending));
-                    return;
-                }
-                CoursesCollectionView.SortDescriptions.Add(new SortDescription(_selectedPropertyName, ListSortDirection.Descending));
+                SortCourses();
             }
+        }
+        private void SortCourses()
+        {
+            if (SelectedPropertyName == null || SelectedSortingWay == null)
+            {
+                RefreshCourses();
+                return;
+            }
+
+            RefreshCourses(SelectedPropertyName, SelectedSortingWay);
         }
         private void Add()
         {
@@ -201,14 +204,14 @@ namespace LangLang.ViewModels.CourseViewModels
         {
             if (_currentPage + 1 > _totalPages) { return; }
             _currentPage++;
-            RefreshCourses();
+            RefreshCourses(SelectedPropertyName!, SelectedSortingWay!);
         }
 
         private void PreviousPage()
         {
             if (_currentPage < 2) { return; }
             _currentPage--;
-            RefreshCourses();
+            RefreshCourses(SelectedPropertyName!, SelectedSortingWay!);
         }
 
         // TODO: CYCLO_SWITCH 7
@@ -226,10 +229,10 @@ namespace LangLang.ViewModels.CourseViewModels
             return false;
         }
 
-        private void RefreshCourses()
+        private void RefreshCourses(string propertyName = "", string sortingWay = "ascending")
         {
             _courses.Clear();
-            _teacherService.GetCourses(_teacher.Id, _currentPage, _itemsPerPage).ForEach(course => _courses.Add(new CourseViewModel(course)));
+            _teacherService.GetCourses(_teacher.Id, _currentPage, _itemsPerPage, propertyName, sortingWay).ForEach(course => _courses.Add(new CourseViewModel(course)));
             CoursesCollectionView.Refresh();
         }
 

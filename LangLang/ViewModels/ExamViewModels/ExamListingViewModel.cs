@@ -18,9 +18,9 @@ namespace LangLang.ViewModels.ExamViewModels
 {
     public class ExamListingViewModel : ViewModelBase
     {
-        private readonly ITeacherService _teacherService = new TeacherService();
-        private readonly ILanguageService _languageService = new LanguageService();
-        private readonly IExamService _examService = new ExamService();
+        private readonly ITeacherService _teacherService;
+        private readonly ILanguageService _languageService;
+        private readonly IExamService _examService;
 
         private readonly ObservableCollection<ExamViewModel> _exams;
 
@@ -37,12 +37,16 @@ namespace LangLang.ViewModels.ExamViewModels
         private readonly int _itemsPerPage = 2;
         private int _totalPages;
         private int _totalExams;
-        public ExamListingViewModel()
+        
+        public ExamListingViewModel(ITeacherService teacherService, ILanguageService languageService, IExamService examService)
         {
-            _currentPage = 1;
+            _teacherService = teacherService;
+            _languageService = languageService;
+            _examService = examService;
+             _currentPage = 1;
             _totalExams = _teacherService.GetExamCount(_teacher.Id);
             CalculateTotalPages();
-            _exams = new ObservableCollection<ExamViewModel>(_teacherService.GetExams(_teacher.Id, _currentPage, _itemsPerPage)
+            _exams = new ObservableCollection<ExamViewModel>(_teacherService.GetExams(_teacher.Id)
                 .Select(exam => new ExamViewModel(exam)));
             ExamCollectionView = CollectionViewSource.GetDefaultView(_exams);
             ExamCollectionView.Filter = FilterExams;
