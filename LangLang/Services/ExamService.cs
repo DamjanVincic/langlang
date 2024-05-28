@@ -35,7 +35,7 @@ public class ExamService : IExamService
                             throw new InvalidInputException("Language with the given level doesn't exist.");
 
 
-        Exam exam = new(language, maxStudents, examDate, teacherId, examTime)
+        Exam exam = new(language, maxStudents, examDate, teacherId, examTime,false,false)
             { Id = _examRepository.GenerateId() };
 
 
@@ -75,7 +75,7 @@ public class ExamService : IExamService
         {
             Teacher? oldTeacher = exam.TeacherId.HasValue ? _userRepository.GetById(exam.TeacherId.Value) as Teacher : null;
 
-            oldTeacher!.ExamIds.Remove(exam.Id);
+            oldTeacher.ExamIds.Remove(exam.Id);
             _userRepository.Update(oldTeacher);
 
             teacher.ExamIds.Add(exam.Id);

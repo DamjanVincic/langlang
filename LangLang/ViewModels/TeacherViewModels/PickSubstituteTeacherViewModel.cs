@@ -16,7 +16,7 @@ namespace LangLang.ViewModels.TeacherViewModels
     internal class PickSubstituteTeacherViewModel : ViewModelBase
     {
         private readonly IUserService _userService = new UserService();
-        private readonly ICourseRepository _courseRepository = new CourseFileRepository();
+        private readonly ICourseService _courseService = new CourseService();
         private readonly ObservableCollection<TeacherViewModel> _displayedTeachers;
         private readonly Course _course;
 
@@ -45,7 +45,7 @@ namespace LangLang.ViewModels.TeacherViewModels
                 return;
             }
             _course.TeacherId = _userService.GetById(SelectedItem.Id).Id;
-            _courseRepository.Update(_course);
+            _courseService.Update(_course.Id, _course.Duration, _course.Held, _course.IsOnline, _course.MaxStudents, _course.ScheduledTime, _course.StartDate, _course.AreApplicationsClosed, _course.TeacherId);
             MessageBox.Show("Substitute teacher picked successfully.", "Success", MessageBoxButton.OK,
                 MessageBoxImage.Information);
         }

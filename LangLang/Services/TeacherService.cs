@@ -51,45 +51,6 @@ public class TeacherService : ITeacherService
         return availableTeachers;
     }
 
-    // delete all courses and exams that the teacher created
-    // if they are on active course it can not be deleted
-    // if they are on courses or exams that director chose, just remove them
-    // ONLY DELETE EXAMS AND COURSES IN THE FUTURE
-    public void Delete(int teacherId)
-    {
-        foreach(Course course in _courseRepository.GetAll())
-        {
-            if (course.TeacherId == teacherId && (DateTime.Now - course.StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays >= 0 && course.Confirmed && !course.IsFinished)
-            {
-                throw new InvalidInputException("You cannot delete this teacher while they are on an active course.");
-            }                                                                                         
-
-            if (course.TeacherId == teacherId && course.StartDate.ToDateTime(TimeOnly.MinValue) > DateTime.Today)
-            {
-                // creator of the course is either teacher or director
-                switch (_userRepository.GetById(course.CreatorId))
-                {
-                    case Teacher:
-                        _courseService.Delete(course.Id);
-                        break;
-                    case Director:
-                        course.TeacherId = null;
-                        _courseRepository.Update(course);
-                        break;
-                }
-            }
-        }
-        foreach(Exam exam in _examRepository.GetAll())
-        {
-            // if exam is in the future delete it
-            if(exam.Date.ToDateTime(TimeOnly.MinValue) > DateTime.Today && exam.TeacherId == teacherId)
-            {
-                _examService.Delete(exam.Id);
-            }    
-        }
-        _userRepository.Delete(teacherId);
-    }
-
     public void RejectStudentApplication(int studentId, int courseId)
     {
         Course course = _courseRepository.GetById(courseId)!;
@@ -178,7 +139,7 @@ public class TeacherService : ITeacherService
             .ToList();
 
         if (!availableTeachers.Any())
-            throw new Exception("There are no available substitute teachers");
+            throw new InvalidInputException("There are no available substitute teachers");
 
         course.TeacherId = availableTeachers.First().Id;
         availableTeachers.First().CourseIds.Add(course.Id);

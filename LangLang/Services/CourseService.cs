@@ -90,7 +90,7 @@ public class CourseService : ICourseService
 
 
     // TODO: NOP 11
-    public void Add(string languageName, LanguageLevel languageLevel, int duration, List<Weekday> held, bool isOnline,
+    public Course Add(string languageName, LanguageLevel languageLevel, int duration, List<Weekday> held, bool isOnline,
         int maxStudents, int? creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed,
         int? teacherId)
     {
@@ -107,6 +107,7 @@ public class CourseService : ICourseService
         _courseRepository.Add(course);
         teacher.CourseIds.Add(course.Id);
         _userRepository.Update(teacher);
+        return course;
     }
 
     // TODO: MELOC 24, NOP 9, MNOC 4
@@ -134,14 +135,11 @@ public class CourseService : ICourseService
 
         _scheduleService.Update(course);
 
-        if (teacher.Id != course.TeacherId)
-        {
-            Teacher? oldTeacher = course.TeacherId.HasValue ? _userRepository.GetById(course.TeacherId.Value) as Teacher : null;
-            oldTeacher!.CourseIds.Remove(course.Id);
-            _userRepository.Update(oldTeacher);
-            teacher.CourseIds.Add(course.Id);
-            _userRepository.Update(teacher);
-        }
+        Teacher? oldTeacher = course.TeacherId.HasValue ? _userRepository.GetById(course.TeacherId.Value) as Teacher : null;
+        oldTeacher.CourseIds.Remove(course.Id);
+        _userRepository.Update(oldTeacher);
+        teacher.CourseIds.Add(course.Id);
+        _userRepository.Update(teacher);
 
         _courseRepository.Update(course);
     }
@@ -151,7 +149,7 @@ public class CourseService : ICourseService
         Course course = _courseRepository.GetById(id) ?? throw new InvalidInputException("Course doesn't exist.");
         Teacher? teacher = course.TeacherId.HasValue ? _userRepository.GetById(course.TeacherId.Value) as Teacher : null;
 
-        teacher!.CourseIds.Remove(id);
+        teacher.CourseIds.Remove(id);
         _userRepository.Update(teacher);
 
         foreach (Student student in course.Students.Keys.Select(studentId => (_userRepository.GetById(studentId) as Student)!))

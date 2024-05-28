@@ -17,7 +17,7 @@ namespace LangLang.ViewModels.CourseViewModels
         public CourseViewModel(Course course)
         {
             _course = course;
-            _teacher = course.TeacherId.HasValue ? _userService.GetById(course.TeacherId.Value) as Teacher : null;
+            _teacher = _userService.GetById(course.TeacherId.Value) as Teacher;
         }
 
         public SolidColorBrush BackgroundColor
@@ -37,7 +37,22 @@ namespace LangLang.ViewModels.CourseViewModels
         public int MaxStudents => _course.MaxStudents;
         public TimeOnly ScheduledTime => _course.ScheduledTime;
         public DateOnly StartDate => _course.StartDate;
-        public string TeachersName => $"{_teacher?.FirstName} {_teacher?.LastName}";
+        public string TeachersName
+        {
+            get
+            {
+                if (_teacher != null)
+                {
+                    string firstName = _teacher.FirstName ?? string.Empty;
+                    string lastName = _teacher.LastName ?? string.Empty;
+                    return $"{firstName} {lastName}";
+                }
+                else
+                {
+                    return string.Empty;
+                }
+            }
+        }
 
         public string Students => string.Join(", ", _course.Students.Keys.Select(studentId =>
         {

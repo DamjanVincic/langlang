@@ -144,26 +144,37 @@ public class UserService : IUserService
 
     private void DeleteTeacher(Teacher teacher)
     {
-        // Delete exams
-        foreach (int examId in teacher.ExamIds)
+        foreach (Course course in _courseRepository.GetAll())
         {
-            _examService.Delete(examId);
-        }
-
-        List<Course> courses = _courseRepository.GetAll()
-            .Where(course => course.TeacherId == teacher.Id && !course.AreApplicationsClosed).ToList();
-
-        foreach (Course course in courses)
-        {
-            // Delete inactive courses
-            if (course.CreatorId == teacher.Id)
-                _courseService.Delete(course.Id);
-            else
+            if (course.TeacherId == teacher.Id && (DateTime.Now - course.StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays >= 0 && course.Confirmed && !course.IsFinished)
             {
-                // Remove from inactive courses
-                course.CreatorId = null;
-                _courseRepository.Update(course);
+                throw new InvalidInputException("You cannot delete this teacher while they are on an active course.");
+            }
+
+            if (course.TeacherId == teacher.Id && course.StartDate.ToDateTime(TimeOnly.MinValue) > DateTime.Today)
+            {
+                // creator of the course is either teacher or director
+                switch (_userRepository.GetById(course.CreatorId))
+                {
+                    case Teacher:
+                        _courseService.Delete(course.Id);
+                        break;
+                    case Director:
+                        course.TeacherId = null;
+                        _courseRepository.Update(course);
+                        break;
+                }
             }
         }
+        foreach (Exam exam in _examRepository.GetAll())
+        {
+            // if exam is in the future delete it
+            if (exam.Date.ToDateTime(TimeOnly.MinValue) > DateTime.Today && exam.TeacherId == teacher.Id)
+            {
+                _examService.Delete(exam.Id);
+            }
+        }
+        _userRepository.Delete(teacher.Id);
     }
+
 }

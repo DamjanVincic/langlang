@@ -13,7 +13,7 @@ public interface ICourseService
     public List<Course> GetActiveCourses(int teacherId);
     public List<Course> GetCoursesWithWithdrawals(int teacherId);
 
-    public void Add(string languageName, LanguageLevel languageLevel, int duration, List<Weekday> held,
+    public Course Add(string languageName, LanguageLevel languageLevel, int duration, List<Weekday> held,
         bool isOnline, int maxStudents, int? creatorId, TimeOnly scheduledTime, DateOnly startDate,
         bool areApplicationsClosed, int? teacherId);
 

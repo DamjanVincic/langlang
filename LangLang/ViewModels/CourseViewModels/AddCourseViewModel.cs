@@ -90,12 +90,12 @@ namespace LangLang.ViewModels.CourseViewModels
                 }
                 else
                 {
-                    creatorId = _director.Id;
-                    teacherId = _teacherService.SmartPick(new Course(new Language(LanguageName, LanguageLevel), Duration, Held, isOnline, MaxStudents, CreatorId, ScheduledTime, startDate, false, null));
+                    Course course = _courseService.Add(LanguageName, LanguageLevel, Duration, Held, isOnline, MaxStudents,
+                    _director.Id, ScheduledTime, startDate, false, null);
+                    teacherId = _teacherService.SmartPick(course);
+                    course.TeacherId = teacherId;
+                    _courseService.Update(course.Id, course.Duration, course.Held, course.IsOnline, course.MaxStudents, course.ScheduledTime, course.StartDate, course.AreApplicationsClosed, course.TeacherId);
                 }
-
-                _courseService.Add(LanguageName, LanguageLevel, Duration, Held, isOnline, MaxStudents,
-                    creatorId, ScheduledTime, startDate, false, teacherId);
                         
                 MessageBox.Show("Course added successfully.", "Success", MessageBoxButton.OK,
                     MessageBoxImage.Information);
