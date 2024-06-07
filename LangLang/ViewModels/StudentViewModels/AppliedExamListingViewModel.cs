@@ -16,17 +16,33 @@ namespace LangLang.ViewModels.StudentViewModels;
 
 public class AppliedExamListingViewModel : ViewModelBase
 {
-    private readonly ILanguageService _languageService = new LanguageService();
-    private readonly IStudentService _studentService = new StudentService();
-    private readonly IExamService _examService = new ExamService();
+    private readonly ILanguageService _languageService;
+    private readonly IStudentService _studentService;
+    private readonly IExamService _examService;
+    
     private string? _languageNameSelected;
     private string? _languageLevelSelected;
     private DateTime _dateSelected;
+    private string? _selectedSortingWay;
+    private string? _selectedPropertyName;
+    
     private readonly Student _student = UserService.LoggedInUser as Student ?? throw new InvalidInputException("No one is logged in.");
-
-    public AppliedExamListingViewModel()
+    
+    private int _currentPage = 1;
+    private const int ItemsPerPage = 5;
+    private int _totalPages;
+    private readonly int _totalCourses;
+    
+    public AppliedExamListingViewModel(ILanguageService languageService, IStudentService studentService, IExamService examService)
     {
-        AppliedExams = new ObservableCollection<ExamViewModel>(_studentService.GetAppliedExams(_student).Select(exam => new ExamViewModel(exam)));
+        _languageService = languageService;
+        _studentService = studentService;
+        _examService = examService;
+        
+        _totalCourses = _studentService.GetAppliedExams(_student.Id).Count;
+        CalculateTotalPages();
+        
+        AppliedExams = new ObservableCollection<ExamViewModel>(_studentService.GetAppliedExams(_student.Id, _currentPage, ItemsPerPage).Select(exam => new ExamViewModel(exam)));
         ExamCollectionView = CollectionViewSource.GetDefaultView(AppliedExams);
         ExamCollectionView.Filter = FilterExams;
         ResetFiltersCommand = new RelayCommand(ResetFilters);
@@ -39,6 +55,9 @@ public class AppliedExamListingViewModel : ViewModelBase
     public ICollectionView ExamCollectionView { get; set; }
     public IEnumerable<LanguageLevel> LanguageLevelValues => Enum.GetValues(typeof(LanguageLevel)).Cast<LanguageLevel>();
     public IEnumerable<string> LanguageNames => _languageService.GetAllNames();
+    public static IEnumerable<String> SortingWays => new List<String> { "ascending", "descending" };
+    public static IEnumerable<String> PropertyNames => new List<String> { "LanguageName","LanguageLevel", "ExamDate" };
+    
     public ICommand ResetFiltersCommand { get; }
     public ICommand DropExamCommand { get; }
 
@@ -83,6 +102,37 @@ public class AppliedExamListingViewModel : ViewModelBase
         }
         return false;
     }
+    
+    public string? SelectedSortingWay
+    {
+        get => _selectedSortingWay;
+        set
+        {
+            _selectedSortingWay = value;
+            ExamCollectionView.SortDescriptions.Clear();
+            if (value!.Equals("ascending"))
+            {
+                ExamCollectionView.SortDescriptions.Add(new SortDescription(_selectedPropertyName, ListSortDirection.Ascending));
+                return;
+            }
+            ExamCollectionView.SortDescriptions.Add(new SortDescription(_selectedPropertyName, ListSortDirection.Descending));
+        }
+    }
+    public string? SelectedPropertyName
+    {
+        get => _selectedPropertyName;
+        set
+        {
+            _selectedPropertyName = value;
+            ExamCollectionView.SortDescriptions.Clear();
+            if (value!.Equals("ascending"))
+            {
+                ExamCollectionView.SortDescriptions.Add(new SortDescription(_selectedPropertyName, ListSortDirection.Ascending));
+                return;
+            }
+            ExamCollectionView.SortDescriptions.Add(new SortDescription(_selectedPropertyName, ListSortDirection.Descending));
+        }
+    }
 
     private void ResetFilters()
     {
@@ -100,19 +150,39 @@ public class AppliedExamListingViewModel : ViewModelBase
         }
         try
         {
-            Exam? exam = _examService.GetById(SelectedItem.Id);
+            Exam exam = _examService.GetById(SelectedItem.Id)!;
             _studentService.DropExam(exam, _student);
-            UpdateExamList();
+            RefreshExams();
             MessageBox.Show("Exam droped successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
         } catch(Exception ex)
         {
             MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
-    private void UpdateExamList()
+    
+    private void PreviousPage()
+    {
+        if (_currentPage < 2) { return; }
+        _currentPage--;
+        RefreshExams();
+    }
+
+    private void NextPage()
+    {
+        if (_currentPage + 1 > _totalPages) { return; }
+        _currentPage++;
+        RefreshExams();
+    }
+    
+    private void CalculateTotalPages()
+    {
+        _totalPages = (int)Math.Ceiling((double)_totalCourses / ItemsPerPage);
+    }
+    
+    private void RefreshExams()
     {
         AppliedExams.Clear();
-        _studentService.GetAppliedExams(_student).ForEach(exam => AppliedExams.Add(new ExamViewModel(exam)));
+        _studentService.GetAppliedExams(_student.Id, _currentPage, ItemsPerPage).ForEach(exam => AppliedExams.Add(new ExamViewModel(exam)));
         ExamCollectionView.Refresh();
     }
 }

@@ -19,25 +19,37 @@ public class StudentCourseViewModel : ViewModelBase
     private readonly Student _student = UserService.LoggedInUser as Student ??
                                         throw new InvalidOperationException("No one is logged in.");
 
-    private readonly ILanguageService _languageService = new LanguageService();
-    private readonly IStudentService _studentService = new StudentService();
+    private readonly ILanguageService _languageService = ServiceProvider.GetRequiredService<ILanguageService>();
+    private readonly IStudentService _studentService = ServiceProvider.GetRequiredService<IStudentService>();
 
     private string? _selectedLanguageName;
     private string? _selectedLanguageLevel;
     private DateTime _selectedDate;
-    private string _selectedDuration;
-    private string _selectedFormat;
+    private string? _selectedDuration;
+    private string? _selectedFormat;
+    private string? _selectedSortingWay;
+    private string? _selectedPropertyName;
 
     private readonly bool _applied;
+    
+    private int _currentPage = 1;
+    private const int ItemsPerPage = 5;
+    private int _totalPages;
+    private readonly int _totalCourses;
 
     public StudentCourseViewModel(bool applied = false)
     {
         _applied = applied;
         
+        _totalCourses = (applied
+            ? _studentService.GetAppliedCourses(_student.Id)
+            : _studentService.GetAvailableCourses(_student.Id)).Count;
+        CalculateTotalPages();
+        
         AvailableCourses = new ObservableCollection<CourseViewModel>(
             (applied
-                ? _studentService.GetAppliedCourses(_student.Id)
-                : _studentService.GetAvailableCourses(_student.Id))
+                ? _studentService.GetAppliedCourses(_student.Id, _currentPage, ItemsPerPage)
+                : _studentService.GetAvailableCourses(_student.Id, _currentPage, ItemsPerPage))
             .Select(course => new CourseViewModel(course)));
         CoursesCollectionView = CollectionViewSource.GetDefaultView(AvailableCourses);
         CoursesCollectionView.Filter = FilterCourses;
@@ -45,11 +57,15 @@ public class StudentCourseViewModel : ViewModelBase
         ResetFiltersCommand = new RelayCommand(ResetFilters);
         ApplyForCourseCommand = new RelayCommand(ApplyForCourse);
         WithdrawFromCourseCommand = new RelayCommand(WithdrawFromCourse);
+        PreviousPageCommand = new RelayCommand(PreviousPage);
+        NextPageCommand = new RelayCommand(NextPage);
     }
 
     public ICommand ResetFiltersCommand { get; }
     public ICommand ApplyForCourseCommand { get; }
     public ICommand WithdrawFromCourseCommand { get; }
+    public ICommand PreviousPageCommand { get; }
+    public ICommand NextPageCommand { get; }
 
     public CourseViewModel? SelectedCourse { get; set; }
     public ObservableCollection<CourseViewModel> AvailableCourses { get; }
@@ -57,6 +73,8 @@ public class StudentCourseViewModel : ViewModelBase
     public IEnumerable<string> LanguageNameValues => _languageService.GetAllNames();
     public IEnumerable<string> LanguageLevelValues => Enum.GetNames(typeof(LanguageLevel));
     public IEnumerable<string> FormatValues => new List<string> { "online", "in-person" };
+    public static IEnumerable<String> SortingWays => new List<String> { "ascending", "descending" };
+    public static IEnumerable<String> PropertyNames => new List<String> { "LanguageName","LanguageLevel", "StartDate" };
 
     public string? SelectedLanguageName
     {
@@ -88,7 +106,7 @@ public class StudentCourseViewModel : ViewModelBase
         }
     }
 
-    public string SelectedDuration
+    public string? SelectedDuration
     {
         get => _selectedDuration;
         set
@@ -98,7 +116,7 @@ public class StudentCourseViewModel : ViewModelBase
         }
     }
 
-    public string SelectedFormat
+    public string? SelectedFormat
     {
         get => _selectedFormat;
         set
@@ -107,7 +125,39 @@ public class StudentCourseViewModel : ViewModelBase
             CoursesCollectionView.Refresh();
         }
     }
+    
+    public string? SelectedSortingWay
+    {
+        get => _selectedSortingWay;
+        set
+        {
+            _selectedSortingWay = value;
+            CoursesCollectionView.SortDescriptions.Clear();
+            if (value!.Equals("ascending"))
+            {
+                CoursesCollectionView.SortDescriptions.Add(new SortDescription(_selectedPropertyName, ListSortDirection.Ascending));
+                return;
+            }
+            CoursesCollectionView.SortDescriptions.Add(new SortDescription(_selectedPropertyName, ListSortDirection.Descending));
+        }
+    }
+    public string? SelectedPropertyName
+    {
+        get => _selectedPropertyName;
+        set
+        {
+            _selectedPropertyName = value;
+            CoursesCollectionView.SortDescriptions.Clear();
+            if (value!.Equals("ascending"))
+            {
+                CoursesCollectionView.SortDescriptions.Add(new SortDescription(_selectedPropertyName, ListSortDirection.Ascending));
+                return;
+            }
+            CoursesCollectionView.SortDescriptions.Add(new SortDescription(_selectedPropertyName, ListSortDirection.Descending));
+        }
+    }
 
+    // TODO: CYCLO_SWITCH 6
     private bool FilterCourses(object obj)
     {
         if (obj is CourseViewModel courseViewModel)
@@ -120,6 +170,25 @@ public class StudentCourseViewModel : ViewModelBase
         }
 
         return false;
+    }
+
+    private void PreviousPage()
+    {
+        if (_currentPage < 2) { return; }
+        _currentPage--;
+        RefreshCourses(_applied);
+    }
+
+    private void NextPage()
+    {
+        if (_currentPage + 1 > _totalPages) { return; }
+        _currentPage++;
+        RefreshCourses(_applied);
+    }
+    
+    private void CalculateTotalPages()
+    {
+        _totalPages = (int)Math.Ceiling((double)_totalCourses / ItemsPerPage);
     }
 
     private void ResetFilters()
@@ -169,7 +238,7 @@ public class StudentCourseViewModel : ViewModelBase
     private void RefreshCourses(bool applied)
     {
         AvailableCourses.Clear();
-        (applied ? _studentService.GetAppliedCourses(_student.Id) : _studentService.GetAvailableCourses(_student.Id))
+        (applied ? _studentService.GetAppliedCourses(_student.Id, _currentPage, ItemsPerPage) : _studentService.GetAvailableCourses(_student.Id, _currentPage, ItemsPerPage))
             .ForEach(course => AvailableCourses.Add(new CourseViewModel(course)));
         CoursesCollectionView.Refresh();
     }

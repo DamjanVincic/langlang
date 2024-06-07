@@ -6,7 +6,12 @@ using LangLang.Models;
 namespace LangLang.Services;
 public class PenaltyPointService : IPenaltyPointService
 {
-    private readonly IPenaltyPointRepository _penaltyPointRepository = new PenaltyPointRepository();
+    private readonly IPenaltyPointRepository _penaltyPointRepository;
+    
+    public PenaltyPointService(IPenaltyPointRepository penaltyPointRepository)
+    {
+        _penaltyPointRepository = penaltyPointRepository;
+    }
 
     public List<PenaltyPoint> GetAll()
     {
@@ -17,6 +22,7 @@ public class PenaltyPointService : IPenaltyPointService
     {
         return _penaltyPointRepository.GetById(id);
     }
+    // TODO: NOP 6
     public void Add(PenaltyPointReason penaltyPointReason, int studentId, int courseId, int teacherId, DateOnly datePenaltyPointGiven)
     {
         PenaltyPoint point = new(penaltyPointReason, false, studentId, courseId, teacherId, datePenaltyPointGiven);

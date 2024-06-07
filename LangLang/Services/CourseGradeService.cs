@@ -1,15 +1,23 @@
 ﻿using LangLang.Models;
 using LangLang.Repositories;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LangLang.Services
 {
     internal class CourseGradeService : ICourseGradeService
     {
-        private readonly ICourseGradeRepository _courseGradeRepository = new CourseGradeFileRepository();
-        private readonly IUserRepository _userRepository = new UserFileRepository();
-        private readonly ICourseRepository _courseRepository = new CourseFileRepository();
+        private readonly ICourseGradeRepository _courseGradeRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly ICourseRepository _courseRepository;
 
+        public CourseGradeService(ICourseGradeRepository courseGradeRepository, IUserRepository userRepository, ICourseRepository courseRepository)
+        {
+            _courseGradeRepository = courseGradeRepository;
+            _userRepository = userRepository;
+            _courseRepository = courseRepository;
+        }
+        
         public List<CourseGrade> GetAll()
         {
             return _courseGradeRepository.GetAll();
@@ -19,6 +27,16 @@ namespace LangLang.Services
         {
             return _courseGradeRepository.GetById(id);
         }
+        
+        public CourseGrade? GetByStudentAndCourse(int studentId, int courseId)
+        {
+            return GetAll().FirstOrDefault(courseGrade => courseGrade.StudentId == studentId && courseGrade.CourseId == courseId);
+        }
+        public List<CourseGrade> GetByCourseId(int courseId)
+        {
+            return GetAll().Where(courseGrade => courseGrade.CourseId == courseId).ToList();
+        }
+
 
         public int Add(int courseId, int studentId, int knowledgeGrade, int activityGrade)
         {

@@ -13,10 +13,10 @@ namespace LangLang.ViewModels.TeacherViewModels
 {
     class StudentWithdrawalApprovalViewModel : ViewModelBase
     {
-        private readonly ICourseService _courseService = new CourseService();
-        private readonly IStudentService _studentService = new StudentService();
+        private readonly IStudentService _studentService = ServiceProvider.GetRequiredService<IStudentService>();
         private readonly ICourseRepository _courseRepository = new CourseFileRepository();
         private readonly IUserRepository _userRepository = new UserFileRepository();
+        
         private readonly Teacher _teacher = UserService.LoggedInUser as Teacher ??
                                             throw new InvalidOperationException("No one is logged in.");
         private readonly int _courseId;

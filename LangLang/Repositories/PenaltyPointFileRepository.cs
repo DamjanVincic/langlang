@@ -8,7 +8,7 @@ using LangLang.Models;
 using Newtonsoft.Json;
 
 namespace LangLang.Repositories;
-    public class PenaltyPointRepository : IPenaltyPointRepository
+    public class PenaltyPointFileRepository : IPenaltyPointRepository
     {
     private const string PenaltyPointFileName = "penalty_points.json";
     private const string PenaltyPointDirectoryName = "data";
