@@ -34,9 +34,6 @@ namespace LangLang
             IUserRepository userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
             if (userRepository.GetAll().All(user => user.Email != director.Email))
                 userRepository.Add(director);
-
-            ICourseRepository courseRepository = ServiceProvider.GetRequiredService<ICourseRepository>();
-            courseRepository.GetAll().ForEach(Console.WriteLine);
             
             Exit += App_Exit;
         }
