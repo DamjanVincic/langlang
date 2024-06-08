@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Configuration;
+using System.Linq;
 using System.Windows;
 using LangLang.Models;
 using LangLang.Repositories;
@@ -9,7 +11,9 @@ using LangLang.ViewModels.DirectorViewModels;
 using LangLang.ViewModels.ExamViewModels;
 using LangLang.ViewModels.StudentViewModels;
 using LangLang.ViewModels.TeacherViewModels;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using ServiceProvider = LangLang.Models.ServiceProvider;
 
 namespace LangLang
@@ -30,12 +34,17 @@ namespace LangLang
             IUserRepository userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
             if (userRepository.GetAll().All(user => user.Email != director.Email))
                 userRepository.Add(director);
+
+            ICourseRepository courseRepository = ServiceProvider.GetRequiredService<ICourseRepository>();
+            courseRepository.GetAll().ForEach(Console.WriteLine);
             
             Exit += App_Exit;
         }
         
         private void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<DatabaseContext, DatabaseContext>();
+            
             services.AddScoped<ICourseGradeRepository, CourseGradeFileRepository>();
             services.AddScoped<ICourseRepository, CourseFileRepository>();
             services.AddScoped<IExamGradeRepository, ExamGradeFileRepository>();
