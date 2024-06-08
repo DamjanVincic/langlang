@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using LangLang.Models;
 using Newtonsoft.Json;
 
-namespace LangLang.Repositories;
-    public class PenaltyPointFileRepository : IPenaltyPointRepository
-    {
+namespace LangLang.Repositories.FileRepositories;
+public class PenaltyPointFileRepository : IPenaltyPointRepository
+{
     private const string PenaltyPointFileName = "penalty_points.json";
     private const string PenaltyPointDirectoryName = "data";
 
@@ -53,7 +53,7 @@ namespace LangLang.Repositories;
     {
         LoadData();
         PenaltyPoint? point = GetById(id);
-        if(point != null)
+        if (point != null)
         {
             point.Deleted = true;
             SaveData();

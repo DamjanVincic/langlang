@@ -4,14 +4,14 @@ using System.Linq;
 using LangLang.Models;
 using Newtonsoft.Json;
 
-namespace LangLang.Repositories;
+namespace LangLang.Repositories.FileRepositories;
 
 public class LanguageFileRepository : ILanguageRepository
 {
     private const string LanguageFileName = "languages.json";
     private const string LanguageDirectoryName = "data";
 
-    private Dictionary<int,Language> _languages = new();
+    private Dictionary<int, Language> _languages = new();
     private int _idCounter = 1;
     public List<Language> GetAll()
     {
@@ -57,7 +57,7 @@ public class LanguageFileRepository : ILanguageRepository
         if (!File.Exists(filePath)) return;
 
         string json = File.ReadAllText(filePath);
-        _languages = JsonConvert.DeserializeObject<Dictionary<int,Language>>(json, new JsonSerializerSettings
+        _languages = JsonConvert.DeserializeObject<Dictionary<int, Language>>(json, new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.Auto
         }) ?? new Dictionary<int, Language>();
