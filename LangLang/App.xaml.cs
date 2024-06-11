@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Windows;
 using LangLang.Models;
 using LangLang.Repositories;
@@ -22,10 +23,11 @@ namespace LangLang
     {
         public App()
         {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+            DotNetEnv.Env.Load("../.env"); // Works if the current directory is the LangLang project
+            
             var services = new ServiceCollection();
             ConfigureServices(services);
-
-            services.AddDbContext<DatabaseContext>(options => options.UseSqlServer("Host=localhost;Username=user;Password=MnogoJakaSifra123;Persist Security Info=True;Database=langlang"));
             
             ServiceProvider.Instance = services.BuildServiceProvider();
             
@@ -40,6 +42,9 @@ namespace LangLang
         
         private void ConfigureServices(IServiceCollection services)
         {
+            string connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? throw new InvalidInputException("Connection string not found in .env file.");
+            services.AddDbContext<DatabaseContext>(options => options.UseNpgsql(connectionString));
+            
             services.AddScoped<ICourseGradeRepository, CourseGradeFileRepository>();
             services.AddScoped<ICourseRepository, CourseFileRepository>();
             services.AddScoped<IExamGradeRepository, ExamGradeFileRepository>();
