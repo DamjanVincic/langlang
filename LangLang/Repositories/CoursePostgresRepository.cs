@@ -31,7 +31,8 @@ public class CoursePostgresRepository : ICourseRepository
 
     public void Add(Course course)
     {
-        throw new System.NotImplementedException();
+        _dbContext.Courses.Add(course);
+        _dbContext.SaveChanges();
     }
 
     public void Update(Course course)
