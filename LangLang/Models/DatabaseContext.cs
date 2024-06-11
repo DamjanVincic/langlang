@@ -4,6 +4,10 @@ namespace LangLang.Models;
 
 public class DatabaseContext : DbContext
 {
+    public DatabaseContext(DbContextOptions options) : base(options)
+    {
+    }
+
     public DbSet<Course> Courses { get; set; }
     public DbSet<CourseGrade> CourseGrades { get; set; }
     public DbSet<Exam> Exams { get; set; }
@@ -15,9 +19,8 @@ public class DatabaseContext : DbContext
     public DbSet<User> Users { get; set; }
     // public DbSet<LanguageLevel> LanguageLevels { get; set; }
     
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        optionsBuilder.UseSqlServer(
-            "Host=localhost;Username=user;Password=MnogoJakaSifra123;Persist Security Info=True;Database=langlang");
+        base.OnModelCreating(modelBuilder);
     }
 }

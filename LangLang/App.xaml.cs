@@ -1,6 +1,4 @@
-﻿using System;
-using System.Configuration;
-using System.Linq;
+﻿using System.Linq;
 using System.Windows;
 using LangLang.Models;
 using LangLang.Repositories;
@@ -13,7 +11,6 @@ using LangLang.ViewModels.StudentViewModels;
 using LangLang.ViewModels.TeacherViewModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using ServiceProvider = LangLang.Models.ServiceProvider;
 
 namespace LangLang
@@ -27,6 +24,9 @@ namespace LangLang
         {
             var services = new ServiceCollection();
             ConfigureServices(services);
+
+            services.AddDbContext<DatabaseContext>(options => options.UseSqlServer("Host=localhost;Username=user;Password=MnogoJakaSifra123;Persist Security Info=True;Database=langlang"));
+            
             ServiceProvider.Instance = services.BuildServiceProvider();
             
             Director director = new Director("Nadja", "Zoric", "nadjazoric@gmail.com", "PatrikZvezdasti011", Gender.Female, "1234567890123");
@@ -40,8 +40,6 @@ namespace LangLang
         
         private void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<DatabaseContext, DatabaseContext>();
-            
             services.AddScoped<ICourseGradeRepository, CourseGradeFileRepository>();
             services.AddScoped<ICourseRepository, CourseFileRepository>();
             services.AddScoped<IExamGradeRepository, ExamGradeFileRepository>();
