@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 
@@ -29,12 +28,11 @@ public class DatabaseContext : DbContext
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        if (!optionsBuilder.IsConfigured)
-        {
-            DotNetEnv.Env.Load("../.env"); // Works if the current directory is the LangLang project
-            string connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? throw new InvalidInputException("Connection string not found in .env file.");
-            optionsBuilder.UseNpgsql(connectionString);
-        }
+        if (optionsBuilder.IsConfigured) return;
+        
+        DotNetEnv.Env.Load("../.env"); // Works if the current directory is the LangLang project
+        string connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? throw new InvalidInputException("Connection string not found in .env file.");
+        optionsBuilder.UseNpgsql(connectionString);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -65,6 +63,13 @@ public class DatabaseContext : DbContext
 
         modelBuilder.Entity<List<Weekday>>().HasNoKey();
         
+        modelBuilder.Entity<Course>()
+            .Property(c => c.Held)
+            .HasPostgresArrayConversion(
+                v => (int)v,
+                v => (Weekday)v
+            );
+
         // modelBuilder.Entity<Course>()
         //     .Property(c => c.Held)
         //     .HasConversion(
