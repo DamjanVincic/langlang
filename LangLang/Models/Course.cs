@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 
 namespace LangLang.Models
@@ -10,6 +11,10 @@ namespace LangLang.Models
 
         private int _duration;
         private List<Weekday> _held = null!;
+
+        public Course()
+        {
+        }
 
         public Course(Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents,
             int? creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed,
@@ -78,7 +83,7 @@ namespace LangLang.Models
 
         public int? CreatorId { get; set; }
 
-
+        [NotMapped]
         public DateOnly StartDate
         {
             get => Date;
@@ -87,6 +92,13 @@ namespace LangLang.Models
                 ValidateDate(value);
                 Date = value;
             }
+        }
+        
+        // TODO: Switch to private and figure out how not to validate when loading from the database (ctor instead of property?)
+        public DateTime StartDateDatabase
+        {
+            get => Date.ToDateTime(TimeOnly.MinValue);
+            set => Date = DateOnly.FromDateTime(value.Date);
         }
 
         public bool AreApplicationsClosed { get; set; }
