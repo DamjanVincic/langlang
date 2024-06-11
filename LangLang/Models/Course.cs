@@ -83,7 +83,7 @@ namespace LangLang.Models
 
         public int? CreatorId { get; set; }
 
-        [NotMapped]
+        // TODO: Figure out how not to validate when loading from the database (ctor instead of property?)
         public DateOnly StartDate
         {
             get => Date;
@@ -92,13 +92,6 @@ namespace LangLang.Models
                 ValidateDate(value);
                 Date = value;
             }
-        }
-        
-        // TODO: Switch to private and figure out how not to validate when loading from the database (ctor instead of property?)
-        public DateTime StartDateDatabase
-        {
-            get => Date.ToDateTime(TimeOnly.MinValue);
-            set => Date = DateOnly.FromDateTime(value.Date);
         }
 
         public bool AreApplicationsClosed { get; set; }

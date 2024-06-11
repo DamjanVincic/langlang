@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LangLang.Models
 {
@@ -60,8 +59,6 @@ namespace LangLang.Models
 
         public int? TeacherId { get; set; }
 
-        // TODO: Add properties for database to store date and time
-        [NotMapped]
         public DateOnly Date
         {
             get => _date;
@@ -72,7 +69,6 @@ namespace LangLang.Models
             }
         }
 
-        [NotMapped]
         public TimeOnly ScheduledTime { get; set; }
 
         public bool IsOnline
