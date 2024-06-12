@@ -15,13 +15,15 @@ namespace LangLang.FormTable
     {
         private readonly ICourseService _courseService;
         private readonly ILanguageService _languageService;
+        private readonly ICourseRepository _courseRepository;
         private readonly CourseFormTable _courseFormTable;
 
-        public FormTableMenu(ICourseService courseService, ILanguageService languageService)
+        public FormTableMenu(ICourseService courseService, ILanguageService languageService, ICourseRepository courseRepository)
         {
-            _courseService = courseService ?? throw new ArgumentNullException(nameof(courseService));
+            _courseService = courseService;
             _languageService = languageService;
-            _courseFormTable = new CourseFormTable(_courseService,_languageService);
+            _courseRepository = courseRepository;
+            _courseFormTable = new CourseFormTable(_courseService, _languageService,_courseRepository);
         }
 
         public void Run()

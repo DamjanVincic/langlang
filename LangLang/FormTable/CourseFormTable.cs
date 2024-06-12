@@ -7,19 +7,25 @@ using System.Threading.Tasks;
 using System.Reflection;
 using LangLang.Models;
 using LangLang.Services;
+using LangLang.Repositories;
 namespace LangLang.FormTable;
 public class CourseFormTable
 {
     Type type = typeof(Course);
+    Type serviceType = typeof(CourseService);
+    MethodInfo createCourseMethod;
     private readonly ICourseService _courseService;
     private readonly ILanguageService _languageService;
+    private readonly ICourseRepository _courseRepository;
     private List<Course> _courses;
 
-    public CourseFormTable(ICourseService courseService, ILanguageService languageService)
+    public CourseFormTable(ICourseService courseService, ILanguageService languageService, ICourseRepository courseRepository)
     {
         _courseService = courseService;
         _courses = _courseService.GetAll();
         _languageService = languageService;
+        createCourseMethod = serviceType.GetMethod("Add");
+        _courseRepository = courseRepository;
     }
     public void CourseMenu()
     {
@@ -48,8 +54,9 @@ public class CourseFormTable
     }
     public void Add()
     {
+        ConstructorInfo constructor = type.GetConstructors().FirstOrDefault();
         PropertyInfo[] properties = type.GetProperties();
-
+        List<object> parameterValues = new List<object>();
         foreach (var property in properties)
         {
             if (property.PropertyType == typeof(Language))
@@ -62,6 +69,15 @@ public class CourseFormTable
             try
             {
                 object value = GetValueFromInput(input, property.PropertyType);
+                if (property.PropertyType == typeof(Language))
+                {
+                    Language language = _languageService.GetById((int)value);
+                    parameterValues.Add(language);
+                }
+                else
+                {
+                    parameterValues.Add(value);
+                }
                 Console.WriteLine($"Successfully set {property.Name} to {value}");
             }
             catch (Exception ex)
@@ -69,11 +85,18 @@ public class CourseFormTable
                 Console.WriteLine($"Error setting {property.Name}: {ex.Message}");
             }
         }
-        Course newCourse = (Course)Activator.CreateInstance(type);
+        int id = _courseRepository.GenerateId();
+        parameterValues.Add(id);
+
+        object[] parametersArray = parameterValues.ToArray();
+
+
+        Course newCourse = (Course)constructor.Invoke(parametersArray);
 
         _courses.Add(newCourse);
         Console.WriteLine("Course added successfully.\n");
     }
+
     private object GetValueFromInput(string input, Type targetType)
     {
         if (targetType == typeof(string))
@@ -144,13 +167,14 @@ public class CourseFormTable
     {
         List<Language> languages = _languageService.GetAll();
 
-        Console.WriteLine("{0,-5} {1,-20} {2,-5} {3}", "ID", "Name", "Level");
+        Console.WriteLine("{0,-5} {1,-20} {2,-5} {3}", "ID", "Name", "Level", new string('-', 25));
 
         foreach (Language language in languages)
         {
             Console.WriteLine("{0,-5} {1,-20} {2,-5} {3}", language.Id, language.Name, language.Level, new string('-', 25));
         }
     }
+
 
     public void Info()
     {
