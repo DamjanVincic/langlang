@@ -24,7 +24,7 @@ public class DatabaseContext : DbContext
     //public DbSet<PenaltyPoint> PenaltyPoints { get; set; }
     //public DbSet<ScheduleItem> ScheduleItems { get; set; }
     //public DbSet<User> Users { get; set; }
-    // public DbSet<LanguageLevel> LanguageLevels { get; set; }
+    public DbSet<Language> Languages { get; set; }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

@@ -110,6 +110,7 @@ namespace LangLang
             services.AddDbContext<DatabaseContext>(options => options.UseNpgsql(connectionString));
             
             services.AddScoped<ICourseRepository, CoursePostgresRepository>();
+            services.AddScoped<ILanguageRepository, LanguagePostgresRepository>();
         }
     }
 }
