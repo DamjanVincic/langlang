@@ -25,7 +25,7 @@ namespace LangLang.FormTable
             _columnsPerPage = columnsPerPage;
         }
 
-        private List<object> GetData()
+        private List<object> GetData(User user)
         {
             List<object> arguments = new List<object>();
             var method = _service.GetType().GetMethod("Add");
@@ -39,36 +39,68 @@ namespace LangLang.FormTable
 
             foreach (var param in parameters)
             {
-                Console.WriteLine($"Enter {param.Name} ({param.ParameterType.Name}): ");
-                string input = Console.ReadLine();
-                object value = Memory.GetValueFromInput(input, param.ParameterType);
-                arguments.Add(value);
+                // i nastavnik i direktor su kreatori tako da ih samo dodaj
+                // za id nastavnika, ako nastavnik kreira dodaj ga, ako direktor kreira kasnije mora da se pozove smart pick i promenice se tako da se moze ovo samo privremeno staviti
+                if(param.Name == "teacherId" || param.Name == "creatorId")
+                {
+                    arguments.Add(user.Id);
+                }
+                else
+                {
+                    Console.WriteLine($"Enter {param.Name} ({param.ParameterType.Name}): ");
+                    string input = Console.ReadLine();
+                    object value = Memory.GetValueFromInput(input, param.ParameterType);
+                    arguments.Add(value);
+                }
             }
             return arguments;
         }
 
-        public void Create()
+        public T Create(User user)
         {
-            List<object> arguments = GetData();
+            List<object> arguments = GetData(user);
             var serviceType = _service.GetType();
             var method = serviceType.GetMethod("Add");
             if (method == null)
             {
-                Console.WriteLine("method not found");
+                Console.WriteLine("Method 'Add' not found on the service.");
+                return default;
+            }
+
+            try
+            {
+                object result = method.Invoke(_service, arguments.ToArray());
+                Console.WriteLine("Item successfully added.");
+                return (T)result;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error creating item: {ex.Message}");
+                return default;
+            }
+        }
+
+        public void SmartPick(User user, object item)
+        {
+            var serviceType = _service.GetType();
+            var method = serviceType.GetMethod("SmartPick");
+            if (method == null)
+            {
+                Console.WriteLine("Method 'SmartPick' not found on the service.");
                 return;
             }
 
-            var parameters = method.GetParameters();
-            object[] args = new object[arguments.Count];
-            for (int i = 0; i < arguments.Count; i++)
+            try
             {
-                args[i] = arguments[i];
+                method.Invoke(_service, new object[] { item });
+                Console.WriteLine("SmartPick completed successfully.");
             }
-
-            var result = method.Invoke(_service, args);
-
-            Console.WriteLine("Kurs je uspješno dodan.");
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in SmartPick: {ex.Message}");
+            }
         }
+
 
         public void ShowTable()
         {

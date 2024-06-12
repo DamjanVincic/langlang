@@ -234,7 +234,18 @@ public class TeacherService : ITeacherService
     }
     // get all available teachers and sort them based on ranking
     // pick the first one as the best choice
-    public int? SmartPick(Course course)
+
+    public int? SmartPick(ScheduleItem scheduleItem)
+    {
+         if(scheduleItem is Exam exam){
+            return  SmartPickExam(exam);
+         }else if(scheduleItem is Course course) 
+            {
+            return SmartPickCourse(course);
+         }
+        return null;
+    }
+    public int? SmartPickCourse(Course course)
     {
         List<Teacher> availableTeachers = GetAvailableTeachers(course)
             .OrderByDescending(teacher => teacher.Rating)
@@ -248,14 +259,17 @@ public class TeacherService : ITeacherService
         _courseRepository.Update(course);
         return course.TeacherId;
     }
-    public int? SmartPick(Exam exam)
+    public int? SmartPickExam(Exam exam)
     {
         List<Teacher> availableTeachers = GetAvailableTeachers(exam)
             .OrderByDescending(teacher => teacher.Rating)
             .ToList();
 
         if (!availableTeachers.Any())
+        {
+            _examService.Delete(exam.Id);
             throw new InvalidInputException("There are no available substitute teachers");
+        }
 
         exam.TeacherId = availableTeachers.First().Id;
         availableTeachers.First().ExamIds.Add(exam.Id);

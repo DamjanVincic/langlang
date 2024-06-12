@@ -103,16 +103,36 @@ public class CourseService : ICourseService
 
 
     // TODO: NOP 11
-    public Course Add(string languageName, LanguageLevel languageLevel, int duration, List<Weekday> held, bool isOnline,
-        int maxStudents, int? creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed,
+    public Course Add(
+        string languageName,
+        LanguageLevel languageLevel,
+        int duration,
+        List<Weekday> held,
+        bool isOnline,
+        int maxStudents,
+        int? creatorId,
+        TimeOnly scheduledTime,
+        DateOnly startDate,
+        bool areApplicationsClosed,
         int? teacherId)
     {
         Language language = _languageService.GetLanguage(languageName, languageLevel) ??
                             throw new InvalidInputException("Language with the given level doesn't exist.");
         Teacher? teacher = null;
+        // ovo se radi zbog smart picka, ako nastavnik ne postoji onda baci gresku
+        // ali ako je nastavnik = direktor onda ce se promeniti kasnije u validan id nastavnika
         if (teacherId != null)
-            teacher = _userRepository.GetById(teacherId.Value) as Teacher ??
-                      throw new InvalidInputException("User doesn't exist.");
+        {
+            var user = _userRepository.GetById(teacherId.Value);
+            if (user == null && creatorId != teacherId)
+            {
+                throw new InvalidInputException("Teacher doesn't exist.");
+            }
+
+            teacher = user as Teacher;
+        }
+
+
 
         startDate = SetValidStartDate(startDate, held);
         Course course = new(language, duration, held, isOnline, maxStudents, creatorId, scheduledTime, startDate,

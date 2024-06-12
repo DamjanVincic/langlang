@@ -15,6 +15,7 @@ namespace LangLang.FormTable
 {
     public class MainMenu
     {
+        static User user;
         static void Main()
         {
             var serviceCollection = new ServiceCollection();
@@ -26,7 +27,7 @@ namespace LangLang.FormTable
             IExamService examService = serviceProvider.GetRequiredService<IExamService>();
             ICourseService courseService = serviceProvider.GetRequiredService<ICourseService>();
 
-            User user = Loggin(userService);
+            user = Loggin(userService);
 
             while (true)
             {
@@ -36,7 +37,7 @@ namespace LangLang.FormTable
                         TeacherMenu(examService, courseService);
                         break;
                     case Director:
-                        DirectorMenu(teacherService,userService);
+                        DirectorMenu(teacherService,userService,courseService,examService);
                         break;
                     default:
                         break;
@@ -71,35 +72,47 @@ namespace LangLang.FormTable
         }
         private static void TeacherMenu(IExamService examService, ICourseService courseService)
         {
-            Console.Write("" +
-              "1) Create exams\n" +
-              "2) Read exams\n" +
-              "3) Update exams\n" +
-              "4) Delete exams\n" +
-              "5) Create courses\n" +
-              "6) Read courses\n" +
-              "7) Update courses\n" +
-              "8) Delete courses\n" +
-              "q)uit" +
-              "Enter option >> ");
-            string option = Console.ReadLine();
-            switch(option)
+            try
             {
-                case "1":
-                    new FormTableGenerator<Exam>(examService.GetAll(), examService).Create();
-                    break;
-                case "2": 
-                    new FormTableGenerator<Exam>(examService.GetAll(),examService).ShowTable();
-                    break;
-                case "6":
-                    new FormTableGenerator<Course>(courseService.GetAll(),courseService).ShowTable();
-                    break;
-                case "q":
-                    return;
-                default: break;
+                Console.Write("" +
+                  "1) Create exams\n" +
+                  "2) Read exams\n" +
+                  "3) Update exams\n" +
+                  "4) Delete exams\n" +
+                  "5) Create courses\n" +
+                  "6) Read courses\n" +
+                  "7) Update courses\n" +
+                  "8) Delete courses\n" +
+                  "9) Logout\n" +
+                  "Enter option >> ");
+                string option = Console.ReadLine();
+                switch (option)
+                {
+                    // radi
+                    case "1":
+                        new FormTableGenerator<Exam>(examService.GetAll(), examService).Create(user);
+                        break;
+                    // promeni redosled
+                    case "2":
+                        new FormTableGenerator<Exam>(examService.GetAll(), examService).ShowTable();
+                        break;
+                    // radi
+                    case "5":
+                        new FormTableGenerator<Course>(courseService.GetAll(), courseService).Create(user);
+                        break;
+                    // promeni redosled
+                    case "6":
+                        new FormTableGenerator<Course>(courseService.GetAll(), courseService).ShowTable();
+                        break;
+                    case "9":
+                        return;
+                    default: break;
+                }
+            }catch (Exception ex){
+                Console.WriteLine("Invalid entries. Try again.");
             }
         }
-        private static void DirectorMenu(ITeacherService teacherService,IUserService userService)
+        private static void DirectorMenu(ITeacherService teacherService,IUserService userService, ICourseService courseService,IExamService examService)
         {
             Console.Write("" +
                 "1) Create teachers\n" +
@@ -108,18 +121,28 @@ namespace LangLang.FormTable
                 "4) Delete teachers\n" +
                 "5) Create courses - smart pick\n" +
                 "6) Create exams - smart pick\n" +
-                "q)uit" +
+                "7) Log out" +
                 "Enter option >> ");
             string option = Console.ReadLine();
             switch (option)
             {
                 case "1":
-                    new FormTableGenerator<Teacher>(teacherService.GetAll(),userService).Create();
+                    new FormTableGenerator<Teacher>(teacherService.GetAll(),userService).Create(user);
                     break;
                 case "2":
                     new FormTableGenerator<Teacher>(teacherService.GetAll(), teacherService).ShowTable();
                     break;
-                case "q":
+                // tehnicki radi, resiti problem creatorId = teacherId
+                case "5":
+                    object exam = new FormTableGenerator<Exam>(examService.GetAll(), examService).Create(user);
+                    new FormTableGenerator<Teacher>(teacherService.GetAll(), teacherService).SmartPick(user, exam);
+                    break;
+                // radi
+                case "6":
+                    object item = new FormTableGenerator<Course>(courseService.GetAll(), courseService).Create(user);
+                    new FormTableGenerator<Teacher>(teacherService.GetAll(), teacherService).SmartPick(user,item);
+                    break;
+                case "7":
                     return;
                 default: break;
             }

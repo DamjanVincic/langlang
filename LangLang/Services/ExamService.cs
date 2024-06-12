@@ -44,9 +44,17 @@ public class ExamService : IExamService
         TimeOnly examTime)
     {
         Teacher? teacher = null;
-        if (teacherId != null)
-            teacher = _userRepository.GetById(teacherId.Value) as Teacher ??
-                      throw new InvalidInputException("User doesn't exist.");
+        User user = _userRepository.GetById(teacherId.Value);
+
+        // zbog smart picka, ako je id direktora onda ce se promeniti u narenih par funkcija na validan id nastavnika
+        if (user is Teacher)
+        {
+            teacher = (Teacher)user;
+        }
+        else if (user is not Director)
+        {
+            throw new InvalidInputException("User doesn't exist.");
+        }
 
         Language language = _languageService.GetLanguage(languageName, languageLevel) ??
                             throw new InvalidInputException("Language with the given level doesn't exist.");
