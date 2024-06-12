@@ -92,17 +92,56 @@ namespace LangLang.FormTable
                     case "1":
                         new FormTableGenerator<Exam>(examService.GetAll(), examService).Create(user);
                         break;
-                    // promeni redosled
+                    // radi
                     case "2":
                         new FormTableGenerator<Exam>(examService.GetAll(), examService).ShowTable();
+                        break;
+                    // radi
+                    case "4":
+                        int id;
+                        while (true)
+                        {
+                            Console.Write("Please enter an ID: ");
+                            string input = Console.ReadLine();
+
+                            if (int.TryParse(input, out id))
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Invalid input. Please enter a valid integer.");
+                            }
+                        }
+                        new FormTableGenerator<Exam>(examService.GetAll(), examService).Delete(id);
                         break;
                     // radi
                     case "5":
                         new FormTableGenerator<Course>(courseService.GetAll(), courseService).Create(user);
                         break;
-                    // promeni redosled
+                    // radi
                     case "6":
                         new FormTableGenerator<Course>(courseService.GetAll(), courseService).ShowTable();
+                        break;
+                    case "7":
+                        break;
+                    // radi
+                    case "8":
+                        while (true)
+                        {
+                            Console.Write("Please enter an ID: ");
+                            string input = Console.ReadLine();
+
+                            if (int.TryParse(input, out id))
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Invalid input. Please enter a valid integer.");
+                            }
+                        }
+                        new FormTableGenerator<Course>(courseService.GetAll(), courseService).Delete(id);
                         break;
                     case "9":
                         return;
@@ -126,11 +165,34 @@ namespace LangLang.FormTable
             string option = Console.ReadLine();
             switch (option)
             {
+                // radi
                 case "1":
                     new FormTableGenerator<Teacher>(teacherService.GetAll(),userService).Create(user);
                     break;
+                // radi
                 case "2":
                     new FormTableGenerator<Teacher>(teacherService.GetAll(), teacherService).ShowTable();
+                    break;
+                case "3":
+                    break;
+                // radi
+                case "4":
+                    int id;
+                    while (true)
+                    {
+                        Console.Write("Please enter an ID: ");
+                        string input = Console.ReadLine();
+
+                        if (int.TryParse(input, out id))
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid input. Please enter a valid integer.");
+                        }
+                    }
+                    new FormTableGenerator<User>(userService.GetAll(), userService).Delete(id);
                     break;
                 // tehnicki radi, resiti problem creatorId = teacherId
                 case "5":

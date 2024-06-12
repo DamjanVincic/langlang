@@ -6,6 +6,7 @@ namespace LangLang.Models
     {
         private string _name = null!;
 
+        public Language() { }
         public Language(string name, LanguageLevel level)
         {
             Name = name;

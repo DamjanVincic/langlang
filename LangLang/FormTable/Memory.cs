@@ -5,6 +5,7 @@ using System.Linq;
 using LangLang.Services;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections;
 
 namespace LangLang.FormTable
 {
@@ -49,11 +50,69 @@ namespace LangLang.FormTable
             {
                 return ParseEnum(input,targetType);
             }
+            else if (targetType.IsGenericType && targetType.GetGenericTypeDefinition() == typeof(List<>))
+            {
+                Type elementType = targetType.GetGenericArguments()[0];
+                return ParseList(input, elementType);
+            }
+            else if (!targetType.IsPrimitive && !targetType.IsEnum && !targetType.IsGenericType)
+            {
+                return ParseComplexType(input, targetType);
+            }
             // Add other type checks and conversions as needed
             else
             {
                 throw new NotSupportedException($"Type {targetType.Name} is not supported");
             }
+        }
+
+        private static object ParseList(string input, Type elementType)
+        {
+            string[] values = input.Split(',');
+            Type listType = typeof(List<>).MakeGenericType(elementType);
+            IList list = (IList)Activator.CreateInstance(listType);
+
+            foreach (string value in values)
+            {
+                object parsedValue = ParseComplexType(value, elementType);
+                list.Add(parsedValue);
+            }
+
+            return list;
+        }
+
+        private static object ParseComplexType(string input, Type targetType)
+        {
+            string[] propertyValues = input.Trim().Split(' ');
+
+            var constructor = targetType.GetConstructors().FirstOrDefault(c => c.GetParameters().Length == propertyValues.Length);
+            if (constructor == null)
+            {
+                throw new Exception($"No suitable constructor found for type {targetType.Name}");
+            }
+
+            var parameters = constructor.GetParameters();
+            object[] parameterValues = new object[parameters.Length];
+
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                var parameter = parameters[i];
+                object value;
+
+                if (parameter.ParameterType.IsEnum)
+                {
+                    value = Enum.Parse(parameter.ParameterType, propertyValues[i]);
+                }
+                else
+                {
+                    value = GetValueFromInput(propertyValues[i], parameter.ParameterType);
+                }
+
+                parameterValues[i] = value;
+            }
+
+            var instance = constructor.Invoke(parameterValues);
+            return instance;
         }
 
         private static object ParseEnum(string input, Type targetType)

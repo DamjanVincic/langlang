@@ -85,7 +85,7 @@ namespace LangLang.ViewModels.ExamViewModels
                     if (_loggedIn is Director)
                     {
                         Exam exam = _examService.Add(Name, LanguageLevel, MaxStudents, ExamDate, null, new TimeOnly(HourSelected, MinuteSelected));
-                        teacherId = _teacherService.SmartPick(exam);
+                        teacherId = _teacherService.SmartPickExam(exam);
                         exam.TeacherId = teacherId;
                         _examService.Update(exam.Id, exam.Language.Name, exam.Language.Level, exam.MaxStudents, exam.Date, exam.TeacherId, exam.ScheduledTime);
                     }

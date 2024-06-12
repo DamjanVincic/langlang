@@ -1,6 +1,7 @@
 ﻿using LangLang.Models;
 using LangLang.Services;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -79,6 +80,22 @@ namespace LangLang.FormTable
                 return default;
             }
         }
+        public void Delete(int id)
+        {
+            try
+            {
+                var serviceType = _service.GetType();
+                var method = serviceType.GetMethod("Delete");
+                method.Invoke(_service, new object[] { id });
+                Console.WriteLine("Success");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Invalid input. Action terminated.");
+            }
+
+        }
+
 
         public void SmartPick(User user, object item)
         {
@@ -126,7 +143,7 @@ namespace LangLang.FormTable
             var sb = new StringBuilder();
             foreach (var item in properties)
             {
-                sb.Append(item.Name.PadRight(15)).Append(" ");
+                sb.Append(item.Name.PadRight(25)).Append(" ");
             }
             return sb.ToString();
         }
@@ -137,8 +154,21 @@ namespace LangLang.FormTable
             var sb = new StringBuilder();
             foreach (var prop in properties)
             {
-                var value = prop.GetValue(item)?.ToString() ?? string.Empty;
-                sb.Append(value.PadRight(15)).Append(" ");
+                var value = prop.GetValue(item);
+                string formattedValue;
+
+                if (value is IEnumerable enumerable && !(value is string))
+                {
+                    // Ako je vrednost enumerabilna (lista, rečnik, itd.), formatiramo je za prikaz
+                    formattedValue = $"[{string.Join(", ", enumerable.Cast<object>())}]";
+                }
+                else
+                {
+                    // Inače, koristimo ToString() metodu
+                    formattedValue = value?.ToString() ?? string.Empty;
+                }
+
+                sb.Append(formattedValue.PadRight(25)).Append(" ");
             }
             return sb.ToString();
         }
