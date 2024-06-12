@@ -15,8 +15,9 @@ public class TeacherService : ITeacherService
     private readonly IScheduleService _scheduleService;
     private readonly IStudentService _studentService;
     private readonly IMessageService _messageService;
+    private readonly ILanguageService _languageService; 
 
-    public TeacherService(IUserRepository userRepository, ICourseRepository courseRepository, IExamRepository examRepository, IExamService examService, IScheduleService scheduleService, IStudentService studentService, IMessageService messageService)
+    public TeacherService(IUserRepository userRepository, ICourseRepository courseRepository, IExamRepository examRepository, IExamService examService, IScheduleService scheduleService, IStudentService studentService, IMessageService messageService, ILanguageService languageService)
     {
         _userRepository = userRepository;
         _courseRepository = courseRepository;
@@ -25,6 +26,7 @@ public class TeacherService : ITeacherService
         _scheduleService = scheduleService;
         _studentService = studentService;
         _messageService = messageService;
+        _languageService = languageService;
     }
 
     public List<Teacher> GetAll()
@@ -273,7 +275,10 @@ public class TeacherService : ITeacherService
 
         exam.TeacherId = availableTeachers.First().Id;
         availableTeachers.First().ExamIds.Add(exam.Id);
-        _examService.Update(exam.Id, exam.Language.Name, exam.Language.Level ,exam.MaxStudents, exam.Date, exam.TeacherId, exam.ScheduledTime);
+        Language language = _languageService.GetLanguage(exam.Language.Name, exam.Language.Level) ??
+                    throw new InvalidInputException("Language with the given level doesn't exist.");
+
+        _examService.Update(exam.Id, language ,exam.MaxStudents, exam.Date, exam.TeacherId, exam.ScheduledTime);
         return exam.TeacherId;
     }
 }

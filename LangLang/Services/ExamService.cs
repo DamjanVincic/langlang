@@ -76,8 +76,8 @@ public class ExamService : IExamService
     }
 
     // TODO: MELOC 21, CYCLO_SWITCH 6, NOP 7, MNOC 5 
-    public void Update(int id, string languageName, LanguageLevel languageLevel, int maxStudents, DateOnly date,
-        int? teacherId, TimeOnly time)
+    public void Update(int id, Language language, int maxStudents, DateOnly date,
+        int? teacherId, TimeOnly scheduledTime)
     {
         // TODO: Decide which information should be updated
 
@@ -90,16 +90,16 @@ public class ExamService : IExamService
         if (teacherId.HasValue)
             teacher = _userRepository.GetById(teacherId.Value) as Teacher ?? throw new InvalidInputException("User doesn't exist.");;
 
-
+         /*
         Language language = _languageService.GetLanguage(languageName, languageLevel) ??
                             throw new InvalidInputException("Language with the given level doesn't exist.");
-
+             */
         int? oldTeacherId = exam.TeacherId;
         
         exam.Language = language;
         exam.MaxStudents = maxStudents;
         exam.Date = date;
-        exam.ScheduledTime = time;
+        exam.ScheduledTime = scheduledTime;
         exam.TeacherId = teacherId;
 
         // Validates if it can be added to the current schedule

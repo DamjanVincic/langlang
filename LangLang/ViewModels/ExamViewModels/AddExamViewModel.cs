@@ -87,7 +87,9 @@ namespace LangLang.ViewModels.ExamViewModels
                         Exam exam = _examService.Add(Name, LanguageLevel, MaxStudents, ExamDate, null, new TimeOnly(HourSelected, MinuteSelected));
                         teacherId = _teacherService.SmartPickExam(exam);
                         exam.TeacherId = teacherId;
-                        _examService.Update(exam.Id, exam.Language.Name, exam.Language.Level, exam.MaxStudents, exam.Date, exam.TeacherId, exam.ScheduledTime);
+                        Language language = _languageService.GetLanguage(exam.Language.Name, exam.Language.Level) ??
+                    throw new InvalidInputException("Language with the given level doesn't exist.");
+                        _examService.Update(exam.Id, language, exam.MaxStudents, exam.Date, exam.TeacherId, exam.ScheduledTime);
                     }
                     else
                     {
@@ -99,7 +101,10 @@ namespace LangLang.ViewModels.ExamViewModels
                 }
                 else
                 {
-                    _examService.Update(_exam.Id, Name!, LanguageLevel, MaxStudents, ExamDate, _loggedIn.Id,
+                    Language language = _languageService.GetLanguage(Name!, LanguageLevel) ??
+                    throw new InvalidInputException("Language with the given level doesn't exist.");
+
+                    _examService.Update(_exam.Id, language, MaxStudents, ExamDate, _loggedIn.Id,
                         new TimeOnly(HourSelected, MinuteSelected));
 
                     MessageBox.Show("Exam edited successfully.", "Success", MessageBoxButton.OK,

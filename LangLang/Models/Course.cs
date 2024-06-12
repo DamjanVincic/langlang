@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using LangLang.FormTable;
 using Newtonsoft.Json;
 
 namespace LangLang.Models
@@ -60,6 +61,7 @@ namespace LangLang.Models
             }
         }
 
+        [TableItem(9)]
         public List<Weekday> Held
         {
             get => _held;
@@ -70,12 +72,16 @@ namespace LangLang.Models
             }
         }
 
+        [TableItem(10)]
         public new bool IsOnline { get; set; }
+        [TableItem(11)]
         public bool IsFinished { get; set; } = false;
 
         // If the best students were notified by the director
+        [TableItem(12)]
         public bool StudentsNotified { get; set; } = false;
 
+        [TableItem(13)]
         public int? CreatorId { get; set; }
 
 
@@ -94,9 +100,11 @@ namespace LangLang.Models
         // TODO: Return different student IDs based on the status, only pending when accepting (ignore paused), remove all paused after starting a course etc.
         // TODO: Add logic to respective methods when a student drops out from, or others to resume their applications etc.
         // Dictionary of student IDs and their application status
+        [TableItem(14)]
         public Dictionary<int, ApplicationStatus> Students { get; } = new();
 
         // Dictionary of student IDs and their reasons for requesting to drop out
+        [TableItem(14)]
         public Dictionary<int, string> DropOutRequests { get; } = new();
 
         private static void ValidateDate(DateOnly startDate)

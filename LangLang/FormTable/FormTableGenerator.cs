@@ -25,6 +25,31 @@ namespace LangLang.FormTable
             _service = service;
             _columnsPerPage = columnsPerPage;
         }
+        public T GetById(object id)
+        {
+            var serviceType = _service.GetType();
+            var getByIdMethods = serviceType.GetMethods().Where(m => m.Name == "GetById" && m.GetParameters().Length == 1);
+
+            foreach (var getByIdMethod in getByIdMethods)
+            {
+                var parameterType = getByIdMethod.GetParameters()[0].ParameterType;
+                if (parameterType.IsAssignableFrom(id.GetType()))
+                {
+                    try
+                    {
+                        var result = getByIdMethod.Invoke(_service, new object[] { id });
+                        return (T)result;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error getting item by ID: {ex.Message}");
+                    }
+                }
+            }
+
+            Console.WriteLine($"Method 'GetById' with compatible parameter type not found on the service.");
+            return default;
+        }
 
         private List<object> GetData(User user)
         {
@@ -78,6 +103,107 @@ namespace LangLang.FormTable
             {
                 Console.WriteLine($"Error creating item: {ex.Message}");
                 return default;
+            }
+        }
+        // onlt update properties that service allows
+        private Dictionary<string, object> Prompt(T item, MethodInfo updateMethod)
+        {
+            var values = new Dictionary<string, object>();
+
+            foreach (var parameter in updateMethod.GetParameters())
+            {
+                if (parameter.Name.Equals("id", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                var prop = _type.GetProperty(parameter.Name, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+                if (prop != null)
+                {
+                    var value = prop.GetValue(item);
+                    string formattedValue = value?.ToString() ?? string.Empty;
+
+                    Console.WriteLine($"{parameter.Name} ({parameter.ParameterType.Name}) [Current value: {formattedValue}]: ");
+                    string input = Console.ReadLine();
+
+                    if (!string.IsNullOrWhiteSpace(input))
+                    {
+                        object newValue = Memory.GetValueFromInput(input, parameter.ParameterType);
+                        values[parameter.Name] = newValue;
+                    }
+                    else
+                    {
+                        values[parameter.Name] = value;
+                    }
+                }
+                else
+                {
+                    // if property not found, consider it empty or default
+                    values[parameter.Name] = parameter.ParameterType.IsValueType ? Activator.CreateInstance(parameter.ParameterType) : null;
+                }
+            }
+
+            return values;
+        }
+
+        public void Update(T item, params string[] propertiesToUpdate)
+        {
+            var serviceType = _service.GetType();
+            var updateMethod = serviceType.GetMethod("Update");
+            if (updateMethod == null)
+            {
+                Console.WriteLine("Method 'Update' not found on the service.");
+                return;
+            }
+
+            // to get all new and old values
+            var values = Prompt(item, updateMethod);
+            // to invoke
+            var methodParameters = new List<object>();
+
+            foreach (var parameter in updateMethod.GetParameters())
+            {
+                if (parameter.Name.Equals("id", StringComparison.OrdinalIgnoreCase))
+                {
+                    var idProperty = _type.GetProperty("Id", BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+                    if (idProperty != null)
+                    {
+                        methodParameters.Add(idProperty.GetValue(item));
+                    }
+                    else
+                    {
+                        Console.WriteLine("ID property not found on the item.");
+                        return;
+                    }
+                }
+                else
+                {
+                    if (values.ContainsKey(parameter.Name))
+                    {
+                        methodParameters.Add(values[parameter.Name]);
+                    }
+                    else
+                    {
+                        var property = _type.GetProperty(parameter.Name, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+                        if (property != null)
+                        {
+                            methodParameters.Add(property.GetValue(item));
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Property '{parameter.Name}' not found on type '{_type.Name}'.");
+                            return;
+                        }
+                    }
+                }
+            }
+
+            try
+            {
+                updateMethod.Invoke(_service, methodParameters.ToArray());
+                Console.WriteLine("Item successfully updated.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating item: {ex.Message}");
             }
         }
         public void Delete(int id)
@@ -136,10 +262,14 @@ namespace LangLang.FormTable
                 Console.ReadLine();
             }
         }
-
         private string CreateHeader(int pageIndex)
         {
-            var properties = _type.GetProperties().Skip(pageIndex * _columnsPerPage).Take(_columnsPerPage);
+            var properties = _type.GetProperties()
+                .Where(p => p.IsDefined(typeof(TableItemAttribute), false))
+                .OrderBy(p => p.GetCustomAttribute<TableItemAttribute>().ColumnOrder)
+                .Skip(pageIndex * _columnsPerPage)
+                .Take(_columnsPerPage);
+
             var sb = new StringBuilder();
             foreach (var item in properties)
             {
@@ -150,24 +280,27 @@ namespace LangLang.FormTable
 
         private string CreateRow(T item, int pageIndex)
         {
-            var properties = _type.GetProperties().Skip(pageIndex * _columnsPerPage).Take(_columnsPerPage);
+            var properties = _type.GetProperties()
+                .Where(p => p.IsDefined(typeof(TableItemAttribute), false))
+                .OrderBy(p => p.GetCustomAttribute<TableItemAttribute>().ColumnOrder)
+                .Skip(pageIndex * _columnsPerPage)
+                .Take(_columnsPerPage);
+
             var sb = new StringBuilder();
             foreach (var prop in properties)
             {
                 var value = prop.GetValue(item);
                 string formattedValue;
-
                 if (value is IEnumerable enumerable && !(value is string))
                 {
-                    // Ako je vrednost enumerabilna (lista, rečnik, itd.), formatiramo je za prikaz
+                    // If the value is enumerable (list, dictionary, etc.), format it for display
                     formattedValue = $"[{string.Join(", ", enumerable.Cast<object>())}]";
                 }
                 else
                 {
-                    // Inače, koristimo ToString() metodu
+                    // Otherwise, use the ToString() method
                     formattedValue = value?.ToString() ?? string.Empty;
                 }
-
                 sb.Append(formattedValue.PadRight(25)).Append(" ");
             }
             return sb.ToString();
