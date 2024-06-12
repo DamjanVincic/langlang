@@ -69,12 +69,5 @@ public class DatabaseContext : DbContext
                 v => (int)v,
                 v => (Weekday)v
             );
-
-        // modelBuilder.Entity<Course>()
-        //     .Property(c => c.Held)
-        //     .HasConversion(
-        //         v => JsonConvert.SerializeObject(v), // Convert list to JSON string
-        //         v => JsonConvert.DeserializeObject<List<Weekday>>(v) // Convert JSON string to list
-        //     );
     }
 }
