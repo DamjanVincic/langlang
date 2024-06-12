@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 
 namespace LangLang.Models
@@ -12,8 +11,12 @@ namespace LangLang.Models
         private int _duration;
         private List<Weekday> _held = null!;
 
+        private readonly bool _loadingFromDatabase;
+
         public Course()
         {
+            // Only Entity Framework uses empty constructor
+            _loadingFromDatabase = true;
         }
 
         public Course(Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents,
@@ -76,14 +79,13 @@ namespace LangLang.Models
         }
 
         public new bool IsOnline { get; set; }
-        public bool IsFinished { get; set; } = false;
+        public bool IsFinished { get; set; }
 
         // If the best students were notified by the director
-        public bool StudentsNotified { get; set; } = false;
+        public bool StudentsNotified { get; set; }
 
         public int? CreatorId { get; set; }
 
-        // TODO: Figure out how not to validate when loading from the database (ctor instead of property?)
         public DateOnly StartDate
         {
             get => Date;
@@ -104,8 +106,9 @@ namespace LangLang.Models
         // Dictionary of student IDs and their reasons for requesting to drop out
         public Dictionary<int, string> DropOutRequests { get; } = new();
 
-        private static void ValidateDate(DateOnly startDate)
+        private void ValidateDate(DateOnly startDate)
         {
+            if (_loadingFromDatabase) return;
             if ((startDate.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days < 7)
                 throw new InvalidInputException("The course has to be at least 7 days from now.");
         }
