@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using LangLang.FormTable;
 using Newtonsoft.Json;
 
 namespace LangLang.Models
@@ -24,9 +25,10 @@ namespace LangLang.Models
         }
 
 
-        public bool TeacherGraded {  get; set; }
-        public bool DirectorGraded {  get; set; }
-
+        [TableItem(8)]
+        public bool TeacherGraded { get; set; }
+        [TableItem(9)]
+        public bool DirectorGraded { get; set; }
 
         public new int MaxStudents
         {
@@ -44,6 +46,7 @@ namespace LangLang.Models
             }
         }
 
+        [TableItem(10)]
         public List<int> StudentIds { get; set; } = new();
 
         private static void ValidateDate(DateOnly date)

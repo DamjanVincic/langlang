@@ -1,4 +1,5 @@
 ﻿using System;
+using LangLang.FormTable;
 
 namespace LangLang.Models
 {
@@ -29,10 +30,13 @@ namespace LangLang.Models
             ScheduledTime = time;
         }
 
+        [TableItem(1)]
         public int Id { get; set; }
 
+        [TableItem(8)]
         public bool Confirmed { get; set; }
 
+        [TableItem(2)]
         public Language Language
         {
             get => _language;
@@ -43,6 +47,7 @@ namespace LangLang.Models
             }
         }
 
+        [TableItem(7)]
         public int MaxStudents
         {
             get => _maxStudents;
@@ -53,8 +58,10 @@ namespace LangLang.Models
             }
         }
 
+        [TableItem(5)]
         public int? TeacherId { get; set; }
 
+        [TableItem(3)]
         public DateOnly Date
         {
             get => _date;
@@ -65,8 +72,10 @@ namespace LangLang.Models
             }
         }
 
+        [TableItem(4)]
         public TimeOnly ScheduledTime { get; set; }
 
+        [TableItem(6)]
         public bool IsOnline
         {
             get
