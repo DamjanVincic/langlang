@@ -1,25 +1,73 @@
-﻿using System;
+﻿using LangLang.Models;
+using LangLang.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.util;
 
 namespace LangLang.FormTable
 {
-    public class FormTableGenerator<T,S>
+    public class FormTableGenerator<T>
     {
         private Type _type;
-        private Type _service;
+        private object _service;
         private IEnumerable<T> _data;
         private int _columnsPerPage;
 
-        public FormTableGenerator(IEnumerable<T> data, int columnsPerPage = 5)
+        public FormTableGenerator(IEnumerable<T> data, object service, int columnsPerPage = 5)
         {
             _data = data;
             _type = typeof(T);
-            _service = typeof(S);
+            _service = service;
             _columnsPerPage = columnsPerPage;
+        }
+
+        private List<object> GetData()
+        {
+            List<object> arguments = new List<object>();
+            var method = _service.GetType().GetMethod("Add");
+            if (method == null)
+            {
+                Console.WriteLine("Metoda 'Add' nije pronađena na servisu.");
+                return arguments;
+            }
+
+            var parameters = method.GetParameters();
+
+            foreach (var param in parameters)
+            {
+                Console.WriteLine($"Enter {param.Name} ({param.ParameterType.Name}): ");
+                string input = Console.ReadLine();
+                object value = Memory.GetValueFromInput(input, param.ParameterType);
+                arguments.Add(value);
+            }
+            return arguments;
+        }
+
+        public void Create()
+        {
+            List<object> arguments = GetData();
+            var serviceType = _service.GetType();
+            var method = serviceType.GetMethod("Add");
+            if (method == null)
+            {
+                Console.WriteLine("method not found");
+                return;
+            }
+
+            var parameters = method.GetParameters();
+            object[] args = new object[arguments.Count];
+            for (int i = 0; i < arguments.Count; i++)
+            {
+                args[i] = Convert.ChangeType(arguments[i], parameters[i].ParameterType);
+            }
+
+            var result = method.Invoke(_service, args);
+
+            Console.WriteLine("Kurs je uspješno dodan.");
         }
 
         public void ShowTable()

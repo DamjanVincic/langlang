@@ -36,7 +36,7 @@ namespace LangLang.FormTable
                         TeacherMenu(examService, courseService);
                         break;
                     case Director:
-                        DirectorMenu(teacherService);
+                        DirectorMenu(teacherService,userService);
                         break;
                     default:
                         break;
@@ -80,20 +80,26 @@ namespace LangLang.FormTable
               "6) Read courses\n" +
               "7) Update courses\n" +
               "8) Delete courses\n" +
+              "q)uit" +
               "Enter option >> ");
             string option = Console.ReadLine();
             switch(option)
             {
+                case "1":
+                    new FormTableGenerator<Exam>(examService.GetAll(), examService).Create();
+                    break;
                 case "2": 
-                    new FormTableGenerator<Exam,IExamService>(examService.GetAll()).ShowTable();
+                    new FormTableGenerator<Exam>(examService.GetAll(),examService).ShowTable();
                     break;
                 case "6":
-                    new FormTableGenerator<Course,ICourseService>(courseService.GetAll()).ShowTable();
+                    new FormTableGenerator<Course>(courseService.GetAll(),courseService).ShowTable();
                     break;
+                case "q":
+                    return;
                 default: break;
             }
         }
-        private static void DirectorMenu(ITeacherService teacherService)
+        private static void DirectorMenu(ITeacherService teacherService,IUserService userService)
         {
             Console.Write("" +
                 "1) Create teachers\n" +
@@ -102,13 +108,19 @@ namespace LangLang.FormTable
                 "4) Delete teachers\n" +
                 "5) Create courses - smart pick\n" +
                 "6) Create exams - smart pick\n" +
+                "q)uit" +
                 "Enter option >> ");
             string option = Console.ReadLine();
             switch (option)
             {
-                case "2":
-                    new FormTableGenerator<Teacher,ITeacherService>(teacherService.GetAll()).ShowTable();
+                case "1":
+                    new FormTableGenerator<Teacher>(teacherService.GetAll(),userService).Create();
                     break;
+                case "2":
+                    new FormTableGenerator<Teacher>(teacherService.GetAll(), teacherService).ShowTable();
+                    break;
+                case "q":
+                    return;
                 default: break;
             }
         }
