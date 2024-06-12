@@ -92,6 +92,8 @@ namespace LangLang.ViewModels.CourseViewModels
                 {
                     teacherId = _teacher.Id;
                     creatorId = _teacher.Id;
+                    Course course = _courseService.Add(LanguageName, LanguageLevel, Duration, Held, isOnline, MaxStudents,
+                        creatorId, ScheduledTime, startDate, false, teacherId);
                 }
                 else
                 {
