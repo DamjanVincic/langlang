@@ -62,7 +62,7 @@ namespace LangLang.FormTable
             object[] args = new object[arguments.Count];
             for (int i = 0; i < arguments.Count; i++)
             {
-                args[i] = Convert.ChangeType(arguments[i], parameters[i].ParameterType);
+                args[i] = arguments[i];
             }
 
             var result = method.Invoke(_service, args);
