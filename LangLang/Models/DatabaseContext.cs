@@ -38,6 +38,10 @@ public class DatabaseContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<Course>()
+            .Property(c => c.Id)
+            .ValueGeneratedOnAdd();
         
         var dateOnlyConverter = new ValueConverter<DateOnly, DateTime>(
             dateOnly => dateOnly.ToDateTime(TimeOnly.MinValue),
