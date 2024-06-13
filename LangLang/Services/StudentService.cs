@@ -36,89 +36,6 @@ public class StudentService : IStudentService
         return _userRepository.GetAll().OfType<Student>().ToList();
     }
 
-    public List<Course> GetAvailableCourses(int studentId, int pageIndex = 1, int? amount = null)
-    {
-        List<Course> courses =_courseRepository.GetAll().Where(course =>
-            (course.Students.Count < course.MaxStudents || course.IsOnline) &&
-            (course.StartDate.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days >= 7 &&
-            !course.Students.ContainsKey(studentId)).ToList();
-        
-        amount ??= courses.Count;
-        
-        return courses.Skip((pageIndex - 1) * amount.Value).Take(amount.Value).ToList();
-    }
-
-    public List<Course> GetAppliedCourses(int studentId, int pageIndex = 1, int? amount = null)
-    {
-        Student? student = _userRepository.GetById(studentId) as Student;
-        List<Course> courses = student!.AppliedCourses.Select(courseId => _courseRepository.GetById(courseId)!).ToList();
-        amount ??= courses.Count;
-        return courses.Skip((pageIndex - 1) * amount.Value).Take(amount.Value).ToList();
-    }
-
-    public List<Exam> GetAppliedExams(int studentId, int pageIndex = 1, int? amount = null)
-    {
-        Student student = (_userRepository.GetById(studentId) as Student)!;
-        
-        var appliedExamIds = student.AppliedExams;
-
-        var appliedExams = _examRepository.GetAll()
-            .Where(exam => appliedExamIds.Contains(exam.Id))
-            .ToList();
-
-        amount ??= appliedExams.Count;
-
-        return appliedExams.Skip((pageIndex - 1) * amount.Value).Take(amount.Value).ToList();
-    }
-
-
-    /*
-     1. student must have finished course for the language he wants to take exam in
-     2. exam must have at least one available spot for student
-     3. search date must be at least 30 days before the date the exam is held
-     */
-    public List<Exam> GetAvailableExams(int studentId, int pageIndex = 1, int? amount = null)
-    {
-        // Nakon što je učenik završio kurs, prikazuju mu se svi dostupni termini ispita koji se
-        // odnose na jezik i nivo jezika koji je učenik obradio na kursu
-        
-        Student student = (_userRepository.GetById(studentId) as Student)!;
-
-        List<Exam> exams = _examRepository.GetAll().Where(exam =>
-                            exam.StudentIds.Count < exam.MaxStudents && IsNeededCourseFinished(exam, student) &&
-                            (exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days >= 30 &&
-                            !IsAlreadyPassed(exam, student) &&
-                            !student.AppliedExams.Contains(exam.Id)).ToList();
-
-        amount ??= exams.Count;
-        
-        return exams.Skip((pageIndex - 1) * amount.Value).Take(amount.Value).ToList();
-    }
-
-    /*
-    if language from that course is in the dict than student has finished that course
-    if its in the dict and it has value true then student passed exam, if its false he didnt pass it yet
-    */
-    // TODO: MNOC 3
-    private bool IsNeededCourseFinished(Exam exam, Student student)
-    {
-        return student.LanguagePassFail.ContainsKey(exam.Language.Id) &&
-               student.LanguagePassFail[exam.Language.Id] == false;
-    }
-
-    private bool IsAlreadyPassed(Exam exam, Student student)
-    {
-        foreach (int languageId in student.LanguagePassFail.Keys)
-        {
-            Language language = _languageRepository.GetById(languageId)!;
-            if (language.Name == exam.Language.Name && language.Level >= exam.Language.Level &&
-                student.LanguagePassFail[languageId])
-                return true;
-        }
-
-        return false;
-    }
-
     /*
      *  if teacher has graded the exam but director has not sent the email,
      *  then student can not apply for new exams
@@ -172,8 +89,7 @@ public class StudentService : IStudentService
 
     public void ApplyForCourse(int studentId, int courseId)
     {
-        Student student = _userRepository.GetById(studentId) as Student ??
-                          throw new InvalidInputException("Student doesn't exist.");
+        Student student = GetStudentOrThrow(studentId);
 
         if (student.ActiveCourseId is not null)
             throw new InvalidInputException("You are already enrolled in a course.");
@@ -191,8 +107,7 @@ public class StudentService : IStudentService
     // TODO: MNOC 3
     public void WithdrawFromCourse(int studentId, int courseId)
     {
-        Student student = _userRepository.GetById(studentId) as Student ??
-                          throw new InvalidInputException("Student doesn't exist.");
+        Student student = GetStudentOrThrow(studentId);
 
         Course course = _courseRepository.GetById(courseId) ??
                         throw new InvalidInputException("Course doesn't exist.");
@@ -209,8 +124,7 @@ public class StudentService : IStudentService
 
     public void DropActiveCourse(int studentId, string reason)
     {
-        Student student = _userRepository.GetById(studentId) as Student ??
-                          throw new InvalidInputException("Student doesn't exist.");
+        Student student = GetStudentOrThrow(studentId);
 
         if (student.ActiveCourseId is null)
             throw new InvalidInputException("You are not enrolled in a course.");
@@ -233,8 +147,7 @@ public class StudentService : IStudentService
 
     public void ReportCheating(int studentId, int examId)
     {
-        Student student = _userRepository.GetById(studentId) as Student ??
-                          throw new InvalidInputException("Student doesn't exist.");
+        Student student = GetStudentOrThrow(studentId);
 
         Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
 
@@ -272,12 +185,10 @@ public class StudentService : IStudentService
         }
     }
 
-    // TODO: NOP 6
     public void AddPenaltyPoint(int studentId, PenaltyPointReason penaltyPointReason, int courseId,
         int teacherId, DateOnly datePenaltyPointGiven)
     {
-        Student student = _userRepository.GetById(studentId) as Student ??
-                          throw new InvalidInputException("Student doesn't exist.");
+        Student student = GetStudentOrThrow(studentId);
         _ = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
         ++student.PenaltyPoints;
         _userRepository.Update(student);
@@ -286,26 +197,6 @@ public class StudentService : IStudentService
         {
             _userService.Delete(student.Id);
         }
-    }
-
-    public void AddExamGrade(int studentId, int examId, int writing, int reading, int listening, int talking)
-    {
-        int examGradeId = _examGradeService.Add(examId, studentId, reading, writing, listening, talking);
-
-        Student student = _userRepository.GetById(studentId) as Student ??
-                          throw new InvalidInputException("Student doesn't exist.");
-
-        Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
-
-        if (student.ExamGradeIds.ContainsKey(examId))
-            _examGradeService.Delete(student.ExamGradeIds[examId]);
-
-        student.ExamGradeIds[examId] = examGradeId;
-
-        ExamGrade examGrade = _examGradeService.GetById(examGradeId)!;
-        student.LanguagePassFail[exam.Language.Id] = examGrade.Passed;
-
-        _userRepository.Update(student);
     }
 
     /// <summary>
@@ -330,22 +221,6 @@ public class StudentService : IStudentService
             _userService.Login(student.Email, student.Password);
     }
 
-    public void AddCourseGrade(int studentId, int courseId, int knowledgeGrade, int activityGrade)
-    {
-        int courseGradeId = _courseGradeService.Add(courseId, studentId, knowledgeGrade, activityGrade);
-
-        Student student = _userRepository.GetById(studentId) as Student ??
-                          throw new InvalidInputException("Student doesn't exist.");
-        _ = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
-
-        if (student.CourseGradeIds.ContainsKey(courseId))
-            _courseGradeService.Delete(student.CourseGradeIds[courseId]);
-
-        student.CourseGradeIds[courseId] = courseGradeId;
-
-        _userRepository.Update(student);
-    }
-
     /// <summary>
     /// Pause all student applications except the one with the passed ID
     /// </summary>
@@ -353,7 +228,7 @@ public class StudentService : IStudentService
     /// <param name="courseId">Course ID which not to pause</param>
     public void PauseOtherApplications(int studentId, int courseId)
     {
-        Student student = (_userRepository.GetById(studentId) as Student)!;
+        Student student = GetStudentOrThrow(studentId);
 
         foreach (Course course in student.AppliedCourses.Select(id => _courseRepository.GetById(id)!))
         {
@@ -371,7 +246,7 @@ public class StudentService : IStudentService
     // TODO: Call this method when the teacher reviews the drop out request
     public void ResumeApplications(int studentId)
     {
-        Student student = (_userRepository.GetById(studentId) as Student)!;
+        Student student = GetStudentOrThrow(studentId);
 
         foreach (Course course in student.AppliedCourses.Select(courseId => _courseRepository.GetById(courseId)!))
         {
@@ -381,5 +256,12 @@ public class StudentService : IStudentService
             course.Students[studentId] = ApplicationStatus.Pending;
             _courseRepository.Update(course);
         }
+    }
+    private Student GetStudentOrThrow(int studentId)
+    {
+        Student? student = _userRepository.GetById(studentId) as Student;
+        if (student == null)
+            throw new InvalidInputException("User doesn't exist.");
+        return student;
     }
 }

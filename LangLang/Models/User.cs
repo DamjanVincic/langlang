@@ -114,7 +114,6 @@ namespace LangLang.Models
             }
         }
 
-        // TODO: MELOC 20, CYCLO_SWITCH 6
         private static void ValidatePassword(string password)
         {
             if (password == null)
@@ -127,31 +126,17 @@ namespace LangLang.Models
                 throw new InvalidInputException("Password must be at least eight characters long");
             }
 
-            if (!password.Any(char.IsUpper))
+            if (!password.Any(char.IsUpper) || !password.Any(char.IsLower) || !password.Any(char.IsDigit))
             {
-                throw new InvalidInputException("Password must contain at least one uppercase letter");
-            }
-
-            if (!password.Any(char.IsLower))
-            {
-                throw new InvalidInputException("Password must contain at least one lowercase letter");
-            }
-
-            if (!password.Any(char.IsDigit))
-            {
-                throw new InvalidInputException("Password must contain at least one digit");
+                throw new InvalidInputException("Password must contain at least one uppercase letter, one lower case and one digit.");
             }
         }
 
         private static void ValidatePhoneNumber(string phoneNumber)
         {
-            switch (phoneNumber)
-            {
-                case null:
-                    throw new ArgumentNullException(nameof(phoneNumber));
-                case "":
-                    throw new InvalidInputException("Phone number must not be empty.");
-            }
+            if(phoneNumber==null)
+                throw new ArgumentNullException(nameof(phoneNumber));
+
 
             if (phoneNumber.Length < 10)
             {
