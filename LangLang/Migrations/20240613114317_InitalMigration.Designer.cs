@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LangLang.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240613110602_AddExamTable")]
-    partial class AddExamTable
+    [Migration("20240613114317_InitalMigration")]
+    partial class InitalMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -24,107 +24,6 @@ namespace LangLang.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("LangLang.Models.Course", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("AreApplicationsClosed")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("Confirmed")
-                        .HasColumnType("boolean");
-
-                    b.Property<int?>("CreatorId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Duration")
-                        .HasColumnType("integer");
-
-                    b.Property<List<int>>("Held")
-                        .IsRequired()
-                        .HasColumnType("integer[]");
-
-                    b.Property<bool>("IsFinished")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsOnline")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("LanguageId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("MaxStudents")
-                        .HasColumnType("integer");
-
-                    b.Property<TimeSpan>("ScheduledTime")
-                        .HasColumnType("interval");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("StudentsNotified")
-                        .HasColumnType("boolean");
-
-                    b.Property<int?>("TeacherId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LanguageId");
-
-                    b.ToTable("Courses");
-                });
-
-            modelBuilder.Entity("LangLang.Models.Exam", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("Confirmed")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("date");
-
-                    b.Property<bool>("DirectorGraded")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("LanguageId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("MaxStudents")
-                        .HasColumnType("integer");
-
-                    b.Property<TimeOnly>("ScheduledTime")
-                        .HasColumnType("time without time zone");
-
-                    b.Property<List<int>>("StudentIds")
-                        .IsRequired()
-                        .HasColumnType("integer[]");
-
-                    b.Property<bool>("TeacherGraded")
-                        .HasColumnType("boolean");
-
-                    b.Property<int?>("TeacherId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LanguageId");
-
-                    b.ToTable("Exams");
-                });
 
             modelBuilder.Entity("LangLang.Models.Language", b =>
                 {
@@ -149,6 +48,45 @@ namespace LangLang.Migrations
                     b.HasIndex("TeacherId");
 
                     b.ToTable("Languages");
+                });
+
+            modelBuilder.Entity("LangLang.Models.ScheduleItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Confirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("LanguageId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MaxStudents")
+                        .HasColumnType("integer");
+
+                    b.Property<TimeSpan>("ScheduledTime")
+                        .HasColumnType("interval");
+
+                    b.Property<int?>("TeacherId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LanguageId");
+
+                    b.ToTable("ScheduleItems");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("ScheduleItem");
                 });
 
             modelBuilder.Entity("LangLang.Models.User", b =>
@@ -214,11 +152,60 @@ namespace LangLang.Migrations
                     b.ToTable("List<Weekday>");
                 });
 
+            modelBuilder.Entity("LangLang.Models.Course", b =>
+                {
+                    b.HasBaseType("LangLang.Models.ScheduleItem");
+
+                    b.Property<bool>("AreApplicationsClosed")
+                        .HasColumnType("boolean");
+
+                    b.Property<int?>("CreatorId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Duration")
+                        .HasColumnType("integer");
+
+                    b.Property<List<int>>("Held")
+                        .IsRequired()
+                        .HasColumnType("integer[]");
+
+                    b.Property<bool>("IsFinished")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsOnline")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("StudentsNotified")
+                        .HasColumnType("boolean");
+
+                    b.HasDiscriminator().HasValue("Course");
+                });
+
             modelBuilder.Entity("LangLang.Models.Director", b =>
                 {
                     b.HasBaseType("LangLang.Models.User");
 
                     b.HasDiscriminator().HasValue("Director");
+                });
+
+            modelBuilder.Entity("LangLang.Models.Exam", b =>
+                {
+                    b.HasBaseType("LangLang.Models.ScheduleItem");
+
+                    b.Property<bool>("DirectorGraded")
+                        .HasColumnType("boolean");
+
+                    b.Property<List<int>>("StudentIds")
+                        .IsRequired()
+                        .HasColumnType("integer[]");
+
+                    b.Property<bool>("TeacherGraded")
+                        .HasColumnType("boolean");
+
+                    b.HasDiscriminator().HasValue("Exam");
                 });
 
             modelBuilder.Entity("LangLang.Models.Student", b =>
@@ -260,33 +247,22 @@ namespace LangLang.Migrations
                     b.HasDiscriminator().HasValue("Teacher");
                 });
 
-            modelBuilder.Entity("LangLang.Models.Course", b =>
-                {
-                    b.HasOne("LangLang.Models.Language", "Language")
-                        .WithMany()
-                        .HasForeignKey("LanguageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Language");
-                });
-
-            modelBuilder.Entity("LangLang.Models.Exam", b =>
-                {
-                    b.HasOne("LangLang.Models.Language", "Language")
-                        .WithMany()
-                        .HasForeignKey("LanguageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Language");
-                });
-
             modelBuilder.Entity("LangLang.Models.Language", b =>
                 {
                     b.HasOne("LangLang.Models.Teacher", null)
                         .WithMany("Qualifications")
                         .HasForeignKey("TeacherId");
+                });
+
+            modelBuilder.Entity("LangLang.Models.ScheduleItem", b =>
+                {
+                    b.HasOne("LangLang.Models.Language", "Language")
+                        .WithMany()
+                        .HasForeignKey("LanguageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Language");
                 });
 
             modelBuilder.Entity("LangLang.Models.Teacher", b =>
