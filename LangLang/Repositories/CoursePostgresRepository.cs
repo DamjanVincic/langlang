@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using LangLang.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace LangLang.Repositories;
 
@@ -21,26 +20,28 @@ public class CoursePostgresRepository : ICourseRepository
 
     public Course? GetById(int id)
     {
-        throw new System.NotImplementedException();
+        return _dbContext.Courses.Find(id);
     }
 
-    public int GenerateId()
+    public Course Add(Course course)
     {
-        throw new System.NotImplementedException();
-    }
-
-    public void Add(Course course)
-    {
-        throw new System.NotImplementedException();
+        var addedCourse = _dbContext.Courses.Add(course);
+        _dbContext.SaveChanges();
+        return addedCourse.Entity;
     }
 
     public void Update(Course course)
     {
-        throw new System.NotImplementedException();
+        _dbContext.Courses.Update(course);
+        _dbContext.SaveChanges();
     }
 
     public void Delete(int id)
     {
-        throw new System.NotImplementedException();
+        Course? course = _dbContext.Courses.Find(id);
+        if (course == null) return;
+        
+        _dbContext.Courses.Remove(course);
+        _dbContext.SaveChanges();
     }
 }
