@@ -19,7 +19,7 @@ public class DatabaseContext : DbContext
 
     public DbSet<Course> Courses { get; set; }
     //public DbSet<CourseGrade> CourseGrades { get; set; }
-    //public DbSet<Exam> Exams { get; set; }
+    public DbSet<Exam> Exams { get; set; }
     //public DbSet<ExamGrade> ExamGrades { get; set; }
     //public DbSet<Language> Languages { get; set; }
     //public DbSet<Message> Messages { get; set; }
