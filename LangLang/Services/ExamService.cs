@@ -67,8 +67,6 @@ public class ExamService : IExamService
     public void Update(int id, string languageName, LanguageLevel languageLevel, int maxStudents, DateOnly date,
         int? teacherId, TimeOnly time)
     {
-        // TODO: Decide which information should be updated
-
         Exam exam = GetExamOrThrow(id);
 
         if ((exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days < 14)
@@ -114,8 +112,6 @@ public class ExamService : IExamService
 
     public void Delete(int id)
     {
-        // TODO: Delete from schedule, students etc.
-
         Exam exam = GetExamOrThrow(id);
         Teacher? teacher = null;
         if (exam.TeacherId.HasValue)
@@ -178,14 +174,10 @@ public class ExamService : IExamService
         {
             Exam exam = GetExamOrThrow(examId);
 
-            TimeSpan time = DateTime.Now - exam.Date.ToDateTime(exam.ScheduledTime);
-
             double timeDifference = (DateTime.Now - exam.Date.ToDateTime(exam.ScheduledTime)).TotalMinutes;
 
             if (timeDifference >= 0 && timeDifference < Exam.ExamDuration)
-            {
                 return exam.Id;
-            }
         }
 
         throw new InvalidInputException("There are currently no exams");
