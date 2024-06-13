@@ -17,8 +17,9 @@ public class ExamService : IExamService
     private readonly ILanguageService _languageService;
     private readonly IExamGradeRepository _examGradeRepository;
     private readonly IMessageService _messageService;
+    private readonly ILanguageRepository _languageRepository;
     
-    public ExamService(IExamRepository examRepository, IUserRepository userRepository, IScheduleService scheduleService, ILanguageService languageService, IExamGradeRepository examGradeRepository, IMessageService messageService)
+    public ExamService(IExamRepository examRepository, IUserRepository userRepository, IScheduleService scheduleService, ILanguageService languageService, IExamGradeRepository examGradeRepository, IMessageService messageService,ILanguageRepository languageRepository)
     {
         _examRepository = examRepository;
         _userRepository = userRepository;
@@ -26,6 +27,7 @@ public class ExamService : IExamService
         _languageService = languageService;
         _examGradeRepository = examGradeRepository;
         _messageService = messageService;
+        _languageRepository = languageRepository;
     }
 
     public List<Exam> GetAll()
@@ -37,7 +39,68 @@ public class ExamService : IExamService
     {
         return _examRepository.GetById(id);
     }
+    public List<Exam> GetAppliedExams(int studentId, int pageIndex = 1, int? amount = null)
+    {
+        Student student = (_userRepository.GetById(studentId) as Student)!;
 
+        var appliedExamIds = student.AppliedExams;
+
+        var appliedExams = _examRepository.GetAll()
+            .Where(exam => appliedExamIds.Contains(exam.Id))
+            .ToList();
+
+        amount ??= appliedExams.Count;
+
+        return appliedExams.Skip((pageIndex - 1) * amount.Value).Take(amount.Value).ToList();
+    }
+
+
+    /*
+     1. student must have finished course for the language he wants to take exam in
+     2. exam must have at least one available spot for student
+     3. search date must be at least 30 days before the date the exam is held
+     */
+    public List<Exam> GetAvailableExams(int studentId, int pageIndex = 1, int? amount = null)
+    {
+        // Nakon što je učenik završio kurs, prikazuju mu se svi dostupni termini ispita koji se
+        // odnose na jezik i nivo jezika koji je učenik obradio na kursu
+
+        Student student = (_userRepository.GetById(studentId) as Student)!;
+
+        List<Exam> exams = _examRepository.GetAll().Where(exam =>
+                            exam.StudentIds.Count < exam.MaxStudents && IsNeededCourseFinished(exam, student) &&
+                            (exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days >= 30 &&
+                            !IsAlreadyPassed(exam, student) &&
+                            !student.AppliedExams.Contains(exam.Id)).ToList();
+
+        amount ??= exams.Count;
+
+        return exams.Skip((pageIndex - 1) * amount.Value).Take(amount.Value).ToList();
+    }
+
+    /*
+    if language from that course is in the dict than student has finished that course
+    if its in the dict and it has value true then student passed exam, if its false he didnt pass it yet
+    */
+    // TODO: MNOC 3
+    private bool IsNeededCourseFinished(Exam exam, Student student)
+    {
+        return student.LanguagePassFail.ContainsKey(exam.Language.Id) &&
+               student.LanguagePassFail[exam.Language.Id] == false;
+    }
+
+    private bool IsAlreadyPassed(Exam exam, Student student)
+    {
+        foreach (int languageId in student.LanguagePassFail.Keys)
+        {
+            Language language = _languageRepository.GetById(languageId)!;
+            if (language.Name == exam.Language.Name && language.Level >= exam.Language.Level &&
+                student.LanguagePassFail[languageId])
+                return true;
+        }
+
+        return false;
+    }
     public Exam Add(string? languageName, LanguageLevel languageLevel, int maxStudents, DateOnly examDate, int? teacherId,
         TimeOnly examTime)
     {

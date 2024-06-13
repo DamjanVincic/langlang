@@ -35,18 +35,23 @@ namespace LangLang.Services
                                         .ToList();
         }
 
-        public int Add(int examId, int studentId, int readingPoints, int writingPoints, int listeningPoints,
-            int talkingPoints)
+        public int AddExamGrade(int studentId, int examId, int reading, int writing, int listening, int talking)
         {
-            _ = _userRepository.GetById(studentId) as Student ??
-                              throw new InvalidInputException("User doesn't exist.");
-            _ = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
+            Student? student = _userRepository.GetById(studentId) as Student ?? throw new InvalidInputException("User doesn't exist.");
+            Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
 
-            ExamGrade examGrade = new(_examGradeRepository.GenerateId(), examId, studentId, readingPoints,
-                writingPoints, listeningPoints, talkingPoints);
-            
+            if (student.ExamGradeIds.ContainsKey(examId))
+            {
+                Delete(student.ExamGradeIds[examId]);
+            }
+
+            ExamGrade examGrade = new(_examGradeRepository.GenerateId(), examId, studentId, reading, writing, listening, talking);
             _examGradeRepository.Add(examGrade);
-            
+
+            student.ExamGradeIds[examId] = examGrade.Id;
+            student.LanguagePassFail[exam.Language.Id] = examGrade.Passed;
+
+            _userRepository.Update(student);
             return examGrade.Id;
         }
 

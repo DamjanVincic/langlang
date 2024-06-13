@@ -13,7 +13,7 @@ namespace LangLang.ViewModels.CourseViewModels
         private readonly int _courseId;
         private readonly Window _currentWindow;
 
-        private readonly IStudentService _studentService = ServiceProvider.GetRequiredService<IStudentService>();
+        private readonly ICourseGradeService _courseGradeService = ServiceProvider.GetRequiredService<ICourseGradeService>();
 
         public AddCourseGradeViewModel(int studentId, int courseId, Window currentWindow)
         {
@@ -32,7 +32,7 @@ namespace LangLang.ViewModels.CourseViewModels
         {
             try
             {
-                _studentService.AddCourseGrade(_studentId, _courseId, KnowledgeGrade, ActivityGrade);
+                _courseGradeService.AddCourseGrade(_studentId, _courseId, KnowledgeGrade, ActivityGrade);
                 MessageBox.Show("Grade added successfully.", "Success", MessageBoxButton.OK,
                     MessageBoxImage.Information);
                 _currentWindow.Close();

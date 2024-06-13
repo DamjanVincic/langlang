@@ -90,6 +90,25 @@ public class CourseService : ICourseService
         }
         return coursesWithWithdrawals;
     }
+    public List<Course> GetAvailableCourses(int studentId, int pageIndex = 1, int? amount = null)
+    {
+        List<Course> courses = _courseRepository.GetAll().Where(course =>
+            (course.Students.Count < course.MaxStudents || course.IsOnline) &&
+            (course.StartDate.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days >= 7 &&
+            !course.Students.ContainsKey(studentId)).ToList();
+
+        amount ??= courses.Count;
+
+        return courses.Skip((pageIndex - 1) * amount.Value).Take(amount.Value).ToList();
+    }
+
+    public List<Course> GetAppliedCourses(int studentId, int pageIndex = 1, int? amount = null)
+    {
+        Student? student = _userRepository.GetById(studentId) as Student;
+        List<Course> courses = student!.AppliedCourses.Select(courseId => _courseRepository.GetById(courseId)!).ToList();
+        amount ??= courses.Count;
+        return courses.Skip((pageIndex - 1) * amount.Value).Take(amount.Value).ToList();
+    }
 
     public Course Add(string languageName, LanguageLevel languageLevel, int duration, List<Weekday> held, bool isOnline,
         int maxStudents, int? creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed,
