@@ -17,9 +17,8 @@ public class ExamService : IExamService
     private readonly ILanguageService _languageService;
     private readonly IExamGradeRepository _examGradeRepository;
     private readonly IMessageService _messageService;
-    private readonly IExamGradeService _examGradeService;
     
-    public ExamService(IExamRepository examRepository, IUserRepository userRepository, IScheduleService scheduleService, ILanguageService languageService, IExamGradeRepository examGradeRepository, IMessageService messageService, IExamGradeService examGradeService)
+    public ExamService(IExamRepository examRepository, IUserRepository userRepository, IScheduleService scheduleService, ILanguageService languageService, IExamGradeRepository examGradeRepository, IMessageService messageService)
     {
         _examRepository = examRepository;
         _userRepository = userRepository;
@@ -27,7 +26,6 @@ public class ExamService : IExamService
         _languageService = languageService;
         _examGradeRepository = examGradeRepository;
         _messageService = messageService;
-        _examGradeService = examGradeService;
     }
 
     public List<Exam> GetAll()
@@ -45,8 +43,7 @@ public class ExamService : IExamService
     {
         Teacher? teacher = null;
         if (teacherId != null)
-            teacher = _userRepository.GetById(teacherId.Value) as Teacher ??
-                      throw new InvalidInputException("User doesn't exist.");
+            teacher = GetTeacherOrThrow(teacherId.Value);
 
         Language language = _languageService.GetLanguage(languageName, languageLevel) ??
                             throw new InvalidInputException("Language with the given level doesn't exist.");
@@ -67,20 +64,19 @@ public class ExamService : IExamService
         return exam;
     }
 
-    // TODO: MELOC 21, CYCLO_SWITCH 6, NOP 7, MNOC 5 
     public void Update(int id, string languageName, LanguageLevel languageLevel, int maxStudents, DateOnly date,
         int? teacherId, TimeOnly time)
     {
         // TODO: Decide which information should be updated
 
-        Exam exam = _examRepository.GetById(id) ?? throw new InvalidInputException("Exam doesn't exist.");
+        Exam exam = GetExamOrThrow(id);
 
         if ((exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days < 14)
             throw new InvalidInputException("The exam can't be changed if it's less than 2 weeks from now.");
 
         Teacher? teacher = null;
         if (teacherId.HasValue)
-            teacher = _userRepository.GetById(teacherId.Value) as Teacher ?? throw new InvalidInputException("User doesn't exist.");;
+            teacher = GetTeacherOrThrow(teacherId.Value);
 
 
         Language language = _languageService.GetLanguage(languageName, languageLevel) ??
@@ -96,8 +92,10 @@ public class ExamService : IExamService
 
         // Validates if it can be added to the current schedule
         _scheduleService.Update(exam);
-        
-        Teacher? oldTeacher = oldTeacherId.HasValue ? _userRepository.GetById(oldTeacherId.Value) as Teacher : null;
+
+        Teacher? oldTeacher = null;
+        if (oldTeacherId.HasValue)
+            oldTeacher = GetTeacherOrThrow(oldTeacherId.Value);
 
         if (oldTeacher is not null)
         {
@@ -118,9 +116,10 @@ public class ExamService : IExamService
     {
         // TODO: Delete from schedule, students etc.
 
-        Exam exam = _examRepository.GetById(id) ?? throw new InvalidInputException("Exam doesn't exist.");
-        Teacher? teacher = exam.TeacherId.HasValue ? _userRepository.GetById(exam.TeacherId.Value) as Teacher ?? 
-            throw new InvalidInputException("Teacher doesn't exist.") : null;
+        Exam exam = GetExamOrThrow(id);
+        Teacher? teacher = null;
+        if (exam.TeacherId.HasValue)
+            teacher = GetTeacherOrThrow(exam.TeacherId.Value);
 
         if (teacher is not null)
         {
@@ -141,7 +140,7 @@ public class ExamService : IExamService
 
     public void ConfirmExam(int examId)
     {
-        Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
+        Exam exam = GetExamOrThrow(examId);
         exam.Confirmed = true;
         _examRepository.Update(exam);
     }
@@ -155,15 +154,13 @@ public class ExamService : IExamService
         return students;
     }
 
-    // TODO: CYCLO_SWITCH 6,  MNOC 3
     public List<Exam> GetStartableExams(int teacherId)
     {
-        Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
-                          throw new InvalidInputException("User doesn't exist.");
+        Teacher teacher = GetTeacherOrThrow(teacherId);
         List<Exam> startableExams = new();
         foreach (int examId in teacher.ExamIds)
         {
-            Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
+            Exam exam = GetExamOrThrow(examId);
             if ((exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days <= 7 &&
                 !exam.Confirmed)
             {
@@ -176,11 +173,10 @@ public class ExamService : IExamService
 
     public int GetCurrentExam(int teacherId)
     {
-        Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
-                          throw new InvalidInputException("User doesn't exist.");
+        Teacher teacher = GetTeacherOrThrow(teacherId);
         foreach (int examId in teacher.ExamIds)
         {
-            Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
+            Exam exam = GetExamOrThrow(examId);
 
             TimeSpan time = DateTime.Now - exam.Date.ToDateTime(exam.ScheduledTime);
 
@@ -197,7 +193,7 @@ public class ExamService : IExamService
 
     public void FinishExam(int examId)
     {
-        Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
+        Exam exam = GetExamOrThrow(examId);
         CheckGrades(exam);
 
         exam.TeacherGraded = true;
@@ -255,5 +251,19 @@ public class ExamService : IExamService
             _messageService.Add(examGrade.StudentId, passedText+pointsText);
             EmailService.SendMessage("Exam results",passedText+pointsText);
         }
+    }
+    private Teacher GetTeacherOrThrow(int teacherId)
+    {
+        Teacher? teacher = _userRepository.GetById(teacherId) as Teacher;
+        if (teacher == null)
+            throw new InvalidInputException("User doesn't exist.");
+        return teacher;
+    }
+    private Exam GetExamOrThrow(int examId)
+    {
+        Exam? exam = _examRepository.GetById(examId);
+        if (exam == null)
+            throw new InvalidInputException("Exam doesn't exist.");
+        return exam;
     }
 }
