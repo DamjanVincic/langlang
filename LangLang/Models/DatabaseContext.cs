@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Collections.Generic;
+using System.Windows.Forms;
+using Newtonsoft.Json;
 
 namespace LangLang.Models;
 
@@ -23,7 +25,10 @@ public class DatabaseContext : DbContext
     //public DbSet<Message> Messages { get; set; }
     //public DbSet<PenaltyPoint> PenaltyPoints { get; set; }
     //public DbSet<ScheduleItem> ScheduleItems { get; set; }
-    //public DbSet<User> Users { get; set; }
+    public DbSet<User> Users { get; set; } 
+    public DbSet<Teacher> Teachers { get; set; }
+    public DbSet<Director>Director { get; set; }
+    public DbSet<Student> Students { get; set; }
     public DbSet<Language> Languages { get; set; }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -73,5 +78,28 @@ public class DatabaseContext : DbContext
                 v => (int)v,
                 v => (Weekday)v
             );
+        modelBuilder.Entity<Student>()
+            .Property(s=>s.LanguagePassFail)
+            .HasConversion(
+                v => JsonConvert.SerializeObject(v),
+                v =>JsonConvert.DeserializeObject<Dictionary<int,bool>>(v)!
+                );
+
+        modelBuilder.Entity<Student>()
+            .Property(s => s.CourseGradeIds)
+            .HasConversion(
+                v => JsonConvert.SerializeObject(v),
+                v => JsonConvert.DeserializeObject<Dictionary<int, int>>(v)!
+            );
+
+        modelBuilder.Entity<Student>()
+            .Property(s => s.ExamGradeIds)
+            .HasConversion(
+                v => JsonConvert.SerializeObject(v),
+                v => JsonConvert.DeserializeObject<Dictionary<int, int>>(v)!
+            );
+
+        modelBuilder.Entity<Dictionary<int, bool>>().HasNoKey();
+        modelBuilder.Entity<Dictionary<int, int>>().HasNoKey();
     }
 }
