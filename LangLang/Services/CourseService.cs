@@ -125,9 +125,10 @@ public class CourseService : ICourseService
             // If the course can't be scheduled, delete it
             _scheduleService.Add(addedCourse);
         }
-        catch (InvalidInputException)
+        catch (InvalidInputException ex)
         {
             _courseRepository.Delete(addedCourse.Id);
+            throw ex;
         }
 
         if (teacher != null)
@@ -138,7 +139,6 @@ public class CourseService : ICourseService
         return course;
     }
 
-    // TODO: MELOC 24, NOP 9, MNOC 4
     public void Update(int id, int duration, List<Weekday> held,
         bool isOnline, int maxStudents, TimeOnly scheduledTime, DateOnly startDate,
         bool areApplicationsClosed, int? teacherId)

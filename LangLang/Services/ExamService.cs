@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows.Input;
 using LangLang.Models;
 using LangLang.Repositories;
+using Microsoft.VisualBasic.Devices;
 
 namespace LangLang.Services;
 
@@ -52,22 +53,29 @@ public class ExamService : IExamService
                             throw new InvalidInputException("Language with the given level doesn't exist.");
 
 
-        Exam exam = new(language, maxStudents, examDate, teacherId, examTime)
-        { Id = _examRepository.GenerateId() };
-
-
-        _scheduleService.Add(exam);
-        _examRepository.Add(exam);
+        Exam addedExam = new(0,language, maxStudents, examDate, teacherId, examTime);
+        
+        addedExam = _examRepository.Add(addedExam);
+        try
+        {
+            // If the exam can't be scheduled, delete it
+            _scheduleService.Add(addedExam);
+        }
+        catch (InvalidInputException ex)
+        {
+            _examRepository.Delete(addedExam.Id);
+            throw ex;
+        }
 
         if (teacher != null)
         {
-            teacher.ExamIds.Add(exam.Id);
+            teacher.ExamIds.Add(addedExam.Id);
             _userRepository.Update(teacher);
         }
-        return exam;
+
+        return addedExam;
     }
 
-    // TODO: MELOC 21, CYCLO_SWITCH 6, NOP 7, MNOC 5 
     public void Update(int id, string languageName, LanguageLevel languageLevel, int maxStudents, DateOnly date,
         int? teacherId, TimeOnly time)
     {
