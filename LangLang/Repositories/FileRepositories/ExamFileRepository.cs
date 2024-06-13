@@ -4,7 +4,7 @@ using System.Linq;
 using LangLang.Models;
 using Newtonsoft.Json;
 
-namespace LangLang.Repositories;
+namespace LangLang.Repositories.FileRepositories;
 
 public class ExamFileRepository : IExamRepository
 {
@@ -26,7 +26,7 @@ public class ExamFileRepository : IExamRepository
         _exams.TryGetValue(id, out var exam);
         return exam;
     }
-    
+
     public int GenerateId()
     {
         LoadData();

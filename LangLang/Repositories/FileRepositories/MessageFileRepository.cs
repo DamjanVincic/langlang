@@ -4,13 +4,13 @@ using System.Linq;
 using LangLang.Models;
 using Newtonsoft.Json;
 
-namespace LangLang.Repositories;
+namespace LangLang.Repositories.FileRepositories;
 
 public class MessageFileRepository : IMessageRepository
 {
     private const string MessageFileName = "messages.json";
     private const string MessageDirectoryName = "data";
-    
+
     private List<Message> _messages = new();
 
     public List<Message> GetAll()
