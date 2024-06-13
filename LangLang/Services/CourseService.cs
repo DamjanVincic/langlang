@@ -43,42 +43,34 @@ public class CourseService : ICourseService
             .Select(student => (_userRepository.GetById(student.Key) as Student)!).ToList();
         return students;
     }
-
     public List<Course> GetStartableCourses(int teacherId)
     {
-        Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
-                          throw new InvalidInputException("User doesn't exist.");
-        List<Course> startableCourses = new();
-        foreach (int courseId in teacher.CourseIds)
-        {
-            Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
-            if ((course.StartDate.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days <= 7 &&
-                !course.Confirmed)
-            {
-                startableCourses.Add(course);
-            }
-        }
-
-        return startableCourses;
+        return GetCourses(teacherId, course =>
+            (course.StartDate.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days <= 7 && !course.Confirmed);
     }
 
     public List<Course> GetActiveCourses(int teacherId)
     {
+        return GetCourses(teacherId, course =>
+            (DateTime.Now - course.StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays >= 0 && course.Confirmed && !course.IsFinished);
+    }
+
+    private List<Course> GetCourses(int teacherId, Func<Course, bool> filter)
+    {
         Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
                           throw new InvalidInputException("User doesn't exist.");
-        List<Course> activeCourses = new();
+        List<Course> filteredCourses = new();
 
         foreach (int courseId in teacher.CourseIds)
         {
             Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
-
-            if ((DateTime.Now - course.StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays >= 0 && course.Confirmed && !course.IsFinished)
+            if (filter(course))
             {
-                activeCourses.Add(course);
+                filteredCourses.Add(course);
             }
         }
 
-        return activeCourses;
+        return filteredCourses;
     }
 
     public List<Course> GetFinishedCourses()
