@@ -33,13 +33,14 @@ public class ExamFileRepository : IExamRepository
         return _idCounter++;
     }
 
-    public void Add(Exam exam)
+    public Exam Add(Exam exam)
     {
         LoadData();
         if (exam.Id == 0)
             exam.Id = _idCounter++;
         _exams.Add(exam.Id, exam);
         SaveData();
+        return exam;
     }
 
     public void Update(Exam exam)
