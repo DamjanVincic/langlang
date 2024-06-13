@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 using System.Linq;
 using System.Windows;
 using LangLang.Models;
@@ -14,7 +13,6 @@ using LangLang.ViewModels.StudentViewModels;
 using LangLang.ViewModels.TeacherViewModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using ServiceProvider = LangLang.Models.ServiceProvider;
 
 namespace LangLang
@@ -28,6 +26,7 @@ namespace LangLang
         {
             var services = new ServiceCollection();
             ConfigureServices(services);
+            
             ServiceProvider.Instance = services.BuildServiceProvider();
             
             Director director = new Director("Nadja", "Zoric", "nadjazoric@gmail.com", "PatrikZvezdasti011", Gender.Female, "1234567890123");
@@ -38,20 +37,26 @@ namespace LangLang
             
             Exit += App_Exit;
         }
+
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+            
+            var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
+            mainWindow.Show();
+        }
         
+        private void App_Exit(object sender, ExitEventArgs e)
+        {
+            
+        }
+
         private void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<DatabaseContext, DatabaseContext>();
+            ConfigureFileRepositories(services);
             
-            services.AddScoped<ICourseGradeRepository, CourseGradeFileRepository>();
-            services.AddScoped<ICourseRepository, CourseFileRepository>();
-            services.AddScoped<IExamGradeRepository, ExamGradeFileRepository>();
-            services.AddScoped<IExamRepository, ExamFileRepository>();
-            services.AddScoped<ILanguageRepository, LanguageFileRepository>();
-            services.AddScoped<IMessageRepository, MessageFileRepository>();
-            services.AddScoped<IPenaltyPointRepository, PenaltyPointFileRepository>();
-            services.AddScoped<IScheduleRepository, ScheduleFileRepository>();
-            services.AddScoped<IUserRepository, UserFileRepository>();
+            // TODO: Uncomment this line to use the database
+            // ConfigureDatabaseRepositories(services);
 
             services.AddScoped<ICourseGradeService, CourseGradeService>();
             services.AddScoped<ICourseService, CourseService>();
@@ -84,17 +89,29 @@ namespace LangLang
             services.AddTransient<CourseListingDirectorViewModel>();
         }
 
-        protected override void OnStartup(StartupEventArgs e)
+        private static void ConfigureFileRepositories(IServiceCollection services)
         {
-            base.OnStartup(e);
-            
-            var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
-            mainWindow.Show();
+            services.AddScoped<ICourseGradeRepository, CourseGradeFileRepository>();
+            services.AddScoped<ICourseRepository, CourseFileRepository>();
+            services.AddScoped<IExamGradeRepository, ExamGradeFileRepository>();
+            services.AddScoped<IExamRepository, ExamFileRepository>();
+            services.AddScoped<ILanguageRepository, LanguageFileRepository>();
+            services.AddScoped<IMessageRepository, MessageFileRepository>();
+            services.AddScoped<IPenaltyPointRepository, PenaltyPointFileRepository>();
+            services.AddScoped<IScheduleRepository, ScheduleFileRepository>();
+            services.AddScoped<IUserRepository, UserFileRepository>();
         }
         
-        private void App_Exit(object sender, ExitEventArgs e)
+        private void ConfigureDatabaseRepositories(IServiceCollection services)
         {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+            DotNetEnv.Env.Load("../.env"); // Works if the current directory is the LangLang project
             
+            string connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? throw new InvalidInputException("Connection string not found in .env file.");
+            services.AddDbContext<DatabaseContext>(options => options.UseNpgsql(connectionString));
+            
+            services.AddScoped<ICourseRepository, CoursePostgresRepository>();
+            services.AddScoped<ILanguageRepository, LanguagePostgresRepository>();
         }
     }
 }

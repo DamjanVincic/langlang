@@ -33,13 +33,14 @@ public class CourseFileRepository : ICourseRepository
         return _idCounter++;
     }
 
-    public void Add(Course course)
+    public Course Add(Course course)
     {
         LoadData();
         if (course.Id == 0)
             course.Id = _idCounter++;
         _courses.Add(course.Id, course);
         SaveData();
+        return course;
     }
 
     public void Update(Course course)

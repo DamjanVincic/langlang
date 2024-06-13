@@ -116,10 +116,19 @@ public class CourseService : ICourseService
 
         startDate = SetValidStartDate(startDate, held);
         Course course = new(language, duration, held, isOnline, maxStudents, creatorId, scheduledTime, startDate,
-            areApplicationsClosed, teacherId) { Id = _courseRepository.GenerateId() };
+            areApplicationsClosed, teacherId);
 
-        _scheduleService.Add(course);
-        _courseRepository.Add(course);
+        // To auto generate the ID
+        Course addedCourse = _courseRepository.Add(course);
+        try
+        {
+            // If the course can't be scheduled, delete it
+            _scheduleService.Add(addedCourse);
+        }
+        catch (InvalidInputException)
+        {
+            _courseRepository.Delete(addedCourse.Id);
+        }
 
         if (teacher != null)
         {
