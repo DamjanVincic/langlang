@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using LangLang.Services;
 using Newtonsoft.Json;
 
 namespace LangLang.Models
@@ -9,10 +7,10 @@ namespace LangLang.Models
     public class Teacher : User
     {
         [JsonProperty]
-        private int TotalRating { get; set; }
+        public int TotalRating { get; set; }
         
         [JsonProperty]
-        private int NumberOfReviews { get; set; }
+        public int NumberOfReviews { get; set; }
 
         public Teacher(string? firstName, string? lastName, string? email, string? password, Gender gender, string? phone,
             List<Language> qualifications, DateOnly? dateCreated = null) : base(firstName, lastName, email, password, gender, phone)
