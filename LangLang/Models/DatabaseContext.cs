@@ -21,15 +21,15 @@ public class DatabaseContext : DbContext
     //public DbSet<CourseGrade> CourseGrades { get; set; }
     public DbSet<Exam> Exams { get; set; }
     //public DbSet<ExamGrade> ExamGrades { get; set; }
-    public DbSet<Language> Languages { get; set; }
+    //public DbSet<Language> Languages { get; set; }
     //public DbSet<Message> Messages { get; set; }
     //public DbSet<PenaltyPoint> PenaltyPoints { get; set; }
-    public DbSet<ScheduleItem> ScheduleItems { get; set; }
+    //public DbSet<ScheduleItem> ScheduleItems { get; set; }
     public DbSet<User> Users { get; set; } 
     public DbSet<Teacher> Teachers { get; set; }
     public DbSet<Director>Director { get; set; }
     public DbSet<Student> Students { get; set; }
-    
+    public DbSet<Language> Languages { get; set; }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
