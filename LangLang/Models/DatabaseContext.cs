@@ -74,33 +74,4 @@ public class DatabaseContext : DbContext
                 v => (Weekday)v
             );
     }
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        var dateOnlyConverter = new ValueConverter<DateOnly, DateTime>(
-            dateOnly => dateOnly.ToDateTime(TimeOnly.MinValue),
-            dateTime => DateOnly.FromDateTime(dateTime)
-        );
-
-        var timeOnlyConverter = new ValueConverter<TimeOnly, TimeSpan>(
-            timeOnly => timeOnly.ToTimeSpan(),
-            timeSpan => TimeOnly.FromTimeSpan(timeSpan)
-        );
-
-        modelBuilder.Entity<Course>()
-            .Property(e => e.Date)
-            .HasConversion(dateOnlyConverter);
-
-        modelBuilder.Entity<Course>()
-            .Property(e => e.StartDate)
-            .HasConversion(dateOnlyConverter);
-
-        modelBuilder.Entity<Course>()
-            .Property(e => e.ScheduledTime)
-            .HasConversion(timeOnlyConverter);
-
-        modelBuilder.Entity<List<Weekday>>().HasNoKey();
-
-        base.OnModelCreating(modelBuilder);
-    }
 }
