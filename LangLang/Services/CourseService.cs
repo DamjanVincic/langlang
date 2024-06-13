@@ -20,7 +20,7 @@ public class CourseService : ICourseService
         _languageService = languageService;
         _scheduleService = scheduleService;
     }
-    
+
     public List<Course> GetAll()
     {
         return _courseRepository.GetAll();
@@ -57,8 +57,7 @@ public class CourseService : ICourseService
 
     private List<Course> GetCourses(int teacherId, Func<Course, bool> filter)
     {
-        Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
-                          throw new InvalidInputException("User doesn't exist.");
+        Teacher teacher = GetTeacherOrThrow(teacherId);
         List<Course> filteredCourses = new();
 
         foreach (int courseId in teacher.CourseIds)
@@ -77,11 +76,10 @@ public class CourseService : ICourseService
     {
         return GetAll().Where(course => course.IsFinished && !course.StudentsNotified).ToList();
     }
-    
+
     public List<Course> GetCoursesWithWithdrawals(int teacherId)
     {
-        Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
-                          throw new InvalidInputException("User doesn't exist.");
+        Teacher teacher = GetTeacherOrThrow(teacherId);
         List<Course> coursesWithWithdrawals = new();
 
         foreach (int courseId in teacher.CourseIds)
@@ -101,8 +99,7 @@ public class CourseService : ICourseService
                             throw new InvalidInputException("Language with the given level doesn't exist.");
         Teacher? teacher = null;
         if (teacherId != null)
-            teacher = _userRepository.GetById(teacherId.Value) as Teacher ??
-                      throw new InvalidInputException("User doesn't exist.");
+            teacher = GetTeacherOrThrow(teacherId.Value);
 
         startDate = SetValidStartDate(startDate, held);
         Course course = new(language, duration, held, isOnline, maxStudents, creatorId, scheduledTime, startDate,
@@ -133,13 +130,13 @@ public class CourseService : ICourseService
         bool areApplicationsClosed, int? teacherId)
     {
         Course course = _courseRepository.GetById(id) ?? throw new InvalidInputException("Course doesn't exist.");
-        Teacher? teacher = teacherId.HasValue ? _userRepository.GetById(teacherId.Value) as Teacher ?? throw new InvalidInputException("User doesn't exist.") : null;
-        
+        Teacher? teacher = teacherId.HasValue ? GetTeacherOrThrow(teacherId.Value) : null;
+
         if ((course.StartDate.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days < 7)
             throw new InvalidInputException("The course can't be changed if it's less than 1 week from now.");
 
         int? oldTeacherId = course.TeacherId;
-        
+
         startDate = SetValidStartDate(startDate, held);
         course.Duration = duration;
         course.Held = held;
@@ -172,8 +169,8 @@ public class CourseService : ICourseService
     public void Delete(int id)
     {
         Course course = _courseRepository.GetById(id) ?? throw new InvalidInputException("Course doesn't exist.");
-        Teacher? teacher = course.TeacherId.HasValue ? _userRepository.GetById(course.TeacherId.Value) as Teacher : null;
-
+        Teacher? teacher = course.TeacherId.HasValue ? GetTeacherOrThrow(course.TeacherId.Value) : null;
+                                                                           
         if (teacher is not null)
         {
             teacher.CourseIds.Remove(id);
@@ -185,7 +182,7 @@ public class CourseService : ICourseService
             student.RemoveCourse(course.Id);
             _userRepository.Update(student);
         }
-        
+
         _scheduleService.Delete(id);
         _courseRepository.Delete(id);
     }
@@ -196,5 +193,12 @@ public class CourseService : ICourseService
         int b = (int)startDate.DayOfWeek;
         int difference = a - b;
         return startDate.AddDays((difference < 0 ? difference + 7 : difference) % 7);
+    }
+    private Teacher GetTeacherOrThrow(int teacherId)
+    {
+        Teacher? teacher = _userRepository.GetById(teacherId) as Teacher;
+        if (teacher == null)
+            throw new InvalidInputException("User doesn't exist.");
+        return teacher;
     }
 }
