@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.RightsManagement;
-using LangLang.Views.CourseViews;
 using Newtonsoft.Json;
 
 namespace LangLang.Models;
@@ -14,7 +12,6 @@ public class Student : User
     {
         Education = education ?? throw new ArgumentNullException(nameof(education));
         PenaltyPoints = 0;
-        AppliedExams = new List<int>();
         ActiveCourseId = null;
     }
     
@@ -44,7 +41,7 @@ public class Student : User
     // dict jezik-bool, kada se zavrsi dodaj sa false, kada polozi ispit promeni na true
     public Dictionary<int, bool> LanguagePassFail { get; set; } = new();
     public List<int> AppliedCourses { get; } = new();
-    public List<int> AppliedExams { get; set; }
+    public List<int> AppliedExams { get; set; } = new();
 
     public Dictionary<int, int> ExamGradeIds { get; set; } = new();
     public Dictionary<int, int> CourseGradeIds { get; set; } = new();

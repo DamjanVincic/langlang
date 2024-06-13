@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
 using Newtonsoft.Json;
 
 namespace LangLang.Models;
@@ -46,6 +45,10 @@ public class DatabaseContext : DbContext
 
         modelBuilder.Entity<Course>()
             .Property(c => c.Id)
+            .ValueGeneratedOnAdd();
+
+        modelBuilder.Entity<Language>()
+            .Property(l => l.Id)
             .ValueGeneratedOnAdd();
         
         var dateOnlyConverter = new ValueConverter<DateOnly, DateTime>(
