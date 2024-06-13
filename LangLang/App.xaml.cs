@@ -115,6 +115,7 @@ namespace LangLang
             services.AddScoped<ILanguageRepository, LanguagePostgresRepository>();
             services.AddScoped<IUserRepository, UserPostgresRepository>();
             services.AddScoped<IExamRepository, ExamPostgresRepository>();
+            services.AddScoped<IScheduleRepository,SchedulePostgresRepository>();
         }
     }
 }
