@@ -2,7 +2,7 @@
 using System.Linq;
 using LangLang.Models;
 
-namespace LangLang.Repositories;
+namespace LangLang.Repositories.PostgresRepositories;
 
 public class LanguagePostgresRepository : ILanguageRepository
 {
