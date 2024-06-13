@@ -35,12 +35,12 @@ public class Student : User
 
     public Education? Education { get; set; }
     public int PenaltyPoints { get; set; }
-    public int? ActiveCourseId { get; private set; } = null;
+    public int? ActiveCourseId { get; set; } = null;
 
     // obradjeniJezici / zavrseniJezici
     // dict jezik-bool, kada se zavrsi dodaj sa false, kada polozi ispit promeni na true
     public Dictionary<int, bool> LanguagePassFail { get; set; } = new();
-    public List<int> AppliedCourses { get; } = new();
+    public List<int> AppliedCourses { get; set; } = new();
     public List<int> AppliedExams { get; set; } = new();
 
     public Dictionary<int, int> ExamGradeIds { get; set; } = new();
