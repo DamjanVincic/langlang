@@ -62,7 +62,8 @@ public class ScheduleFileRepository : IScheduleRepository
         string json = JsonConvert.SerializeObject(_table, new JsonSerializerSettings
         {
             Formatting = Formatting.Indented,
-            TypeNameHandling = TypeNameHandling.Auto
+            TypeNameHandling = TypeNameHandling.Auto,
+            ReferenceLoopHandling = ReferenceLoopHandling.Serialize
         });
 
         File.WriteAllText(filePath, json);
