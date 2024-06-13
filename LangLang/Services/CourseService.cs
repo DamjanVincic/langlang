@@ -93,8 +93,6 @@ public class CourseService : ICourseService
         return coursesWithWithdrawals;
     }
 
-
-    // TODO: NOP 11
     public Course Add(string languageName, LanguageLevel languageLevel, int duration, List<Weekday> held, bool isOnline,
         int maxStudents, int? creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed,
         int? teacherId)
@@ -130,7 +128,6 @@ public class CourseService : ICourseService
         return course;
     }
 
-    // TODO: MELOC 24, NOP 9, MNOC 4
     public void Update(int id, int duration, List<Weekday> held,
         bool isOnline, int maxStudents, TimeOnly scheduledTime, DateOnly startDate,
         bool areApplicationsClosed, int? teacherId)
