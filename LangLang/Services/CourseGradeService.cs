@@ -50,6 +50,22 @@ namespace LangLang.Services
 
             return courseGrade.Id;
         }
+        public void AddCourseGrade(int studentId, int courseId, int knowledgeGrade, int activityGrade)
+        {
+            int courseGradeId = Add(courseId, studentId, knowledgeGrade, activityGrade);
+
+            Student? student = _userRepository.GetById(studentId) as Student;
+            if (student == null)
+                throw new InvalidInputException("User doesn't exist.");
+            _ = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
+
+            if (student.CourseGradeIds.ContainsKey(courseId))
+                Delete(student.CourseGradeIds[courseId]);
+
+            student.CourseGradeIds[courseId] = courseGradeId;
+
+            _userRepository.Update(student);
+        }
 
         public void Delete(int id)
         {

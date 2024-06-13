@@ -39,10 +39,10 @@ public class AppliedExamListingViewModel : ViewModelBase
         _studentService = studentService;
         _examService = examService;
         
-        _totalCourses = _studentService.GetAppliedExams(_student.Id).Count;
+        _totalCourses = _examService.GetAppliedExams(_student.Id).Count;
         CalculateTotalPages();
         
-        AppliedExams = new ObservableCollection<ExamViewModel>(_studentService.GetAppliedExams(_student.Id, _currentPage, ItemsPerPage).Select(exam => new ExamViewModel(exam)));
+        AppliedExams = new ObservableCollection<ExamViewModel>(_examService.GetAppliedExams(_student.Id, _currentPage, ItemsPerPage).Select(exam => new ExamViewModel(exam)));
         ExamCollectionView = CollectionViewSource.GetDefaultView(AppliedExams);
         ExamCollectionView.Filter = FilterExams;
         ResetFiltersCommand = new RelayCommand(ResetFilters);
@@ -182,7 +182,7 @@ public class AppliedExamListingViewModel : ViewModelBase
     private void RefreshExams()
     {
         AppliedExams.Clear();
-        _studentService.GetAppliedExams(_student.Id, _currentPage, ItemsPerPage).ForEach(exam => AppliedExams.Add(new ExamViewModel(exam)));
+        _examService.GetAppliedExams(_student.Id, _currentPage, ItemsPerPage).ForEach(exam => AppliedExams.Add(new ExamViewModel(exam)));
         ExamCollectionView.Refresh();
     }
 }

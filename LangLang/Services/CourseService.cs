@@ -20,7 +20,7 @@ public class CourseService : ICourseService
         _languageService = languageService;
         _scheduleService = scheduleService;
     }
-    
+
     public List<Course> GetAll()
     {
         return _courseRepository.GetAll();
@@ -43,53 +43,43 @@ public class CourseService : ICourseService
             .Select(student => (_userRepository.GetById(student.Key) as Student)!).ToList();
         return students;
     }
-
     public List<Course> GetStartableCourses(int teacherId)
     {
-        Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
-                          throw new InvalidInputException("User doesn't exist.");
-        List<Course> startableCourses = new();
-        foreach (int courseId in teacher.CourseIds)
-        {
-            Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
-            if ((course.StartDate.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days <= 7 &&
-                !course.Confirmed)
-            {
-                startableCourses.Add(course);
-            }
-        }
-
-        return startableCourses;
+        return GetCourses(teacherId, course =>
+            (course.StartDate.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days <= 7 && !course.Confirmed);
     }
 
     public List<Course> GetActiveCourses(int teacherId)
     {
-        Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
-                          throw new InvalidInputException("User doesn't exist.");
-        List<Course> activeCourses = new();
+        return GetCourses(teacherId, course =>
+            (DateTime.Now - course.StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays >= 0 && course.Confirmed && !course.IsFinished);
+    }
+
+    private List<Course> GetCourses(int teacherId, Func<Course, bool> filter)
+    {
+        Teacher teacher = GetTeacherOrThrow(teacherId);
+        List<Course> filteredCourses = new();
 
         foreach (int courseId in teacher.CourseIds)
         {
             Course course = _courseRepository.GetById(courseId) ?? throw new InvalidInputException("Course doesn't exist.");
-
-            if ((DateTime.Now - course.StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays >= 0 && course.Confirmed && !course.IsFinished)
+            if (filter(course))
             {
-                activeCourses.Add(course);
+                filteredCourses.Add(course);
             }
         }
 
-        return activeCourses;
+        return filteredCourses;
     }
 
     public List<Course> GetFinishedCourses()
     {
         return GetAll().Where(course => course.IsFinished && !course.StudentsNotified).ToList();
     }
-    
+
     public List<Course> GetCoursesWithWithdrawals(int teacherId)
     {
-        Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
-                          throw new InvalidInputException("User doesn't exist.");
+        Teacher teacher = GetTeacherOrThrow(teacherId);
         List<Course> coursesWithWithdrawals = new();
 
         foreach (int courseId in teacher.CourseIds)
@@ -100,9 +90,26 @@ public class CourseService : ICourseService
         }
         return coursesWithWithdrawals;
     }
+    public List<Course> GetAvailableCourses(int studentId, int pageIndex = 1, int? amount = null)
+    {
+        List<Course> courses = _courseRepository.GetAll().Where(course =>
+            (course.Students.Count < course.MaxStudents || course.IsOnline) &&
+            (course.StartDate.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days >= 7 &&
+            !course.Students.ContainsKey(studentId)).ToList();
 
+        amount ??= courses.Count;
 
-    // TODO: NOP 11
+        return courses.Skip((pageIndex - 1) * amount.Value).Take(amount.Value).ToList();
+    }
+
+    public List<Course> GetAppliedCourses(int studentId, int pageIndex = 1, int? amount = null)
+    {
+        Student? student = _userRepository.GetById(studentId) as Student;
+        List<Course> courses = student!.AppliedCourses.Select(courseId => _courseRepository.GetById(courseId)!).ToList();
+        amount ??= courses.Count;
+        return courses.Skip((pageIndex - 1) * amount.Value).Take(amount.Value).ToList();
+    }
+
     public Course Add(string languageName, LanguageLevel languageLevel, int duration, List<Weekday> held, bool isOnline,
         int maxStudents, int? creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed,
         int? teacherId)
@@ -111,8 +118,7 @@ public class CourseService : ICourseService
                             throw new InvalidInputException("Language with the given level doesn't exist.");
         Teacher? teacher = null;
         if (teacherId != null)
-            teacher = _userRepository.GetById(teacherId.Value) as Teacher ??
-                      throw new InvalidInputException("User doesn't exist.");
+            teacher = GetTeacherOrThrow(teacherId.Value);
 
         startDate = SetValidStartDate(startDate, held);
         Course course = new(language, duration, held, isOnline, maxStudents, creatorId, scheduledTime, startDate,
@@ -138,19 +144,18 @@ public class CourseService : ICourseService
         return course;
     }
 
-    // TODO: MELOC 24, NOP 9, MNOC 4
     public void Update(int id, int duration, List<Weekday> held,
         bool isOnline, int maxStudents, TimeOnly scheduledTime, DateOnly startDate,
         bool areApplicationsClosed, int? teacherId)
     {
         Course course = _courseRepository.GetById(id) ?? throw new InvalidInputException("Course doesn't exist.");
-        Teacher? teacher = teacherId.HasValue ? _userRepository.GetById(teacherId.Value) as Teacher ?? throw new InvalidInputException("User doesn't exist.") : null;
-        
+        Teacher? teacher = teacherId.HasValue ? GetTeacherOrThrow(teacherId.Value) : null;
+
         if ((course.StartDate.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days < 7)
             throw new InvalidInputException("The course can't be changed if it's less than 1 week from now.");
 
         int? oldTeacherId = course.TeacherId;
-        
+
         startDate = SetValidStartDate(startDate, held);
         course.Duration = duration;
         course.Held = held;
@@ -183,8 +188,8 @@ public class CourseService : ICourseService
     public void Delete(int id)
     {
         Course course = _courseRepository.GetById(id) ?? throw new InvalidInputException("Course doesn't exist.");
-        Teacher? teacher = course.TeacherId.HasValue ? _userRepository.GetById(course.TeacherId.Value) as Teacher : null;
-
+        Teacher? teacher = course.TeacherId.HasValue ? GetTeacherOrThrow(course.TeacherId.Value) : null;
+                                                                           
         if (teacher is not null)
         {
             teacher.CourseIds.Remove(id);
@@ -196,7 +201,7 @@ public class CourseService : ICourseService
             student.RemoveCourse(course.Id);
             _userRepository.Update(student);
         }
-        
+
         _scheduleService.Delete(id);
         _courseRepository.Delete(id);
     }
@@ -207,5 +212,12 @@ public class CourseService : ICourseService
         int b = (int)startDate.DayOfWeek;
         int difference = a - b;
         return startDate.AddDays((difference < 0 ? difference + 7 : difference) % 7);
+    }
+    private Teacher GetTeacherOrThrow(int teacherId)
+    {
+        Teacher? teacher = _userRepository.GetById(teacherId) as Teacher;
+        if (teacher == null)
+            throw new InvalidInputException("User doesn't exist.");
+        return teacher;
     }
 }

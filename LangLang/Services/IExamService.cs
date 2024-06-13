@@ -8,6 +8,8 @@ public interface IExamService
 {
     public List<Exam> GetAll();
     public Exam? GetById(int id);
+    public List<Exam> GetAvailableExams(int studentId, int pageIndex = 1, int? amount = null);
+    public List<Exam> GetAppliedExams(int studentId, int pageIndex = 1, int? amount = null);
     public Exam Add(string? languageName, LanguageLevel languageLevel, int maxStudents, DateOnly examDate, int? teacherId, TimeOnly examTime);
     public void Update(int id, string languageName, LanguageLevel languageLevel, int maxStudents, DateOnly date, int? teacherId, TimeOnly time);
     public void Delete(int id);
