@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using LangLang.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LangLang.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20240613111725_AddScheduleItemTable")]
+    partial class AddScheduleItemTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,107 +24,6 @@ namespace LangLang.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("LangLang.Models.Course", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("AreApplicationsClosed")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("Confirmed")
-                        .HasColumnType("boolean");
-
-                    b.Property<int?>("CreatorId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Duration")
-                        .HasColumnType("integer");
-
-                    b.Property<List<int>>("Held")
-                        .IsRequired()
-                        .HasColumnType("integer[]");
-
-                    b.Property<bool>("IsFinished")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsOnline")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("LanguageId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("MaxStudents")
-                        .HasColumnType("integer");
-
-                    b.Property<TimeSpan>("ScheduledTime")
-                        .HasColumnType("interval");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("StudentsNotified")
-                        .HasColumnType("boolean");
-
-                    b.Property<int?>("TeacherId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LanguageId");
-
-                    b.ToTable("Courses");
-                });
-
-            modelBuilder.Entity("LangLang.Models.Exam", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("Confirmed")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("date");
-
-                    b.Property<bool>("DirectorGraded")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("LanguageId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("MaxStudents")
-                        .HasColumnType("integer");
-
-                    b.Property<TimeOnly>("ScheduledTime")
-                        .HasColumnType("time without time zone");
-
-                    b.Property<List<int>>("StudentIds")
-                        .IsRequired()
-                        .HasColumnType("integer[]");
-
-                    b.Property<bool>("TeacherGraded")
-                        .HasColumnType("boolean");
-
-                    b.Property<int?>("TeacherId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LanguageId");
-
-                    b.ToTable("Exams");
-                });
 
             modelBuilder.Entity("LangLang.Models.Language", b =>
                 {
@@ -139,12 +40,7 @@ namespace LangLang.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("TeacherId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("TeacherId");
 
                     b.ToTable("Languages");
                 });
@@ -231,6 +127,21 @@ namespace LangLang.Migrations
                     b.ToTable("Users");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("User");
+                });
+
+            modelBuilder.Entity("LanguageTeacher", b =>
+                {
+                    b.Property<int>("QualificationsId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TeachersId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("QualificationsId", "TeachersId");
+
+                    b.HasIndex("TeachersId");
+
+                    b.ToTable("LanguageTeacher");
                 });
 
             modelBuilder.Entity("System.Collections.Generic.Dictionary<int, bool>", b =>
@@ -326,6 +237,12 @@ namespace LangLang.Migrations
                 {
                     b.HasBaseType("LangLang.Models.User");
 
+                    b.Property<int>("NumberOfReviews")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TotalRating")
+                        .HasColumnType("integer");
+
                     b.HasDiscriminator().HasValue("Teacher");
                 });
 
@@ -340,27 +257,19 @@ namespace LangLang.Migrations
                     b.Navigation("Language");
                 });
 
-            modelBuilder.Entity("LangLang.Models.Exam", b =>
+            modelBuilder.Entity("LanguageTeacher", b =>
                 {
-                    b.HasOne("LangLang.Models.Language", "Language")
+                    b.HasOne("LangLang.Models.Language", null)
                         .WithMany()
-                        .HasForeignKey("LanguageId")
+                        .HasForeignKey("QualificationsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Language");
-                });
-
-            modelBuilder.Entity("LangLang.Models.Language", b =>
-                {
                     b.HasOne("LangLang.Models.Teacher", null)
-                        .WithMany("Qualifications")
-                        .HasForeignKey("TeacherId");
-                });
-
-            modelBuilder.Entity("LangLang.Models.Teacher", b =>
-                {
-                    b.Navigation("Qualifications");
+                        .WithMany()
+                        .HasForeignKey("TeachersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }
