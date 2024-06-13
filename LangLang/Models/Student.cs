@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.RightsManagement;
 using LangLang.Views.CourseViews;
 using Newtonsoft.Json;
 
@@ -30,7 +31,11 @@ public class Student : User
         ExamGradeIds = examGradeIds;
         CourseGradeIds = courseGradeIds;
     }
-    
+
+    public Student()
+    {
+    }
+
     public Education? Education { get; set; }
     public int PenaltyPoints { get; set; }
     public int? ActiveCourseId { get; private set; } = null;

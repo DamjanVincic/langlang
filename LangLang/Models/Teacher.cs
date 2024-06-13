@@ -21,6 +21,10 @@ namespace LangLang.Models
             DateCreated = dateCreated == null ? DateOnly.FromDateTime(DateTime.Now) : dateCreated.GetValueOrDefault();
         }
 
+        public Teacher()
+        {
+        }
+
         public List<Language> Qualifications { get; set; } = new();
 
         public DateOnly DateCreated { get; }

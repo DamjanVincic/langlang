@@ -24,6 +24,10 @@ namespace LangLang.Models
             Deleted = false;
         }
 
+        public User()
+        {
+        }
+
         public int Id { get; set; }
         public bool Deleted { get; set; }
 
