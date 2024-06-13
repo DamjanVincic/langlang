@@ -23,6 +23,9 @@ namespace LangLang.Models
         {
         }
 
+        public Exam()
+        {
+        }
 
         public bool TeacherGraded {  get; set; }
         public bool DirectorGraded {  get; set; }
