@@ -119,9 +119,7 @@ namespace LangLang.FormTable
             var values = new Dictionary<string, object?>();
 
             foreach (var parameter in updateMethod.GetParameters())
-            {
-                if (parameter.Name!.Equals("id", StringComparison.OrdinalIgnoreCase))
-                    continue;
+            { 
 
                 var prop = _type.GetProperty(parameter.Name, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
                 if (prop != null)
@@ -129,10 +127,17 @@ namespace LangLang.FormTable
                     var value = prop.GetValue(item);
                     string formattedValue = value?.ToString() ?? string.Empty;
 
-                    if (parameter.ParameterType.IsPrimitive || typeof(IEnumerable).IsAssignableFrom(parameter.ParameterType) || parameter.ParameterType.IsEnum)
+                    // prolaze iter, primitivni,enumi,datum i vreme
+                    // ne prolazi Language i nullable
+                    if ((parameter.ParameterType.IsPrimitive
+                        || typeof(IEnumerable).IsAssignableFrom(parameter.ParameterType)
+                        || parameter.ParameterType.IsEnum
+                        || parameter.ParameterType == typeof(DateOnly) 
+                        || parameter.ParameterType == typeof(TimeOnly))
+                        && !(parameter.Name!.Equals("id", StringComparison.OrdinalIgnoreCase)))
                     {
                         Console.WriteLine($"{parameter.Name} ({parameter.ParameterType.Name}) [Current value: {formattedValue}]: ");
-                        string input = Console.ReadLine();
+                        string input = Console.ReadLine()!;
 
                         if (!string.IsNullOrWhiteSpace(input))
                         {
@@ -170,47 +175,11 @@ namespace LangLang.FormTable
             var values = Prompt(item, updateMethod);
             // to invoke
             var methodParameters = new List<object>();
-
-            foreach (var parameter in updateMethod.GetParameters())
-            {
-                if (parameter.Name!.Equals("id", StringComparison.OrdinalIgnoreCase))
-                {
-                    var idProperty = _type.GetProperty("Id", BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-                    if (idProperty != null)
-                    {
-                        methodParameters.Add(idProperty.GetValue(item)!);
-                    }
-                    else
-                    {
-                        Console.WriteLine("ID property not found on the item.");
-                        return;
-                    }
-                }
-                else
-                {
-                    if (values.ContainsKey(parameter.Name))
-                    {
-                        methodParameters.Add(values[parameter.Name]);
-                    }
-                    else
-                    {
-                        var property = _type.GetProperty(parameter.Name, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-                        if (property != null)
-                        {
-                            methodParameters.Add(property.GetValue(item)!);
-                        }
-                        else
-                        {
-                            Console.WriteLine($"Property '{parameter.Name}' not found on type '{_type.Name}'.");
-                            return;
-                        }
-                    }
-                }
-            }
+            object[] valuesArray = values.Values.ToArray();
 
             try
             {
-                updateMethod.Invoke(_service, methodParameters.ToArray());
+                updateMethod.Invoke(_service, valuesArray);
                 Console.WriteLine("Item successfully updated.");
             }
             catch (Exception ex)
