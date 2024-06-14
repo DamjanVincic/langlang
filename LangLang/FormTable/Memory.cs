@@ -134,12 +134,6 @@ namespace LangLang.FormTable
                 throw new ArgumentException($"Invalid input '{input}' for enum type '{targetType.Name}'");
             }
         }
-
-        private static List<Weekday> ParseWeekdayList(string input)
-        {
-            var weekdays = input.Split(',').Select(day => Enum.Parse<Weekday>(day.Trim(), true)).ToList();
-            return weekdays;
-        }
         private static object ParseNullableType(string input, Type targetType)
         {
             if (string.IsNullOrEmpty(input) || input.ToLower() == "null")
