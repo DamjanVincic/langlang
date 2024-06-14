@@ -223,7 +223,7 @@ namespace LangLang.FormTable
                             Console.WriteLine("Invalid input. Please enter a valid integer.");
                         }
                     }
-                    Teacher teacher = new FormTableGenerator<Teacher>(teacherService.GetAll(), examService).GetById(id);
+                    Teacher teacher = new FormTableGenerator<Teacher>(teacherService.GetAll(), userService).GetById(id);
                     new FormTableGenerator<Teacher>(teacherService.GetAll(), userService).Update(teacher);
                     break;
                 // radi
@@ -245,12 +245,12 @@ namespace LangLang.FormTable
                     new FormTableGenerator<User>(userService.GetAll(), userService).Delete(id);
                     break;
                 // tehnicki radi, resiti problem creatorId = teacherId
-                case "5":
+                case "6":
                     object exam = new FormTableGenerator<Exam>(examService.GetAll(), examService).Create(user);
                     new FormTableGenerator<Teacher>(teacherService.GetAll(), teacherService).SmartPick(user, exam);
                     break;
                 // radi
-                case "6":
+                case "5":
                     object item = new FormTableGenerator<Course>(courseService.GetAll(), courseService).Create(user);
                     new FormTableGenerator<Teacher>(teacherService.GetAll(), teacherService).SmartPick(user,item);
                     break;
