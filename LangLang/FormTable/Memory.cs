@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using LangLang.Services;
-using System.Text;
-using System.Threading.Tasks;
 using System.Collections;
 
 namespace LangLang.FormTable
@@ -70,27 +68,22 @@ namespace LangLang.FormTable
         {
             string[] values = input.Split(',');
             Type listType = typeof(List<>).MakeGenericType(elementType);
-            IList list = (IList)Activator.CreateInstance(listType);
+            IList list = (IList)Activator.CreateInstance(listType)!;
 
             foreach (string value in values)
             {
                 object parsedValue = ParseComplexType(value, elementType);
-                list.Add(parsedValue);
+                list!.Add(parsedValue);
             }
 
-            return list;
+            return list!;
         }
 
         private static object ParseComplexType(string input, Type targetType)
         {
             string[] propertyValues = input.Trim().Split(' ');
 
-            var constructor = targetType.GetConstructors().FirstOrDefault(c => c.GetParameters().Length == propertyValues.Length);
-            if (constructor == null)
-            {
-                throw new Exception($"No suitable constructor found for type {targetType.Name}");
-            }
-
+            var constructor = targetType.GetConstructors().FirstOrDefault(c => c.GetParameters().Length == propertyValues.Length) ?? throw new Exception($"No suitable constructor found for type {targetType.Name}");
             var parameters = constructor.GetParameters();
             object[] parameterValues = new object[parameters.Length];
 
@@ -124,7 +117,7 @@ namespace LangLang.FormTable
 
             if (Enum.TryParse(targetType, input, out object enumValue))
             {
-                return enumValue;
+                return enumValue!;
             }
             else if (Enum.IsDefined(targetType, input))
             {
@@ -145,9 +138,9 @@ namespace LangLang.FormTable
         {
             if (string.IsNullOrEmpty(input) || input.ToLower() == "null")
             {
-                return null;
+                return null!;
             }
-            Type underlyingType = Nullable.GetUnderlyingType(targetType);
+            Type underlyingType = Nullable.GetUnderlyingType(targetType)!;
             return Convert.ChangeType(input, underlyingType);
         }
         private static object ParseDictionary(string input, Type targetType)

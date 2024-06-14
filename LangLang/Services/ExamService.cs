@@ -44,7 +44,7 @@ public class ExamService : IExamService
         TimeOnly examTime)
     {
         Teacher? teacher = null;
-        User user = _userRepository.GetById(teacherId.Value);
+        User user = _userRepository.GetById(teacherId!.Value)!;
 
         // zbog smart picka, ako je id direktora onda ce se promeniti u narenih par funkcija na validan id nastavnika
         if (user is Teacher)
