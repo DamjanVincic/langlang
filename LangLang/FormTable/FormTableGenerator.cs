@@ -24,28 +24,24 @@ namespace LangLang.FormTable
         }
         public T GetById(object id)
         {
-            var serviceType = _service.GetType();
-            var getByIdMethods = serviceType.GetMethods().Where(m => m.Name == "GetById" && m.GetParameters().Length == 1);
+            var getByIdMethod = _service.GetType().GetMethod("GetById", BindingFlags.Instance | BindingFlags.Public);
 
-            foreach (var getByIdMethod in getByIdMethods)
+            if (getByIdMethod is null || !getByIdMethod.IsGenericMethodDefinition)
             {
-                var parameterType = getByIdMethod.GetParameters()[0].ParameterType;
-                if (parameterType.IsAssignableFrom(id.GetType()))
-                {
-                    try
-                    {
-                        var result = getByIdMethod.Invoke(_service, new object[] { id });
-                        return (T)result!;
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error getting item by ID: {ex.Message}");
-                    }
-                }
+                Console.WriteLine($"Method 'GetById' with compatible parameter type not found on the service.");
+                return default!;
             }
 
-            Console.WriteLine($"Method 'GetById' with compatible parameter type not found on the service.");
-            return default!;
+            try
+            {
+                var result = getByIdMethod.MakeGenericMethod(id.GetType()).Invoke(_service, new[] { id });
+                return (T)result!;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error getting item by ID: {ex.Message}");
+                return default!;
+            }
         }
 
         private List<object> GetData(User user)
