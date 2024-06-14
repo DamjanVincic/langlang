@@ -43,128 +43,145 @@ namespace LangLang.FormTable
                 return default!;
             }
         }
-
         private List<object> GetData(User user)
         {
-            List<object> arguments = new();
             var method = _service.GetType().GetMethod("Add");
             if (method == null)
             {
-                Console.WriteLine("Metoda 'Add' nije pronađena na servisu.");
-                return arguments;
+                Console.WriteLine("Method 'Add' not found on the service.");
+                return new List<object>();
             }
 
+            return FormTableGenerator<T>.GetMethodArguments(method, user);
+        }
+
+        private static List<object> GetMethodArguments(MethodInfo method, User user)
+        {
+            var arguments = new List<object>();
             var parameters = method.GetParameters();
 
             foreach (var param in parameters)
             {
-                // i nastavnik i direktor su kreatori tako da ih samo dodaj
-                // za id nastavnika, ako nastavnik kreira dodaj ga, ako direktor kreira kasnije mora da se pozove smart pick i promenice se tako da se moze ovo samo privremeno staviti
-                if(param.Name == "teacherId" || param.Name == "creatorId")
+                if (param.Name == "teacherId" || param.Name == "creatorId")
                 {
                     arguments.Add(user.Id);
                 }
+                else if (param.ParameterType.IsGenericType && param.ParameterType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                {
+                    arguments.Add(null!);
+                }
                 else
                 {
-                    if (param.ParameterType.IsGenericType && param.ParameterType.GetGenericTypeDefinition() == typeof(Nullable<>))
-                    {
-                        arguments.Add(null);
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Enter {param.Name} ({param.ParameterType.Name}): ");
-
-                        if (param.ParameterType.IsEnum)
-                        {
-                            foreach (var en in Enum.GetValues(param.ParameterType))
-                            {
-                                Console.WriteLine(">>" + en);
-                            }
-                        }
-                        string input = Console.ReadLine();
-                        object value = Memory.GetValueFromInput(input, param.ParameterType);
-                        arguments.Add(value);
-                    }
+                    arguments.Add(FormTableGenerator<T>.GetArgumentFromUserInput(param));
                 }
             }
+
             return arguments;
+        }
+
+        private static object GetArgumentFromUserInput(ParameterInfo param)
+        {
+            Console.WriteLine($"Enter {param.Name} ({param.ParameterType.Name}): ");
+
+            if (param.ParameterType.IsEnum)
+            {
+                FormTableGenerator<T>.PrintEnumValues(param.ParameterType);
+            }
+
+            string input = Console.ReadLine()!;
+            return Memory.GetValueFromInput(input, param.ParameterType);
+        }
+
+        private static void PrintEnumValues(Type enumType)
+        {
+            foreach (var value in Enum.GetValues(enumType))
+            {
+                Console.WriteLine($">>{value}");
+            }
         }
 
         public T Create(User user)
         {
-            List<object> arguments = GetData(user);
-            var serviceType = _service.GetType();
-            var method = serviceType.GetMethod("Add");
-
+            var method = _service.GetType().GetMethod("Add");
             if (method == null)
             {
                 Console.WriteLine("Method 'Add' not found on the service.");
                 return default!;
             }
 
+            List<object> arguments = GetData(user);
+            return InvokeServiceMethod<T>(method, arguments);
+        }
+
+        private TResult InvokeServiceMethod<TResult>(MethodInfo method, List<object> arguments)
+        {
             try
             {
                 object result = method.Invoke(_service, arguments.ToArray())!;
                 Console.WriteLine("Item successfully added.");
-                return (T)result!;
+                return (TResult)result!;
             }
             catch (Exception)
             {
-                Console.WriteLine($"Error! Item not created");
-
+                Console.WriteLine("Error! Item not created");
                 return default!;
             }
         }
 
-        // onlt update properties that service allows
         private Dictionary<string, object> Prompt(T item, MethodInfo updateMethod)
         {
-            var values = new Dictionary<string, object?>();
+            var values = new Dictionary<string, object>();
 
             foreach (var parameter in updateMethod.GetParameters())
-            { 
+            {
+                var property = _type.GetProperty(parameter.Name!, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+                var currentValue = property != null ? property.GetValue(item) : FormTableGenerator<T>.GetDefaultValue(parameter.ParameterType);
 
-                var prop = _type.GetProperty(parameter.Name, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-                if (prop != null)
+                if (FormTableGenerator<T>.ShouldPromptForInput(parameter))
                 {
-                    var value = prop.GetValue(item);
-                    string formattedValue = value?.ToString() ?? string.Empty;
-
-                    // prolaze iter, primitivni,enumi,datum i vreme
-                    // ne prolazi Language i nullable
-                    if ((parameter.ParameterType.IsPrimitive
-                        || typeof(IEnumerable).IsAssignableFrom(parameter.ParameterType)
-                        || parameter.ParameterType.IsEnum
-                        || parameter.ParameterType == typeof(DateOnly) 
-                        || parameter.ParameterType == typeof(TimeOnly))
-                        && !(parameter.Name!.Equals("id", StringComparison.OrdinalIgnoreCase)))
-                    {
-                        Console.WriteLine($"{parameter.Name} ({parameter.ParameterType.Name}) [Current value: {formattedValue}]: ");
-                        string input = Console.ReadLine()!;
-
-                        if (!string.IsNullOrWhiteSpace(input))
-                        {
-                            object newValue = Memory.GetValueFromInput(input, parameter.ParameterType);
-                            values[parameter.Name] = newValue;
-                        }
-                        else
-                        {
-                            values[parameter.Name] = value;
-                        }
-                    }
-                    else values[parameter.Name] = value;
+                    values[parameter.Name!] = PromptForParameterValue(parameter, currentValue!);
                 }
                 else
                 {
-                    // if property not found, consider it empty or default
-                    values[parameter.Name] = parameter.ParameterType.IsValueType ? Activator.CreateInstance(parameter.ParameterType) : null;
+                    values[parameter.Name!] = currentValue!;
                 }
             }
 
-            return values!;
+            return values;
         }
 
-        public void Update(T item, params string[] propertiesToUpdate)
+
+        private static object? GetDefaultValue(Type type)
+        {
+            return type.IsValueType ? Activator.CreateInstance(type) : null;
+        }
+
+        private static bool ShouldPromptForInput(ParameterInfo parameter)
+        {
+            return (parameter.ParameterType.IsPrimitive
+                    || typeof(IEnumerable).IsAssignableFrom(parameter.ParameterType)
+                    || parameter.ParameterType.IsEnum
+                    || parameter.ParameterType == typeof(DateOnly)
+                    || parameter.ParameterType == typeof(TimeOnly))
+                   && !parameter.Name!.Equals("id", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static object PromptForParameterValue(ParameterInfo parameter, object currentValue)
+        {
+            string formattedValue = currentValue?.ToString() ?? string.Empty;
+            Console.WriteLine($"{parameter.Name} ({parameter.ParameterType.Name}) [Current value: {formattedValue}]: ");
+
+            string input = Console.ReadLine()!;
+
+            if (!string.IsNullOrWhiteSpace(input))
+            {
+                return Memory.GetValueFromInput(input, parameter.ParameterType);
+            }
+
+            return currentValue!;
+        }
+
+        public void Update(T item)
         {
             var serviceType = _service.GetType();
             var updateMethod = serviceType.GetMethod("Update");
@@ -177,7 +194,6 @@ namespace LangLang.FormTable
             // to get all new and old values
             var values = Prompt(item, updateMethod);
             // to invoke
-            var methodParameters = new List<object>();
             object[] valuesArray = values.Values.ToArray();
 
             try
@@ -257,7 +273,7 @@ namespace LangLang.FormTable
             var sb = new StringBuilder();
             foreach (var item in properties)
             {
-                sb.Append(item.Name.PadRight(25)).Append(" ");
+                sb.Append(item.Name.PadRight(25)).Append(' ');
             }
             return sb.ToString();
         }
@@ -275,7 +291,7 @@ namespace LangLang.FormTable
             {
                 var value = prop.GetValue(item);
                 string formattedValue;
-                if (value is IEnumerable enumerable && !(value is string))
+                if (value is IEnumerable enumerable && value is not string)
                 {
                     // If the value is enumerable (list, dictionary, etc.), format it for display
                     formattedValue = $"[{string.Join(", ", enumerable.Cast<object>())}]";
@@ -285,7 +301,7 @@ namespace LangLang.FormTable
                     // Otherwise, use the ToString() method
                     formattedValue = value?.ToString() ?? string.Empty;
                 }
-                sb.Append(formattedValue.PadRight(25)).Append(" ");
+                sb.Append(formattedValue.PadRight(25)).Append(' ');
             }
             return sb.ToString();
         }

@@ -17,9 +17,8 @@ public class ExamService : IExamService
     private readonly ILanguageService _languageService;
     private readonly IExamGradeRepository _examGradeRepository;
     private readonly IMessageService _messageService;
-    private readonly IExamGradeService _examGradeService;
     
-    public ExamService(IExamRepository examRepository, IUserRepository userRepository, IScheduleService scheduleService, ILanguageService languageService, IExamGradeRepository examGradeRepository, IMessageService messageService, IExamGradeService examGradeService)
+    public ExamService(IExamRepository examRepository, IUserRepository userRepository, IScheduleService scheduleService, ILanguageService languageService, IExamGradeRepository examGradeRepository, IMessageService messageService)
     {
         _examRepository = examRepository;
         _userRepository = userRepository;
@@ -27,7 +26,6 @@ public class ExamService : IExamService
         _languageService = languageService;
         _examGradeRepository = examGradeRepository;
         _messageService = messageService;
-        _examGradeService = examGradeService;
     }
 
     public List<Exam> GetAll()
@@ -189,8 +187,6 @@ public class ExamService : IExamService
         foreach (int examId in teacher.ExamIds)
         {
             Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
-
-            TimeSpan time = DateTime.Now - exam.Date.ToDateTime(exam.ScheduledTime);
 
             double timeDifference = (DateTime.Now - exam.Date.ToDateTime(exam.ScheduledTime)).TotalMinutes;
 
