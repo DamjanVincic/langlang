@@ -184,7 +184,9 @@ namespace LangLang.FormTable
         }
         private static void DirectorMenu(ITeacherService teacherService,IUserService userService, ICourseService courseService,IExamService examService)
         {
-            Console.Write("" +
+            try
+            {
+                Console.Write("" +
                 "1) Create teachers\n" +
                 "2) Read teachers\n" +
                 "3) Update teachers\n" +
@@ -193,69 +195,74 @@ namespace LangLang.FormTable
                 "6) Create courses - smart pick\n" +
                 "7) Log out" +
                 "Enter option >> ");
-            string option = Console.ReadLine()!;
-            switch (option)
+                string option = Console.ReadLine()!;
+                switch (option)
+                {
+                    // radi
+                    case "1":
+                        new FormTableGenerator<Teacher>(teacherService.GetAll(),userService).Create(user!);
+                        break;
+                    // radi
+                    case "2":
+                        new FormTableGenerator<Teacher>(teacherService.GetAll(), teacherService).ShowTable();
+                        break;
+                    case "3":
+                        int id;
+                        while (true)
+                        {
+                            Console.Write("Please enter an ID: ");
+                            string input = Console.ReadLine()!;
+
+                            if (int.TryParse(input, out id))
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Invalid input. Please enter a valid integer.");
+                            }
+                        }
+                        Teacher teacher = new FormTableGenerator<Teacher>(teacherService.GetAll(), userService).GetById(id);
+                        new FormTableGenerator<Teacher>(teacherService.GetAll(), userService).Update(teacher);
+                        break;
+                    // radi
+                    case "4":
+                        while (true)
+                        {
+                            Console.Write("Please enter an ID: ");
+                            string input = Console.ReadLine()!;
+
+                            if (int.TryParse(input, out id))
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Invalid input. Please enter a valid integer.");
+                            }
+                        }
+                        new FormTableGenerator<User>(userService.GetAll(), userService).Delete(id);
+                        break;
+                    // tehnicki radi, resiti problem creatorId = teacherId
+                    case "5":
+                        object exam = new FormTableGenerator<Exam>(examService.GetAll(), examService).Create(user!);
+                        new FormTableGenerator<Teacher>(teacherService.GetAll(), teacherService).SmartPick(exam);
+                        break;
+                    // radi
+                    case "6":
+                        object item = new FormTableGenerator<Course>(courseService.GetAll(), courseService).Create(user!);
+                        new FormTableGenerator<Teacher>(teacherService.GetAll(), teacherService).SmartPick(item);
+                        break;
+                    case "7":
+                        userService.Logout();
+                        Main();
+                        break;
+                    default: break;
+                }
+            }
+            catch (Exception)
             {
-                // radi
-                case "1":
-                    new FormTableGenerator<Teacher>(teacherService.GetAll(),userService).Create(user!);
-                    break;
-                // radi
-                case "2":
-                    new FormTableGenerator<Teacher>(teacherService.GetAll(), teacherService).ShowTable();
-                    break;
-                case "3":
-                    int id;
-                    while (true)
-                    {
-                        Console.Write("Please enter an ID: ");
-                        string input = Console.ReadLine()!;
-
-                        if (int.TryParse(input, out id))
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Invalid input. Please enter a valid integer.");
-                        }
-                    }
-                    Teacher teacher = new FormTableGenerator<Teacher>(teacherService.GetAll(), userService).GetById(id);
-                    new FormTableGenerator<Teacher>(teacherService.GetAll(), userService).Update(teacher);
-                    break;
-                // radi
-                case "4":
-                    while (true)
-                    {
-                        Console.Write("Please enter an ID: ");
-                        string input = Console.ReadLine()!;
-
-                        if (int.TryParse(input, out id))
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Invalid input. Please enter a valid integer.");
-                        }
-                    }
-                    new FormTableGenerator<User>(userService.GetAll(), userService).Delete(id);
-                    break;
-                // tehnicki radi, resiti problem creatorId = teacherId
-                case "5":
-                    object exam = new FormTableGenerator<Exam>(examService.GetAll(), examService).Create(user!);
-                    new FormTableGenerator<Teacher>(teacherService.GetAll(), teacherService).SmartPick(exam);
-                    break;
-                // radi
-                case "6":
-                    object item = new FormTableGenerator<Course>(courseService.GetAll(), courseService).Create(user!);
-                    new FormTableGenerator<Teacher>(teacherService.GetAll(), teacherService).SmartPick(item);
-                    break;
-                case "7":
-                    userService.Logout();
-                    Main();
-                    break;
-                default: break;
+                Console.WriteLine("Invalid entries. Try again.");
             }
         }
         private static void ConfigureServices(IServiceCollection services)
