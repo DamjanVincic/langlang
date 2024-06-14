@@ -92,6 +92,7 @@ namespace LangLang.FormTable
             List<object> arguments = GetData(user);
             var serviceType = _service.GetType();
             var method = serviceType.GetMethod("Add");
+
             if (method == null)
             {
                 Console.WriteLine("Method 'Add' not found on the service.");
@@ -104,12 +105,14 @@ namespace LangLang.FormTable
                 Console.WriteLine("Item successfully added.");
                 return (T)result!;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine($"Error creating item: {ex.Message}");
+                Console.WriteLine($"Error! Item not created");
+
                 return default!;
             }
         }
+
         // onlt update properties that service allows
         private Dictionary<string, object> Prompt(T item, MethodInfo updateMethod)
         {
