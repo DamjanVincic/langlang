@@ -3,40 +3,26 @@ using LangLang.Repositories;
 using OxyPlot.Axes;
 using OxyPlot.Series;
 using OxyPlot;
-using PdfSharp.Pdf.IO;
-using PdfSharp.Pdf;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LangLang.Services.ReportServices
 {
-    internal class LanguageReportService:ILanguageReportService
+    internal class LanguageReportService: ReportService
     {
         private const string ReportsFolderName = "Reports";
         private const string LanguageReportSubfolder = "LanguageReports";
 
-        private readonly ICourseRepository _courseRepository;
         private readonly IExamRepository _examRepository;
-        private readonly ILanguageRepository _languageRepository;
-        private readonly IPenaltyPointRepository _penaltyPointRepository;
-        private readonly IExamGradeRepository _examGradeRepository;
+        private readonly ILanguageRepository _languageRepository = ServiceProvider.GetRequiredService<ILanguageRepository>();
+        private readonly IExamGradeRepository _examGradeRepository = ServiceProvider.GetRequiredService<IExamGradeRepository>();
+        private readonly ICourseRepository _courseRepository = ServiceProvider.GetRequiredService<ICourseRepository>();
+        private readonly IPenaltyPointRepository _penaltyPointRepository = ServiceProvider.GetRequiredService<IPenaltyPointRepository>();
+        public LanguageReportService(){}
 
-        public LanguageReportService(ICourseRepository courseRepository, IExamRepository examRepository,
-            ILanguageRepository languageRepository,
-            IPenaltyPointRepository penaltyPointRepository, IExamGradeRepository examGradeRepository)
-        {
-            _courseRepository = courseRepository;
-            _examRepository = examRepository;
-            _languageRepository = languageRepository;
-            _penaltyPointRepository = penaltyPointRepository;
-            _examGradeRepository = examGradeRepository;
-        }
-
-        public void GenerateLanguageReport()
+        public override void GenerateReport()
         {
             Directory.CreateDirectory(Path.Combine(ReportsFolderName, LanguageReportSubfolder));
 
@@ -196,35 +182,5 @@ namespace LangLang.Services.ReportServices
             return plotModel;
         }
 
-        private static void SaveToPdf(PlotModel plotModel, string filePath)
-        {
-            using (var stream = File.Create(filePath))
-            {
-                var pdfExporter = new PdfExporter { Width = 600, Height = 400 };
-                pdfExporter.Export(plotModel, stream);
-            }
-        }
-
-        private static void MergePdf(string outputFilePath, string[] inputFilePaths)
-        {
-            PdfDocument outputPdfDocument = new PdfDocument();
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            foreach (string filePath in inputFilePaths)
-            {
-                PdfDocument inputPdfDocument = PdfReader.Open(filePath, PdfDocumentOpenMode.Import);
-                outputPdfDocument.Version = inputPdfDocument.Version;
-                foreach (PdfPage page in inputPdfDocument.Pages)
-                {
-                    outputPdfDocument.AddPage(page);
-                }
-            }
-
-            outputPdfDocument.Save(outputFilePath);
-
-            foreach (string filePath in inputFilePaths)
-            {
-                File.Delete(filePath);
-            }
-        }
     }
 }
