@@ -41,6 +41,7 @@ namespace LangLang.Models
             StudentsNotified = studentsNotified;
         }
 
+        [TableItem(14)]
         public new int MaxStudents
         {
             get => base.MaxStudents;
@@ -51,6 +52,7 @@ namespace LangLang.Models
             }
         }
 
+        [TableItem(15)]
         public int Duration
         {
             get => _duration;
@@ -95,6 +97,7 @@ namespace LangLang.Models
             }
         }
 
+        [TableItem(16)]
         public bool AreApplicationsClosed { get; set; }
 
         // TODO: Return different student IDs based on the status, only pending when accepting (ignore paused), remove all paused after starting a course etc.
