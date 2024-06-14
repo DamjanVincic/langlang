@@ -70,18 +70,25 @@ namespace LangLang.FormTable
                 }
                 else
                 {
-                    Console.WriteLine($"Enter {param.Name} ({param.ParameterType.Name}): ");
-
-                    if (param.ParameterType.IsEnum)
+                    if (param.ParameterType.IsGenericType && param.ParameterType.GetGenericTypeDefinition() == typeof(Nullable<>))
                     {
-                        foreach (var en in Enum.GetValues(param.ParameterType))
-                        {
-                            Console.WriteLine(">>"+en);
-                        }
+                        arguments.Add(null);
                     }
-                    string input = Console.ReadLine();
-                    object value = Memory.GetValueFromInput(input, param.ParameterType);
-                    arguments.Add(value);
+                    else
+                    {
+                        Console.WriteLine($"Enter {param.Name} ({param.ParameterType.Name}): ");
+
+                        if (param.ParameterType.IsEnum)
+                        {
+                            foreach (var en in Enum.GetValues(param.ParameterType))
+                            {
+                                Console.WriteLine(">>" + en);
+                            }
+                        }
+                        string input = Console.ReadLine();
+                        object value = Memory.GetValueFromInput(input, param.ParameterType);
+                        arguments.Add(value);
+                    }
                 }
             }
             return arguments;

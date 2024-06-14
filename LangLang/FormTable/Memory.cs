@@ -24,10 +24,6 @@ namespace LangLang.FormTable
             {
                 return Convert.ChangeType(input, targetType);
             }
-            else if (targetType == typeof(List<Weekday>))
-            {
-                return ParseWeekdayList(input);
-            }
             else if (Nullable.GetUnderlyingType(targetType) != null)
             {
                 return ParseNullableType(input, targetType);
@@ -72,7 +68,17 @@ namespace LangLang.FormTable
 
             foreach (string value in values)
             {
-                object parsedValue = ParseComplexType(value, elementType);
+                object parsedValue;
+
+                if (elementType.IsEnum)
+                {
+                    parsedValue = ParseEnum(value, elementType);
+                }
+                else
+                {
+                    parsedValue = ParseComplexType(value, elementType);
+                }
+
                 list!.Add(parsedValue);
             }
 
@@ -141,7 +147,7 @@ namespace LangLang.FormTable
                 return null!;
             }
             Type underlyingType = Nullable.GetUnderlyingType(targetType)!;
-            return Convert.ChangeType(input, underlyingType);
+            return GetValueFromInput(input, underlyingType);
         }
         private static object ParseDictionary(string input, Type targetType)
         {
