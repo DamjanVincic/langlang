@@ -30,12 +30,14 @@ namespace LangLang.Models
         [TableItem(9)]
         public bool DirectorGraded { get; set; }
 
+        [TableItem(10)]
         public new int MaxStudents
         {
             get => base.MaxStudents;
             set => base.MaxStudents = value;
         }
 
+        [TableItem(11)]
         public new DateOnly Date
         {
             get => base.Date;
