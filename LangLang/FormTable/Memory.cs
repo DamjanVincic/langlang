@@ -83,12 +83,7 @@ namespace LangLang.FormTable
         {
             string[] propertyValues = input.Trim().Split(' ');
 
-            var constructor = targetType.GetConstructors().FirstOrDefault(c => c.GetParameters().Length == propertyValues.Length);
-            if (constructor == null)
-            {
-                throw new Exception($"No suitable constructor found for type {targetType.Name}");
-            }
-
+            var constructor = targetType.GetConstructors().FirstOrDefault(c => c.GetParameters().Length == propertyValues.Length) ?? throw new Exception($"No suitable constructor found for type {targetType.Name}");
             var parameters = constructor.GetParameters();
             object[] parameterValues = new object[parameters.Length];
 

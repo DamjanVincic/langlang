@@ -50,7 +50,7 @@ namespace LangLang.FormTable
 
         private List<object> GetData(User user)
         {
-            List<object> arguments = new List<object>();
+            List<object> arguments = new();
             var method = _service.GetType().GetMethod("Add");
             if (method == null)
             {
@@ -220,7 +220,7 @@ namespace LangLang.FormTable
         }
 
 
-        public void SmartPick(User user, object item)
+        public void SmartPick(object item)
         {
             var serviceType = _service.GetType();
             var method = serviceType.GetMethod("SmartPick");
