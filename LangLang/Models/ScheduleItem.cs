@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace LangLang.Models
 {
@@ -40,7 +41,7 @@ namespace LangLang.Models
         public int Id { get; set; }
 
         public bool Confirmed { get; set; }
-
+        [Required]
         public Language Language
         {
             get => _language;
