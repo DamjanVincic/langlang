@@ -42,14 +42,20 @@ namespace LangLang.Repositories.PostgresRepositories
             _databaseContext.SaveChanges();
         }
 
-        public void Update(ScheduleItem item)
-        {
-            throw new NotImplementedException();
-        }
-
         public void Delete(int id)
         {
-            throw new NotImplementedException();
+            List<Schedule> schedules = _databaseContext.Schedules.ToList();
+            bool updated = false;
+            foreach(Schedule schedule in schedules)
+            {
+                if (schedule.ScheduleItems.RemoveAll(scheduleItem => scheduleItem.Id == id) != 0)
+                {
+                    _databaseContext.Schedules.Update(schedule);
+                    updated= true;
+                }
+            }
+            if(updated)
+                _databaseContext.SaveChanges();
         }
     }
 }
