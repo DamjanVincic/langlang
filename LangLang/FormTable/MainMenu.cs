@@ -28,7 +28,7 @@ namespace LangLang.FormTable
                 switch (user)
                 {
                     case Teacher:
-                        TeacherMenu(examService, courseService);
+                        TeacherMenu(examService, courseService, userService);
                         break;
                     case Director:
                         DirectorMenu(teacherService,userService,courseService,examService);
@@ -64,7 +64,7 @@ namespace LangLang.FormTable
                 }
             }
         }
-        private static void TeacherMenu(IExamService examService, ICourseService courseService)
+        private static void TeacherMenu(IExamService examService, ICourseService courseService, IUserService userService)
         {
             try
             {
@@ -172,7 +172,9 @@ namespace LangLang.FormTable
                         new FormTableGenerator<Course>(courseService.GetAll(), courseService).Delete(id);
                         break;
                     case "9":
-                        return;
+                        userService.Logout();
+                        Main();
+                        break;
                     default: break;
                 }
             }catch (Exception)
@@ -250,7 +252,9 @@ namespace LangLang.FormTable
                     new FormTableGenerator<Teacher>(teacherService.GetAll(), teacherService).SmartPick(item);
                     break;
                 case "7":
-                    return;
+                    userService.Logout();
+                    Main();
+                    break;
                 default: break;
             }
         }
