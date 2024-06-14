@@ -24,16 +24,18 @@ public class ScheduleService : IScheduleService
             case Course course:
                 List<int> dayDifferences = CalculateDateDifferences(course.Held);
                 DateOnly startDate = scheduleItem.Date;
+                DateOnly tempDate = scheduleItem.Date;
 
                 for (int i = 0; i < course.Duration; ++i)
                 {
                     foreach (int day in dayDifferences)
                     {
                         _scheduleRepository.Add(scheduleItem);
-                        course.StartDate.AddDays(day);
+                        course.StartDate = course.StartDate.AddDays(day);
                     }
+                    startDate = startDate.AddDays(7);
                 }
-                course.StartDate = startDate;
+                course.StartDate = tempDate;
                 break;
             case Exam:
                 _scheduleRepository.Add(scheduleItem);
