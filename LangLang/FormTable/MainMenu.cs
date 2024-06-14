@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Printing;
-using System.Text;
-using System.Threading.Tasks;
 using LangLang.Models;
 using LangLang.Repositories;
 using LangLang.Services;
@@ -15,7 +9,7 @@ namespace LangLang.FormTable
 {
     public class MainMenu
     {
-        static User user;
+        static User? user;
         static void Main()
         {
             var serviceCollection = new ServiceCollection();
@@ -27,7 +21,7 @@ namespace LangLang.FormTable
             IExamService examService = serviceProvider.GetRequiredService<IExamService>();
             ICourseService courseService = serviceProvider.GetRequiredService<ICourseService>();
 
-            user = Loggin(userService);
+            user = Loggin(userService)!;
 
             while (true)
             {
@@ -50,15 +44,15 @@ namespace LangLang.FormTable
             while (true)
             {
                 Console.WriteLine("Email >> ");
-                string email = Console.ReadLine();
+                string email = Console.ReadLine()!;
                 Console.WriteLine("Password >> ");
-                string password = Console.ReadLine();
+                string password = Console.ReadLine()!;
                 User? user = userService.Login(email!, password!);
                 switch (user)
                 {
                     case null:
                         Console.WriteLine("Error logging in. Try again? y/n");
-                        string option = Console.ReadLine();
+                        string option = Console.ReadLine()!;
                         if (option == "n") return null;
                         continue;
                     case Teacher:
@@ -85,12 +79,12 @@ namespace LangLang.FormTable
                   "8) Delete courses\n" +
                   "9) Logout\n" +
                   "Enter option >> ");
-                string option = Console.ReadLine();
+                string option = Console.ReadLine()!;
                 switch (option)
                 {
                     // radi
                     case "1":
-                        new FormTableGenerator<Exam>(examService.GetAll(), examService).Create(user);
+                        new FormTableGenerator<Exam>(examService.GetAll(), examService).Create(user!);
                         break;
                     // radi
                     case "2":
@@ -101,7 +95,7 @@ namespace LangLang.FormTable
                         while (true)
                         {
                             Console.Write("Please enter an ID: ");
-                            string input = Console.ReadLine();
+                            string input = Console.ReadLine()!;
 
                             if (int.TryParse(input, out id))
                             {
@@ -120,7 +114,7 @@ namespace LangLang.FormTable
                         while (true)
                         {
                             Console.Write("Please enter an ID: ");
-                            string input = Console.ReadLine();
+                            string input = Console.ReadLine()!;
 
                             if (int.TryParse(input, out id))
                             {
@@ -135,7 +129,7 @@ namespace LangLang.FormTable
                         break;
                     // radi
                     case "5":
-                        new FormTableGenerator<Course>(courseService.GetAll(), courseService).Create(user);
+                        new FormTableGenerator<Course>(courseService.GetAll(), courseService).Create(user!);
                         break;
                     // radi
                     case "6":
@@ -145,7 +139,7 @@ namespace LangLang.FormTable
                         while (true)
                         {
                             Console.Write("Please enter an ID: ");
-                            string input = Console.ReadLine();
+                            string input = Console.ReadLine()!;
 
                             if (int.TryParse(input, out id))
                             {
@@ -164,7 +158,7 @@ namespace LangLang.FormTable
                         while (true)
                         {
                             Console.Write("Please enter an ID: ");
-                            string input = Console.ReadLine();
+                            string input = Console.ReadLine()!;
 
                             if (int.TryParse(input, out id))
                             {
@@ -181,7 +175,8 @@ namespace LangLang.FormTable
                         return;
                     default: break;
                 }
-            }catch (Exception ex){
+            }catch (Exception)
+            {
                 Console.WriteLine("Invalid entries. Try again.");
             }
         }
@@ -196,12 +191,12 @@ namespace LangLang.FormTable
                 "6) Create exams - smart pick\n" +
                 "7) Log out" +
                 "Enter option >> ");
-            string option = Console.ReadLine();
+            string option = Console.ReadLine()!;
             switch (option)
             {
                 // radi
                 case "1":
-                    new FormTableGenerator<Teacher>(teacherService.GetAll(),userService).Create(user);
+                    new FormTableGenerator<Teacher>(teacherService.GetAll(),userService).Create(user!);
                     break;
                 // radi
                 case "2":
@@ -212,7 +207,7 @@ namespace LangLang.FormTable
                     while (true)
                     {
                         Console.Write("Please enter an ID: ");
-                        string input = Console.ReadLine();
+                        string input = Console.ReadLine()!;
 
                         if (int.TryParse(input, out id))
                         {
@@ -231,7 +226,7 @@ namespace LangLang.FormTable
                     while (true)
                     {
                         Console.Write("Please enter an ID: ");
-                        string input = Console.ReadLine();
+                        string input = Console.ReadLine()!;
 
                         if (int.TryParse(input, out id))
                         {
@@ -246,13 +241,13 @@ namespace LangLang.FormTable
                     break;
                 // tehnicki radi, resiti problem creatorId = teacherId
                 case "5":
-                    object exam = new FormTableGenerator<Exam>(examService.GetAll(), examService).Create(user);
-                    new FormTableGenerator<Teacher>(teacherService.GetAll(), teacherService).SmartPick(user, exam);
+                    object exam = new FormTableGenerator<Exam>(examService.GetAll(), examService).Create(user!);
+                    new FormTableGenerator<Teacher>(teacherService.GetAll(), teacherService).SmartPick(user!, exam);
                     break;
                 // radi
                 case "6":
-                    object item = new FormTableGenerator<Course>(courseService.GetAll(), courseService).Create(user);
-                    new FormTableGenerator<Teacher>(teacherService.GetAll(), teacherService).SmartPick(user,item);
+                    object item = new FormTableGenerator<Course>(courseService.GetAll(), courseService).Create(user!);
+                    new FormTableGenerator<Teacher>(teacherService.GetAll(), teacherService).SmartPick(user!,item);
                     break;
                 case "7":
                     return;

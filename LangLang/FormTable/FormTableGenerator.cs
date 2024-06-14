@@ -1,22 +1,19 @@
 ﻿using LangLang.Models;
-using LangLang.Services;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
-using System.util;
 
 namespace LangLang.FormTable
 {
     public class FormTableGenerator<T>
     {
-        private Type _type;
-        private object _service;
-        private IEnumerable<T> _data;
-        private int _columnsPerPage;
+        private readonly Type _type;
+        private readonly object _service;
+        private readonly IEnumerable<T> _data;
+        private readonly int _columnsPerPage;
 
         public FormTableGenerator(IEnumerable<T> data, object service, int columnsPerPage = 5)
         {
@@ -38,7 +35,7 @@ namespace LangLang.FormTable
                     try
                     {
                         var result = getByIdMethod.Invoke(_service, new object[] { id });
-                        return (T)result;
+                        return (T)result!;
                     }
                     catch (Exception ex)
                     {
@@ -48,7 +45,7 @@ namespace LangLang.FormTable
             }
 
             Console.WriteLine($"Method 'GetById' with compatible parameter type not found on the service.");
-            return default;
+            return default!;
         }
 
         private List<object> GetData(User user)
@@ -74,7 +71,7 @@ namespace LangLang.FormTable
                 else
                 {
                     Console.WriteLine($"Enter {param.Name} ({param.ParameterType.Name}): ");
-                    string input = Console.ReadLine();
+                    string input = Console.ReadLine()!;
                     object value = Memory.GetValueFromInput(input, param.ParameterType);
                     arguments.Add(value);
                 }
@@ -90,29 +87,29 @@ namespace LangLang.FormTable
             if (method == null)
             {
                 Console.WriteLine("Method 'Add' not found on the service.");
-                return default;
+                return default!;
             }
 
             try
             {
-                object result = method.Invoke(_service, arguments.ToArray());
+                object result = method.Invoke(_service, arguments.ToArray())!;
                 Console.WriteLine("Item successfully added.");
-                return (T)result;
+                return (T)result!;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error creating item: {ex.Message}");
-                return default;
+                return default!;
             }
         }
         // onlt update properties that service allows
         private Dictionary<string, object> Prompt(T item, MethodInfo updateMethod)
         {
-            var values = new Dictionary<string, object>();
+            var values = new Dictionary<string, object?>();
 
             foreach (var parameter in updateMethod.GetParameters())
             {
-                if (parameter.Name.Equals("id", StringComparison.OrdinalIgnoreCase))
+                if (parameter.Name!.Equals("id", StringComparison.OrdinalIgnoreCase))
                     continue;
 
                 var prop = _type.GetProperty(parameter.Name, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
@@ -122,7 +119,7 @@ namespace LangLang.FormTable
                     string formattedValue = value?.ToString() ?? string.Empty;
 
                     Console.WriteLine($"{parameter.Name} ({parameter.ParameterType.Name}) [Current value: {formattedValue}]: ");
-                    string input = Console.ReadLine();
+                    string input = Console.ReadLine()!;
 
                     if (!string.IsNullOrWhiteSpace(input))
                     {
@@ -131,7 +128,7 @@ namespace LangLang.FormTable
                     }
                     else
                     {
-                        values[parameter.Name] = value;
+                        values[parameter.Name] = value!;
                     }
                 }
                 else
@@ -141,7 +138,7 @@ namespace LangLang.FormTable
                 }
             }
 
-            return values;
+            return values!;
         }
 
         public void Update(T item, params string[] propertiesToUpdate)
@@ -161,12 +158,12 @@ namespace LangLang.FormTable
 
             foreach (var parameter in updateMethod.GetParameters())
             {
-                if (parameter.Name.Equals("id", StringComparison.OrdinalIgnoreCase))
+                if (parameter.Name!.Equals("id", StringComparison.OrdinalIgnoreCase))
                 {
                     var idProperty = _type.GetProperty("Id", BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
                     if (idProperty != null)
                     {
-                        methodParameters.Add(idProperty.GetValue(item));
+                        methodParameters.Add(idProperty.GetValue(item)!);
                     }
                     else
                     {
@@ -185,7 +182,7 @@ namespace LangLang.FormTable
                         var property = _type.GetProperty(parameter.Name, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
                         if (property != null)
                         {
-                            methodParameters.Add(property.GetValue(item));
+                            methodParameters.Add(property.GetValue(item)!);
                         }
                         else
                         {
@@ -212,10 +209,10 @@ namespace LangLang.FormTable
             {
                 var serviceType = _service.GetType();
                 var method = serviceType.GetMethod("Delete");
-                method.Invoke(_service, new object[] { id });
+                method!.Invoke(_service, new object[] { id });
                 Console.WriteLine("Success");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Console.WriteLine("Invalid input. Action terminated.");
             }
@@ -266,7 +263,7 @@ namespace LangLang.FormTable
         {
             var properties = _type.GetProperties()
                 .Where(p => p.IsDefined(typeof(TableItemAttribute), false))
-                .OrderBy(p => p.GetCustomAttribute<TableItemAttribute>().ColumnOrder)
+                .OrderBy(p => p.GetCustomAttribute<TableItemAttribute>()!.ColumnOrder)
                 .Skip(pageIndex * _columnsPerPage)
                 .Take(_columnsPerPage);
 
@@ -282,7 +279,7 @@ namespace LangLang.FormTable
         {
             var properties = _type.GetProperties()
                 .Where(p => p.IsDefined(typeof(TableItemAttribute), false))
-                .OrderBy(p => p.GetCustomAttribute<TableItemAttribute>().ColumnOrder)
+                .OrderBy(p => p.GetCustomAttribute<TableItemAttribute>()!.ColumnOrder)
                 .Skip(pageIndex * _columnsPerPage)
                 .Take(_columnsPerPage);
 
