@@ -220,7 +220,7 @@ namespace LangLang.FormTable
                             Console.WriteLine("Invalid input. Please enter a valid integer.");
                         }
                     }
-                    Teacher teacher = new FormTableGenerator<Teacher>(teacherService.GetAll(), examService).GetById(id);
+                    Teacher teacher = new FormTableGenerator<Teacher>(teacherService.GetAll(), userService).GetById(id);
                     new FormTableGenerator<Teacher>(teacherService.GetAll(), userService).Update(teacher);
                     break;
                 // radi
