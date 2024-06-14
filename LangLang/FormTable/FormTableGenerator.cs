@@ -24,9 +24,10 @@ namespace LangLang.FormTable
         }
         public T GetById(object id)
         {
-            var getByIdMethod = _service.GetType().GetMethod("GetById", BindingFlags.Instance | BindingFlags.Public);
+            var serviceType = _service.GetType();
+            var getByIdMethod = serviceType.GetMethod("GetById", new[] { id.GetType() });
 
-            if (getByIdMethod is null || !getByIdMethod.IsGenericMethodDefinition)
+            if (getByIdMethod == null)
             {
                 Console.WriteLine($"Method 'GetById' with compatible parameter type not found on the service.");
                 return default!;
@@ -34,7 +35,7 @@ namespace LangLang.FormTable
 
             try
             {
-                var result = getByIdMethod.MakeGenericMethod(id.GetType()).Invoke(_service, new[] { id });
+                var result = getByIdMethod.Invoke(_service, new[] { id });
                 return (T)result!;
             }
             catch (Exception ex)
