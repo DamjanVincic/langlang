@@ -9,11 +9,8 @@ using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LangLang.Models;
-using LangLang.Repositories;
 using LangLang.Services;
-using LangLang.Views.TeacherViews;
 using LangLang.Views.DirectorViews;
-using LangLang.ViewModels.CourseViewModels;
 
 namespace LangLang.ViewModels.TeacherViewModels
 {
@@ -22,7 +19,6 @@ namespace LangLang.ViewModels.TeacherViewModels
         private readonly IUserService _userService = ServiceProvider.GetRequiredService<IUserService>();
         private readonly ITeacherService _teacherService = ServiceProvider.GetRequiredService<ITeacherService>();
         private readonly ILanguageService _languageService = ServiceProvider.GetRequiredService<ILanguageService>();
-        private readonly ICourseRepository _courseRepository = ServiceProvider.GetRequiredService<ICourseRepository>();
 
         private string? _selectedLanguageName;
         private string? _selectedLanguageLevel;
@@ -33,7 +29,7 @@ namespace LangLang.ViewModels.TeacherViewModels
         private int _currentPage;
         private readonly int _itemsPerPage = 2;
         private int _totalPages;
-        private int _totalTeachers;
+        private readonly int _totalTeachers;
 
         private readonly ObservableCollection<TeacherViewModel> _teachers;
         private readonly Window _teacherListingWindow;
@@ -64,7 +60,7 @@ namespace LangLang.ViewModels.TeacherViewModels
         public ICollectionView TeachersCollectionView { get; }
         public IEnumerable<TeacherViewModel> Teachers => _teachers;
         public IEnumerable<String> LanguageNameValues => _languageService.GetAllNames();
-        public IEnumerable<String> LanguageLevelValues => Enum.GetNames(typeof(LanguageLevel));
+        public static IEnumerable<String> LanguageLevelValues => Enum.GetNames(typeof(LanguageLevel));
         public static IEnumerable<String> SortingWays => new List<String> { "ascending", "descending" };
         public static IEnumerable<String> PropertyNames => new List<String> { "Name", "DateAdded" };
         public ICommand EditCommand { get; }

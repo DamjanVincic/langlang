@@ -15,8 +15,9 @@ public class TeacherService : ITeacherService
     private readonly IScheduleService _scheduleService;
     private readonly IStudentService _studentService;
     private readonly IMessageService _messageService;
+    private readonly ILanguageService _languageService; 
 
-    public TeacherService(IUserRepository userRepository, ICourseRepository courseRepository, IExamRepository examRepository, IExamService examService, IScheduleService scheduleService, IStudentService studentService, IMessageService messageService)
+    public TeacherService(IUserRepository userRepository, ICourseRepository courseRepository, IExamRepository examRepository, IExamService examService, IScheduleService scheduleService, IStudentService studentService, IMessageService messageService, ILanguageService languageService)
     {
         _userRepository = userRepository;
         _courseRepository = courseRepository;
@@ -25,6 +26,7 @@ public class TeacherService : ITeacherService
         _scheduleService = scheduleService;
         _studentService = studentService;
         _messageService = messageService;
+        _languageService = languageService;
     }
 
     public List<Teacher> GetAll()
@@ -122,10 +124,10 @@ public class TeacherService : ITeacherService
 
     public List<Teacher> GetAvailableTeachers(Course course)
     {
-        List<Teacher> availableTeachers = new List<Teacher>();
+        List<Teacher> availableTeachers = new();
         foreach (Teacher teacher_ in GetAll())
         {
-            Course tempCourse = new Course(course.Language, course.Duration, course.Held, true,
+            Course tempCourse = new(course.Language, course.Duration, course.Held, true,
                 course.MaxStudents, course.CreatorId, course.ScheduledTime, course.StartDate,
                 course.AreApplicationsClosed, teacher_.Id);
 
@@ -139,10 +141,10 @@ public class TeacherService : ITeacherService
     }
     public List<Teacher> GetAvailableTeachers(Exam exam)
     {
-        List<Teacher> availableTeachers = new List<Teacher>();
+        List<Teacher> availableTeachers = new();
         foreach (Teacher teacher_ in GetAll())
         {
-            Exam tempExam = new Exam(exam.Language, exam.MaxStudents, exam.Date, teacher_.Id, exam.ScheduledTime);
+            Exam tempExam = new(exam.Language, exam.MaxStudents, exam.Date, teacher_.Id, exam.ScheduledTime);
 
             if (_scheduleService.ValidateScheduleItem(tempExam, true))
             {
@@ -234,7 +236,18 @@ public class TeacherService : ITeacherService
     }
     // get all available teachers and sort them based on ranking
     // pick the first one as the best choice
-    public int? SmartPick(Course course)
+
+    public int? SmartPick(ScheduleItem scheduleItem)
+    {
+         if(scheduleItem is Exam exam){
+            return  SmartPickExam(exam);
+         }else if(scheduleItem is Course course) 
+            {
+            return SmartPickCourse(course);
+         }
+        return null;
+    }
+    public int? SmartPickCourse(Course course)
     {
         List<Teacher> availableTeachers = GetAvailableTeachers(course)
             .OrderByDescending(teacher => teacher.Rating)
@@ -248,18 +261,24 @@ public class TeacherService : ITeacherService
         _courseRepository.Update(course);
         return course.TeacherId;
     }
-    public int? SmartPick(Exam exam)
+    public int? SmartPickExam(Exam exam)
     {
         List<Teacher> availableTeachers = GetAvailableTeachers(exam)
             .OrderByDescending(teacher => teacher.Rating)
             .ToList();
 
         if (!availableTeachers.Any())
+        {
+            _examService.Delete(exam.Id);
             throw new InvalidInputException("There are no available substitute teachers");
+        }
 
         exam.TeacherId = availableTeachers.First().Id;
         availableTeachers.First().ExamIds.Add(exam.Id);
-        _examService.Update(exam.Id, exam.Language.Name, exam.Language.Level ,exam.MaxStudents, exam.Date, exam.TeacherId, exam.ScheduledTime);
+        Language language = _languageService.GetLanguage(exam.Language.Name, exam.Language.Level) ??
+                    throw new InvalidInputException("Language with the given level doesn't exist.");
+
+        _examService.Update(exam.Id ,exam.MaxStudents, exam.Date, exam.TeacherId, exam.ScheduledTime);
         return exam.TeacherId;
     }
 }

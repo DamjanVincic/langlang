@@ -113,7 +113,7 @@ namespace LangLang.ViewModels.CourseViewModels
                 subWindow.Closed += (sender, args) => RefreshCourses();
                 subWindow.Show();
             }
-            else _teacherService.SmartPick(course);
+            else _teacherService.SmartPickCourse(course);
             RefreshCourses();
         }
 

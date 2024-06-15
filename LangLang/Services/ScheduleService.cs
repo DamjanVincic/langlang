@@ -24,16 +24,18 @@ public class ScheduleService : IScheduleService
             case Course course:
                 List<int> dayDifferences = CalculateDateDifferences(course.Held);
                 DateOnly startDate = scheduleItem.Date;
+                DateOnly tempDate = scheduleItem.Date;
 
                 for (int i = 0; i < course.Duration; ++i)
                 {
                     foreach (int day in dayDifferences)
                     {
                         _scheduleRepository.Add(scheduleItem);
-                        course.StartDate.AddDays(day);
+                        course.StartDate = course.StartDate.AddDays(day);
                     }
+                    startDate = startDate.AddDays(7);
                 }
-                course.StartDate = startDate;
+                course.StartDate = tempDate;
                 break;
             case Exam:
                 _scheduleRepository.Add(scheduleItem);
@@ -52,8 +54,6 @@ public class ScheduleService : IScheduleService
     {
         _scheduleRepository.Delete(id);
     }
-
-    // TODO: MELOC 20, CYCLO_SWITCH 6
     public bool ValidateScheduleItem(ScheduleItem scheduleItem, bool toEdit = false)
     {
         switch (scheduleItem)
@@ -92,7 +92,6 @@ public class ScheduleService : IScheduleService
         return dayDifferences;
     }
 
-    // TODO: MELOC 18, CYCLO_SWITCH 15, MNOC 3
     private bool IsAvailable(ScheduleItem scheduleItem, DateOnly date, bool toEdit)
     {
         List<ScheduleItem> scheduleItems = _scheduleRepository.GetByDate(date);
@@ -129,8 +128,6 @@ public class ScheduleService : IScheduleService
         return true;
     }
 
-
-    // TODO: NOP 4
     private static bool DoPeriodsOverlap(TimeOnly startTime, TimeOnly endTime, TimeOnly startTimeCheck, TimeOnly endTimeCheck)
     {
         return !(startTime >= endTimeCheck || startTimeCheck >= endTime);

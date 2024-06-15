@@ -18,7 +18,7 @@ namespace LangLang.ViewModels.ExamViewModels
         public LanguageLevel LanguageLevel => _exam.Language.Level;
         public string MaxStudents => _exam.MaxStudents.ToString();
         public DateOnly ExamDate => _exam.Date;
-        public int Duration => Exam.ExamDuration;
+        public static int Duration => Exam.ExamDuration;
         public TimeOnly ExamTime => _exam.ScheduledTime;
 
         public bool FilterLevel(string? level)
@@ -48,7 +48,7 @@ namespace LangLang.ViewModels.ExamViewModels
                 return true;
             }
 
-            DateOnly chosenDate = new DateOnly(date.Year, date.Month, date.Day);
+            DateOnly chosenDate = new(date.Year, date.Month, date.Day);
             return chosenDate == _exam.Date;
         }
 

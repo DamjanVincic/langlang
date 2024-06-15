@@ -7,20 +7,20 @@ using LangLang.Services;
 
 namespace LangLang.ViewModels.ExamViewModels
 {
-    internal class AddExamGradeViewModel:ViewModelBase
+    internal class AddExamGradeViewModel : ViewModelBase
     {
         private readonly int _studentId;
         private readonly int _examId;
         private readonly Window _currentWindow;
 
-        private readonly IStudentService _studentService = ServiceProvider.GetRequiredService<IStudentService>();
+        private readonly IExamGradeService _examGradeService = ServiceProvider.GetRequiredService<IExamGradeService>();
 
         public AddExamGradeViewModel(int studentId, int examId, Window currentWindow)
         {
             _studentId = studentId;
             _examId = examId;
             AddExamGradeCommand = new RelayCommand(AddExamGrade);
-            _currentWindow=currentWindow;
+            _currentWindow = currentWindow;
         }
 
         public int ReadingPoints { get; set; }
@@ -34,9 +34,8 @@ namespace LangLang.ViewModels.ExamViewModels
         {
             try
             {
-                _studentService.AddExamGrade(_studentId, _examId, WritingPoints, ReadingPoints, ListeningPoints, TalkingPoints);
-                MessageBox.Show("Grade added successfully.", "Success", MessageBoxButton.OK,
-                    MessageBoxImage.Information);
+                _examGradeService.AddExamGrade(_studentId, _examId, ReadingPoints, WritingPoints, ListeningPoints, TalkingPoints);
+                MessageBox.Show("Grade added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 _currentWindow.Close();
             }
             catch (InvalidInputException ex)

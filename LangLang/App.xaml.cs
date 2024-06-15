@@ -71,9 +71,6 @@ namespace LangLang
             services.AddScoped<IStudentService, StudentService>();
             services.AddScoped<ITeacherService, TeacherService>();
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IGradeReportService, GradeReportService>();
-            services.AddScoped<IPassRateReportService, PassRateReportService>();
-            services.AddScoped<ILanguageReportService, LanguageReportService>();
 
             services.AddTransient<MainWindow>();
             services.AddTransient<ActiveCoursesViewModel>();
