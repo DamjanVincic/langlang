@@ -18,6 +18,10 @@ public class LanguageService : ILanguageService
     {
         return _languageRepository.GetAll();
     }
+    public Language? GetById(int id)
+    {
+        return _languageRepository.GetById(id);
+    }
 
     public List<string> GetAllNames()
     {

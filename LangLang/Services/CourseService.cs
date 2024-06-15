@@ -110,6 +110,7 @@ public class CourseService : ICourseService
         return courses.Skip((pageIndex - 1) * amount.Value).Take(amount.Value).ToList();
     }
 
+
     public Course Add(string languageName, LanguageLevel languageLevel, int duration, List<Weekday> held, bool isOnline,
         int maxStudents, int? creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed,
         int? teacherId)
@@ -117,6 +118,8 @@ public class CourseService : ICourseService
         Language language = _languageService.GetLanguage(languageName, languageLevel) ??
                             throw new InvalidInputException("Language with the given level doesn't exist.");
         Teacher? teacher = null;
+        // ovo se radi zbog smart picka, ako nastavnik ne postoji onda baci gresku
+        // ali ako je nastavnik = direktor onda ce se promeniti kasnije u validan id nastavnika
         if (teacherId != null)
             teacher = GetTeacherOrThrow(teacherId.Value);
 

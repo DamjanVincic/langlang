@@ -17,9 +17,9 @@ public class ExamService : IExamService
     private readonly ILanguageService _languageService;
     private readonly IExamGradeRepository _examGradeRepository;
     private readonly IMessageService _messageService;
-    private readonly ILanguageRepository _languageRepository;
     
-    public ExamService(IExamRepository examRepository, IUserRepository userRepository, IScheduleService scheduleService, ILanguageService languageService, IExamGradeRepository examGradeRepository, IMessageService messageService,ILanguageRepository languageRepository)
+    public ExamService(IExamRepository examRepository, IUserRepository userRepository, IScheduleService scheduleService, ILanguageService languageService, IExamGradeRepository examGradeRepository, IMessageService messageService)
+
     {
         _examRepository = examRepository;
         _userRepository = userRepository;
@@ -28,6 +28,7 @@ public class ExamService : IExamService
         _examGradeRepository = examGradeRepository;
         _messageService = messageService;
         _languageRepository = languageRepository;
+
     }
 
     public List<Exam> GetAll()
@@ -105,9 +106,9 @@ public class ExamService : IExamService
         TimeOnly examTime)
     {
         Teacher? teacher = null;
+        // zbog smart picka, ako je id direktora onda ce se promeniti u narenih par funkcija na validan id nastavnika
         if (teacherId != null)
             teacher = GetTeacherOrThrow(teacherId.Value);
-
         Language language = _languageService.GetLanguage(languageName, languageLevel) ??
                             throw new InvalidInputException("Language with the given level doesn't exist.");
 
@@ -127,8 +128,10 @@ public class ExamService : IExamService
         return exam;
     }
 
-    public void Update(int id, string languageName, LanguageLevel languageLevel, int maxStudents, DateOnly date,
-        int? teacherId, TimeOnly time)
+    // TODO: MELOC 21, CYCLO_SWITCH 6, NOP 7, MNOC 5 
+    public void Update(int id, int maxStudents, DateOnly date,
+        int? teacherId, TimeOnly scheduledTime)
+
     {
         Exam exam = GetExamOrThrow(id);
 
@@ -139,16 +142,11 @@ public class ExamService : IExamService
         if (teacherId.HasValue)
             teacher = GetTeacherOrThrow(teacherId.Value);
 
-
-        Language language = _languageService.GetLanguage(languageName, languageLevel) ??
-                            throw new InvalidInputException("Language with the given level doesn't exist.");
-
         int? oldTeacherId = exam.TeacherId;
         
-        exam.Language = language;
         exam.MaxStudents = maxStudents;
         exam.Date = date;
-        exam.ScheduledTime = time;
+        exam.ScheduledTime = scheduledTime;
         exam.TeacherId = teacherId;
 
         // Validates if it can be added to the current schedule
@@ -235,6 +233,7 @@ public class ExamService : IExamService
         Teacher teacher = GetTeacherOrThrow(teacherId);
         foreach (int examId in teacher.ExamIds)
         {
+
             Exam exam = GetExamOrThrow(examId);
 
             double timeDifference = (DateTime.Now - exam.Date.ToDateTime(exam.ScheduledTime)).TotalMinutes;

@@ -163,8 +163,10 @@ namespace LangLang.Services.ReportServices
 
         private PlotModel CreateLanguagePlotModel(string title, Dictionary<int, double> data)
         {
-            var plotModel = new PlotModel();
-            plotModel.Title = title;
+            var plotModel = new PlotModel
+            {
+                Title = title
+            };
 
             var categoryAxis = new CategoryAxis { Position = AxisPosition.Left };
             categoryAxis.Labels.AddRange(data.Keys.Select(id => _languageRepository.GetById(id)!.ToString()).ToList());
@@ -182,5 +184,33 @@ namespace LangLang.Services.ReportServices
             return plotModel;
         }
 
+        private static void SaveToPdf(PlotModel plotModel, string filePath)
+        {
+            using var stream = File.Create(filePath);
+            var pdfExporter = new PdfExporter { Width = 600, Height = 400 };
+            pdfExporter.Export(plotModel, stream);
+        }
+
+        private static void MergePdf(string outputFilePath, string[] inputFilePaths)
+        {
+            PdfDocument outputPdfDocument = new();
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            foreach (string filePath in inputFilePaths)
+            {
+                PdfDocument inputPdfDocument = PdfReader.Open(filePath, PdfDocumentOpenMode.Import);
+                outputPdfDocument.Version = inputPdfDocument.Version;
+                foreach (PdfPage page in inputPdfDocument.Pages)
+                {
+                    outputPdfDocument.AddPage(page);
+                }
+            }
+
+            outputPdfDocument.Save(outputFilePath);
+
+            foreach (string filePath in inputFilePaths)
+            {
+                File.Delete(filePath);
+            }
+        }
     }
 }
