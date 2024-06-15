@@ -54,9 +54,7 @@ namespace LangLang
         private void ConfigureServices(IServiceCollection services)
         {
             ConfigureFileRepositories(services);
-            
-            // TODO: Uncomment this line to use the database
-            //ConfigureDatabaseRepositories(services);
+            ConfigureDatabaseRepositories(services);
 
             services.AddScoped<ICourseGradeService, CourseGradeService>();
             services.AddScoped<ICourseService, CourseService>();
@@ -89,14 +87,9 @@ namespace LangLang
         private static void ConfigureFileRepositories(IServiceCollection services)
         {
             services.AddScoped<ICourseGradeRepository, CourseGradeFileRepository>();
-            services.AddScoped<ICourseRepository, CourseFileRepository>();
             services.AddScoped<IExamGradeRepository, ExamGradeFileRepository>();
-            services.AddScoped<IExamRepository, ExamFileRepository>();
-            services.AddScoped<ILanguageRepository, LanguageFileRepository>();
             services.AddScoped<IMessageRepository, MessageFileRepository>();
             services.AddScoped<IPenaltyPointRepository, PenaltyPointFileRepository>();
-            services.AddScoped<IScheduleRepository, ScheduleFileRepository>();
-            services.AddScoped<IUserRepository, UserFileRepository>();
         }
         
         private void ConfigureDatabaseRepositories(IServiceCollection services)
@@ -111,6 +104,7 @@ namespace LangLang
             services.AddScoped<ILanguageRepository, LanguagePostgresRepository>();
             services.AddScoped<IUserRepository, UserPostgresRepository>();
             services.AddScoped<IExamRepository, ExamPostgresRepository>();
+            services.AddScoped<IScheduleRepository,SchedulePostgresRepository>();
         }
     }
 }

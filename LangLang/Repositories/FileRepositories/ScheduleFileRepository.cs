@@ -33,11 +33,6 @@ public class ScheduleFileRepository : IScheduleRepository
         SaveData();
     }
 
-    public void Update(ScheduleItem item)
-    {
-        throw new NotImplementedException();
-    }
-
     /// <summary>
     /// Deletes the item from the whole schedule
     /// </summary>

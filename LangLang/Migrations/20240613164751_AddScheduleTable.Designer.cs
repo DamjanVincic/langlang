@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using LangLang.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LangLang.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20240613164751_AddScheduleTable")]
+    partial class AddScheduleTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,10 +50,6 @@ namespace LangLang.Migrations
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 
-                    b.Property<string>("ScheduleItems")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Date");
 
                     b.ToTable("Schedules");
@@ -81,6 +79,9 @@ namespace LangLang.Migrations
                     b.Property<int>("MaxStudents")
                         .HasColumnType("integer");
 
+                    b.Property<DateOnly?>("ScheduleDate")
+                        .HasColumnType("date");
+
                     b.Property<TimeSpan>("ScheduledTime")
                         .HasColumnType("interval");
 
@@ -90,6 +91,8 @@ namespace LangLang.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("LanguageId");
+
+                    b.HasIndex("ScheduleDate");
 
                     b.ToTable("ScheduleItems");
 
@@ -287,6 +290,10 @@ namespace LangLang.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("LangLang.Models.Schedule", null)
+                        .WithMany("ScheduleItems")
+                        .HasForeignKey("ScheduleDate");
+
                     b.Navigation("Language");
                 });
 
@@ -303,6 +310,11 @@ namespace LangLang.Migrations
                         .HasForeignKey("TeachersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("LangLang.Models.Schedule", b =>
+                {
+                    b.Navigation("ScheduleItems");
                 });
 #pragma warning restore 612, 618
         }

@@ -17,6 +17,7 @@ public class DatabaseContext : DbContext
     }
 
     public DbSet<Course> Courses { get; set; }
+    public DbSet<Schedule> Schedules { get; set; }
     //public DbSet<CourseGrade> CourseGrades { get; set; }
     public DbSet<Exam> Exams { get; set; }
     //public DbSet<ExamGrade> ExamGrades { get; set; }
@@ -104,5 +105,13 @@ public class DatabaseContext : DbContext
 
         modelBuilder.Entity<Dictionary<int, bool>>().HasNoKey();
         modelBuilder.Entity<Dictionary<int, int>>().HasNoKey();
+        modelBuilder.Entity<Schedule>()
+            .Property(s => s.ScheduleItems)
+            .HasConversion(
+                v => JsonConvert.SerializeObject(v,
+                    new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }),
+                v => JsonConvert.DeserializeObject<List<ScheduleItem>>(v,
+                    new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto })!
+            );
     }
 }
