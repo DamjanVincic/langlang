@@ -9,6 +9,14 @@ namespace LangLang.Models
         private int _maxStudents;
         private DateOnly _date;
 
+        private readonly bool _loadingFromDatabase;
+        
+        protected ScheduleItem()
+        {
+            // Only Entity Framework uses empty constructor
+            _loadingFromDatabase = true;
+        }
+
         protected ScheduleItem(Language language, int maxStudents, DateOnly date, int? teacherId, TimeOnly time)
         {
             Language = language;
@@ -99,8 +107,9 @@ namespace LangLang.Models
                 throw new InvalidInputException("Number of max students can not be negative.");
         }
 
-        private static void ValidateDate(DateOnly date)
+        private void ValidateDate(DateOnly date)
         {
+            if (_loadingFromDatabase) return;
             if (date < DateOnly.FromDateTime(DateTime.Today))
                 throw new InvalidInputException("Date must be after today.");
         }

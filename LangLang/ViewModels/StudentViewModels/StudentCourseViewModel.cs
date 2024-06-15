@@ -21,6 +21,7 @@ public class StudentCourseViewModel : ViewModelBase
 
     private readonly ILanguageService _languageService = ServiceProvider.GetRequiredService<ILanguageService>();
     private readonly IStudentService _studentService = ServiceProvider.GetRequiredService<IStudentService>();
+    private readonly ICourseService _couseService = ServiceProvider.GetRequiredService<ICourseService>();
 
     private string? _selectedLanguageName;
     private string? _selectedLanguageLevel;
@@ -42,14 +43,14 @@ public class StudentCourseViewModel : ViewModelBase
         _applied = applied;
         
         _totalCourses = (applied
-            ? _studentService.GetAppliedCourses(_student.Id)
-            : _studentService.GetAvailableCourses(_student.Id)).Count;
+            ? _couseService.GetAppliedCourses(_student.Id)
+            : _couseService.GetAvailableCourses(_student.Id)).Count;
         CalculateTotalPages();
         
         AvailableCourses = new ObservableCollection<CourseViewModel>(
             (applied
-                ? _studentService.GetAppliedCourses(_student.Id, _currentPage, ItemsPerPage)
-                : _studentService.GetAvailableCourses(_student.Id, _currentPage, ItemsPerPage))
+                ? _couseService.GetAppliedCourses(_student.Id, _currentPage, ItemsPerPage)
+                : _couseService.GetAvailableCourses(_student.Id, _currentPage, ItemsPerPage))
             .Select(course => new CourseViewModel(course)));
         CoursesCollectionView = CollectionViewSource.GetDefaultView(AvailableCourses);
         CoursesCollectionView.Filter = FilterCourses;
@@ -157,7 +158,6 @@ public class StudentCourseViewModel : ViewModelBase
         }
     }
 
-    // TODO: CYCLO_SWITCH 6
     private bool FilterCourses(object obj)
     {
         if (obj is CourseViewModel courseViewModel)
@@ -238,7 +238,7 @@ public class StudentCourseViewModel : ViewModelBase
     private void RefreshCourses(bool applied)
     {
         AvailableCourses.Clear();
-        (applied ? _studentService.GetAppliedCourses(_student.Id, _currentPage, ItemsPerPage) : _studentService.GetAvailableCourses(_student.Id, _currentPage, ItemsPerPage))
+        (applied ? _couseService.GetAppliedCourses(_student.Id, _currentPage, ItemsPerPage) : _couseService.GetAvailableCourses(_student.Id, _currentPage, ItemsPerPage))
             .ForEach(course => AvailableCourses.Add(new CourseViewModel(course)));
         CoursesCollectionView.Refresh();
     }

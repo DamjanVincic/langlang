@@ -13,6 +13,8 @@ public interface ICourseService
     public List<Course> GetActiveCourses(int teacherId);
     public List<Course> GetFinishedCourses();
     public List<Course> GetCoursesWithWithdrawals(int teacherId);
+    public List<Course> GetAppliedCourses(int studentId, int pageIndex = 1, int? amount = null);
+    List<Course> GetAvailableCourses(int studentId, int pageIndex = 1, int? amount = null);
 
     public Course Add(string languageName, LanguageLevel languageLevel, int duration, List<Weekday> held,
         bool isOnline, int maxStudents, int? creatorId, TimeOnly scheduledTime, DateOnly startDate,

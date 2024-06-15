@@ -19,6 +19,7 @@ public class ExamService : IExamService
     private readonly IMessageService _messageService;
     
     public ExamService(IExamRepository examRepository, IUserRepository userRepository, IScheduleService scheduleService, ILanguageService languageService, IExamGradeRepository examGradeRepository, IMessageService messageService)
+
     {
         _examRepository = examRepository;
         _userRepository = userRepository;
@@ -26,6 +27,8 @@ public class ExamService : IExamService
         _languageService = languageService;
         _examGradeRepository = examGradeRepository;
         _messageService = messageService;
+        _languageRepository = languageRepository;
+
     }
 
     public List<Exam> GetAll()
@@ -37,23 +40,75 @@ public class ExamService : IExamService
     {
         return _examRepository.GetById(id);
     }
+    public List<Exam> GetAppliedExams(int studentId, int pageIndex = 1, int? amount = null)
+    {
+        Student student = (_userRepository.GetById(studentId) as Student)!;
 
+        var appliedExamIds = student.AppliedExams;
+
+        var appliedExams = _examRepository.GetAll()
+            .Where(exam => appliedExamIds.Contains(exam.Id))
+            .ToList();
+
+        amount ??= appliedExams.Count;
+
+        return appliedExams.Skip((pageIndex - 1) * amount.Value).Take(amount.Value).ToList();
+    }
+
+
+    /*
+     1. student must have finished course for the language he wants to take exam in
+     2. exam must have at least one available spot for student
+     3. search date must be at least 30 days before the date the exam is held
+     */
+    public List<Exam> GetAvailableExams(int studentId, int pageIndex = 1, int? amount = null)
+    {
+        // Nakon što je učenik završio kurs, prikazuju mu se svi dostupni termini ispita koji se
+        // odnose na jezik i nivo jezika koji je učenik obradio na kursu
+
+        Student student = (_userRepository.GetById(studentId) as Student)!;
+
+        List<Exam> exams = _examRepository.GetAll().Where(exam =>
+                            exam.StudentIds.Count < exam.MaxStudents && IsNeededCourseFinished(exam, student) &&
+                            (exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days >= 30 &&
+                            !IsAlreadyPassed(exam, student) &&
+                            !student.AppliedExams.Contains(exam.Id)).ToList();
+
+        amount ??= exams.Count;
+
+        return exams.Skip((pageIndex - 1) * amount.Value).Take(amount.Value).ToList();
+    }
+
+    /*
+    if language from that course is in the dict than student has finished that course
+    if its in the dict and it has value true then student passed exam, if its false he didnt pass it yet
+    */
+    // TODO: MNOC 3
+    private bool IsNeededCourseFinished(Exam exam, Student student)
+    {
+        return student.LanguagePassFail.ContainsKey(exam.Language.Id) &&
+               student.LanguagePassFail[exam.Language.Id] == false;
+    }
+
+    private bool IsAlreadyPassed(Exam exam, Student student)
+    {
+        foreach (int languageId in student.LanguagePassFail.Keys)
+        {
+            Language language = _languageRepository.GetById(languageId)!;
+            if (language.Name == exam.Language.Name && language.Level >= exam.Language.Level &&
+                student.LanguagePassFail[languageId])
+                return true;
+        }
+
+        return false;
+    }
     public Exam Add(string? languageName, LanguageLevel languageLevel, int maxStudents, DateOnly examDate, int? teacherId,
         TimeOnly examTime)
     {
         Teacher? teacher = null;
-        User user = _userRepository.GetById(teacherId!.Value)!;
-
         // zbog smart picka, ako je id direktora onda ce se promeniti u narenih par funkcija na validan id nastavnika
-        if (user is Teacher)
-        {
-            teacher = (Teacher)user;
-        }
-        else if (user is not Director)
-        {
-            throw new InvalidInputException("User doesn't exist.");
-        }
-
+        if (teacherId != null)
+            teacher = GetTeacherOrThrow(teacherId.Value);
         Language language = _languageService.GetLanguage(languageName, languageLevel) ??
                             throw new InvalidInputException("Language with the given level doesn't exist.");
 
@@ -76,17 +131,16 @@ public class ExamService : IExamService
     // TODO: MELOC 21, CYCLO_SWITCH 6, NOP 7, MNOC 5 
     public void Update(int id, int maxStudents, DateOnly date,
         int? teacherId, TimeOnly scheduledTime)
-    {
-        // TODO: Decide which information should be updated
 
-        Exam exam = _examRepository.GetById(id) ?? throw new InvalidInputException("Exam doesn't exist.");
+    {
+        Exam exam = GetExamOrThrow(id);
 
         if ((exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days < 14)
             throw new InvalidInputException("The exam can't be changed if it's less than 2 weeks from now.");
 
         Teacher? teacher = null;
         if (teacherId.HasValue)
-            teacher = _userRepository.GetById(teacherId.Value) as Teacher ?? throw new InvalidInputException("User doesn't exist.");;
+            teacher = GetTeacherOrThrow(teacherId.Value);
 
         int? oldTeacherId = exam.TeacherId;
         
@@ -97,8 +151,10 @@ public class ExamService : IExamService
 
         // Validates if it can be added to the current schedule
         _scheduleService.Update(exam);
-        
-        Teacher? oldTeacher = oldTeacherId.HasValue ? _userRepository.GetById(oldTeacherId.Value) as Teacher : null;
+
+        Teacher? oldTeacher = null;
+        if (oldTeacherId.HasValue)
+            oldTeacher = GetTeacherOrThrow(oldTeacherId.Value);
 
         if (oldTeacher is not null)
         {
@@ -117,11 +173,10 @@ public class ExamService : IExamService
 
     public void Delete(int id)
     {
-        // TODO: Delete from schedule, students etc.
-
-        Exam exam = _examRepository.GetById(id) ?? throw new InvalidInputException("Exam doesn't exist.");
-        Teacher? teacher = exam.TeacherId.HasValue ? _userRepository.GetById(exam.TeacherId.Value) as Teacher ?? 
-            throw new InvalidInputException("Teacher doesn't exist.") : null;
+        Exam exam = GetExamOrThrow(id);
+        Teacher? teacher = null;
+        if (exam.TeacherId.HasValue)
+            teacher = GetTeacherOrThrow(exam.TeacherId.Value);
 
         if (teacher is not null)
         {
@@ -142,7 +197,7 @@ public class ExamService : IExamService
 
     public void ConfirmExam(int examId)
     {
-        Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
+        Exam exam = GetExamOrThrow(examId);
         exam.Confirmed = true;
         _examRepository.Update(exam);
     }
@@ -156,15 +211,13 @@ public class ExamService : IExamService
         return students;
     }
 
-    // TODO: CYCLO_SWITCH 6,  MNOC 3
     public List<Exam> GetStartableExams(int teacherId)
     {
-        Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
-                          throw new InvalidInputException("User doesn't exist.");
+        Teacher teacher = GetTeacherOrThrow(teacherId);
         List<Exam> startableExams = new();
         foreach (int examId in teacher.ExamIds)
         {
-            Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
+            Exam exam = GetExamOrThrow(examId);
             if ((exam.Date.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days <= 7 &&
                 !exam.Confirmed)
             {
@@ -177,18 +230,16 @@ public class ExamService : IExamService
 
     public int GetCurrentExam(int teacherId)
     {
-        Teacher teacher = _userRepository.GetById(teacherId) as Teacher ??
-                          throw new InvalidInputException("User doesn't exist.");
+        Teacher teacher = GetTeacherOrThrow(teacherId);
         foreach (int examId in teacher.ExamIds)
         {
-            Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
+
+            Exam exam = GetExamOrThrow(examId);
 
             double timeDifference = (DateTime.Now - exam.Date.ToDateTime(exam.ScheduledTime)).TotalMinutes;
 
             if (timeDifference >= 0 && timeDifference < Exam.ExamDuration)
-            {
                 return exam.Id;
-            }
         }
 
         throw new InvalidInputException("There are currently no exams");
@@ -196,7 +247,7 @@ public class ExamService : IExamService
 
     public void FinishExam(int examId)
     {
-        Exam exam = _examRepository.GetById(examId) ?? throw new InvalidInputException("Exam doesn't exist.");
+        Exam exam = GetExamOrThrow(examId);
         CheckGrades(exam);
 
         exam.TeacherGraded = true;
@@ -254,5 +305,19 @@ public class ExamService : IExamService
             _messageService.Add(examGrade.StudentId, passedText+pointsText);
             EmailService.SendMessage("Exam results",passedText+pointsText);
         }
+    }
+    private Teacher GetTeacherOrThrow(int teacherId)
+    {
+        Teacher? teacher = _userRepository.GetById(teacherId) as Teacher;
+        if (teacher == null)
+            throw new InvalidInputException("User doesn't exist.");
+        return teacher;
+    }
+    private Exam GetExamOrThrow(int examId)
+    {
+        Exam? exam = _examRepository.GetById(examId);
+        if (exam == null)
+            throw new InvalidInputException("Exam doesn't exist.");
+        return exam;
     }
 }

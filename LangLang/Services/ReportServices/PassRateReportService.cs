@@ -7,29 +7,21 @@ using LangLang.Models;
 using OxyPlot.Series;
 using OxyPlot.Axes;
 using OxyPlot;
-using System.Windows.Markup;
-using PdfSharp.Pdf.IO;
-using PdfSharp.Pdf;
-using System.Text;
 
 namespace LangLang.Services.ReportServices
 {
-    public class PassRateReportService : IPassRateReportService
+    public class PassRateReportService : ReportService
     {
 
-        private readonly IExamRepository _examRepository;
-        private readonly IExamGradeService _examGradeService;
-        private readonly ICourseService _courseService;
-        private readonly ICourseGradeService _courseGradeService;
+        private readonly IExamRepository _examRepository = ServiceProvider.GetRequiredService<IExamRepository>();
+        private readonly IExamGradeService _examGradeService = ServiceProvider.GetRequiredService<IExamGradeService>();
+        private readonly ICourseService _courseService = ServiceProvider.GetRequiredService<ICourseService>();
+        private readonly ICourseGradeService _courseGradeService = ServiceProvider.GetRequiredService<ICourseGradeService>();
+
         private const string ReportsFolderName = "Reports";
         private const string PassRateReportSubfolder = "PassRateReports";
-        public PassRateReportService(IExamRepository examRepository, IExamGradeService examGradeService,ICourseService courseService, ICourseGradeService courseGradeService) {
-            _examRepository = examRepository;
-            _examGradeService = examGradeService;
-            _courseService = courseService;
-            _courseGradeService = courseGradeService;
-        }
-        public void GeneratePointsPassRateReport()
+        public PassRateReportService() {}
+        public override void GenerateReport()
         {
             Directory.CreateDirectory(Path.Combine(ReportsFolderName, PassRateReportSubfolder));
 
@@ -146,19 +138,13 @@ namespace LangLang.Services.ReportServices
             return result;
         }
 
-        private static void SaveToPdf(PlotModel plotModel, string filePath)
-        {
-            using var stream = File.Create(filePath);
-            var pdfExporter = new PdfExporter { Width = 600, Height = 400 };
-            pdfExporter.Export(plotModel, stream);
-        }
         /*
       Prosečan broj poena ostvaren na svakom od delova svih ispita u poslednjih
       godinu dana. 
       Koliko je studenata slušalo kurs, a koliko položilo, pored toga
       navesti i procenat studenata koji je položio u odnosu na one koje je slušao
   */
-        public List<double> AveragePointsInLastYear()
+        private List<double> AveragePointsInLastYear()
         {
             List<double> sumOfPoints = new List<double> { 0.0, 0.0, 0.0, 0.0 };
             int gradeCount = 0;
@@ -190,25 +176,6 @@ namespace LangLang.Services.ReportServices
 
             return sumOfPoints;
         }
-        private static void MergePdf(string outputFilePath, string[] inputFilePaths)
-        {
-            PdfDocument outputPdfDocument = new PdfDocument();
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            foreach (string filePath in inputFilePaths)
-            {
-                PdfDocument inputPdfDocument = PdfReader.Open(filePath, PdfDocumentOpenMode.Import);
-                outputPdfDocument.Version = inputPdfDocument.Version;
-                foreach (PdfPage page in inputPdfDocument.Pages)
-                {
-                    outputPdfDocument.AddPage(page);
-                }
-            }
-            outputPdfDocument.Save(outputFilePath);
-
-            foreach (string filePath in inputFilePaths)
-            {
-                File.Delete(filePath);
-            }
-        }
+        
     }
 }

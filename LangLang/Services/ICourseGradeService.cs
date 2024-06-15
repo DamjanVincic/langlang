@@ -10,6 +10,8 @@ namespace LangLang.Services
         public CourseGrade? GetByStudentAndCourse(int studentId, int courseId);
         public List<CourseGrade> GetByCourseId(int courseId);
         public int Add(int courseId, int studentId, int knowledgeGrade, int activityGrade);
+        public void AddCourseGrade(int studentId, int courseId, int knowledgeGrade, int activityGrade);
+
         public void Delete(int id);
     }
 }

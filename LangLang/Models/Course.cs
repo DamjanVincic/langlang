@@ -12,6 +12,14 @@ namespace LangLang.Models
         private int _duration;
         private List<Weekday> _held = null!;
 
+        private readonly bool _loadingFromDatabase;
+
+        public Course()
+        {
+            // Only Entity Framework uses empty constructor
+            _loadingFromDatabase = true;
+        }
+
         public Course(Language language, int duration, List<Weekday> held, bool isOnline, int maxStudents,
             int? creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed,
             int? teacherId) : base(language, maxStudents, startDate, teacherId, scheduledTime)
@@ -76,6 +84,7 @@ namespace LangLang.Models
 
         [TableItem(10)]
         public new bool IsOnline { get; set; }
+
         [TableItem(11)]
         public bool IsFinished { get; set; } = false;
 
@@ -85,7 +94,6 @@ namespace LangLang.Models
 
         [TableItem(13)]
         public int? CreatorId { get; set; }
-
 
         public DateOnly StartDate
         {
@@ -110,8 +118,9 @@ namespace LangLang.Models
         [TableItem(14)]
         public Dictionary<int, string> DropOutRequests { get; } = new();
 
-        private static void ValidateDate(DateOnly startDate)
+        private void ValidateDate(DateOnly startDate)
         {
+            if (_loadingFromDatabase) return;
             if ((startDate.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days < 7)
                 throw new InvalidInputException("The course has to be at least 7 days from now.");
         }
