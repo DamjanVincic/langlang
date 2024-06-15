@@ -20,7 +20,6 @@ public class ExamService : IExamService
     private readonly IMessageService _messageService;
     
     public ExamService(IExamRepository examRepository, IUserRepository userRepository, IScheduleService scheduleService, ILanguageService languageService, IExamGradeRepository examGradeRepository, IMessageService messageService)
-
     {
         _examRepository = examRepository;
         _userRepository = userRepository;
@@ -28,8 +27,6 @@ public class ExamService : IExamService
         _languageService = languageService;
         _examGradeRepository = examGradeRepository;
         _messageService = messageService;
-        _languageRepository = languageRepository;
-
     }
 
     public List<Exam> GetAll()
@@ -95,7 +92,7 @@ public class ExamService : IExamService
     {
         foreach (int languageId in student.LanguagePassFail.Keys)
         {
-            Language language = _languageRepository.GetById(languageId)!;
+            Language language = _languageService.GetById(languageId)!;
             if (language.Name == exam.Language.Name && language.Level >= exam.Language.Level &&
                 student.LanguagePassFail[languageId])
                 return true;
