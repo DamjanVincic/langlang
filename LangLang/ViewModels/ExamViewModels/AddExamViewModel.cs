@@ -22,7 +22,7 @@ namespace LangLang.ViewModels.ExamViewModels
 
         private readonly Exam? _exam;
 
-        private readonly User _loggedIn = UserService.LoggedInUser;
+        private readonly User _loggedIn = UserService.LoggedInUser!;
 
         private readonly Window _addExamWindow;
 
@@ -65,13 +65,13 @@ namespace LangLang.ViewModels.ExamViewModels
         public int HourSelected { get; set; }
         public int MinuteSelected { get; set; }
 
-        public IEnumerable<LanguageLevel> LanguageLevelValues =>
+        public static IEnumerable<LanguageLevel> LanguageLevelValues =>
             Enum.GetValues(typeof(LanguageLevel)).Cast<LanguageLevel>();
 
-        public List<int> Hours => new()
+        public static List<int> Hours => new()
             { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24 };
 
-        public List<int> Minutes => new() { 0, 15, 30, 45 };
+        public static List<int> Minutes => new() { 0, 15, 30, 45 };
 
         public ICommand EnterExamCommand { get; }
 
@@ -89,7 +89,7 @@ namespace LangLang.ViewModels.ExamViewModels
                         exam.TeacherId = teacherId;
                         Language language = _languageService.GetLanguage(exam.Language.Name, exam.Language.Level) ??
                     throw new InvalidInputException("Language with the given level doesn't exist.");
-                        _examService.Update(exam.Id, language, exam.MaxStudents, exam.Date, exam.TeacherId, exam.ScheduledTime);
+                        _examService.Update(exam.Id, exam.MaxStudents, exam.Date, exam.TeacherId, exam.ScheduledTime);
                     }
                     else
                     {
@@ -104,7 +104,7 @@ namespace LangLang.ViewModels.ExamViewModels
                     Language language = _languageService.GetLanguage(Name!, LanguageLevel) ??
                     throw new InvalidInputException("Language with the given level doesn't exist.");
 
-                    _examService.Update(_exam.Id, language, MaxStudents, ExamDate, _loggedIn.Id,
+                    _examService.Update(_exam.Id, MaxStudents, ExamDate, _loggedIn.Id,
                         new TimeOnly(HourSelected, MinuteSelected));
 
                     MessageBox.Show("Exam edited successfully.", "Success", MessageBoxButton.OK,

@@ -124,10 +124,10 @@ public class TeacherService : ITeacherService
 
     public List<Teacher> GetAvailableTeachers(Course course)
     {
-        List<Teacher> availableTeachers = new List<Teacher>();
+        List<Teacher> availableTeachers = new();
         foreach (Teacher teacher_ in GetAll())
         {
-            Course tempCourse = new Course(course.Language, course.Duration, course.Held, true,
+            Course tempCourse = new(course.Language, course.Duration, course.Held, true,
                 course.MaxStudents, course.CreatorId, course.ScheduledTime, course.StartDate,
                 course.AreApplicationsClosed, teacher_.Id);
 
@@ -141,10 +141,10 @@ public class TeacherService : ITeacherService
     }
     public List<Teacher> GetAvailableTeachers(Exam exam)
     {
-        List<Teacher> availableTeachers = new List<Teacher>();
+        List<Teacher> availableTeachers = new();
         foreach (Teacher teacher_ in GetAll())
         {
-            Exam tempExam = new Exam(exam.Language, exam.MaxStudents, exam.Date, teacher_.Id, exam.ScheduledTime);
+            Exam tempExam = new(exam.Language, exam.MaxStudents, exam.Date, teacher_.Id, exam.ScheduledTime);
 
             if (_scheduleService.ValidateScheduleItem(tempExam, true))
             {
@@ -278,7 +278,7 @@ public class TeacherService : ITeacherService
         Language language = _languageService.GetLanguage(exam.Language.Name, exam.Language.Level) ??
                     throw new InvalidInputException("Language with the given level doesn't exist.");
 
-        _examService.Update(exam.Id, language ,exam.MaxStudents, exam.Date, exam.TeacherId, exam.ScheduledTime);
+        _examService.Update(exam.Id ,exam.MaxStudents, exam.Date, exam.TeacherId, exam.ScheduledTime);
         return exam.TeacherId;
     }
 }
