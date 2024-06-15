@@ -6,7 +6,6 @@ using LangLang.Repositories;
 using LangLang.Repositories.FileRepositories;
 using LangLang.Repositories.PostgresRepositories;
 using LangLang.Services;
-using LangLang.Services.ReportServices;
 using LangLang.ViewModels.CourseViewModels;
 using LangLang.ViewModels.DirectorViewModels;
 using LangLang.ViewModels.ExamViewModels;

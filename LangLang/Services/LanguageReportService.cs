@@ -1,17 +1,17 @@
-﻿using LangLang.Models;
-using LangLang.Repositories;
-using OxyPlot.Axes;
-using OxyPlot.Series;
-using OxyPlot;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using LangLang.Models;
+using LangLang.Repositories;
+using OxyPlot;
+using OxyPlot.Axes;
+using OxyPlot.Series;
 using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
 
-namespace LangLang.Services.ReportServices
+namespace LangLang.Services
 {
     internal class LanguageReportService: ReportService
     {
