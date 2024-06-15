@@ -82,11 +82,9 @@ namespace LangLang.FormTable
                 string option = Console.ReadLine()!;
                 switch (option)
                 {
-                    // radi
                     case "1":
                         new FormTableGenerator<Exam>(examService.GetAll(), examService).Create(user!);
                         break;
-                    // radi
                     case "2":
                         new FormTableGenerator<Exam>(examService.GetAll(), examService).ShowTable();
                         break;
@@ -109,7 +107,6 @@ namespace LangLang.FormTable
                         Exam item = new FormTableGenerator<Exam>(examService.GetAll(), examService).GetById(id);
                         new FormTableGenerator<Exam>(examService.GetAll(), examService).Update(item);
                         break;
-                    // radi
                     case "4":
                         while (true)
                         {
@@ -127,11 +124,9 @@ namespace LangLang.FormTable
                         }
                         new FormTableGenerator<Exam>(examService.GetAll(), examService).Delete(id);
                         break;
-                    // radi
                     case "5":
                         new FormTableGenerator<Course>(courseService.GetAll(), courseService).Create(user!);
                         break;
-                    // radi
                     case "6":
                         new FormTableGenerator<Course>(courseService.GetAll(), courseService).ShowTable();
                         break;
@@ -153,7 +148,6 @@ namespace LangLang.FormTable
                         Course course = new FormTableGenerator<Course>(courseService.GetAll(), courseService).GetById(id);
                         new FormTableGenerator<Course>(courseService.GetAll(), courseService).Update(course);
                         break;
-                    // radi
                     case "8":
                         while (true)
                         {
@@ -198,11 +192,9 @@ namespace LangLang.FormTable
                 string option = Console.ReadLine()!;
                 switch (option)
                 {
-                    // radi
                     case "1":
                         new FormTableGenerator<Teacher>(teacherService.GetAll(),userService).Create(user!);
                         break;
-                    // radi
                     case "2":
                         new FormTableGenerator<Teacher>(teacherService.GetAll(), teacherService).ShowTable();
                         break;
@@ -225,7 +217,6 @@ namespace LangLang.FormTable
                         Teacher teacher = new FormTableGenerator<Teacher>(teacherService.GetAll(), userService).GetById(id);
                         new FormTableGenerator<Teacher>(teacherService.GetAll(), userService).Update(teacher);
                         break;
-                    // radi
                     case "4":
                         while (true)
                         {
@@ -243,12 +234,10 @@ namespace LangLang.FormTable
                         }
                         new FormTableGenerator<User>(userService.GetAll(), userService).Delete(id);
                         break;
-                    // tehnicki radi, resiti problem creatorId = teacherId
                     case "5":
                         object exam = new FormTableGenerator<Exam>(examService.GetAll(), examService).Create(user!);
                         new FormTableGenerator<Teacher>(teacherService.GetAll(), teacherService).SmartPick(exam);
                         break;
-                    // radi
                     case "6":
                         object item = new FormTableGenerator<Course>(courseService.GetAll(), courseService).Create(user!);
                         new FormTableGenerator<Teacher>(teacherService.GetAll(), teacherService).SmartPick(item);
