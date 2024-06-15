@@ -9,4 +9,5 @@ public interface ILanguageService
     public List<string> GetAllNames();
     public Language? GetLanguage(string? name, LanguageLevel level);
     public void Add(string name, LanguageLevel level);
+    public Language? GetById(int id);
 }

@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using LangLang.FormTable;
+using LangLang.Services;
 using Newtonsoft.Json;
 
 namespace LangLang.Models
@@ -7,9 +10,11 @@ namespace LangLang.Models
     public class Teacher : User
     {
         [JsonProperty]
+        [TableItem(13)]
         public int TotalRating { get; set; }
         
         [JsonProperty]
+        [TableItem(12)]
         public int NumberOfReviews { get; set; }
 
         public Teacher(string? firstName, string? lastName, string? email, string? password, Gender gender, string? phone,
@@ -23,10 +28,14 @@ namespace LangLang.Models
         {
         }
 
+        [TableItem(10)]
         public List<Language> Qualifications { get; set; } = new();
 
+        [TableItem(11)]
         public DateOnly DateCreated { get; }
+        [TableItem(9)]
         public List<int> CourseIds { get; } = new();
+        [TableItem(8)]
         public List<int> ExamIds { get; } = new();
         
         public double Rating => (double)TotalRating / NumberOfReviews;

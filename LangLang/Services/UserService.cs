@@ -36,7 +36,6 @@ public class UserService : IUserService
         return _userRepository.GetById(id);
     }
 
-    // TODO: NOP 8
     public void Add(string? firstName, string? lastName, string? email, string? password, Gender gender, string? phone,
         Education? education = null, List<Language>? languages = null)
     {
@@ -51,7 +50,6 @@ public class UserService : IUserService
             throw new InvalidInputException("Invalid input");
     }
 
-    // TODO: MELOC 22, CYCLO_SWITCH 8, NOP 9, MNOC 5
     public void Update(int id, string firstName, string lastName, string password, Gender gender, string phone,
         Education? education = null, List<Language>? languages = null, int penaltyPoints = -1)
     {

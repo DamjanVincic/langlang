@@ -6,7 +6,6 @@ using LangLang.Repositories;
 using LangLang.Repositories.FileRepositories;
 using LangLang.Repositories.PostgresRepositories;
 using LangLang.Services;
-using LangLang.Services.ReportServices;
 using LangLang.ViewModels.CourseViewModels;
 using LangLang.ViewModels.DirectorViewModels;
 using LangLang.ViewModels.ExamViewModels;
@@ -69,9 +68,6 @@ namespace LangLang
             services.AddScoped<IStudentService, StudentService>();
             services.AddScoped<ITeacherService, TeacherService>();
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IGradeReportService, GradeReportService>();
-            services.AddScoped<IPassRateReportService, PassRateReportService>();
-            services.AddScoped<ILanguageReportService, LanguageReportService>();
 
             services.AddTransient<MainWindow>();
             services.AddTransient<ActiveCoursesViewModel>();

@@ -1,32 +1,27 @@
-﻿using LangLang.Repositories;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using LangLang.Models;
-using OxyPlot.Series;
-using OxyPlot.Axes;
+using LangLang.Repositories;
 using OxyPlot;
+using OxyPlot.Axes;
+using OxyPlot.Series;
 
-
-namespace LangLang.Services.ReportServices
+namespace LangLang.Services
 {
-    public class GradeReportService : IGradeReportService
+    public class GradeReportService : ReportService
     {
-        private readonly ICourseRepository _courseRepository;
-        private readonly ITeacherService _teacherService;
-        private readonly ICourseGradeRepository _courseGradeRepository;
+        private readonly ITeacherService _teacherService = ServiceProvider.GetRequiredService<ITeacherService>();
+        private readonly ICourseRepository _courseRepository = ServiceProvider.GetRequiredService<ICourseRepository>();
+        private readonly ICourseGradeRepository _courseGradeRepository = ServiceProvider.GetRequiredService<ICourseGradeRepository>();
+
 
         private const string ReportsFolderName = "Reports";
         private const string GradeReportSubfolder = "GradeReports";
-        public GradeReportService(ICourseRepository courseRepository, ITeacherService teacherService, ICourseGradeRepository courseGradeRepository)
-        {
-            _courseRepository = courseRepository;
-            _teacherService = teacherService;
-            _courseGradeRepository = courseGradeRepository;
-        }
+        public GradeReportService() { }
 
-        public void GenerateGradeReport()
+        public override void GenerateReport()
         {
             Directory.CreateDirectory(Path.Combine(ReportsFolderName, GradeReportSubfolder));
 
@@ -73,7 +68,7 @@ namespace LangLang.Services.ReportServices
             }
 
             return gradeNums > 0
-                ? new List<double> { knowledgeGradeSum / gradeNums, activityGradeSum / gradeNums }
+                ? new List<double> { (double)knowledgeGradeSum / gradeNums, (double)activityGradeSum / gradeNums }
                 : new List<double> { 0, 0 };
         }
 
@@ -100,13 +95,6 @@ namespace LangLang.Services.ReportServices
             model.Axes.Add(new LinearAxis { Position = AxisPosition.Left, Title = "Average" });
 
             return model;
-        }
-
-        private static void SaveToPdf(PlotModel plotModel, string filePath)
-        {
-            using var stream = File.Create(filePath);
-            var pdfExporter = new PdfExporter { Width = 600, Height = 400 };
-            pdfExporter.Export(plotModel, stream);
         }
     }
 }

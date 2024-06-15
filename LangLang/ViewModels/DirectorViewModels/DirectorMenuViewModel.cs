@@ -6,9 +6,7 @@ using LangLang.Models;
 using LangLang.Repositories;
 using LangLang.Services;
 using LangLang.Views.CourseViews;
-using LangLang.Services.ReportServices;
 using LangLang.Views.DirectorViews;
-using LangLang.Views.ExamViews;
 
 namespace LangLang.ViewModels.DirectorViewModels
 {
@@ -17,11 +15,7 @@ namespace LangLang.ViewModels.DirectorViewModels
         private readonly Director _director = UserService.LoggedInUser as Director ?? throw new InvalidInputException("No one is logged in.");
         private readonly Window _directorViewWindow;
 
-        private readonly IGradeReportService _gradeReportService =  ServiceProvider.GetRequiredService<IGradeReportService>();
-        private readonly IPassRateReportService _passRateReportService = ServiceProvider.GetRequiredService<IPassRateReportService>();
-        private readonly ILanguageReportService _languageReportService = ServiceProvider.GetRequiredService<ILanguageReportService>();
         private readonly IUserService _userService = ServiceProvider.GetRequiredService<IUserService>();
-        private readonly IDirectorService _directorService = ServiceProvider.GetRequiredService<IDirectorService>();
         
         public DirectorMenuViewModel(Window directorViewWindow)
         {
@@ -62,7 +56,6 @@ namespace LangLang.ViewModels.DirectorViewModels
             var teachersView = new TeacherListingView();
             teachersView.Show();
         }
-        
         private void SendOutGrades()
         {
             var sendGradesView = new GradedExams();
@@ -71,8 +64,7 @@ namespace LangLang.ViewModels.DirectorViewModels
 
         private void ViewExams()
         {
-            var examView = new AddExamView();
-            examView.Show();
+
         }
         private void ViewCourses()
         {
@@ -82,14 +74,16 @@ namespace LangLang.ViewModels.DirectorViewModels
 
         private void GeneratePenaltyPointReport()
         {
-            _directorService.GeneratePenaltyReport();
+            ReportService reportService = new PenaltyPointReportService();
+            reportService.GenerateReport();
             MessageBox.Show("Penalty report generated.");
         }
         private void GenerateGradeReport()
         {
             try
             {
-                _gradeReportService.GenerateGradeReport();
+                ReportService reportService = new GradeReportService();
+                reportService.GenerateReport();
                 MessageBox.Show("Report sent successfully.", "Success", MessageBoxButton.OK,
                     MessageBoxImage.Information);
             }
@@ -100,13 +94,15 @@ namespace LangLang.ViewModels.DirectorViewModels
         }
         private void GeneratePointReport()
         {
-            _passRateReportService.GeneratePointsPassRateReport();
+            ReportService reportService = new PassRateReportService();
+            reportService.GenerateReport();
         }
         private void GenerateLanguageReport()
         {
             try
             {
-                _languageReportService.GenerateLanguageReport();
+                ReportService reportService = new LanguageReportService();
+                reportService.GenerateReport();
                 MessageBox.Show("Report sent successfully.", "Success", MessageBoxButton.OK,
                     MessageBoxImage.Information);
             }
