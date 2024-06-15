@@ -6,7 +6,6 @@ using LangLang.Models;
 using LangLang.Repositories;
 using LangLang.Services;
 using LangLang.Views.CourseViews;
-using LangLang.Services.ReportServices;
 using LangLang.Views.DirectorViews;
 
 namespace LangLang.ViewModels.DirectorViewModels

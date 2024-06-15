@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows.Input;
 using LangLang.Models;
 using LangLang.Repositories;
+using Microsoft.VisualBasic.Devices;
 
 namespace LangLang.Services;
 
@@ -19,7 +20,6 @@ public class ExamService : IExamService
     private readonly IMessageService _messageService;
     
     public ExamService(IExamRepository examRepository, IUserRepository userRepository, IScheduleService scheduleService, ILanguageService languageService, IExamGradeRepository examGradeRepository, IMessageService messageService)
-
     {
         _examRepository = examRepository;
         _userRepository = userRepository;
@@ -27,8 +27,6 @@ public class ExamService : IExamService
         _languageService = languageService;
         _examGradeRepository = examGradeRepository;
         _messageService = messageService;
-        _languageRepository = languageRepository;
-
     }
 
     public List<Exam> GetAll()
@@ -94,7 +92,7 @@ public class ExamService : IExamService
     {
         foreach (int languageId in student.LanguagePassFail.Keys)
         {
-            Language language = _languageRepository.GetById(languageId)!;
+            Language language = _languageService.GetById(languageId)!;
             if (language.Name == exam.Language.Name && language.Level >= exam.Language.Level &&
                 student.LanguagePassFail[languageId])
                 return true;
@@ -113,19 +111,27 @@ public class ExamService : IExamService
                             throw new InvalidInputException("Language with the given level doesn't exist.");
 
 
-        Exam exam = new(language, maxStudents, examDate, teacherId, examTime)
-        { Id = _examRepository.GenerateId() };
-
-
-        _scheduleService.Add(exam);
-        _examRepository.Add(exam);
+        Exam addedExam = new(0,language, maxStudents, examDate, teacherId, examTime);
+        
+        addedExam = _examRepository.Add(addedExam);
+        try
+        {
+            // If the exam can't be scheduled, delete it
+            _scheduleService.Add(addedExam);
+        }
+        catch (InvalidInputException ex)
+        {
+            _examRepository.Delete(addedExam.Id);
+            throw ex;
+        }
 
         if (teacher != null)
         {
-            teacher.ExamIds.Add(exam.Id);
+            teacher.ExamIds.Add(addedExam.Id);
             _userRepository.Update(teacher);
         }
-        return exam;
+
+        return addedExam;
     }
 
     // TODO: MELOC 21, CYCLO_SWITCH 6, NOP 7, MNOC 5 

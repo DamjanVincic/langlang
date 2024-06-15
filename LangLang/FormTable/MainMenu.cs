@@ -1,8 +1,8 @@
 ﻿using System;
 using LangLang.Models;
 using LangLang.Repositories;
+using LangLang.Repositories.FileRepositories;
 using LangLang.Services;
-using LangLang.Services.ReportServices;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LangLang.FormTable
@@ -278,9 +278,6 @@ namespace LangLang.FormTable
             services.AddScoped<IStudentService, StudentService>();
             services.AddScoped<ITeacherService, TeacherService>();
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IGradeReportService, GradeReportService>();
-            services.AddScoped<IPassRateReportService, PassRateReportService>();
-            services.AddScoped<ILanguageReportService, LanguageReportService>();
         }
     }
 }

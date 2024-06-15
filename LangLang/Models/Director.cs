@@ -6,5 +6,9 @@
             base(firstName, lastName, email, password, gender, phone)
         {
         }
+
+        public Director()
+        {
+        }
     }
 }

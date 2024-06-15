@@ -24,6 +24,9 @@ namespace LangLang.Models
         {
         }
 
+        public Exam()
+        {
+        }
 
         [TableItem(8)]
         public bool TeacherGraded { get; set; }

@@ -134,9 +134,10 @@ public class CourseService : ICourseService
             // If the course can't be scheduled, delete it
             _scheduleService.Add(addedCourse);
         }
-        catch (InvalidInputException)
+        catch (InvalidInputException ex)
         {
             _courseRepository.Delete(addedCourse.Id);
+            throw ex;
         }
 
         if (teacher != null)

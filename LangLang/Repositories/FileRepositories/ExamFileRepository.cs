@@ -4,7 +4,7 @@ using System.Linq;
 using LangLang.Models;
 using Newtonsoft.Json;
 
-namespace LangLang.Repositories;
+namespace LangLang.Repositories.FileRepositories;
 
 public class ExamFileRepository : IExamRepository
 {
@@ -26,20 +26,21 @@ public class ExamFileRepository : IExamRepository
         _exams.TryGetValue(id, out var exam);
         return exam;
     }
-    
+
     public int GenerateId()
     {
         LoadData();
         return _idCounter++;
     }
 
-    public void Add(Exam exam)
+    public Exam Add(Exam exam)
     {
         LoadData();
         if (exam.Id == 0)
             exam.Id = _idCounter++;
         _exams.Add(exam.Id, exam);
         SaveData();
+        return exam;
     }
 
     public void Update(Exam exam)

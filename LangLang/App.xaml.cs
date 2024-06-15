@@ -3,8 +3,9 @@ using System.Linq;
 using System.Windows;
 using LangLang.Models;
 using LangLang.Repositories;
+using LangLang.Repositories.FileRepositories;
+using LangLang.Repositories.PostgresRepositories;
 using LangLang.Services;
-using LangLang.Services.ReportServices;
 using LangLang.ViewModels.CourseViewModels;
 using LangLang.ViewModels.DirectorViewModels;
 using LangLang.ViewModels.ExamViewModels;
@@ -55,7 +56,7 @@ namespace LangLang
             ConfigureFileRepositories(services);
             
             // TODO: Uncomment this line to use the database
-            // ConfigureDatabaseRepositories(services);
+            //ConfigureDatabaseRepositories(services);
 
             services.AddScoped<ICourseGradeService, CourseGradeService>();
             services.AddScoped<ICourseService, CourseService>();
@@ -108,6 +109,8 @@ namespace LangLang
             
             services.AddScoped<ICourseRepository, CoursePostgresRepository>();
             services.AddScoped<ILanguageRepository, LanguagePostgresRepository>();
+            services.AddScoped<IUserRepository, UserPostgresRepository>();
+            services.AddScoped<IExamRepository, ExamPostgresRepository>();
         }
     }
 }

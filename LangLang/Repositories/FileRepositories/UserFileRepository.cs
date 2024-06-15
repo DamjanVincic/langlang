@@ -4,7 +4,7 @@ using System.Linq;
 using LangLang.Models;
 using Newtonsoft.Json;
 
-namespace LangLang.Repositories;
+namespace LangLang.Repositories.FileRepositories;
 
 public class UserFileRepository : IUserRepository
 {

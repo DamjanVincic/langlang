@@ -1,21 +1,24 @@
-﻿using LangLang.Models;
-using LangLang.Repositories;
-using OxyPlot.Axes;
-using OxyPlot.Series;
-using OxyPlot;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
+using LangLang.Models;
+using LangLang.Repositories;
+using OxyPlot;
+using OxyPlot.Axes;
+using OxyPlot.Series;
+using PdfSharp.Pdf;
+using PdfSharp.Pdf.IO;
 
-namespace LangLang.Services.ReportServices
+namespace LangLang.Services
 {
     internal class LanguageReportService: ReportService
     {
         private const string ReportsFolderName = "Reports";
         private const string LanguageReportSubfolder = "LanguageReports";
 
-        private readonly IExamRepository _examRepository;
+        private readonly IExamRepository _examRepository = ServiceProvider.GetRequiredService<IExamRepository>();
         private readonly ILanguageRepository _languageRepository = ServiceProvider.GetRequiredService<ILanguageRepository>();
         private readonly IExamGradeRepository _examGradeRepository = ServiceProvider.GetRequiredService<IExamGradeRepository>();
         private readonly ICourseRepository _courseRepository = ServiceProvider.GetRequiredService<ICourseRepository>();
@@ -184,14 +187,14 @@ namespace LangLang.Services.ReportServices
             return plotModel;
         }
 
-        private static void SaveToPdf(PlotModel plotModel, string filePath)
+        private new static void SaveToPdf(PlotModel plotModel, string filePath)
         {
             using var stream = File.Create(filePath);
             var pdfExporter = new PdfExporter { Width = 600, Height = 400 };
             pdfExporter.Export(plotModel, stream);
         }
 
-        private static void MergePdf(string outputFilePath, string[] inputFilePaths)
+        private new static void MergePdf(string outputFilePath, string[] inputFilePaths)
         {
             PdfDocument outputPdfDocument = new();
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);

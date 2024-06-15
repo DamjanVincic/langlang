@@ -11,17 +11,21 @@ namespace LangLang.Models
     {
         [JsonProperty]
         [TableItem(13)]
-        private int TotalRating { get; set; }
+        public int TotalRating { get; set; }
         
         [JsonProperty]
         [TableItem(12)]
-        private int NumberOfReviews { get; set; }
+        public int NumberOfReviews { get; set; }
 
         public Teacher(string? firstName, string? lastName, string? email, string? password, Gender gender, string? phone,
             List<Language> qualifications, DateOnly? dateCreated = null) : base(firstName, lastName, email, password, gender, phone)
         {
             Qualifications = qualifications;
             DateCreated = dateCreated == null ? DateOnly.FromDateTime(DateTime.Now) : dateCreated.GetValueOrDefault();
+        }
+
+        public Teacher()
+        {
         }
 
         [TableItem(10)]

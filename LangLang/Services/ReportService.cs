@@ -1,10 +1,10 @@
-﻿using OxyPlot;
-using PdfSharp.Pdf.IO;
+﻿using System.IO;
 using System.Text;
+using OxyPlot;
 using PdfSharp.Pdf;
-using System.IO;
+using PdfSharp.Pdf.IO;
 
-namespace LangLang.Services.ReportServices
+namespace LangLang.Services
 {
     public abstract class ReportService
     {

@@ -1,15 +1,14 @@
-﻿using LangLang.Repositories;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using LangLang.Models;
-using OxyPlot.Series;
-using OxyPlot.Axes;
+using LangLang.Repositories;
 using OxyPlot;
+using OxyPlot.Axes;
+using OxyPlot.Series;
 
-
-namespace LangLang.Services.ReportServices
+namespace LangLang.Services
 {
     public class GradeReportService : ReportService
     {
@@ -69,7 +68,7 @@ namespace LangLang.Services.ReportServices
             }
 
             return gradeNums > 0
-                ? new List<double> { knowledgeGradeSum / gradeNums, activityGradeSum / gradeNums }
+                ? new List<double> { (double)knowledgeGradeSum / gradeNums, (double)activityGradeSum / gradeNums }
                 : new List<double> { 0, 0 };
         }
 
