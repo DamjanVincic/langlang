@@ -69,7 +69,7 @@ namespace LangLang.Services.ReportServices
             }
 
             return gradeNums > 0
-                ? new List<double> { knowledgeGradeSum / gradeNums, activityGradeSum / gradeNums }
+                ? new List<double> { (double)knowledgeGradeSum / gradeNums, (double)activityGradeSum / gradeNums }
                 : new List<double> { 0, 0 };
         }
 
