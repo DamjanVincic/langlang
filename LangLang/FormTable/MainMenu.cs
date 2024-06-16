@@ -1,9 +1,18 @@
 ﻿using System;
+using System.Linq;
 using LangLang.Models;
 using LangLang.Repositories;
 using LangLang.Repositories.FileRepositories;
+using LangLang.Repositories.PostgresRepositories;
 using LangLang.Services;
+using LangLang.ViewModels.CourseViewModels;
+using LangLang.ViewModels.DirectorViewModels;
+using LangLang.ViewModels.ExamViewModels;
+using LangLang.ViewModels.StudentViewModels;
+using LangLang.ViewModels.TeacherViewModels;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using ServiceProvider = LangLang.Models.ServiceProvider;
 
 namespace LangLang.FormTable
 {
@@ -13,13 +22,23 @@ namespace LangLang.FormTable
         static void Main()
         {
             var serviceCollection = new ServiceCollection();
-            ConfigureServices(serviceCollection);
-            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var mainMenu = new MainMenu();
+            mainMenu.ConfigureServices(serviceCollection);
 
-            IUserService userService = serviceProvider.GetRequiredService<IUserService>();
-            ITeacherService teacherService = serviceProvider.GetRequiredService<ITeacherService>();
-            IExamService examService = serviceProvider.GetRequiredService<IExamService>();
-            ICourseService courseService = serviceProvider.GetRequiredService<ICourseService>();
+            ServiceProvider.Instance = serviceCollection.BuildServiceProvider();
+
+            Director director = new Director("Nadja", "Zoric", "nadjazoric@gmail.com", "PatrikZvezdasti011", Gender.Female, "1234567890123");
+
+            IUserRepository userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
+            if (userRepository.GetAll().All(user => user.Email != director.Email))
+                userRepository.Add(director);
+
+            //var serviceProvider = serviceCollection.BuildServiceProvider();
+
+            IUserService userService = ServiceProvider.Instance.GetRequiredService<IUserService>();
+            ITeacherService teacherService = ServiceProvider.Instance.GetRequiredService<ITeacherService>();
+            IExamService examService = ServiceProvider.Instance.GetRequiredService<IExamService>();
+            ICourseService courseService = ServiceProvider.Instance.GetRequiredService<ICourseService>();
 
             user = Loggin(userService)!;
 
@@ -31,7 +50,7 @@ namespace LangLang.FormTable
                         TeacherMenu(examService, courseService, userService);
                         break;
                     case Director:
-                        DirectorMenu(teacherService,userService,courseService,examService);
+                        DirectorMenu(teacherService, userService, courseService, examService);
                         break;
                     default:
                         break;
@@ -171,12 +190,13 @@ namespace LangLang.FormTable
                         break;
                     default: break;
                 }
-            }catch (Exception)
+            }
+            catch (Exception)
             {
                 Console.WriteLine("Invalid entries. Try again.");
             }
         }
-        private static void DirectorMenu(ITeacherService teacherService,IUserService userService, ICourseService courseService,IExamService examService)
+        private static void DirectorMenu(ITeacherService teacherService, IUserService userService, ICourseService courseService, IExamService examService)
         {
             try
             {
@@ -193,7 +213,7 @@ namespace LangLang.FormTable
                 switch (option)
                 {
                     case "1":
-                        new FormTableGenerator<Teacher>(teacherService.GetAll(),userService).Create(user!);
+                        new FormTableGenerator<Teacher>(teacherService.GetAll(), userService).Create(user!);
                         break;
                     case "2":
                         new FormTableGenerator<Teacher>(teacherService.GetAll(), teacherService).ShowTable();
@@ -254,17 +274,10 @@ namespace LangLang.FormTable
                 Console.WriteLine("Invalid entries. Try again.");
             }
         }
-        private static void ConfigureServices(IServiceCollection services)
+        private void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<ICourseGradeRepository, CourseGradeFileRepository>();
-            services.AddScoped<ICourseRepository, CourseFileRepository>();
-            services.AddScoped<IExamGradeRepository, ExamGradeFileRepository>();
-            services.AddScoped<IExamRepository, ExamFileRepository>();
-            services.AddScoped<ILanguageRepository, LanguageFileRepository>();
-            services.AddScoped<IMessageRepository, MessageFileRepository>();
-            services.AddScoped<IPenaltyPointRepository, PenaltyPointFileRepository>();
-            services.AddScoped<IScheduleRepository, ScheduleFileRepository>();
-            services.AddScoped<IUserRepository, UserFileRepository>();
+            ConfigureFileRepositories(services);
+            ConfigureDatabaseRepositories(services);
 
             services.AddScoped<ICourseGradeService, CourseGradeService>();
             services.AddScoped<ICourseService, CourseService>();
@@ -278,6 +291,43 @@ namespace LangLang.FormTable
             services.AddScoped<IStudentService, StudentService>();
             services.AddScoped<ITeacherService, TeacherService>();
             services.AddScoped<IUserService, UserService>();
+
+            services.AddTransient<MainWindow>();
+            services.AddTransient<ActiveCoursesViewModel>();
+            services.AddTransient<AddCourseViewModel>();
+            services.AddTransient<CourseListingViewModel>();
+            services.AddTransient<CoursesWithStudentWithdrawalsViewModel>();
+            services.AddTransient<StartableCoursesViewModel>();
+            services.AddTransient<GradedExamsViewModel>();
+            services.AddTransient<ExamListingViewModel>();
+            services.AddTransient<AppliedExamListingViewModel>();
+            services.AddTransient<StudentExamViewModel>();
+            services.AddTransient<StartableExamsViewModel>();
+            services.AddTransient<BestStudentsNotificationViewModel>();
+            services.AddTransient<CourseListingDirectorViewModel>();
+        }
+
+        private static void ConfigureFileRepositories(IServiceCollection services)
+        {
+            services.AddScoped<ICourseGradeRepository, CourseGradeFileRepository>();
+            services.AddScoped<IExamGradeRepository, ExamGradeFileRepository>();
+            services.AddScoped<IMessageRepository, MessageFileRepository>();
+            services.AddScoped<IPenaltyPointRepository, PenaltyPointFileRepository>();
+        }
+
+        private void ConfigureDatabaseRepositories(IServiceCollection services)
+        {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+            DotNetEnv.Env.Load("../.env"); // Works if the current directory is the LangLang project
+
+            string connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? throw new InvalidInputException("Connection string not found in .env file.");
+            services.AddDbContext<DatabaseContext>(options => options.UseNpgsql(connectionString));
+
+            services.AddScoped<ICourseRepository, CoursePostgresRepository>();
+            services.AddScoped<ILanguageRepository, LanguagePostgresRepository>();
+            services.AddScoped<IUserRepository, UserPostgresRepository>();
+            services.AddScoped<IExamRepository, ExamPostgresRepository>();
+            services.AddScoped<IScheduleRepository, SchedulePostgresRepository>();
         }
     }
 }
