@@ -32,11 +32,11 @@ namespace LangLang.Models
         public virtual List<Language> Qualifications { get; set; } = new();
 
         [TableItem(11)]
-        public DateOnly DateCreated { get; }
+        public DateOnly DateCreated { get; set; }
         [TableItem(9)]
-        public List<int> CourseIds { get; } = new();
+        public List<int> CourseIds { get; set; } = new();
         [TableItem(8)]
-        public List<int> ExamIds { get; } = new();
+        public List<int> ExamIds { get; set; } = new();
         
         public double Rating => (double)TotalRating / NumberOfReviews;
 
