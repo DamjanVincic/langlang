@@ -250,8 +250,9 @@ public class TeacherService : ITeacherService
     public int? SmartPickCourse(Course course)
     {
         List<Teacher> availableTeachers = GetAvailableTeachers(course)
-            .OrderByDescending(teacher => teacher.Rating)
-            .ToList();
+             .Where(teacher => teacher.Qualifications.Contains(course.Language))
+             .OrderByDescending(teacher => teacher.Rating)
+             .ToList();
 
         if (!availableTeachers.Any())
             throw new InvalidInputException("There are no available substitute teachers");
@@ -264,8 +265,9 @@ public class TeacherService : ITeacherService
     public int? SmartPickExam(Exam exam)
     {
         List<Teacher> availableTeachers = GetAvailableTeachers(exam)
-            .OrderByDescending(teacher => teacher.Rating)
-            .ToList();
+                    .Where(teacher => teacher.Qualifications.Contains(exam.Language))
+                    .OrderByDescending(teacher => teacher.Rating)
+                    .ToList();
 
         if (!availableTeachers.Any())
         {
