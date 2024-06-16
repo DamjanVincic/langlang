@@ -78,7 +78,6 @@ namespace LangLang.ViewModels.CourseViewModels
             RefreshCourses();
         }
 
-        // TODO: MNOC 3
         private void Delete()
         {
             if (SelectedItem == null)

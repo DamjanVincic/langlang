@@ -36,7 +36,6 @@ public class RegisterViewModel : ViewModelBase
         RegisterCommand = new RelayCommand(Register);
     }
 
-    // TODO: MELOC 18
     private void Register()
     {
         try

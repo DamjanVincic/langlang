@@ -81,7 +81,6 @@ public class ExamService : IExamService
     if language from that course is in the dict than student has finished that course
     if its in the dict and it has value true then student passed exam, if its false he didnt pass it yet
     */
-    // TODO: MNOC 3
     private bool IsNeededCourseFinished(Exam exam, Student student)
     {
         return student.LanguagePassFail.ContainsKey(exam.Language.Id) &&
@@ -142,7 +141,6 @@ public class ExamService : IExamService
         return addedExam;
     }
 
-    // TODO: MELOC 21, CYCLO_SWITCH 6, NOP 7, MNOC 5 
     public void Update(int id, int maxStudents, DateOnly date,
         int? teacherId, TimeOnly scheduledTime)
 

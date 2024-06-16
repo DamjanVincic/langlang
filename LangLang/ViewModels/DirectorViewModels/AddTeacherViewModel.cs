@@ -51,7 +51,6 @@ namespace LangLang.ViewModels.DirectorViewModels
             UpdateQualifications();
         }
 
-        // TODO: MELOC 16
         private void AddTeacher()
         {
             try

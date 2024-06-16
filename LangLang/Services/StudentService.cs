@@ -104,7 +104,6 @@ public class StudentService : IStudentService
         _courseRepository.Update(course);
     }
 
-    // TODO: MNOC 3
     public void WithdrawFromCourse(int studentId, int courseId)
     {
         Student student = GetStudentOrThrow(studentId);
@@ -243,7 +242,6 @@ public class StudentService : IStudentService
         }
     }
 
-    // TODO: Call this method when the teacher reviews the drop out request
     public void ResumeApplications(int studentId)
     {
         Student student = GetStudentOrThrow(studentId);

@@ -36,8 +36,6 @@ public class MainViewModel : ViewModelBase
     {
         new RegisterView().Show();
     }
-
-    // TODO: MELOC 19
     private void Login()
     {
         User? user = _userService.Login(Email!, Password!);

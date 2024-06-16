@@ -6,7 +6,6 @@ namespace LangLang.Services;
 
 public interface IStudentService
 {
-    // TODO: Implement course and exam enrollment etc.
     public List<Student> GetAll();
     public void ApplyForCourse(int studentId, int courseId);
     public void WithdrawFromCourse(int studentId, int courseId);

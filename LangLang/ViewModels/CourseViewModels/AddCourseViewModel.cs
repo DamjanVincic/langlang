@@ -66,7 +66,6 @@ namespace LangLang.ViewModels.CourseViewModels
         public IEnumerable<string?> HourValues => _hours;
         public IEnumerable<string?> MinuteValues => _minutes;
 
-        // TODOL: MELOC 30, CYCLO_SWITCH 10, MNOC 5
         private void AddCourse()
         {
             if (string.IsNullOrEmpty(LanguageName) ||
