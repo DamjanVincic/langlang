@@ -33,6 +33,7 @@ public class DatabaseContext : DbContext
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
+        optionsBuilder.UseLazyLoadingProxies();
         if (optionsBuilder.IsConfigured) return;
         
         DotNetEnv.Env.Load("../.env"); // Works if the current directory is the LangLang project

@@ -29,7 +29,7 @@ namespace LangLang.Models
         }
 
         [TableItem(10)]
-        public List<Language> Qualifications { get; set; } = new();
+        public virtual List<Language> Qualifications { get; set; } = new();
 
         [TableItem(11)]
         public DateOnly DateCreated { get; }

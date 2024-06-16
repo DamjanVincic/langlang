@@ -27,7 +27,7 @@ namespace LangLang.Models
         public int Id {  get; set; }
 
         public LanguageLevel Level { get; set; }
-        public List<Teacher> Teachers { get; set; } = new();
+        public virtual List<Teacher> Teachers { get; set; } = new();
 
         private void ValidateName(string name)
         {
