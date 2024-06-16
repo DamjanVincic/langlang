@@ -51,7 +51,7 @@ public class UserService : IUserService
     }
 
     public void Update(int id, string firstName, string lastName, string password, Gender gender, string phone,
-        Education? education = null, List<Language>? languages = null, int penaltyPoints = -1)
+        Education? education = null, int penaltyPoints = -1)
     {
         User user = _userRepository.GetById(id) ?? throw new InvalidInputException("User doesn't exist");
 
@@ -66,16 +66,10 @@ public class UserService : IUserService
         user.Gender = gender;
         user.Phone = phone;
 
-        switch (user)
+        if(user is Student)
         {
-            case Student student:
-                student.PenaltyPoints = penaltyPoints != -1 ? penaltyPoints : student.PenaltyPoints;
-                student.Education = education;
-                break;
-            case Teacher teacher:
-                // TODO: Uncomment if teacher gets allowed to update their qualifications
-                // teacher.Qualifications = languages ?? new List<Language>();
-                break;
+            ((Student)user).PenaltyPoints = penaltyPoints != -1 ? penaltyPoints : ((Student)user).PenaltyPoints;
+            ((Student)user).Education = education;
         }
 
         _userRepository.Update(user);
