@@ -108,8 +108,6 @@ namespace LangLang.Models
         [TableItem(16)]
         public bool AreApplicationsClosed { get; set; }
 
-        // TODO: Return different student IDs based on the status, only pending when accepting (ignore paused), remove all paused after starting a course etc.
-        // TODO: Add logic to respective methods when a student drops out from, or others to resume their applications etc.
         // Dictionary of student IDs and their application status
         [TableItem(14)]
         public Dictionary<int, ApplicationStatus> Students { get; set; } = new();

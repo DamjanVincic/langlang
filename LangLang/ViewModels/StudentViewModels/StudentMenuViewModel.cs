@@ -137,7 +137,6 @@ public class StudentMenuViewModel : ViewModelBase
             
             _studentService.DropActiveCourse(_student.Id, dialog.ResponseText);
             MessageBox.Show("Request for dropping out from the course has been sent.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-            // TODO: Refresh the active course here (after binding it to a view)
         }
         catch (InvalidInputException ex)
         {

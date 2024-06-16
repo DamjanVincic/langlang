@@ -1065,4 +1065,3 @@ coverage*[.json, .xml, .info]
 # Additional files built by Visual Studio
 
 # End of https://www.toptal.com/developers/gitignore/api/dotnetcore,csharp,visualstudio,visualstudiocode,vs,vim,rider,intellij+all,intellij+iml,intellij
-/LangLang/Services/ExamService.cs
