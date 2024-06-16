@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Windows.Documents;
 using LangLang.Models;
 using LangLang.Repositories;
 using LangLang.Repositories.FileRepositories;
@@ -105,6 +106,7 @@ namespace LangLang.FormTable
                         new FormTableGenerator<Exam>(examService.GetAll(), examService).Create(user!);
                         break;
                     case "2":
+                        var da = examService.GetAll();
                         new FormTableGenerator<Exam>(examService.GetAll(), examService).ShowTable();
                         break;
                     case "3":

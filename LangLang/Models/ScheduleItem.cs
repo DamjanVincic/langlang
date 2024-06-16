@@ -5,7 +5,7 @@ namespace LangLang.Models
 {
     public abstract class ScheduleItem
     {
-        private Language _language = null!;
+        private Language _language;
         private int _maxStudents;
         private DateOnly _date;
 
