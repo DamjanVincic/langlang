@@ -15,15 +15,17 @@ public class UserService : IUserService
     private readonly IExamRepository _examRepository;
     private readonly ICourseService _courseService;
     private readonly IExamService _examService;
+    private readonly ILanguageService _languageService;
 
     public UserService(IUserRepository userRepository, ICourseRepository courseRepository, IExamRepository examRepository,
-        ICourseService courseService, IExamService examService)
+        ICourseService courseService, IExamService examService,ILanguageService languageService)
     {
         _userRepository = userRepository;
         _courseRepository = courseRepository;
         _examRepository = examRepository;
         _courseService = courseService;
         _examService = examService;
+        _languageService = languageService;
     }
 
     public List<User> GetAll()
@@ -45,7 +47,14 @@ public class UserService : IUserService
         if (education is not null)
             _userRepository.Add(new Student(firstName, lastName, email, password, gender, phone, education));
         else if (languages is not null)
-            _userRepository.Add(new Teacher(firstName, lastName, email, password, gender, phone, languages));
+        {
+            List<Language> languagesFromDB = new List<Language>();
+            foreach(Language language in languages)
+            {
+                languagesFromDB.Add(_languageService.GetLanguage(language.Name, language.Level));
+            }
+            _userRepository.Add(new Teacher(firstName, lastName, email, password, gender, phone, languagesFromDB));
+        }
         else
             throw new InvalidInputException("Invalid input");
     }
