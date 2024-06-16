@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LangLang.FormTable;
+using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -24,9 +25,14 @@ namespace LangLang.Models
             Deleted = false;
         }
 
+        public User()
+        {
+        }
+
+        [TableItem(1)]
         public int Id { get; set; }
         public bool Deleted { get; set; }
-
+        [TableItem(2)]
         public string FirstName
         {
             get => _firstName;
@@ -36,7 +42,7 @@ namespace LangLang.Models
                 _firstName = value;
             }
         }
-
+        [TableItem(3)]
         public string LastName
         {
             get => _lastName;
@@ -47,6 +53,7 @@ namespace LangLang.Models
             }
         }
 
+        [TableItem(4)]
         public string Email
         {
             get => _email;
@@ -56,7 +63,7 @@ namespace LangLang.Models
                 _email = value;
             }
         }
-
+        [TableItem(5)]
         public string Password
         {
             get => _password;
@@ -67,8 +74,10 @@ namespace LangLang.Models
             }
         }
 
+        [TableItem(6)]
         public Gender Gender { get; set; }
 
+        [TableItem(7)]
         public string Phone
         {
             get => _phone;

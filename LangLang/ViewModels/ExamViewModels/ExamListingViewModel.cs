@@ -152,11 +152,10 @@ namespace LangLang.ViewModels.ExamViewModels
 
             Exam exam = _examService.GetById(SelectedItem.Id) ?? throw new InvalidOperationException("Exam not found.");
 
-            new AddExamView(exam).ShowDialog();
+            new EditExamView(exam).ShowDialog();
             RefreshExams();
         }
 
-        // TODO: MNOC 3
         private void Delete()
         {
             if (SelectedItem == null)

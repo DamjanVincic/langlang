@@ -66,7 +66,6 @@ namespace LangLang.ViewModels.CourseViewModels
         public IEnumerable<string?> HourValues => _hours;
         public IEnumerable<string?> MinuteValues => _minutes;
 
-        // TODOL: MELOC 30, CYCLO_SWITCH 10, MNOC 5
         private void AddCourse()
         {
             if (string.IsNullOrEmpty(LanguageName) ||
@@ -98,7 +97,7 @@ namespace LangLang.ViewModels.CourseViewModels
                 else
                 {
                     Course course = _courseService.Add(LanguageName, LanguageLevel, Duration, Held, isOnline, MaxStudents,
-                    _director.Id, ScheduledTime, startDate, false, null);
+                    _director.Id, ScheduledTime, startDate, false, _director.Id);
                     teacherId = _teacherService.SmartPick(course);
                     course.TeacherId = teacherId;
                     _courseService.Update(course.Id, course.Duration, course.Held, course.IsOnline, course.MaxStudents, course.ScheduledTime, course.StartDate, course.AreApplicationsClosed, course.TeacherId);

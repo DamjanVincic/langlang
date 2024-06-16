@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using LangLang.FormTable;
 using Newtonsoft.Json;
 
 namespace LangLang.Models
@@ -48,6 +49,7 @@ namespace LangLang.Models
             StudentsNotified = studentsNotified;
         }
 
+        [TableItem(14)]
         public new int MaxStudents
         {
             get => base.MaxStudents;
@@ -58,6 +60,7 @@ namespace LangLang.Models
             }
         }
 
+        [TableItem(15)]
         public int Duration
         {
             get => _duration;
@@ -68,6 +71,7 @@ namespace LangLang.Models
             }
         }
 
+        [TableItem(9)]
         public List<Weekday> Held
         {
             get => _held;
@@ -78,12 +82,17 @@ namespace LangLang.Models
             }
         }
 
+        [TableItem(10)]
         public new bool IsOnline { get; set; }
-        public bool IsFinished { get; set; }
+
+        [TableItem(11)]
+        public bool IsFinished { get; set; } = false;
 
         // If the best students were notified by the director
-        public bool StudentsNotified { get; set; }
+        [TableItem(12)]
+        public bool StudentsNotified { get; set; } = false;
 
+        [TableItem(13)]
         public int? CreatorId { get; set; }
 
         public DateOnly StartDate
@@ -96,15 +105,16 @@ namespace LangLang.Models
             }
         }
 
+        [TableItem(16)]
         public bool AreApplicationsClosed { get; set; }
 
-        // TODO: Return different student IDs based on the status, only pending when accepting (ignore paused), remove all paused after starting a course etc.
-        // TODO: Add logic to respective methods when a student drops out from, or others to resume their applications etc.
         // Dictionary of student IDs and their application status
-        public Dictionary<int, ApplicationStatus> Students { get; } = new();
+        [TableItem(14)]
+        public Dictionary<int, ApplicationStatus> Students { get; set; } = new();
 
         // Dictionary of student IDs and their reasons for requesting to drop out
-        public Dictionary<int, string> DropOutRequests { get; } = new();
+        [TableItem(14)]
+        public Dictionary<int, string> DropOutRequests { get; set; } = new();
 
         private void ValidateDate(DateOnly startDate)
         {

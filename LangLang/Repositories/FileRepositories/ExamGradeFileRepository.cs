@@ -7,16 +7,16 @@ using System.Text;
 using System.Threading.Tasks;
 using LangLang.Models;
 
-namespace LangLang.Repositories
+namespace LangLang.Repositories.FileRepositories
 {
-    public class ExamGradeFileRepository:IExamGradeRepository
+    public class ExamGradeFileRepository : IExamGradeRepository
     {
         private const string ExamGradeFileName = "examGrades.json";
         private const string ExamGradeDirectoryName = "data";
 
         private int _idCounter = 1;
         private Dictionary<int, ExamGrade> _examGrades = new();
-        
+
         public List<ExamGrade> GetAll()
         {
             LoadData();
@@ -74,19 +74,19 @@ namespace LangLang.Repositories
         }
 
         private void LoadData()
-    {
-        string filePath = Path.Combine(Directory.GetCurrentDirectory(), ExamGradeDirectoryName, ExamGradeFileName);
+        {
+            string filePath = Path.Combine(Directory.GetCurrentDirectory(), ExamGradeDirectoryName, ExamGradeFileName);
 
-        if (!File.Exists(filePath)) return;
+            if (!File.Exists(filePath)) return;
 
             string json = File.ReadAllText(filePath);
-        _examGrades = JsonConvert.DeserializeObject<Dictionary<int, ExamGrade>>(json, new JsonSerializerSettings
-        {
-            TypeNameHandling = TypeNameHandling.Auto
-        }) ?? new Dictionary<int, ExamGrade>();
+            _examGrades = JsonConvert.DeserializeObject<Dictionary<int, ExamGrade>>(json, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto
+            }) ?? new Dictionary<int, ExamGrade>();
 
-        if (_examGrades.Any())
-            _idCounter = _examGrades.Keys.Max() + 1;
-    }
+            if (_examGrades.Any())
+                _idCounter = _examGrades.Keys.Max() + 1;
+        }
     }
 }

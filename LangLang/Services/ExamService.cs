@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows.Input;
 using LangLang.Models;
 using LangLang.Repositories;
+using Microsoft.VisualBasic.Devices;
 
 namespace LangLang.Services;
 
@@ -17,9 +18,8 @@ public class ExamService : IExamService
     private readonly ILanguageService _languageService;
     private readonly IExamGradeRepository _examGradeRepository;
     private readonly IMessageService _messageService;
-    private readonly ILanguageRepository _languageRepository;
     
-    public ExamService(IExamRepository examRepository, IUserRepository userRepository, IScheduleService scheduleService, ILanguageService languageService, IExamGradeRepository examGradeRepository, IMessageService messageService,ILanguageRepository languageRepository)
+    public ExamService(IExamRepository examRepository, IUserRepository userRepository, IScheduleService scheduleService, ILanguageService languageService, IExamGradeRepository examGradeRepository, IMessageService messageService)
     {
         _examRepository = examRepository;
         _userRepository = userRepository;
@@ -27,7 +27,6 @@ public class ExamService : IExamService
         _languageService = languageService;
         _examGradeRepository = examGradeRepository;
         _messageService = messageService;
-        _languageRepository = languageRepository;
     }
 
     public List<Exam> GetAll()
@@ -82,7 +81,6 @@ public class ExamService : IExamService
     if language from that course is in the dict than student has finished that course
     if its in the dict and it has value true then student passed exam, if its false he didnt pass it yet
     */
-    // TODO: MNOC 3
     private bool IsNeededCourseFinished(Exam exam, Student student)
     {
         return student.LanguagePassFail.ContainsKey(exam.Language.Id) &&
@@ -93,7 +91,7 @@ public class ExamService : IExamService
     {
         foreach (int languageId in student.LanguagePassFail.Keys)
         {
-            Language language = _languageRepository.GetById(languageId)!;
+            Language language = _languageService.GetById(languageId)!;
             if (language.Name == exam.Language.Name && language.Level >= exam.Language.Level &&
                 student.LanguagePassFail[languageId])
                 return true;
@@ -105,30 +103,47 @@ public class ExamService : IExamService
         TimeOnly examTime)
     {
         Teacher? teacher = null;
-        if (teacherId != null)
-            teacher = GetTeacherOrThrow(teacherId.Value);
+        User user = _userRepository.GetById(teacherId!.Value)!;
 
+        // zbog smart picka, ako je id direktora onda ce se promeniti u narenih par funkcija na validan id nastavnika
+        if (user is Teacher)
+        {
+            teacher = (Teacher)user;
+        }
+        else if (user is not Director)
+        {
+            throw new InvalidInputException("User doesn't exist.");
+        }
         Language language = _languageService.GetLanguage(languageName, languageLevel) ??
                             throw new InvalidInputException("Language with the given level doesn't exist.");
 
 
-        Exam exam = new(language, maxStudents, examDate, teacherId, examTime)
-        { Id = _examRepository.GenerateId() };
-
-
-        _scheduleService.Add(exam);
-        _examRepository.Add(exam);
+        Exam addedExam = new(0,language, maxStudents, examDate, teacherId, examTime);
+        
+        addedExam = _examRepository.Add(addedExam);
+        try
+        {
+            // If the exam can't be scheduled, delete it
+            _scheduleService.Add(addedExam);
+        }
+        catch (InvalidInputException ex)
+        {
+            _examRepository.Delete(addedExam.Id);
+            throw ex;
+        }
 
         if (teacher != null)
         {
-            teacher.ExamIds.Add(exam.Id);
+            teacher.ExamIds.Add(addedExam.Id);
             _userRepository.Update(teacher);
         }
-        return exam;
+
+        return addedExam;
     }
 
-    public void Update(int id, string languageName, LanguageLevel languageLevel, int maxStudents, DateOnly date,
-        int? teacherId, TimeOnly time)
+    public void Update(int id, int maxStudents, DateOnly date,
+        int? teacherId, TimeOnly scheduledTime)
+
     {
         Exam exam = GetExamOrThrow(id);
 
@@ -139,16 +154,11 @@ public class ExamService : IExamService
         if (teacherId.HasValue)
             teacher = GetTeacherOrThrow(teacherId.Value);
 
-
-        Language language = _languageService.GetLanguage(languageName, languageLevel) ??
-                            throw new InvalidInputException("Language with the given level doesn't exist.");
-
         int? oldTeacherId = exam.TeacherId;
         
-        exam.Language = language;
         exam.MaxStudents = maxStudents;
         exam.Date = date;
-        exam.ScheduledTime = time;
+        exam.ScheduledTime = scheduledTime;
         exam.TeacherId = teacherId;
 
         // Validates if it can be added to the current schedule
@@ -235,6 +245,7 @@ public class ExamService : IExamService
         Teacher teacher = GetTeacherOrThrow(teacherId);
         foreach (int examId in teacher.ExamIds)
         {
+
             Exam exam = GetExamOrThrow(examId);
 
             double timeDifference = (DateTime.Now - exam.Date.ToDateTime(exam.ScheduledTime)).TotalMinutes;

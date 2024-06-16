@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using LangLang.FormTable;
 using LangLang.Services;
 using Newtonsoft.Json;
 
@@ -9,10 +10,12 @@ namespace LangLang.Models
     public class Teacher : User
     {
         [JsonProperty]
-        private int TotalRating { get; set; }
+        [TableItem(13)]
+        public int TotalRating { get; set; }
         
         [JsonProperty]
-        private int NumberOfReviews { get; set; }
+        [TableItem(12)]
+        public int NumberOfReviews { get; set; }
 
         public Teacher(string? firstName, string? lastName, string? email, string? password, Gender gender, string? phone,
             List<Language> qualifications, DateOnly? dateCreated = null) : base(firstName, lastName, email, password, gender, phone)
@@ -21,11 +24,19 @@ namespace LangLang.Models
             DateCreated = dateCreated == null ? DateOnly.FromDateTime(DateTime.Now) : dateCreated.GetValueOrDefault();
         }
 
-        public List<Language> Qualifications { get; set; } = new();
+        public Teacher()
+        {
+        }
 
-        public DateOnly DateCreated { get; }
-        public List<int> CourseIds { get; } = new();
-        public List<int> ExamIds { get; } = new();
+        [TableItem(10)]
+        public virtual List<Language> Qualifications { get; set; } = new();
+
+        [TableItem(11)]
+        public DateOnly DateCreated { get; set; }
+        [TableItem(9)]
+        public List<int> CourseIds { get; set; } = new();
+        [TableItem(8)]
+        public List<int> ExamIds { get; set; } = new();
         
         public double Rating => (double)TotalRating / NumberOfReviews;
 

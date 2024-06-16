@@ -78,7 +78,6 @@ namespace LangLang.ViewModels.CourseViewModels
             RefreshCourses();
         }
 
-        // TODO: MNOC 3
         private void Delete()
         {
             if (SelectedItem == null)
@@ -113,7 +112,7 @@ namespace LangLang.ViewModels.CourseViewModels
                 subWindow.Closed += (sender, args) => RefreshCourses();
                 subWindow.Show();
             }
-            else _teacherService.SmartPick(course);
+            else _teacherService.SmartPickCourse(course);
             RefreshCourses();
         }
 

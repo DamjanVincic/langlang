@@ -18,8 +18,9 @@ public interface ITeacherService
     public void ConfirmCourse(int courseId);
     public void FinishCourse(int courseId);
     public int GetExamCount(int teacherId);
-    public int? SmartPick(Course course);
-    public int? SmartPick(Exam exam);
+    public int? SmartPick(ScheduleItem scheduleItem);
+    public int? SmartPickCourse(Course course);
+    public int? SmartPickExam(Exam exam);
 
 
 }

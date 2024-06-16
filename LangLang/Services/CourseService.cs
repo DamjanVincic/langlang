@@ -110,6 +110,7 @@ public class CourseService : ICourseService
         return courses.Skip((pageIndex - 1) * amount.Value).Take(amount.Value).ToList();
     }
 
+
     public Course Add(string languageName, LanguageLevel languageLevel, int duration, List<Weekday> held, bool isOnline,
         int maxStudents, int? creatorId, TimeOnly scheduledTime, DateOnly startDate, bool areApplicationsClosed,
         int? teacherId)
@@ -117,8 +118,17 @@ public class CourseService : ICourseService
         Language language = _languageService.GetLanguage(languageName, languageLevel) ??
                             throw new InvalidInputException("Language with the given level doesn't exist.");
         Teacher? teacher = null;
-        if (teacherId != null)
-            teacher = GetTeacherOrThrow(teacherId.Value);
+        User user = _userRepository.GetById(teacherId!.Value)!;
+
+        // zbog smart picka, ako je id direktora onda ce se promeniti u narenih par funkcija na validan id nastavnika
+        if (user is Teacher)
+        {
+            teacher = (Teacher)user;
+        }
+        else if (user is not Director)
+        {
+            throw new InvalidInputException("User doesn't exist.");
+        }
 
         startDate = SetValidStartDate(startDate, held);
         Course course = new(language, duration, held, isOnline, maxStudents, creatorId, scheduledTime, startDate,
@@ -131,9 +141,10 @@ public class CourseService : ICourseService
             // If the course can't be scheduled, delete it
             _scheduleService.Add(addedCourse);
         }
-        catch (InvalidInputException)
+        catch (InvalidInputException ex)
         {
             _courseRepository.Delete(addedCourse.Id);
+            throw ex;
         }
 
         if (teacher != null)
