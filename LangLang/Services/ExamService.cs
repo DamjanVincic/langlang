@@ -81,7 +81,6 @@ public class ExamService : IExamService
     if language from that course is in the dict than student has finished that course
     if its in the dict and it has value true then student passed exam, if its false he didnt pass it yet
     */
-    // TODO: MNOC 3
     private bool IsNeededCourseFinished(Exam exam, Student student)
     {
         return student.LanguagePassFail.ContainsKey(exam.Language.Id) &&
@@ -104,9 +103,17 @@ public class ExamService : IExamService
         TimeOnly examTime)
     {
         Teacher? teacher = null;
+        User user = _userRepository.GetById(teacherId!.Value)!;
+
         // zbog smart picka, ako je id direktora onda ce se promeniti u narenih par funkcija na validan id nastavnika
-        if (teacherId != null)
-            teacher = GetTeacherOrThrow(teacherId.Value);
+        if (user is Teacher)
+        {
+            teacher = (Teacher)user;
+        }
+        else if (user is not Director)
+        {
+            throw new InvalidInputException("User doesn't exist.");
+        }
         Language language = _languageService.GetLanguage(languageName, languageLevel) ??
                             throw new InvalidInputException("Language with the given level doesn't exist.");
 
@@ -134,7 +141,6 @@ public class ExamService : IExamService
         return addedExam;
     }
 
-    // TODO: MELOC 21, CYCLO_SWITCH 6, NOP 7, MNOC 5 
     public void Update(int id, int maxStudents, DateOnly date,
         int? teacherId, TimeOnly scheduledTime)
 

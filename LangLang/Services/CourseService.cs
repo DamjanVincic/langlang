@@ -118,10 +118,17 @@ public class CourseService : ICourseService
         Language language = _languageService.GetLanguage(languageName, languageLevel) ??
                             throw new InvalidInputException("Language with the given level doesn't exist.");
         Teacher? teacher = null;
-        // ovo se radi zbog smart picka, ako nastavnik ne postoji onda baci gresku
-        // ali ako je nastavnik = direktor onda ce se promeniti kasnije u validan id nastavnika
-        if (teacherId != null)
-            teacher = GetTeacherOrThrow(teacherId.Value);
+        User user = _userRepository.GetById(teacherId!.Value)!;
+
+        // zbog smart picka, ako je id direktora onda ce se promeniti u narenih par funkcija na validan id nastavnika
+        if (user is Teacher)
+        {
+            teacher = (Teacher)user;
+        }
+        else if (user is not Director)
+        {
+            throw new InvalidInputException("User doesn't exist.");
+        }
 
         startDate = SetValidStartDate(startDate, held);
         Course course = new(language, duration, held, isOnline, maxStudents, creatorId, scheduledTime, startDate,

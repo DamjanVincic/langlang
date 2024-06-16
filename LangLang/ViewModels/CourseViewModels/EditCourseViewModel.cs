@@ -66,7 +66,6 @@ namespace LangLang.ViewModels.CourseViewModels
         public IEnumerable<string?> HourValues => _hoursValues;
         public IEnumerable<string?> MinuteValues => _minutesValues;
 
-        // TODO: MELOC 28, CYCLO_SWITCH 9, MNOC 5
         private void EditCourse()
         {
             if ((!Format.Equals("online") && MaxStudents <= 0)|| Duration <= 0 || StartDate == default 

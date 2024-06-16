@@ -7,6 +7,7 @@ using LangLang.Repositories;
 using LangLang.Services;
 using LangLang.Views.CourseViews;
 using LangLang.Views.DirectorViews;
+using LangLang.Views.ExamViews;
 
 namespace LangLang.ViewModels.DirectorViewModels
 {
@@ -64,7 +65,8 @@ namespace LangLang.ViewModels.DirectorViewModels
 
         private void ViewExams()
         {
-
+            var examView = new AddExamView();
+            examView.Show();
         }
         private void ViewCourses()
         {

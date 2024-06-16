@@ -112,11 +112,11 @@ namespace LangLang.Models
         // TODO: Add logic to respective methods when a student drops out from, or others to resume their applications etc.
         // Dictionary of student IDs and their application status
         [TableItem(14)]
-        public Dictionary<int, ApplicationStatus> Students { get; } = new();
+        public Dictionary<int, ApplicationStatus> Students { get; set; } = new();
 
         // Dictionary of student IDs and their reasons for requesting to drop out
         [TableItem(14)]
-        public Dictionary<int, string> DropOutRequests { get; } = new();
+        public Dictionary<int, string> DropOutRequests { get; set; } = new();
 
         private void ValidateDate(DateOnly startDate)
         {

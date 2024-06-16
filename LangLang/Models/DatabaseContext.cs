@@ -33,6 +33,7 @@ public class DatabaseContext : DbContext
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
+        optionsBuilder.UseLazyLoadingProxies();
         if (optionsBuilder.IsConfigured) return;
         
         DotNetEnv.Env.Load("../.env"); // Works if the current directory is the LangLang project
@@ -105,6 +106,9 @@ public class DatabaseContext : DbContext
 
         modelBuilder.Entity<Dictionary<int, bool>>().HasNoKey();
         modelBuilder.Entity<Dictionary<int, int>>().HasNoKey();
+        modelBuilder.Entity<Dictionary<int, ApplicationStatus>>().HasNoKey();
+        modelBuilder.Entity<Dictionary<int, string>>().HasNoKey();
+        
         modelBuilder.Entity<Schedule>()
             .Property(s => s.ScheduleItems)
             .HasConversion(
@@ -112,6 +116,20 @@ public class DatabaseContext : DbContext
                     new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }),
                 v => JsonConvert.DeserializeObject<List<ScheduleItem>>(v,
                     new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto })!
+            );
+        
+        modelBuilder.Entity<Course>()
+            .Property(s => s.Students)
+            .HasConversion(
+                v => JsonConvert.SerializeObject(v),
+                v => JsonConvert.DeserializeObject<Dictionary<int, ApplicationStatus>>(v)!
+            );
+        
+        modelBuilder.Entity<Course>()
+            .Property(s => s.DropOutRequests)
+            .HasConversion(
+                v => JsonConvert.SerializeObject(v),
+                v => JsonConvert.DeserializeObject<Dictionary<int, string>>(v)!
             );
     }
 }

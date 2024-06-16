@@ -147,7 +147,6 @@ public class StudentMenuViewModel : ViewModelBase
 
     private void EditAccount()
     {
-        // TODO: in teacher, after exam is over remove it from appliedExams, ensure that only future exams are in the list or none at all
         if(_student.AppliedExams.Count != 0)
         {
             MessageBox.Show("You cannot change your data while you have registered exams.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);

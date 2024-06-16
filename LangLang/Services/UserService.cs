@@ -15,15 +15,17 @@ public class UserService : IUserService
     private readonly IExamRepository _examRepository;
     private readonly ICourseService _courseService;
     private readonly IExamService _examService;
+    private readonly ILanguageService _languageService;
 
     public UserService(IUserRepository userRepository, ICourseRepository courseRepository, IExamRepository examRepository,
-        ICourseService courseService, IExamService examService)
+        ICourseService courseService, IExamService examService,ILanguageService languageService)
     {
         _userRepository = userRepository;
         _courseRepository = courseRepository;
         _examRepository = examRepository;
         _courseService = courseService;
         _examService = examService;
+        _languageService = languageService;
     }
 
     public List<User> GetAll()
@@ -45,13 +47,20 @@ public class UserService : IUserService
         if (education is not null)
             _userRepository.Add(new Student(firstName, lastName, email, password, gender, phone, education));
         else if (languages is not null)
-            _userRepository.Add(new Teacher(firstName, lastName, email, password, gender, phone, languages));
+        {
+            List<Language> languagesFromDB = new List<Language>();
+            foreach(Language language in languages)
+            {
+                languagesFromDB.Add(_languageService.GetLanguage(language.Name, language.Level));
+            }
+            _userRepository.Add(new Teacher(firstName, lastName, email, password, gender, phone, languagesFromDB));
+        }
         else
             throw new InvalidInputException("Invalid input");
     }
 
     public void Update(int id, string firstName, string lastName, string password, Gender gender, string phone,
-        Education? education = null, List<Language>? languages = null, int penaltyPoints = -1)
+        Education? education = null, int penaltyPoints = -1)
     {
         User user = _userRepository.GetById(id) ?? throw new InvalidInputException("User doesn't exist");
 
@@ -66,16 +75,10 @@ public class UserService : IUserService
         user.Gender = gender;
         user.Phone = phone;
 
-        switch (user)
+        if(user is Student)
         {
-            case Student student:
-                student.PenaltyPoints = penaltyPoints != -1 ? penaltyPoints : student.PenaltyPoints;
-                student.Education = education;
-                break;
-            case Teacher teacher:
-                // TODO: Uncomment if teacher gets allowed to update their qualifications
-                // teacher.Qualifications = languages ?? new List<Language>();
-                break;
+            ((Student)user).PenaltyPoints = penaltyPoints != -1 ? penaltyPoints : ((Student)user).PenaltyPoints;
+            ((Student)user).Education = education;
         }
 
         _userRepository.Update(user);

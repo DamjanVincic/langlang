@@ -214,7 +214,6 @@ namespace LangLang.ViewModels.CourseViewModels
             RefreshCourses(SelectedPropertyName!, SelectedSortingWay!);
         }
 
-        // TODO: CYCLO_SWITCH 7
         private bool FilterCourses(object obj)
         {
             if (obj is CourseViewModel courseViewModel)
